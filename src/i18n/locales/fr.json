@@ -92,7 +92,9 @@
       "specialistDesc": "Consultez les dossiers qui vous sont affectés.",
       "coordinatorTitle": "Coordinateur médical",
       "coordinatorDesc": "Gérez les dossiers, affectations et urgences.",
-      "newPatient": "Nouveau patient ?"
+      "newPatient": "Nouveau patient ?",
+      "localDoctorTitle": "Médecin traitant",
+      "localDoctorDesc": "Suivez vos patients et accompagnez leur demande de deuxième avis."
     },
     "loginPatient": {
       "heading": "Votre Santé,<br/>Notre Priorité.",
@@ -188,6 +190,10 @@
         "ADMIN": {
           "title": "Espace Administrateur",
           "subtitle": "Gestion de la plateforme, des comptes et suivi d'activité."
+        },
+        "MEDECIN_LOCAL": {
+          "title": "Espace Médecin Traitant",
+          "subtitle": "Accompagnez vos patients dans leur demande de deuxième avis."
         }
       }
     },
@@ -276,7 +282,8 @@
     "pdfUnavailable": "Le PDF n'est pas encore disponible",
     "createCaseFailed": "La création du dossier a échoué. Veuillez réessayer.",
     "paymentFailed": "Le paiement n'a pas pu être traité.",
-    "caseNotFoundRestart": "Dossier introuvable. Veuillez recommencer votre demande."
+    "caseNotFoundRestart": "Dossier introuvable. Veuillez recommencer votre demande.",
+    "downloadFailed": "Téléchargement impossible"
   },
   "patient": {
     "dossierStatus": {
@@ -665,6 +672,10 @@
       "user": "Utilisateur",
       "notProvided": "Non renseigné",
       "logout": "Déconnexion"
+    },
+    "medecinNav": {
+      "dossiers": "Mes patients",
+      "profil": "Mon compte"
     }
   },
   "notifications": {
@@ -727,5 +738,83 @@
         "preview": "Dossier {{reference}}"
       }
     }
+  },
+  "chat": {
+    "patientFile": "Dossier patient",
+    "attachAria": "Joindre un document",
+    "attachRemove": "Retirer le document",
+    "attachCaptionPlaceholder": "Ajouter un message (facultatif)...",
+    "attachTypeError": "Format non autorisé. Formats acceptés : PDF, JPEG, PNG, DICOM.",
+    "attachSizeError": "Fichier trop volumineux (25 Mo maximum).",
+    "attachFailed": "L'envoi du document a échoué"
+  },
+  "medecin": {
+    "login": {
+      "title": "Espace médecin traitant",
+      "subtitle": "Accédez aux dossiers de vos patients suivis sur IMSOP.",
+      "submit": "Se connecter",
+      "noAccount": "Pas encore de compte ?",
+      "register": "Créer un compte médecin"
+    },
+    "register": {
+      "title": "Créer un compte médecin traitant",
+      "subtitle": "Vous accompagnez votre patient dans sa demande de deuxième avis. Votre numéro d'ordre sera vérifié par notre équipe.",
+      "fullName": "Nom complet",
+      "email": "Adresse e-mail professionnelle",
+      "password": "Mot de passe",
+      "phone": "Téléphone",
+      "specialite": "Spécialité",
+      "etablissement": "Établissement",
+      "pays": "Pays d’exercice",
+      "numeroOrdre": "Numéro d'ordre des médecins",
+      "submit": "Créer mon compte",
+      "hasAccount": "Vous avez déjà un compte ?",
+      "login": "Se connecter"
+    },
+    "dashboard": {
+      "title": "Mes patients suivis",
+      "subtitle": "Les dossiers pour lesquels un patient vous a désigné comme médecin traitant.",
+      "empty": "Aucun patient ne vous a encore désigné. Votre patient doit renseigner votre adresse e-mail depuis son espace, section « Mon médecin traitant ».",
+      "loading": "Chargement des dossiers...",
+      "pendingVerification": "Votre numéro d'ordre est en cours de vérification par notre équipe de coordination.",
+      "openChat": "Messagerie",
+      "openFile": "Voir le dossier",
+      "reference": "Dossier",
+      "specialist": "Spécialiste international",
+      "noSpecialist": "Pas encore affecté"
+    },
+    "file": {
+      "motif": "Motif",
+      "question": "Question médicale",
+      "symptomes": "Symptômes",
+      "antecedents": "Antécédents",
+      "traitement": "Traitement en cours",
+      "documents": "Documents du dossier",
+      "upload": "Téléverser",
+      "noDocuments": "Aucun document pour le moment.",
+      "categories": {
+        "ANALYSE_BIOLOGIQUE": "Analyse biologique",
+        "IMAGERIE": "Imagerie",
+        "ORDONNANCE": "Ordonnance",
+        "COMPTE_RENDU": "Compte rendu",
+        "AUTRE": "Autre"
+      }
+    }
+  },
+  "patientMedecin": {
+    "title": "Mon médecin traitant",
+    "subtitle": "Désignez le médecin qui vous suit localement. Il pourra consulter ce dossier, y déposer des examens et échanger dans la messagerie sécurisée.",
+    "currentLabel": "Médecin désigné",
+    "none": "Aucun médecin traitant désigné pour ce dossier.",
+    "emailLabel": "Adresse e-mail de votre médecin",
+    "emailHelp": "Il doit déjà avoir un compte médecin sur IMSOP.",
+    "designate": "Désigner",
+    "remove": "Retirer l’accès",
+    "removeConfirm": "Retirer l'accès de ce médecin à votre dossier ?",
+    "chooseDossier": "Choisissez un dossier",
+    "noDossier": "Vous n'avez pas encore de dossier.",
+    "unverified": "Ce médecin n'a pas encore été vérifié par notre équipe.",
+    "designated": "Médecin traitant désigné.",
+    "removed": "Accès retiré."
   }
 }

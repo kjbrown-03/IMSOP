@@ -8,4 +8,12 @@ const sendMessage = {
   body: z.object({ body: z.string().trim().min(1).max(5000) }).strict(),
 }
 
-module.exports = { dossierScoped, sendMessage }
+const sendAttachment = {
+  params: paramsWithId('dossierId'),
+  body: z.object({
+    body: z.string().trim().max(5000).optional(),
+    category: z.enum(['ANALYSE_BIOLOGIQUE', 'IMAGERIE', 'ORDONNANCE', 'COMPTE_RENDU', 'MESSAGERIE', 'AUTRE']).optional(),
+  }).strict(),
+}
+
+module.exports = { dossierScoped, sendMessage, sendAttachment }

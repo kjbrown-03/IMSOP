@@ -6,7 +6,7 @@ const { signAccessToken, signRefreshToken } = require('../middleware/auth')
 const { notify } = require('../services/notificationService')
 const env = require('../config/env')
 
-const ROLES_REQUIRING_2FA = new Set(['SPECIALISTE', 'COORDINATEUR', 'ADMIN'])
+const ROLES_REQUIRING_2FA = new Set(['SPECIALISTE', 'MEDECIN_LOCAL', 'COORDINATEUR', 'ADMIN'])
 
 function hashToken(token) {
   return crypto.createHash('sha256').update(token).digest('hex')
@@ -30,9 +30,13 @@ function serializeUser(user) {
     identityVerified: user.patient?.identityVerified,
     identityDocumentSubmitted: !!user.patient?.identityDocumentKey,
     identityRejectedReason: user.patient?.identityRejectedReason,
-    specialite: user.specialiste?.specialite,
+    specialite: user.specialiste?.specialite ?? user.medecinLocal?.specialite,
     verified: user.specialiste?.verified,
     disponible: user.specialiste?.disponible,
+    etablissement: user.medecinLocal?.etablissement,
+    numeroOrdre: user.medecinLocal?.numeroOrdre,
+    // Set by a coordinator once the ordre registration number has been checked.
+    medecinVerified: user.medecinLocal?.verified,
   }
 }
 
@@ -128,9 +132,40 @@ async function registerPatient(req, res) {
   res.status(201).json(session)
 }
 
+// Self-service registration, deliberately mirroring the patient flow: the
+// account is usable straight away but stays unverified until a coordinator
+// checks the numéro d'ordre. A patient can designate it either way - the
+// consent that grants record access is the patient's, not the platform's.
+async function registerMedecinLocal(req, res) {
+  const { fullName, email, password, phone, specialite, etablissement, pays, numeroOrdre } = req.body
+
+  const existing = await prisma.user.findUnique({ where: { email } })
+  if (existing) return res.status(409).json({ message: 'Un compte existe déjà avec cet email' })
+
+  const passwordHash = await bcrypt.hash(password, 12)
+
+  const user = await prisma.user.create({
+    data: {
+      email,
+      passwordHash,
+      fullName,
+      phone,
+      role: 'MEDECIN_LOCAL',
+      twoFactorEnabled: true,
+      medecinLocal: { create: { specialite, etablissement, pays, numeroOrdre } },
+    },
+    include: { medecinLocal: true },
+  })
+
+  await sendEmailVerificationCode(user)
+
+  const session = await issueSession(user)
+  res.status(201).json(session)
+}
+
 async function login(req, res) {
   const { email, password, role } = req.body
-  const user = await prisma.user.findUnique({ where: { email }, include: { patient: true, specialiste: true } })
+  const user = await prisma.user.findUnique({ where: { email }, include: { patient: true, specialiste: true, medecinLocal: true } })
   if (!user || (role && user.role !== role)) {
     return res.status(401).json({ message: 'Identifiants incorrects' })
   }
@@ -182,7 +217,7 @@ async function verifyTwoFactor(req, res) {
 
   await prisma.twoFactorChallenge.update({ where: { id: challenge.id }, data: { consumedAt: new Date() } })
 
-  const user = await prisma.user.findUnique({ where: { id: payload.sub }, include: { patient: true, specialiste: true } })
+  const user = await prisma.user.findUnique({ where: { id: payload.sub }, include: { patient: true, specialiste: true, medecinLocal: true } })
   const session = await issueSession(user)
   res.json(session)
 }
@@ -235,7 +270,7 @@ async function refresh(req, res) {
 
   await prisma.refreshToken.update({ where: { id: stored.id }, data: { revokedAt: new Date() } })
 
-  const user = await prisma.user.findUnique({ where: { id: payload.sub }, include: { patient: true, specialiste: true } })
+  const user = await prisma.user.findUnique({ where: { id: payload.sub }, include: { patient: true, specialiste: true, medecinLocal: true } })
   if (!user) return res.status(401).json({ message: 'Utilisateur introuvable' })
 
   const session = await issueSession(user)
@@ -300,12 +335,13 @@ async function resetPassword(req, res) {
 }
 
 async function me(req, res) {
-  const user = await prisma.user.findUnique({ where: { id: req.userId }, include: { patient: true, specialiste: true } })
+  const user = await prisma.user.findUnique({ where: { id: req.userId }, include: { patient: true, specialiste: true, medecinLocal: true } })
   if (!user) return res.status(404).json({ message: 'Utilisateur introuvable' })
   res.json(serializeUser(user))
 }
 
 module.exports = {
+  registerMedecinLocal,
   registerPatient, login, verifyTwoFactor, refresh, logout, me,
   forgotPassword, resetPassword, verifyEmail, resendEmailVerification,
 }

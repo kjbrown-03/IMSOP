@@ -7,6 +7,7 @@ const DASHBOARD_BY_ROLE = {
   PATIENT: '/patient/dossiers',
   COORDINATEUR: '/coordinateur/tableau-de-bord',
   SPECIALISTE: '/specialiste/tableau-de-bord',
+  MEDECIN_LOCAL: '/medecin/dossiers',
 }
 
 export default function VerificationDeuxFacteurs() {

@@ -49,9 +49,14 @@ const assignerSpecialiste = {
   body: z.object({ specialisteId: uuid }).strict(),
 }
 
+const designerMedecinLocal = {
+  params: paramsWithId('id'),
+  body: z.object({ email: z.string().trim().toLowerCase().email() }).strict(),
+}
+
 const refuserDossier = {
   params: paramsWithId('id'),
   body: z.object({ motif: z.string().trim().max(1000).optional() }).strict(),
 }
 
-module.exports = { createDossier, updateDossier, idParam, listDossiers, assignerSpecialiste, refuserDossier }
+module.exports = { createDossier, updateDossier, idParam, listDossiers, assignerSpecialiste, refuserDossier, designerMedecinLocal }

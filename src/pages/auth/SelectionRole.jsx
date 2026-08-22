@@ -18,6 +18,12 @@ export default function SelectionRole() {
       description: t('auth.roleSelection.specialistDesc'),
     },
     {
+      to: '/connexion/medecin',
+      icon: 'stethoscope',
+      title: t('auth.roleSelection.localDoctorTitle'),
+      description: t('auth.roleSelection.localDoctorDesc'),
+    },
+    {
       to: '/connexion/coordinateur',
       icon: 'health_and_safety',
       title: t('auth.roleSelection.coordinatorTitle'),

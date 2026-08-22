@@ -11,6 +11,7 @@ async function loadDossierWithAccessCheck(req, dossierId) {
     include: {
       patient: { include: { user: { select: safeUserSelect } } },
       specialiste: { include: { user: { select: safeUserSelect } } },
+      medecinLocal: { include: { user: { select: safeUserSelect } } },
     },
   })
   if (!dossier) return { error: 404, message: 'Dossier introuvable' }
@@ -22,6 +23,12 @@ async function loadDossierWithAccessCheck(req, dossierId) {
     const specialiste = await prisma.specialiste.findUnique({ where: { userId: req.userId } })
     if (!specialiste || dossier.specialisteId !== specialiste.id) {
       return { error: 403, message: "Ce dossier ne vous est pas assigné" }
+    }
+  }
+  if (req.userRole === 'MEDECIN_LOCAL') {
+    const medecin = await prisma.medecinLocal.findUnique({ where: { userId: req.userId } })
+    if (!medecin || dossier.medecinLocalId !== medecin.id) {
+      return { error: 403, message: "Vous n'êtes pas le médecin traitant désigné sur ce dossier" }
     }
   }
   // COORDINATEUR and ADMIN can access any dossier
@@ -66,6 +73,9 @@ async function listDossiers(req, res) {
   } else if (req.userRole === 'SPECIALISTE') {
     const specialiste = await prisma.specialiste.findUnique({ where: { userId: req.userId } })
     where = { specialisteId: specialiste?.id }
+  } else if (req.userRole === 'MEDECIN_LOCAL') {
+    const medecin = await prisma.medecinLocal.findUnique({ where: { userId: req.userId } })
+    where = { medecinLocalId: medecin?.id ?? '__none__' }
   } else if (req.query.status) {
     where = { status: req.query.status }
   }
@@ -81,6 +91,7 @@ async function listDossiers(req, res) {
       include: {
         patient: { include: { user: { select: safeUserSelect } } },
         specialiste: { include: { user: { select: safeUserSelect } } },
+        medecinLocal: { include: { user: { select: safeUserSelect } } },
       },
     }),
     prisma.dossier.count({ where }),
@@ -215,6 +226,96 @@ async function refuserDossier(req, res) {
   res.json(updated)
 }
 
+// The patient designates his own treating doctor - the coordinator never does it
+// for him. Access to a medical record is therefore granted by the patient, and
+// the COMMUNICATION_MEDECIN consent is recorded in the same transaction as proof.
+async function designerMedecinLocal(req, res) {
+  const { dossier, error, message } = await loadDossierWithAccessCheck(req, req.params.id)
+  if (error) return res.status(error).json({ message })
+  if (req.userRole !== 'PATIENT') {
+    return res.status(403).json({ message: 'Seul le patient peut désigner son médecin traitant' })
+  }
+
+  const { email } = req.body
+  const user = await prisma.user.findUnique({ where: { email }, include: { medecinLocal: true } })
+  if (!user || user.role !== 'MEDECIN_LOCAL' || !user.medecinLocal) {
+    return res.status(404).json({ message: "Aucun compte médecin local n'est enregistré avec cette adresse e-mail" })
+  }
+  if (!user.active) {
+    return res.status(400).json({ message: 'Ce compte médecin est désactivé' })
+  }
+
+  const [updated] = await prisma.$transaction([
+    prisma.dossier.update({
+      where: { id: dossier.id },
+      data: { medecinLocalId: user.medecinLocal.id },
+      include: { medecinLocal: { include: { user: { select: safeUserSelect } } } },
+    }),
+    prisma.consentement.create({
+      data: {
+        dossierId: dossier.id,
+        patientId: dossier.patientId,
+        type: 'COMMUNICATION_MEDECIN',
+        accepted: true,
+        ipAddress: req.ip,
+      },
+    }),
+  ])
+
+  await logAction({
+    userId: req.userId,
+    action: 'MEDECIN_LOCAL_DESIGNE',
+    entityType: 'Dossier',
+    entityId: dossier.id,
+    dossierId: dossier.id,
+    metadata: { medecinLocalId: user.medecinLocal.id, email },
+    ipAddress: req.ip,
+  })
+
+  await notify(user.id, user.email, 'MEDECIN_LOCAL_RATTACHE', {
+    name: user.fullName,
+    patientName: dossier.patient.user.fullName,
+    reference: dossier.reference,
+  }, { dossierId: dossier.id })
+
+  res.json(updated)
+}
+
+// Revoking is a patient right and must stay one click away: the médecin local
+// loses access to the record the moment the link is cut.
+async function retirerMedecinLocal(req, res) {
+  const { dossier, error, message } = await loadDossierWithAccessCheck(req, req.params.id)
+  if (error) return res.status(error).json({ message })
+  if (req.userRole !== 'PATIENT') {
+    return res.status(403).json({ message: 'Seul le patient peut retirer son médecin traitant' })
+  }
+
+  const [updated] = await prisma.$transaction([
+    prisma.dossier.update({ where: { id: dossier.id }, data: { medecinLocalId: null } }),
+    prisma.consentement.create({
+      data: {
+        dossierId: dossier.id,
+        patientId: dossier.patientId,
+        type: 'COMMUNICATION_MEDECIN',
+        accepted: false,
+        ipAddress: req.ip,
+      },
+    }),
+  ])
+
+  await logAction({
+    userId: req.userId,
+    action: 'MEDECIN_LOCAL_RETIRE',
+    entityType: 'Dossier',
+    entityId: dossier.id,
+    dossierId: dossier.id,
+    metadata: { medecinLocalId: dossier.medecinLocalId },
+    ipAddress: req.ip,
+  })
+
+  res.json(updated)
+}
+
 module.exports = {
   createDossier,
   listDossiers,
@@ -224,5 +325,7 @@ module.exports = {
   assignerSpecialiste,
   accepterDossier,
   refuserDossier,
+  designerMedecinLocal,
+  retirerMedecinLocal,
   loadDossierWithAccessCheck,
 }

@@ -10,6 +10,8 @@ import ConnexionPatient from './pages/auth/ConnexionPatient'
 import ConnexionCoordinateur from './pages/auth/ConnexionCoordinateur'
 import ConnexionSpecialiste from './pages/auth/ConnexionSpecialiste'
 import ConnexionAdmin from './pages/auth/ConnexionAdmin'
+import ConnexionMedecinLocal from './pages/auth/ConnexionMedecinLocal'
+import InscriptionMedecinLocal from './pages/auth/InscriptionMedecinLocal'
 import VerificationDeuxFacteurs from './pages/auth/VerificationDeuxFacteurs'
 import VerificationEmail from './pages/auth/VerificationEmail'
 import MotDePasseOublie from './pages/auth/MotDePasseOublie'
@@ -25,6 +27,9 @@ import ProfilPatient from './pages/patient/ProfilPatient'
 import ListeMessages from './pages/patient/ListeMessages'
 import ChatSecurise from './pages/patient/ChatSecurise'
 import RapportExpertFinal from './pages/patient/RapportExpertFinal'
+import MonMedecinTraitant from './pages/patient/MonMedecinTraitant'
+import DashboardMedecinLocal from './pages/medecin/DashboardMedecinLocal'
+import DossierMedecinLocal from './pages/medecin/DossierMedecinLocal'
 import DashboardCoordinateur from './pages/coordinateur/DashboardCoordinateur'
 import AffectationExpert from './pages/coordinateur/AffectationExpert'
 import RechercheExpertCoordinateur from './pages/coordinateur/RechercheExpertCoordinateur'
@@ -59,6 +64,8 @@ export default function App() {
       <Route path="/connexion/patient" element={<ConnexionPatient />} />
       <Route path="/connexion/coordinateur" element={<ConnexionCoordinateur />} />
       <Route path="/connexion/specialiste" element={<ConnexionSpecialiste />} />
+      <Route path="/connexion/medecin" element={<ConnexionMedecinLocal />} />
+      <Route path="/inscription/medecin" element={<InscriptionMedecinLocal />} />
       <Route path="/connexion/admin" element={<ConnexionAdmin />} />
       <Route path="/verification-2fa" element={<VerificationDeuxFacteurs />} />
       <Route path="/verifier-email" element={<VerificationEmail />} />
@@ -121,7 +128,39 @@ export default function App() {
         path="/patient/medecins"
         element={
           <ProtectedRoute role="PATIENT">
-            <Placeholder title="Médecins" />
+            <MonMedecinTraitant />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/medecin/dossiers"
+        element={
+          <ProtectedRoute role="MEDECIN_LOCAL">
+            <DashboardMedecinLocal />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/medecin/dossiers/:id"
+        element={
+          <ProtectedRoute role="MEDECIN_LOCAL">
+            <DossierMedecinLocal />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/medecin/messages/:id"
+        element={
+          <ProtectedRoute role="MEDECIN_LOCAL">
+            <ChatSecurise />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/medecin/profil"
+        element={
+          <ProtectedRoute role="MEDECIN_LOCAL">
+            <Placeholder title="Mon compte" />
           </ProtectedRoute>
         }
       />

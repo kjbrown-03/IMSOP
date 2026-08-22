@@ -23,7 +23,7 @@ const login = {
   body: z.object({
     email: z.string().trim().toLowerCase().email().max(254),
     password: z.string().min(1).max(128),
-    role: z.enum(['PATIENT', 'SPECIALISTE', 'COORDINATEUR', 'ADMIN']).optional(),
+    role: z.enum(['PATIENT', 'SPECIALISTE', 'MEDECIN_LOCAL', 'COORDINATEUR', 'ADMIN']).optional(),
   }).strict(),
 }
 
@@ -65,7 +65,21 @@ const verifyEmail = {
   }).strict(),
 }
 
+const registerMedecinLocal = {
+  body: z.object({
+    fullName: z.string().trim().min(2).max(200),
+    email: z.string().trim().toLowerCase().email(),
+    password: z.string().min(8).max(128),
+    phone: z.string().trim().max(40).optional(),
+    specialite: z.string().trim().max(200).optional(),
+    etablissement: z.string().trim().max(200).optional(),
+    pays: z.string().trim().max(100).optional(),
+    numeroOrdre: z.string().trim().max(100).optional(),
+  }).strict(),
+}
+
 module.exports = {
+  registerMedecinLocal,
   registerPatient, login, verifyTwoFactor, refresh, logout,
   forgotPassword, resetPassword, verifyEmail,
 }

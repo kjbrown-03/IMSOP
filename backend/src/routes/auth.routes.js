@@ -8,6 +8,7 @@ const ctrl = require('../controllers/auth.controller')
 const router = express.Router()
 
 router.post('/register/patient', authLimiter, validate(schema.registerPatient), ctrl.registerPatient)
+router.post('/register/medecin-local', authLimiter, validate(schema.registerMedecinLocal), ctrl.registerMedecinLocal)
 router.post('/login', authLimiter, validate(schema.login), ctrl.login)
 router.post('/2fa/verify', authLimiter, validate(schema.verifyTwoFactor), ctrl.verifyTwoFactor)
 router.post('/refresh', validate(schema.refresh), ctrl.refresh)

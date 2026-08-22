@@ -1,14 +1,16 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { HelpCircle, LayoutGrid, Stethoscope } from 'lucide-react'
+import { NavBar } from '@/components/ui/tubelight-navbar'
 import Logo from '../ui/Logo'
 import ThemeToggle from '../ui/ThemeToggle'
 import { useLanguageStore } from '../../store/useLanguageStore'
 
 const LINKS = [
-  { key: 'howItWorks', href: '/#fonctionnement' },
-  { key: 'specialties', href: '/#specialites' },
-  { key: 'forDoctors', href: '/pour-medecins' },
+  { key: 'howItWorks', href: '/#fonctionnement', icon: HelpCircle },
+  { key: 'specialties', href: '/#specialites', icon: LayoutGrid },
+  { key: 'forDoctors', href: '/pour-medecins', icon: Stethoscope },
 ]
 
 export default function Navbar() {
@@ -18,6 +20,11 @@ export default function Navbar() {
   const toggleLang = useLanguageStore((s) => s.toggleLang)
   const navigate = useNavigate()
   const { t } = useTranslation()
+
+  const navItems = useMemo(
+    () => LINKS.map((link) => ({ name: t(`nav.${link.key}`), url: link.href, icon: link.icon })),
+    [t],
+  )
 
   useEffect(() => {
     function onScroll() {
@@ -52,16 +59,8 @@ export default function Navbar() {
           <Logo light={false} size={52} />
         </Link>
 
-        <div className="hidden md:flex items-center gap-8">
-          {LINKS.map((link) => (
-            <button
-              key={link.key}
-              onClick={() => goToLink(link.href)}
-              className="font-sans text-[13px] font-semibold uppercase tracking-wide text-[var(--color-on-surface)] hover:text-[var(--color-primary)] transition-colors"
-            >
-              {t(`nav.${link.key}`)}
-            </button>
-          ))}
+        <div className="hidden md:block">
+          <NavBar items={navItems} floating={false} onSelect={(item) => goToLink(item.url)} />
         </div>
 
         <div className="hidden md:flex items-center gap-3">

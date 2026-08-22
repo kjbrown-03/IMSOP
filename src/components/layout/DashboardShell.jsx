@@ -8,6 +8,7 @@ import NotificationBell from '../ui/NotificationBell'
 import UserProfileDropdown from '../ui/UserProfileDropdown'
 import { useAuthStore } from '../../store/useAuthStore'
 import { cn } from '@/lib/utils'
+import ThemeToggle from '../ui/ThemeToggle'
 
 function Brand({ label, collapsed }) {
   return (
@@ -105,6 +106,7 @@ export default function DashboardShell({
           topBar={
             <div className="flex items-center gap-2">
               <span className="font-display font-bold tracking-tight text-slate-900 dark:text-white mr-1">{title}</span>
+              <ThemeToggle />
               <NotificationBell />
               <UserProfileDropdown />
             </div>
@@ -126,6 +128,7 @@ export default function DashboardShell({
             </div>
             <div className="flex items-center gap-2">
               {headerRight}
+              <ThemeToggle />
               <NotificationBell />
               <UserProfileDropdown />
             </div>

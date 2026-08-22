@@ -92,7 +92,9 @@
       "specialistDesc": "Review the cases assigned to you.",
       "coordinatorTitle": "Medical coordinator",
       "coordinatorDesc": "Manage cases, assignments and emergencies.",
-      "newPatient": "New patient?"
+      "newPatient": "New patient?",
+      "localDoctorTitle": "Treating doctor",
+      "localDoctorDesc": "Follow your patients and support their second opinion request."
     },
     "loginPatient": {
       "heading": "Your Health,<br/>Our Priority.",
@@ -188,6 +190,10 @@
         "ADMIN": {
           "title": "Administrator Area",
           "subtitle": "Platform management, account administration and activity tracking."
+        },
+        "MEDECIN_LOCAL": {
+          "title": "Treating Doctor Area",
+          "subtitle": "Support your patients through their second opinion request."
         }
       }
     },
@@ -276,7 +282,8 @@
     "pdfUnavailable": "The PDF is not yet available",
     "createCaseFailed": "The case could not be created. Please try again.",
     "paymentFailed": "The payment could not be processed.",
-    "caseNotFoundRestart": "Case not found. Please start your request again."
+    "caseNotFoundRestart": "Case not found. Please start your request again.",
+    "downloadFailed": "Download failed"
   },
   "patient": {
     "dossierStatus": {
@@ -665,6 +672,10 @@
       "user": "User",
       "notProvided": "Not provided",
       "logout": "Log out"
+    },
+    "medecinNav": {
+      "dossiers": "My patients",
+      "profil": "My account"
     }
   },
   "notifications": {
@@ -727,5 +738,83 @@
         "preview": "Case {{reference}}"
       }
     }
+  },
+  "chat": {
+    "patientFile": "Patient case",
+    "attachAria": "Attach a document",
+    "attachRemove": "Remove document",
+    "attachCaptionPlaceholder": "Add a message (optional)...",
+    "attachTypeError": "Unsupported format. Accepted: PDF, JPEG, PNG, DICOM.",
+    "attachSizeError": "File too large (25 MB maximum).",
+    "attachFailed": "Document upload failed"
+  },
+  "medecin": {
+    "login": {
+      "title": "Treating doctor area",
+      "subtitle": "Access the cases of the patients you follow on IMSOP.",
+      "submit": "Sign in",
+      "noAccount": "No account yet?",
+      "register": "Create a doctor account"
+    },
+    "register": {
+      "title": "Create a treating doctor account",
+      "subtitle": "You support your patient through their second opinion request. Your medical council number will be verified by our team.",
+      "fullName": "Full name",
+      "email": "Professional email address",
+      "password": "Password",
+      "phone": "Phone",
+      "specialite": "Specialty",
+      "etablissement": "Institution",
+      "pays": "Country of practice",
+      "numeroOrdre": "Medical council number",
+      "submit": "Create my account",
+      "hasAccount": "Already have an account?",
+      "login": "Sign in"
+    },
+    "dashboard": {
+      "title": "My followed patients",
+      "subtitle": "Cases where a patient designated you as their treating doctor.",
+      "empty": "No patient has designated you yet. Your patient must enter your email address from their area, section \"My treating doctor\".",
+      "loading": "Loading cases...",
+      "pendingVerification": "Your medical council number is being verified by our coordination team.",
+      "openChat": "Messages",
+      "openFile": "View case",
+      "reference": "Case",
+      "specialist": "International specialist",
+      "noSpecialist": "Not assigned yet"
+    },
+    "file": {
+      "motif": "Reason",
+      "question": "Medical question",
+      "symptomes": "Symptoms",
+      "antecedents": "History",
+      "traitement": "Current treatment",
+      "documents": "Case documents",
+      "upload": "Upload",
+      "noDocuments": "No document yet.",
+      "categories": {
+        "ANALYSE_BIOLOGIQUE": "Lab test",
+        "IMAGERIE": "Imaging",
+        "ORDONNANCE": "Prescription",
+        "COMPTE_RENDU": "Report",
+        "AUTRE": "Other"
+      }
+    }
+  },
+  "patientMedecin": {
+    "title": "My treating doctor",
+    "subtitle": "Designate the doctor who follows you locally. They will be able to view this case, upload tests and take part in the secure conversation.",
+    "currentLabel": "Designated doctor",
+    "none": "No treating doctor designated for this case.",
+    "emailLabel": "Your doctor's email address",
+    "emailHelp": "They must already have a doctor account on IMSOP.",
+    "designate": "Designate",
+    "remove": "Revoke access",
+    "removeConfirm": "Revoke this doctor's access to your case?",
+    "chooseDossier": "Choose a case",
+    "noDossier": "You have no case yet.",
+    "unverified": "This doctor has not been verified by our team yet.",
+    "designated": "Treating doctor designated.",
+    "removed": "Access revoked."
   }
 }

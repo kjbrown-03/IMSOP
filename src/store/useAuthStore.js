@@ -88,6 +88,19 @@ export const useAuthStore = create((set, get) => ({
     }
   },
 
+  async registerMedecinLocal(payload) {
+    set({ loading: true, error: null })
+    try {
+      const { data } = await api.post('/auth/register/medecin-local', payload)
+      get()._persistSession(data)
+      return { ok: true }
+    } catch (err) {
+      const message = errorMessage(err, 'Inscription impossible')
+      set({ loading: false, error: message })
+      return { ok: false, error: message }
+    }
+  },
+
   async verifyEmailCode(code) {
     set({ loading: true, error: null })
     try {

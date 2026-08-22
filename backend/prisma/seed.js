@@ -60,6 +60,29 @@ async function main() {
     include: { specialiste: true },
   })
 
+  const medecinLocalUser = await prisma.user.upsert({
+    where: { email: 'medecin@imsop.dev' },
+    update: {},
+    create: {
+      email: 'medecin@imsop.dev',
+      passwordHash,
+      fullName: 'Dr. Awa Ngo',
+      role: 'MEDECIN_LOCAL',
+      phone: '+237600000002',
+      twoFactorEnabled: true,
+      medecinLocal: {
+        create: {
+          specialite: 'Médecine générale',
+          etablissement: 'Hôpital Général de Douala',
+          pays: 'cm',
+          numeroOrdre: 'CM-ONMC-4471',
+          verified: true,
+        },
+      },
+    },
+    include: { medecinLocal: true },
+  })
+
   await prisma.user.upsert({
     where: { email: 'coordinateur@imsop.dev' },
     update: {},
@@ -91,6 +114,7 @@ async function main() {
       reference: 'MLA-2026-0001',
       patientId: patientUser.patient.id,
       specialisteId: specialisteUser.specialiste.id,
+      medecinLocalId: medecinLocalUser.medecinLocal.id,
       specialiteRequise: 'Cardiologie',
       motif: 'Avis sur ECG atypique',
       symptomes: 'Palpitations régulières, douleurs thoraciques intermittentes.',
@@ -104,6 +128,7 @@ async function main() {
   console.log('Seed OK:', {
     patient: patientUser.email,
     specialiste: specialisteUser.email,
+    medecinLocal: medecinLocalUser.email,
     coordinateur: 'coordinateur@imsop.dev',
     admin: 'admin@imsop.dev',
     password: PASSWORD,

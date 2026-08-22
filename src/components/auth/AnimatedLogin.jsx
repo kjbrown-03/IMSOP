@@ -31,6 +31,7 @@ const socialIcons = [
 const ROLE_IMAGES = {
   PATIENT: 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&q=80',
   SPECIALISTE: 'https://images.unsplash.com/photo-1551076805-e1869033e561?auto=format&fit=crop&q=80',
+  MEDECIN_LOCAL: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80',
   COORDINATEUR: 'https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&q=80',
   ADMIN: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80',
 };
@@ -38,6 +39,9 @@ const ROLE_IMAGES = {
 const ROLE_LINKS = {
   PATIENT: { forgotLink: '/mot-de-passe-oublie', createLink: '/inscription' },
   SPECIALISTE: { forgotLink: '/mot-de-passe-oublie', createLink: null },
+  // Unlike the international specialists, local doctors sign themselves up:
+  // a patient can only designate a doctor who already has an account.
+  MEDECIN_LOCAL: { forgotLink: '/mot-de-passe-oublie', createLink: '/inscription/medecin' },
   COORDINATEUR: { forgotLink: '/mot-de-passe-oublie', createLink: null },
   ADMIN: { forgotLink: '/mot-de-passe-oublie', createLink: null },
 };
@@ -45,6 +49,7 @@ const ROLE_LINKS = {
 const ROLE_REDIRECTS = {
   PATIENT: '/patient/dossiers',
   SPECIALISTE: '/specialiste/tableau-de-bord',
+  MEDECIN_LOCAL: '/medecin/dossiers',
   COORDINATEUR: '/coordinateur/tableau-de-bord',
   ADMIN: '/admin/tableau-de-bord',
 };

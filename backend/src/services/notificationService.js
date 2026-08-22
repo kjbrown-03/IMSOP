@@ -26,6 +26,14 @@ const TEMPLATES = {
     subject: 'Nouveau message sécurisé',
     body: (ctx) => `Bonjour ${ctx.name},\n\nVous avez reçu un nouveau message concernant le dossier ${ctx.reference}.\n\nL'équipe IMSOP`,
   },
+  MEDECIN_LOCAL_RATTACHE: {
+    subject: 'Un patient vous a désigné comme médecin traitant',
+    body: (ctx) => `Bonjour Dr ${ctx.name},\n\n${ctx.patientName} vous a désigné comme son médecin traitant pour le dossier ${ctx.reference} sur IMSOP. Vous pouvez désormais consulter ce dossier, y déposer des pièces et échanger dans la messagerie sécurisée.\n\nL'équipe IMSOP`,
+  },
+  PIECE_JOINTE_RECUE: {
+    subject: 'Nouveau document dans la messagerie sécurisée',
+    body: (ctx) => `Bonjour ${ctx.name},\n\n${ctx.senderName} a déposé un document (${ctx.filename}) dans la conversation du dossier ${ctx.reference}.\n\nL'équipe IMSOP`,
+  },
   MOT_DE_PASSE_RESET: {
     subject: 'Réinitialisation de votre mot de passe IMSOP',
     body: (ctx) => `Bonjour ${ctx.name},\n\nVous avez demandé la réinitialisation de votre mot de passe. Ce lien est valable 1 heure :\n${ctx.resetUrl}\n\nSi vous n'êtes pas à l'origine de cette demande, ignorez cet e-mail.\n\nL'équipe IMSOP`,
