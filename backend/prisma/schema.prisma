@@ -1,0 +1,333 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  PATIENT
+  SPECIALISTE
+  COORDINATEUR
+  ADMIN
+}
+
+enum DossierStatus {
+  BROUILLON
+  SOUMIS
+  EN_ATTENTE_PAIEMENT
+  EN_VERIFICATION
+  COMPLET
+  EN_ATTENTE_AFFECTATION
+  AFFECTE
+  EN_ANALYSE
+  RAPPORT_EN_PREPARATION
+  RAPPORT_SOUMIS
+  RAPPORT_VALIDE
+  RAPPORT_TRANSMIS
+  CLOTURE
+  ANNULE
+  REFUSE
+}
+
+enum Urgence {
+  NORMAL
+  PRIORITAIRE
+  URGENT
+}
+
+enum DocumentCategorie {
+  ANALYSE_BIOLOGIQUE
+  IMAGERIE
+  ORDONNANCE
+  COMPTE_RENDU
+  AUTRE
+}
+
+enum ConsentementType {
+  TRAITEMENT_DONNEES
+  TRANSMISSION_SPECIALISTE
+  TELECONSULTATION
+  COMMUNICATION_MEDECIN
+}
+
+enum PaiementStatus {
+  EN_ATTENTE
+  PAYE
+  ECHOUE
+  REMBOURSE
+}
+
+enum RapportStatus {
+  BROUILLON
+  SOUMIS
+  VALIDE
+}
+
+model User {
+  id               String   @id @default(uuid())
+  email            String   @unique
+  passwordHash     String
+  role             Role
+  fullName         String
+  phone            String?
+  avatarUrl        String?
+  twoFactorEnabled Boolean  @default(false)
+  emailVerified    Boolean  @default(false)
+  active           Boolean  @default(true)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  patient     Patient?
+  specialiste Specialiste?
+
+  refreshTokens       RefreshToken[]
+  twoFactorChallenges TwoFactorChallenge[]
+  passwordResetTokens PasswordResetToken[]
+  documentsUploaded   Document[]           @relation("DocumentUploadedBy")
+  messagesSent        Message[]            @relation("MessageSender")
+  auditLogs           AuditLog[]
+  notifications       Notification[]
+
+  @@index([role])
+}
+
+model RefreshToken {
+  id        String    @id @default(uuid())
+  tokenHash String    @unique
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+}
+
+model PasswordResetToken {
+  id        String    @id @default(uuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+}
+
+model TwoFactorChallenge {
+  id         String    @id @default(uuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  purpose    String    @default("LOGIN_2FA")
+  codeHash   String
+  expiresAt  DateTime
+  consumedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@index([userId])
+}
+
+model Patient {
+  id                    String    @id @default(uuid())
+  userId                String    @unique
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  patientRef            String    @unique
+  dob                   DateTime?
+  gender                String?
+  nationality           String?
+  country               String?
+  city                  String?
+  preferredLanguage     String?
+  emergencyContactName  String?
+  emergencyContactPhone String?
+
+  identityDocumentKey    String?
+  identityVerified       Boolean   @default(false)
+  identityVerifiedAt     DateTime?
+  identityRejectedReason String?
+  identityReviewedById   String?
+
+  createdAt DateTime @default(now())
+
+  dossiers Dossier[]
+}
+
+model Specialiste {
+  id            String   @id @default(uuid())
+  userId        String   @unique
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  specialite    String
+  pays          String?
+  etablissement String?
+  langues       String?
+  bio           String?
+  verified      Boolean  @default(false)
+  disponible    Boolean  @default(true)
+  createdAt     DateTime @default(now())
+
+  dossiers Dossier[]
+  rapports Rapport[]
+}
+
+model Dossier {
+  id            String       @id @default(uuid())
+  reference     String       @unique
+  patientId     String
+  patient       Patient      @relation(fields: [patientId], references: [id])
+  specialisteId String?
+  specialiste   Specialiste? @relation(fields: [specialisteId], references: [id])
+
+  specialiteRequise String
+  motif             String
+  questionMedicale  String?
+  symptomes         String?
+  antecedents       String?
+  traitementEnCours String?
+  urgence           Urgence       @default(NORMAL)
+  status            DossierStatus @default(BROUILLON)
+
+  assignedAt        DateTime?
+  messagingClosesAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  documents     Document[]
+  consentements Consentement[]
+  paiements     Paiement[]
+  messages      Message[]
+  rapport       Rapport?
+  auditLogs     AuditLog[]
+  notifications Notification[]
+
+  @@index([patientId])
+  @@index([specialisteId])
+  @@index([status])
+}
+
+model Document {
+  id           String            @id @default(uuid())
+  dossierId    String
+  dossier      Dossier           @relation(fields: [dossierId], references: [id], onDelete: Cascade)
+  uploadedById String
+  uploadedBy   User              @relation("DocumentUploadedBy", fields: [uploadedById], references: [id])
+  category     DocumentCategorie @default(AUTRE)
+  filename     String
+  mimeType     String
+  sizeBytes    Int
+  storageKey   String
+  createdAt    DateTime          @default(now())
+
+  @@index([dossierId])
+}
+
+model Consentement {
+  id         String           @id @default(uuid())
+  dossierId  String?
+  dossier    Dossier?         @relation(fields: [dossierId], references: [id], onDelete: Cascade)
+  patientId  String
+  type       ConsentementType
+  version    String           @default("1.0")
+  accepted   Boolean
+  ipAddress  String?
+  acceptedAt DateTime         @default(now())
+  revokedAt  DateTime?
+
+  @@index([dossierId])
+  @@index([patientId])
+}
+
+model Paiement {
+  id                    String         @id @default(uuid())
+  dossierId             String
+  dossier               Dossier        @relation(fields: [dossierId], references: [id])
+  provider              String         @default("CINETPAY")
+  amount                Decimal        @db.Decimal(10, 2)
+  currency              String         @default("XAF")
+  status                PaiementStatus @default(EN_ATTENTE)
+  cinetpayTransactionId String?        @unique
+  rawWebhookPayload     Json?
+  createdAt             DateTime       @default(now())
+  confirmedAt           DateTime?
+
+  @@index([dossierId])
+  @@index([status])
+}
+
+model Message {
+  id        String    @id @default(uuid())
+  dossierId String
+  dossier   Dossier   @relation(fields: [dossierId], references: [id], onDelete: Cascade)
+  senderId  String
+  sender    User      @relation("MessageSender", fields: [senderId], references: [id])
+  body      String
+  readAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([dossierId])
+}
+
+model Rapport {
+  id            String      @id @default(uuid())
+  dossierId     String      @unique
+  dossier       Dossier     @relation(fields: [dossierId], references: [id], onDelete: Cascade)
+  specialisteId String
+  specialiste   Specialiste @relation(fields: [specialisteId], references: [id])
+
+  synthese              String?
+  diagnostic            String?
+  optionsTherapeutiques String?
+  status                RapportStatus @default(BROUILLON)
+  pdfStorageKey         String?
+
+  createdAt   DateTime  @default(now())
+  submittedAt DateTime?
+  validatedAt DateTime?
+
+  @@index([dossierId])
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id])
+  action     String
+  entityType String
+  entityId   String?
+  dossierId  String?
+  dossier    Dossier? @relation(fields: [dossierId], references: [id])
+  metadata   Json?
+  ipAddress  String?
+  createdAt  DateTime @default(now())
+
+  @@index([userId])
+  @@index([entityType, entityId])
+  @@index([dossierId])
+}
+
+model Notification {
+  id      String   @id @default(uuid())
+  userId  String
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  channel String   @default("EMAIL")
+  type    String
+  payload Json?
+  status  String   @default("SENT")
+  sentAt  DateTime @default(now())
+
+  // Set when the recipient opens the notification in the app. Null means unread,
+  // which is what the bell badge counts.
+  readAt DateTime?
+
+  // Where the notification points to. Nullable because account-level events
+  // (email verification, password reset) are not attached to any dossier.
+  dossierId String?
+  dossier   Dossier? @relation(fields: [dossierId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([userId, readAt])
+}

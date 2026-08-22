@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+
+<html class="light" lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>IMSOP - Message Sécurisé</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-surface-variant": "#424752",
+                      "on-background": "#191c21",
+                      "on-secondary-container": "#007327",
+                      "inverse-on-surface": "#f0f0f9",
+                      "on-primary-container": "#bbd0ff",
+                      "surface-tint": "#115cb9",
+                      "surface-dim": "#d9d9e2",
+                      "surface-container-low": "#f2f3fc",
+                      "error": "#ba1a1a",
+                      "surface-container-lowest": "#ffffff",
+                      "secondary-fixed": "#83fc8e",
+                      "primary-fixed": "#d7e2ff",
+                      "inverse-surface": "#2e3037",
+                      "tertiary": "#722b00",
+                      "tertiary-container": "#983c00",
+                      "surface-variant": "#e1e2ea",
+                      "on-primary-fixed-variant": "#004491",
+                      "surface-container": "#ededf6",
+                      "secondary": "#006e25",
+                      "on-primary-fixed": "#001a40",
+                      "status-warning": "#FFC107",
+                      "outline": "#727784",
+                      "primary": "#003f87",
+                      "on-secondary-fixed-variant": "#00531a",
+                      "on-tertiary-fixed-variant": "#7b2f00",
+                      "status-error": "#DC3545",
+                      "on-tertiary-container": "#ffc2a7",
+                      "surface-container-highest": "#e1e2ea",
+                      "on-secondary": "#ffffff",
+                      "secondary-fixed-dim": "#66df75",
+                      "on-tertiary-fixed": "#351000",
+                      "on-secondary-fixed": "#002106",
+                      "error-container": "#ffdad6",
+                      "surface-bright": "#f9f9ff",
+                      "primary-fixed-dim": "#acc7ff",
+                      "on-tertiary": "#ffffff",
+                      "primary-container": "#0056b3",
+                      "secondary-container": "#80f98b",
+                      "background-alt": "#F8F9FA",
+                      "on-primary": "#ffffff",
+                      "surface-container-high": "#e7e8f0",
+                      "on-error-container": "#93000a",
+                      "tertiary-fixed-dim": "#ffb694",
+                      "surface": "#f9f9ff",
+                      "tertiary-fixed": "#ffdbcc",
+                      "on-surface": "#191c21",
+                      "outline-variant": "#c2c6d4",
+                      "inverse-primary": "#acc7ff",
+                      "text-main": "#1A1C1E",
+                      "on-error": "#ffffff",
+                      "background": "#f9f9ff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "stack-lg": "2rem",
+                      "stack-sm": "0.5rem",
+                      "margin-mobile": "1rem",
+                      "stack-md": "1rem",
+                      "gutter": "1rem",
+                      "margin-desktop": "2rem"
+              },
+              "fontFamily": {
+                      "label-md": [
+                              "Inter"
+                      ],
+                      "label-sm": [
+                              "Inter"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "headline-md": [
+                              "Inter"
+                      ],
+                      "headline-lg-mobile": [
+                              "Inter"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ],
+                      "headline-lg": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "label-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "letterSpacing": "0.02em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "label-sm": [
+                              "12px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "1.5",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-md": [
+                              "20px",
+                              {
+                                      "lineHeight": "1.4",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-lg-mobile": [
+                              "24px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "1.6",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "fontWeight": "700"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background h-screen flex flex-col font-body-md overflow-hidden">
+<!-- TopAppBar -->
+<header class="bg-surface dark:bg-surface-dim flex justify-between items-center px-margin-mobile w-full h-14 border-b border-outline-variant dark:border-outline shrink-0 z-10 relative">
+<button aria-label="Retour" class="text-primary dark:text-primary-fixed-dim hover:bg-surface-container-low dark:hover:bg-inverse-surface rounded-full p-2 transition-colors duration-200 ease-in-out">
+<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+</button>
+<div class="flex-1 flex items-center justify-center">
+<div class="flex flex-col items-center">
+<span class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed">Dr. Jean Dupont</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant dark:text-surface-variant">Cardiologue - Paris</span>
+</div>
+</div>
+<button aria-label="Plus d'options" class="text-primary dark:text-primary-fixed-dim hover:bg-surface-container-low dark:hover:bg-inverse-surface rounded-full p-2 transition-colors duration-200 ease-in-out">
+<span class="material-symbols-outlined" data-icon="more_vert">more_vert</span>
+</button>
+</header>
+<!-- Chat Area -->
+<main class="flex-1 overflow-y-auto px-margin-mobile py-stack-md flex flex-col gap-stack-md bg-surface-container-lowest">
+<!-- Date Header -->
+<div class="flex justify-center my-2">
+<span class="bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm px-3 py-1 rounded-full">Aujourd'hui</span>
+</div>
+<!-- Doctor Message (Left) -->
+<div class="flex items-end gap-2 self-start max-w-[85%]">
+<div class="w-8 h-8 rounded-full overflow-hidden shrink-0">
+<img class="object-cover w-full h-full" data-alt="A professional headshot of a middle-aged male cardiologist wearing a white coat, looking confident and approachable. The lighting is bright and clean, typical of a modern medical facility. Background is slightly blurred, showing a clinical setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCJfd9uxR0Ul81qaH8t5lUl1WIgmCQcRRXP_Hsfi4Mi8Lukq0loFCAUD8oLt9FoCN59JD_gtMjM2ghAJgygyRLqWnQnwhu5PHPpGQnoTqHg6-RDZVOsQd6Iy5YAfgiyI-HC0ydhojCWGAtPc1W2_X_8uCeG84EPoW9OrUXI41ZZkw-zGpOQUD1nL0Kbqqui2fSRQYVM4SwjsBmlHDXC7keIEgZ5kpWaXmfCwdKhusc0PrEDEN5eCo4V"/>
+</div>
+<div class="bg-surface-variant text-on-surface rounded-2xl rounded-bl-none p-3 shadow-sm border border-outline-variant/30">
+<p class="font-body-md text-body-md">Bonjour. J'ai bien reçu vos résultats d'analyses. Pouvons-nous discuter de vos symptômes récents ?</p>
+<span class="text-on-surface-variant font-label-sm text-[10px] block text-right mt-1">10:42</span>
+</div>
+</div>
+<!-- Patient Message (Right) -->
+<div class="flex items-end gap-2 self-end max-w-[85%]">
+<div class="bg-primary text-on-primary rounded-2xl rounded-br-none p-3 shadow-sm">
+<p class="font-body-md text-body-md">Bonjour Docteur. Oui, j'ai ressenti des palpitations hier soir après l'effort.</p>
+<span class="text-on-primary/70 font-label-sm text-[10px] block text-right mt-1">10:45</span>
+</div>
+</div>
+<!-- System Message / Document Uploaded -->
+<div class="flex flex-col items-center my-4 gap-2">
+<div class="bg-surface-container text-on-surface border border-outline-variant/50 rounded-xl p-3 flex items-center gap-3 w-3/4 max-w-sm shadow-sm">
+<div class="bg-error-container text-on-error-container rounded-lg p-2">
+<span class="material-symbols-outlined" data-icon="picture_as_pdf">picture_as_pdf</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="font-label-md text-label-md truncate">ECG_Resultats.pdf</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">2.4 MB</p>
+</div>
+<button aria-label="Télécharger" class="text-primary hover:bg-surface-container-high rounded-full p-1">
+<span class="material-symbols-outlined" data-icon="download">download</span>
+</button>
+</div>
+<span class="text-on-surface-variant font-label-sm text-[10px]">Document envoyé à 10:47</span>
+</div>
+<!-- Doctor Message (Left) -->
+<div class="flex items-end gap-2 self-start max-w-[85%]">
+<div class="w-8 h-8 rounded-full overflow-hidden shrink-0">
+<img class="object-cover w-full h-full" data-alt="A professional headshot of a middle-aged male cardiologist wearing a white coat, looking confident and approachable. The lighting is bright and clean, typical of a modern medical facility. Background is slightly blurred, showing a clinical setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA24-wDomnyFzRY5ownaeRJX3mkFquQx26lgW3THlCx92w8REB2rGq0baQGqMBBPyvtaZNjvFgXoGEoINEGxn6jL2qAPbmvHB5igtdT-iP86O2WTqO1Uzj2QvHu5goaUmccQnkf16yj96zv4lyt93KzUToWerPAy4JO3SsoBZ6dn5wTUshXHUarvu4MOgdpQSDPnjdU3R9OxEqd5hOvP3Uqgv-SvgzLQ9XkNxKG6fSdwedLLEUNOSAq"/>
+</div>
+<div class="bg-surface-variant text-on-surface rounded-2xl rounded-bl-none p-3 shadow-sm border border-outline-variant/30">
+<p class="font-body-md text-body-md">Je vois. C'est noté. L'ECG semble normal, mais nous allons surveiller cela. Prenez le traitement prescrit ce soir.</p>
+<span class="text-on-surface-variant font-label-sm text-[10px] block text-right mt-1">10:50</span>
+</div>
+</div>
+</main>
+<!-- Message Input Bar -->
+<footer class="bg-surface border-t border-outline-variant p-3 shrink-0 flex items-end gap-2 pb-6 md:pb-3 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+<button aria-label="Joindre un fichier" class="text-outline hover:bg-surface-container-high rounded-full p-2 shrink-0 transition-colors">
+<span class="material-symbols-outlined" data-icon="attach_file">attach_file</span>
+</button>
+<div class="flex-1 bg-surface-container-low border border-outline-variant rounded-2xl overflow-hidden focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all">
+<textarea class="w-full bg-transparent border-none focus:ring-0 resize-none px-4 py-3 max-h-32 min-h-[48px] font-body-md text-body-md text-on-surface placeholder-on-surface-variant outline-none" oninput="this.style.height = '';this.style.height = this.scrollHeight + 'px'" placeholder="Écrivez votre message..." rows="1"></textarea>
+</div>
+<button aria-label="Envoyer" class="bg-primary text-on-primary hover:bg-primary-container hover:text-on-primary-container rounded-full w-12 h-12 flex items-center justify-center shrink-0 transition-colors shadow-md">
+<span class="material-symbols-outlined" data-icon="send" style="font-variation-settings: 'FILL' 1;">send</span>
+</button>
+</footer>
+</body></html>

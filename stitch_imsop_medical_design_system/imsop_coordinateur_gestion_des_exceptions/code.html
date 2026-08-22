@@ -1,0 +1,338 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>IMSOP - Coordinateur Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "tertiary-fixed-dim": "#ffb694",
+                      "status-error": "#DC3545",
+                      "surface-tint": "#115cb9",
+                      "secondary-container": "#80f98b",
+                      "on-tertiary-fixed": "#351000",
+                      "inverse-surface": "#2e3037",
+                      "surface-dim": "#d9d9e2",
+                      "primary-container": "#0056b3",
+                      "surface-container-lowest": "#ffffff",
+                      "surface-variant": "#e1e2ea",
+                      "on-secondary-fixed-variant": "#00531a",
+                      "on-secondary-container": "#007327",
+                      "secondary-fixed": "#83fc8e",
+                      "inverse-primary": "#acc7ff",
+                      "on-primary-fixed": "#001a40",
+                      "surface": "#f9f9ff",
+                      "tertiary": "#722b00",
+                      "surface-container-highest": "#e1e2ea",
+                      "background-alt": "#F8F9FA",
+                      "primary-fixed-dim": "#acc7ff",
+                      "on-tertiary-container": "#ffc2a7",
+                      "secondary-fixed-dim": "#66df75",
+                      "outline-variant": "#c2c6d4",
+                      "on-surface-variant": "#424752",
+                      "on-secondary": "#ffffff",
+                      "primary-fixed": "#d7e2ff",
+                      "on-tertiary": "#ffffff",
+                      "status-warning": "#FFC107",
+                      "text-main": "#1A1C1E",
+                      "error": "#ba1a1a",
+                      "on-error-container": "#93000a",
+                      "on-surface": "#191c21",
+                      "tertiary-container": "#983c00",
+                      "tertiary-fixed": "#ffdbcc",
+                      "on-secondary-fixed": "#002106",
+                      "on-error": "#ffffff",
+                      "background": "#f9f9ff",
+                      "on-primary-fixed-variant": "#004491",
+                      "surface-bright": "#f9f9ff",
+                      "surface-container-low": "#f2f3fc",
+                      "on-background": "#191c21",
+                      "on-primary": "#ffffff",
+                      "on-tertiary-fixed-variant": "#7b2f00",
+                      "error-container": "#ffdad6",
+                      "outline": "#727784",
+                      "inverse-on-surface": "#f0f0f9",
+                      "surface-container-high": "#e7e8f0",
+                      "on-primary-container": "#bbd0ff",
+                      "secondary": "#006e25",
+                      "surface-container": "#ededf6",
+                      "primary": "#003f87"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "stack-md": "1rem",
+                      "margin-desktop": "2rem",
+                      "stack-sm": "0.5rem",
+                      "stack-lg": "2rem",
+                      "margin-mobile": "1rem",
+                      "gutter": "1rem"
+              },
+              "fontFamily": {
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "label-sm": [
+                              "Inter"
+                      ],
+                      "headline-lg": [
+                              "Inter"
+                      ],
+                      "headline-lg-mobile": [
+                              "Inter"
+                      ],
+                      "label-md": [
+                              "Inter"
+                      ],
+                      "headline-md": [
+                              "Inter"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "1.5",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "label-sm": [
+                              "12px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "headline-lg-mobile": [
+                              "24px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "label-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "letterSpacing": "0.02em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-md": [
+                              "20px",
+                              {
+                                      "lineHeight": "1.4",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "1.6",
+                                      "fontWeight": "400"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+<style>
+        .material-symbols-outlined {
+          font-variation-settings:
+          'FILL' 0,
+          'wght' 400,
+          'GRAD' 0,
+          'opsz' 24;
+        }
+      </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex flex-col pt-12 pb-16 md:pb-0 md:pt-0 pb-20">
+<!-- TopAppBar -->
+<header class="bg-surface dark:bg-on-surface border-b border-outline-variant dark:border-outline fixed top-0 w-full z-50 flex justify-between items-center px-margin-mobile h-12 w-full z-50 transition-colors duration-200">
+<div class="flex items-center gap-4">
+<button class="text-on-surface-variant hover:bg-surface-container-low p-2 rounded-full transition-colors duration-200 hidden md:block">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+<h1 class="text-headline-md font-headline-md text-primary dark:text-primary-fixed-dim font-bold tracking-tight">IMSOP - Coordinateur</h1>
+</div>
+<div class="flex items-center">
+<button class="hover:bg-surface-container-low p-1 rounded-full transition-colors duration-200">
+<img class="w-8 h-8 rounded-full object-cover" data-alt="A professional headshot of a female medical coordinator in her mid-thirties, wearing a subtle blue blouse, smiling warmly in a bright, modern office environment. High-key lighting, corporate medical aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBEshThIw-ZRWYu_HbHBN4GXdv-eKMQerV8PWpIXzrl3yUxrtk346atqQyzhhk0pYOcZj180SmMwPZxSd2J8eMBSxKkBnnYmHMAN23fQOvC8cN-5-wPcdbcITeIBW3X3BdxKp0bv1zsBXixziI3hFvzmmDnIc1GlYAelYVkowm09OLR6nzJ8bXscfgV9hiPj3xdoZYgXR4RSjTCjxGcuMIBxmR_Y5-eQHR_P8tOCaQbX5vJLBAfklcy">
+</button>
+</div>
+</header>
+<div class="flex flex-1 md:pt-12">
+<!-- NavigationDrawer (Hidden on Mobile) -->
+<nav class="hidden md:flex flex-col bg-surface dark:bg-on-surface h-[calc(100vh-3rem)] w-80 fixed left-0 top-12 z-[60] shadow-xl overflow-y-auto border-r border-outline-variant">
+<div class="p-6 border-b border-outline-variant flex items-center gap-4">
+<img class="w-12 h-12 rounded-full object-cover" data-alt="A professional headshot of a female medical coordinator in her mid-thirties, wearing a subtle blue blouse, smiling warmly in a bright, modern office environment. High-key lighting, corporate medical aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCXoXc6QWfRihFAr3xqcMav9HAWi5UBtRTsgfP69F9VTLM-wyvMWiQNh9aG10iYy4-Kqmo8gBqYlByZtWPGvTgu-59Vsqz5vxmN7gwPAoM4bwxpQq5Yjc8F7vG5Lb5gyC-aVfBrLeFsgAM-NtYhQme1ifkTtqp483L4fw8AqUH1p7k8tWVZ91YyP-s3ryvxZ2lUueL1oumAwTOZQimHvxqrcYHog6quacNXh15wWgfUDKG5hkDatump">
+<div>
+<div class="font-headline-md text-primary dark:text-primary-fixed-dim font-bold">Medical Case Manager</div>
+<div class="font-body-md text-body-md text-on-surface-variant">coordinator@imsop.org</div>
+</div>
+</div>
+<div class="flex-1 py-4 flex flex-col gap-2">
+<a class="flex items-center gap-4 px-6 py-3 bg-secondary-container text-on-secondary-container font-bold rounded-r-full transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-4 px-6 py-3 text-on-surface-variant hover:bg-surface-container-high transition-all duration-300 rounded-r-full" href="#">
+<span class="material-symbols-outlined" data-icon="folder_shared">folder_shared</span>
+<span class="font-label-md text-label-md">Cases</span>
+</a>
+<a class="flex items-center gap-4 px-6 py-3 text-on-surface-variant hover:bg-surface-container-high transition-all duration-300 rounded-r-full" href="#">
+<span class="material-symbols-outlined" data-icon="clinical_notes">clinical_notes</span>
+<span class="font-label-md text-label-md">Specialists</span>
+</a>
+<a class="flex items-center gap-4 px-6 py-3 text-on-surface-variant hover:bg-surface-container-high transition-all duration-300 rounded-r-full" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 px-margin-mobile py-stack-lg md:ml-80 max-w-[1200px] mx-auto w-full overflow-y-auto">
+<div class="mb-stack-lg">
+<h2 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-text-main mb-stack-sm">Vue d'ensemble</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Missions nécessitant votre attention aujourd'hui.</p>
+</div>
+<!-- Metrics Grid -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-stack-lg w-full">
+<!-- Nouveaux -->
+<div class="bg-surface-container-lowest p-4 rounded-xl border border-outline-variant flex flex-col items-center justify-center gap-2 hover:bg-surface-container-low transition-colors cursor-pointer">
+<div class="bg-primary-container text-on-primary-container p-3 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-3xl" data-icon="fiber_new">fiber_new</span>
+</div>
+<div class="text-center">
+<div class="font-headline-md text-headline-md text-text-main">12</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Nouveaux</div>
+</div>
+</div>
+<!-- Incomplets -->
+<div class="bg-surface-container-lowest p-4 rounded-xl border border-outline-variant flex flex-col items-center justify-center gap-2 hover:bg-surface-container-low transition-colors cursor-pointer">
+<div class="bg-[#FFF3CD] text-[#856404] p-3 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-3xl" data-icon="warning">warning</span>
+</div>
+<div class="text-center">
+<div class="font-headline-md text-headline-md text-text-main">5</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Incomplets</div>
+</div>
+</div>
+<!-- À Affecter -->
+<div class="bg-surface-container-lowest p-4 rounded-xl border border-outline-variant flex flex-col items-center justify-center gap-2 hover:bg-surface-container-low transition-colors cursor-pointer">
+<div class="bg-error-container text-on-error-container p-3 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-3xl" data-icon="assignment_ind">assignment_ind</span>
+</div>
+<div class="text-center">
+<div class="font-headline-md text-headline-md text-text-main">8</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">À Affecter</div>
+</div>
+</div>
+<!-- Urgents -->
+<div class="bg-surface-container-lowest p-4 rounded-xl border border-outline-variant flex flex-col items-center justify-center gap-2 hover:bg-surface-container-low transition-colors cursor-pointer">
+<div class="bg-error text-on-error p-3 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-3xl" data-icon="notifications_active">notifications_active</span>
+</div>
+<div class="text-center">
+<div class="font-headline-md text-headline-md text-text-main">3</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Urgents</div>
+</div>
+</div>
+</div>
+<!-- Case List Section -->
+<div class="bg-error-container border-2 border-error rounded-xl p-6 mb-stack-lg w-full overflow-x-auto">
+<div class="flex items-center gap-3 mb-4">
+<span class="material-symbols-outlined text-error text-3xl">warning</span>
+<h3 class="font-headline-md text-headline-md text-on-error-container font-bold">Affectations Manuelles Requises (Échecs de l'algorithme)</h3>
+</div>
+<div class="flex flex-col gap-4" id="manual-override-list">
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-2">
+<span class="font-label-sm text-label-sm text-on-surface-variant font-mono bg-surface-container px-2 py-1 rounded">#MLA-2023-098</span>
+<span class="bg-error text-on-error font-label-sm text-label-sm px-2 py-1 rounded-full flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">error</span> Échec Algorithme
+      </span>
+</div>
+<div>
+<h4 class="font-headline-md text-headline-md text-text-main">Aissatou Barry</h4>
+<div class="font-body-md text-body-md text-error font-bold flex items-center gap-2 mt-1">
+<span class="material-symbols-outlined text-sm">info</span> Aucun spécialiste disponible en Neurologie
+      </div>
+</div>
+</div>
+<button class="bg-primary text-on-primary font-label-md text-label-md px-6 py-3 rounded-full hover:bg-primary-container transition-colors h-12 flex items-center justify-center">
+    Affecter manuellement
+  </button>
+</div><div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-2">
+<span class="font-label-sm text-label-sm text-on-surface-variant font-mono bg-surface-container px-2 py-1 rounded">#MLA-2023-102</span>
+<span class="bg-error text-on-error font-label-sm text-label-sm px-2 py-1 rounded-full flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">error</span> Échec Algorithme
+      </span>
+</div>
+<div>
+<h4 class="font-headline-md text-headline-md text-text-main">Mamadou Diallo</h4>
+<div class="font-body-md text-body-md text-error font-bold flex items-center gap-2 mt-1">
+<span class="material-symbols-outlined text-sm">psychiatry</span> Cas complexe signalé - Expertise senior requise
+      </div>
+</div>
+</div>
+<button class="bg-primary text-on-primary font-label-md text-label-md px-6 py-3 rounded-full hover:bg-primary-container transition-colors h-12 flex items-center justify-center">
+    Affecter manuellement
+  </button>
+</div></div>
+</div>
+</main>
+</div>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden bg-surface dark:bg-on-surface shadow-lg fixed bottom-0 w-full z-50 flex justify-around items-center h-16 rounded-t-xl pb-safe px-4">
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-4 py-1 hover:text-primary transition-transform scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-sm text-label-sm mt-1">Dashboard</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="folder_shared">folder_shared</span>
+<span class="font-label-sm text-label-sm mt-1">Cases</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="clinical_notes">clinical_notes</span>
+<span class="font-label-sm text-label-sm mt-1">Specialists</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-sm text-label-sm mt-1">Settings</span>
+</a>
+</nav>
+
+
+
+
+</body></html>

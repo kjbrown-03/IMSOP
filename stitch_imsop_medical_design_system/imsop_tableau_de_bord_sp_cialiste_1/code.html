@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Tableau de bord Expert - MedLink Africa</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-surface-variant": "#424752",
+                      "on-secondary-fixed-variant": "#00531a",
+                      "status-warning": "#FFC107",
+                      "secondary-fixed-dim": "#66df75",
+                      "tertiary-container": "#983c00",
+                      "background-alt": "#F8F9FA",
+                      "background": "#f9f9ff",
+                      "on-error": "#ffffff",
+                      "tertiary-fixed": "#ffdbcc",
+                      "secondary": "#006e25",
+                      "surface-container-highest": "#e1e2ea",
+                      "surface-tint": "#115cb9",
+                      "surface-container-lowest": "#ffffff",
+                      "on-secondary-fixed": "#002106",
+                      "surface-bright": "#f9f9ff",
+                      "outline": "#727784",
+                      "text-main": "#1A1C1E",
+                      "on-surface": "#191c21",
+                      "surface": "#f9f9ff",
+                      "inverse-surface": "#2e3037",
+                      "on-background": "#191c21",
+                      "on-primary-fixed-variant": "#004491",
+                      "error-container": "#ffdad6",
+                      "surface-dim": "#d9d9e2",
+                      "surface-variant": "#e1e2ea",
+                      "tertiary-fixed-dim": "#ffb694",
+                      "primary": "#003f87",
+                      "primary-fixed-dim": "#acc7ff",
+                      "primary-container": "#0056b3",
+                      "on-tertiary-container": "#ffc2a7",
+                      "tertiary": "#722b00",
+                      "surface-container": "#ededf6",
+                      "surface-container-low": "#f2f3fc",
+                      "secondary-fixed": "#83fc8e",
+                      "on-secondary": "#ffffff",
+                      "on-primary-container": "#bbd0ff",
+                      "inverse-on-surface": "#f0f0f9",
+                      "on-tertiary-fixed": "#351000",
+                      "secondary-container": "#80f98b",
+                      "surface-container-high": "#e7e8f0",
+                      "primary-fixed": "#d7e2ff",
+                      "on-tertiary-fixed-variant": "#7b2f00",
+                      "inverse-primary": "#acc7ff",
+                      "outline-variant": "#c2c6d4",
+                      "on-secondary-container": "#007327",
+                      "on-tertiary": "#ffffff",
+                      "status-error": "#DC3545",
+                      "error": "#ba1a1a",
+                      "on-error-container": "#93000a",
+                      "on-primary-fixed": "#001a40",
+                      "on-primary": "#ffffff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "margin-mobile": "1rem",
+                      "stack-md": "1rem",
+                      "gutter": "1rem",
+                      "stack-lg": "2rem",
+                      "margin-desktop": "2rem",
+                      "stack-sm": "0.5rem"
+              },
+              "fontFamily": {
+                      "body-lg": ["Inter"],
+                      "headline-md": ["Inter"],
+                      "headline-lg": ["Inter"],
+                      "body-md": ["Inter"],
+                      "headline-lg-mobile": ["Inter"],
+                      "label-md": ["Inter"],
+                      "label-sm": ["Inter"]
+              },
+              "fontSize": {
+                      "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                      "headline-md": ["20px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                      "headline-lg": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                      "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                      "headline-lg-mobile": ["24px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                      "label-md": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                      "label-sm": ["12px", {"lineHeight": "1.2", "fontWeight": "500"}]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-md min-h-screen pb-24 md:pb-0">
+<!-- TopAppBar -->
+<header class="docked full-width top-0 border-b border-outline-variant bg-surface flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop h-12 z-50 sticky top-0">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-[24px]" data-icon="clinical_notes">clinical_notes</span>
+<h1 class="text-headline-md font-headline-md font-bold text-primary">MedLink Africa</h1>
+<span class="hidden md:inline text-on-surface-variant font-label-md text-label-md ml-4 border-l border-outline-variant pl-4">Tableau de bord Expert</span>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:bg-surface-container transition-colors rounded-full p-1" data-icon="account_circle">account_circle</span>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="max-w-[1200px] mx-auto px-margin-mobile md:px-margin-desktop py-stack-lg">
+<!-- Header Section -->
+<div class="mb-stack-lg">
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg text-primary mb-stack-sm">Vos Dossiers Médicaux</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Vue d'ensemble des cas qui vous sont assignés pour analyse et validation.</p>
+</div>
+<!-- Filter / Tabs -->
+<div class="flex gap-2 overflow-x-auto pb-2 mb-stack-lg no-scrollbar">
+<button class="px-4 py-2 rounded-full bg-primary-container text-on-primary-container font-label-md text-label-md whitespace-nowrap">Tous (12)</button>
+<button class="px-4 py-2 rounded-full bg-surface-container border border-outline-variant text-on-surface-variant font-label-md text-label-md whitespace-nowrap hover:bg-surface-container-high transition-colors">Nouveau (3)</button>
+<button class="px-4 py-2 rounded-full bg-surface-container border border-outline-variant text-on-surface-variant font-label-md text-label-md whitespace-nowrap hover:bg-surface-container-high transition-colors">En cours (5)</button>
+<button class="px-4 py-2 rounded-full bg-surface-container border border-outline-variant text-on-surface-variant font-label-md text-label-md whitespace-nowrap hover:bg-surface-container-high transition-colors">Terminé (4)</button>
+</div>
+<!-- Bento Grid Layout for Cases -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
+<!-- Case Card 1 (Nouveau) -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex flex-col hover:bg-surface-container transition-colors cursor-pointer group">
+<div class="flex justify-between items-start mb-4">
+<div>
+<span class="font-label-sm text-label-sm text-on-surface-variant block mb-1">ID: #MLA-2023-089</span>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[18px]" data-icon="ecg_heart">ecg_heart</span>
+<span class="font-label-md text-label-md text-primary">Cardiologie</span>
+</div>
+</div>
+<!-- Status Badge: Nouveau (Blue) -->
+<span class="bg-primary-container text-on-primary-container px-3 py-1 rounded-full font-label-sm text-label-sm flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+                        Nouveau
+                    </span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-2">Avis sur ECG atypique</h3>
+<p class="font-body-md text-body-md text-on-surface-variant line-clamp-3 mb-4 flex-grow">Patient masculin de 55 ans présentant des douleurs thoraciques intermittentes. L'ECG transmis montre des ondes T inversées en V2-V4. Antécédents d'hypertension. Demande d'évaluation du risque ischémique et recommandations thérapeutiques.</p>
+<div class="flex justify-between items-center mt-auto pt-4 border-t border-surface-container-highest">
+<span class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]" data-icon="calendar_today">calendar_today</span>
+                        Reçu le 24 Oct 2023
+                    </span>
+<button class="text-primary font-label-md text-label-md group-hover:underline">Ouvrir le dossier</button>
+</div>
+</div>
+<!-- Case Card 2 (En cours) -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex flex-col hover:bg-surface-container transition-colors cursor-pointer group">
+<div class="flex justify-between items-start mb-4">
+<div>
+<span class="font-label-sm text-label-sm text-on-surface-variant block mb-1">ID: #MLA-2023-085</span>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-tertiary-container text-[18px]" data-icon="oncology">oncology</span>
+<span class="font-label-md text-label-md text-tertiary-container">Oncologie</span>
+</div>
+</div>
+<!-- Status Badge: En cours (Orange) -->
+<span class="bg-tertiary-fixed text-on-tertiary-fixed px-3 py-1 rounded-full font-label-sm text-label-sm flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-status-warning"></span>
+                        En cours
+                    </span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-2">Revue de plan de traitement</h3>
+<p class="font-body-md text-body-md text-on-surface-variant line-clamp-3 mb-4 flex-grow">Patiente de 62 ans diagnostiquée avec un carcinome canalaire infiltrant de stade II. IRM et résultats biopsie joints. Équipe locale demande confirmation du protocole de chimiothérapie néoadjuvante proposé vs chirurgie d'emblée.</p>
+<div class="flex justify-between items-center mt-auto pt-4 border-t border-surface-container-highest">
+<span class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]" data-icon="calendar_today">calendar_today</span>
+                        Reçu le 22 Oct 2023
+                    </span>
+<button class="text-primary font-label-md text-label-md group-hover:underline">Continuer l'analyse</button>
+</div>
+</div>
+<!-- Case Card 3 (Terminé) -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex flex-col hover:bg-surface-container transition-colors cursor-pointer group">
+<div class="flex justify-between items-start mb-4">
+<div>
+<span class="font-label-sm text-label-sm text-on-surface-variant block mb-1">ID: #MLA-2023-072</span>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[18px]" data-icon="pulmonology">pulmonology</span>
+<span class="font-label-md text-label-md text-secondary">Pneumologie</span>
+</div>
+</div>
+<!-- Status Badge: Terminé (Green) -->
+<span class="bg-secondary-fixed text-on-secondary-fixed px-3 py-1 rounded-full font-label-sm text-label-sm flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+                        Terminé
+                    </span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-2">Interprétation Scanner Thoracique</h3>
+<p class="font-body-md text-body-md text-on-surface-variant line-clamp-3 mb-4 flex-grow">Patient de 45 ans, toux chronique persistante. Scanner montre des opacités en verre dépoli bilatérales. Rapport rédigé et envoyé à l'équipe médicale locale recommandant un lavage broncho-alvéolaire.</p>
+<div class="flex justify-between items-center mt-auto pt-4 border-t border-surface-container-highest">
+<span class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]" data-icon="calendar_today">calendar_today</span>
+                        Validé le 20 Oct 2023
+                    </span>
+<button class="text-primary font-label-md text-label-md group-hover:underline">Voir le rapport</button>
+</div>
+</div>
+<!-- Case Card 4 (Nouveau) -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex flex-col hover:bg-surface-container transition-colors cursor-pointer group">
+<div class="flex justify-between items-start mb-4">
+<div>
+<span class="font-label-sm text-label-sm text-on-surface-variant block mb-1">ID: #MLA-2023-091</span>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[18px]" data-icon="neurology">neurology</span>
+<span class="font-label-md text-label-md text-primary">Neurologie</span>
+</div>
+</div>
+<!-- Status Badge: Nouveau (Blue) -->
+<span class="bg-primary-container text-on-primary-container px-3 py-1 rounded-full font-label-sm text-label-sm flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+                        Nouveau
+                    </span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-2">Suspicion SEP - Avis IRM</h3>
+<p class="font-body-md text-body-md text-on-surface-variant line-clamp-3 mb-4 flex-grow">Jeune femme de 28 ans avec troubles visuels et paresthésies des membres inférieurs. L'IRM cérébrale montre des lésions périventriculaires. Besoin d'une relecture experte des clichés pour confirmer les critères de McDonald.</p>
+<div class="flex justify-between items-center mt-auto pt-4 border-t border-surface-container-highest">
+<span class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]" data-icon="calendar_today">calendar_today</span>
+                        Reçu ce jour
+                    </span>
+<button class="text-primary font-label-md text-label-md group-hover:underline">Ouvrir le dossier</button>
+</div>
+</div>
+</div>
+<!-- Decorative Illustration Area (Optional, for visual balance if list is short) -->
+<div class="mt-stack-lg p-stack-lg bg-surface-container-low rounded-xl border border-outline-variant flex items-center justify-center hidden md:flex">
+<div class="text-center">
+<span class="material-symbols-outlined text-[48px] text-primary-fixed-dim mb-4" data-icon="monitoring">monitoring</span>
+<p class="font-headline-md text-headline-md text-on-surface-variant">La précision médicale sans frontières</p>
+<p class="font-body-sm text-body-md text-outline mt-2">MedLink Africa - Connectant l'expertise internationale aux patients.</p>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-16 px-gutter pb-safe bg-surface border-t border-outline-variant shadow-sm md:hidden">
+<!-- Dashboard (Dossiers) - Active -->
+<a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-4 py-1 hover:text-primary transition-colors scale-95 duration-150" href="#">
+<span class="material-symbols-outlined fill" data-icon="dashboard">dashboard</span>
+<span class="font-label-sm text-label-sm mt-1">Dossiers</span>
+</a>
+<!-- Profile (Compte) - Inactive -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-label-sm text-label-sm mt-1">Compte</span>
+</a>
+</nav>
+</body></html>

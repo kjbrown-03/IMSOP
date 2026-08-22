@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+
+<html lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>IMSOP - Recherche de Spécialiste</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-tint": "#115cb9",
+                        "surface-container-low": "#f2f3fc",
+                        "on-secondary-container": "#007327",
+                        "on-primary": "#ffffff",
+                        "primary-container": "#0056b3",
+                        "tertiary-fixed-dim": "#ffb694",
+                        "on-tertiary-fixed": "#351000",
+                        "text-main": "#1A1C1E",
+                        "status-warning": "#FFC107",
+                        "tertiary": "#722b00",
+                        "inverse-surface": "#2e3037",
+                        "primary-fixed": "#d7e2ff",
+                        "secondary": "#006e25",
+                        "background-alt": "#F8F9FA",
+                        "on-tertiary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "background": "#f9f9ff",
+                        "surface-container": "#ededf6",
+                        "secondary-fixed-dim": "#66df75",
+                        "on-tertiary-fixed-variant": "#7b2f00",
+                        "on-surface-variant": "#424752",
+                        "on-tertiary-container": "#ffc2a7",
+                        "surface-bright": "#f9f9ff",
+                        "status-error": "#DC3545",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-variant": "#e1e2ea",
+                        "primary": "#003f87",
+                        "inverse-on-surface": "#f0f0f9",
+                        "secondary-container": "#80f98b",
+                        "on-surface": "#191c21",
+                        "outline": "#727784",
+                        "error-container": "#ffdad6",
+                        "on-primary-container": "#bbd0ff",
+                        "on-error-container": "#93000a",
+                        "secondary-fixed": "#83fc8e",
+                        "error": "#ba1a1a",
+                        "on-background": "#191c21",
+                        "on-secondary-fixed-variant": "#00531a",
+                        "primary-fixed-dim": "#acc7ff",
+                        "surface": "#f9f9ff",
+                        "on-primary-fixed": "#001a40",
+                        "on-secondary-fixed": "#002106",
+                        "tertiary-container": "#983c00",
+                        "on-secondary": "#ffffff",
+                        "surface-dim": "#d9d9e2",
+                        "surface-container-high": "#e7e8f0",
+                        "surface-container-highest": "#e1e2ea",
+                        "tertiary-fixed": "#ffdbcc",
+                        "inverse-primary": "#acc7ff",
+                        "on-primary-fixed-variant": "#004491",
+                        "outline-variant": "#c2c6d4"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-lg": "2rem",
+                        "stack-md": "1rem",
+                        "stack-sm": "0.5rem",
+                        "gutter": "1rem",
+                        "margin-mobile": "1rem",
+                        "margin-desktop": "2rem"
+                    },
+                    "fontFamily": {
+                        "label-md": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-md": ["14px", { "lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "600" }],
+                        "label-sm": ["12px", { "lineHeight": "1.2", "fontWeight": "500" }],
+                        "headline-lg": ["32px", { "lineHeight": "1.2", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "1.2", "fontWeight": "700" }],
+                        "headline-md": ["20px", { "lineHeight": "1.4", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        /* Hide scrollbar for clean horizontal scrolling */
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-text-main font-body-md min-h-screen relative">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-surface border-b border-outline-variant flex justify-between items-center px-margin-mobile h-12">
+<div class="flex items-center">
+<img class="w-8 h-8 rounded-full object-cover shadow-sm border border-surface-variant cursor-pointer" data-alt="A professional medical headshot of a middle-aged female medical coordinator wearing a subtle grey blazer and white shirt. The background is a clean, bright, slightly blurred clinical office environment with natural light. High quality, modern corporate portrait style emphasizing trust and competence." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC244iS5VLN_Ewwm4MnaUp2E4a7Qp16djsX_DfUYcZPJxZqQAMeIuBKC8T-TWhjBMl-DqLrYEAEf5TMtkB3WUbH8eAKSK6dV6l5Hn-qQSSPnUTJZtEXuo__7agmG224P6yvl9XluXoutvvnlRnCqLizjuVvF38AR8_2F5cEh43UhTTgfaADrXmyvI2keWrrrEqjPk_Io7PgrhmRN2yk6lSuo_9ABDsOzZ2aFcm1gTxmfnxQOqLF-ieP"/>
+</div>
+<div class="font-headline-md text-headline-md-mobile font-bold text-primary tracking-tight">IMSOP</div>
+<button class="hover:bg-surface-container-high transition-colors p-1 rounded-full active:opacity-80">
+<span class="material-symbols-outlined text-primary">notifications</span>
+</button>
+</header>
+<!-- Desktop Sidebar (Hidden on mobile) -->
+<aside class="hidden md:flex flex-col fixed top-[48px] left-0 w-64 h-[calc(100vh-48px)] bg-surface border-r border-outline-variant p-4 overflow-y-auto">
+<nav class="flex flex-col gap-2 mt-4">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors font-label-md" href="#">
+<span class="material-symbols-outlined">folder_shared</span> Dossiers
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg bg-primary-container text-on-primary-container font-label-md" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">medical_services</span> Médecins
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors font-label-md" href="#">
+<span class="material-symbols-outlined">chat</span> Messages
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors font-label-md" href="#">
+<span class="material-symbols-outlined">person</span> Profil
+            </a>
+</nav>
+</aside>
+<!-- Main Content Canvas -->
+<main class="pt-[48px] pb-[80px] md:pb-8 md:pl-[256px] px-margin-mobile md:px-margin-desktop max-w-[1400px] mx-auto w-full flex flex-col md:flex-row gap-gutter mt-stack-md">
+<!-- Filters Section (Left col on Desktop, Top on Mobile) -->
+<section class="w-full md:w-1/3 lg:w-1/4 flex-shrink-0 flex flex-col gap-stack-sm">
+<div class="mb-2">
+<span class="inline-block px-2 py-1 bg-surface-container-high text-on-surface-variant font-label-sm rounded-md mb-2">Dossier #D-2023-8942</span>
+<h1 class="font-headline-lg text-headline-lg-mobile text-on-surface">Affecter un Expert</h1>
+<p class="font-body-md text-on-surface-variant mt-1">Trouvez le spécialiste européen le plus adapté au cas patient.</p>
+</div>
+<!-- Search Input -->
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="w-full pl-10 pr-4 py-3 bg-surface-container-lowest border border-outline-variant rounded-lg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary font-body-md text-on-surface transition-shadow" placeholder="Nom, mot-clé, pathologie..." type="text"/>
+</div>
+<!-- Mobile Horizontal Scroll Filters / Desktop Stack -->
+<div class="flex md:flex-col gap-2 overflow-x-auto md:overflow-visible pb-2 md:pb-0 scrollbar-hide w-full">
+<!-- Select Spécialité -->
+<div class="relative min-w-[140px] md:w-full">
+<select class="w-full appearance-none bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-3 pr-10 font-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary">
+<option value="">Spécialité</option>
+<option selected="" value="Cardiologie">Cardiologie</option>
+<option value="Neurologie">Neurologie</option>
+<option value="Oncologie">Oncologie</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-outline pointer-events-none">arrow_drop_down</span>
+</div>
+<!-- Select Pays -->
+<div class="relative min-w-[140px] md:w-full">
+<select class="w-full appearance-none bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-3 pr-10 font-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary">
+<option value="">Pays (Europe)</option>
+<option value="FR">France</option>
+<option value="BE">Belgique</option>
+<option value="CH">Suisse</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-outline pointer-events-none">arrow_drop_down</span>
+</div>
+<!-- Select Disponibilité -->
+<div class="relative min-w-[160px] md:w-full">
+<select class="w-full appearance-none bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-3 pr-10 font-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary">
+<option value="">Disponibilité</option>
+<option value="24h">&lt; 24 heures</option>
+<option value="48h">&lt; 48 heures</option>
+<option value="1w">1 semaine</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-outline pointer-events-none">arrow_drop_down</span>
+</div>
+</div>
+<!-- Active Filters Indicators -->
+<div class="hidden md:flex flex-wrap gap-2 mt-2">
+<span class="flex items-center gap-1 px-3 py-1 bg-surface-variant text-on-surface-variant font-label-sm rounded-full border border-outline-variant">
+                    Cardiologie <button class="hover:text-error ml-1"><span class="material-symbols-outlined text-[14px]">close</span></button>
+</span>
+<span class="text-primary font-label-sm cursor-pointer hover:underline self-center ml-2">Effacer tout</span>
+</div>
+</section>
+<!-- Results Grid -->
+<section class="w-full md:w-2/3 lg:w-3/4 flex-grow">
+<p class="font-label-md text-on-surface-variant mb-4 hidden md:block">12 spécialistes trouvés</p>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-gutter">
+<!-- Doctor Card 1 -->
+<article class="bg-surface-container-lowest border border-outline-variant rounded-xl p-5 flex flex-col gap-4 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+<div class="absolute top-0 left-0 w-1 h-full bg-secondary"></div>
+<div class="flex items-start gap-4">
+<img class="w-16 h-16 rounded-full object-cover border border-surface-variant" data-alt="Professional headshot of a distinguished male doctor in his 50s. He has short silver hair, wearing a white medical coat over a light blue shirt. The background is a sophisticated, softly lit European hospital corridor. The mood conveys deep expertise, calm authority, and high-end modern healthcare." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBaeLoxcsuBuguJbtqVnxSWa4dJogjwtbACUenHxOcdPqAGnPDcBX5pVZ7olEo2WOmbWi8c4gBfiEEFzWhz3obzAmRRnO5_myOMOrAB_2qCC8VEmhYuEIAcqivxf3ptUkDX7zqzII-Kw4bhCxzCdeH180imc67YhTtjKsgqJHm27l5Pzy75LkIvmlsPMBhx_zmRlRNMuAruEWYIC6rO7qkur9lLh2gymYOrIzsJmj1KR3NzAo_bpn7K"/>
+<div class="flex-1">
+<h2 class="font-headline-md text-headline-md-mobile text-on-surface group-hover:text-primary transition-colors">Dr. Jean-Marc Dubois</h2>
+<p class="font-body-md text-primary mt-1">Cardiologue Interventionnel</p>
+<div class="flex items-center gap-4 mt-2">
+<p class="font-label-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">location_city</span> Hôpital Européen, Paris
+                                </p>
+<p class="font-label-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">language</span> FR, EN
+                                </p>
+</div>
+</div>
+</div>
+<div class="bg-surface px-3 py-2 rounded-lg border border-surface-variant mt-2">
+<p class="font-label-sm text-on-surface-variant line-clamp-2">Expertise spécifique en angioplastie complexe et rythmologie. Habitué aux dossiers de télémédecine internationale.</p>
+</div>
+<div class="flex justify-between items-center mt-auto pt-4 border-t border-surface-variant">
+<span class="bg-secondary-container text-on-secondary-container font-label-md px-3 py-1 rounded-full flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">schedule</span> Dispo: &lt; 24h
+                        </span>
+<button class="bg-primary text-on-primary font-label-md px-5 py-2 rounded-lg hover:bg-primary-container hover:text-on-primary-container active:scale-95 transition-all shadow-sm">
+                            Affecter le dossier
+                        </button>
+</div>
+</article>
+<!-- Doctor Card 2 -->
+<article class="bg-surface-container-lowest border border-outline-variant rounded-xl p-5 flex flex-col gap-4 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+<div class="absolute top-0 left-0 w-1 h-full bg-status-warning"></div>
+<div class="flex items-start gap-4">
+<img class="w-16 h-16 rounded-full object-cover border border-surface-variant" data-alt="A portrait of a confident female medical specialist in her late 40s. She is wearing a modern, tailored navy blue scrub top. The setting is a bright, state-of-the-art clinic office with abstract minimalist art in the background. The lighting is crisp and natural, highlighting a professional and approachable demeanor." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAXPDMiUMIR5rSi9Z_FUAuydaD9a8i9TeKy0Jl565SbEpzByD8uXuNpCMflyLq-sJGrQaSD85A5x4mZlSewCZGqpvuVLRb4wdoF4p-W5esYAnjDmAIxedWthUyj5Xo5Xj18GH-yf_waVNR1_l4XMABfRxWd7WQokcJ4fn8IEsfP9ZT19gnGJPxfCCXF7ic_KPXdAapNEZvQNc_Yvq0vGfCOwDHZWZjMv0U9MnXp6o5bc1QvziNkPke2"/>
+<div class="flex-1">
+<h2 class="font-headline-md text-headline-md-mobile text-on-surface group-hover:text-primary transition-colors">Dr. Sophie Laurent</h2>
+<p class="font-body-md text-primary mt-1">Cardiologue - Échocardiographie</p>
+<div class="flex items-center gap-4 mt-2">
+<p class="font-label-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">location_city</span> Clinique St. Jean, Bruxelles
+                                </p>
+<p class="font-label-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">language</span> FR, NL, EN
+                                </p>
+</div>
+</div>
+</div>
+<div class="bg-surface px-3 py-2 rounded-lg border border-surface-variant mt-2">
+<p class="font-label-sm text-on-surface-variant line-clamp-2">Spécialiste en imagerie cardiovasculaire non-invasive. Grande expérience dans le dépistage préventif.</p>
+</div>
+<div class="flex justify-between items-center mt-auto pt-4 border-t border-surface-variant">
+<span class="bg-surface-variant text-on-surface-variant font-label-md px-3 py-1 rounded-full flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">schedule</span> Dispo: 48h
+                        </span>
+<button class="border border-primary text-primary font-label-md px-5 py-2 rounded-lg hover:bg-primary-container active:scale-95 transition-all">
+                            Voir le profil
+                        </button>
+</div>
+</article>
+<!-- Doctor Card 3 -->
+<article class="bg-surface-container-lowest border border-outline-variant rounded-xl p-5 flex flex-col gap-4 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+<div class="absolute top-0 left-0 w-1 h-full bg-secondary"></div>
+<div class="flex items-start gap-4">
+<div class="w-16 h-16 rounded-full bg-surface-variant border border-outline flex items-center justify-center">
+<span class="material-symbols-outlined text-[32px] text-outline">person</span>
+</div>
+<div class="flex-1">
+<h2 class="font-headline-md text-headline-md-mobile text-on-surface group-hover:text-primary transition-colors">Dr. Antoine Moreau</h2>
+<p class="font-body-md text-primary mt-1">Chirurgien Cardiaque</p>
+<div class="flex items-center gap-4 mt-2">
+<p class="font-label-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">location_city</span> CHU de Genève
+                                </p>
+<p class="font-label-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">language</span> FR, DE
+                                </p>
+</div>
+</div>
+</div>
+<div class="flex justify-between items-center mt-auto pt-4 border-t border-surface-variant">
+<span class="bg-secondary-container text-on-secondary-container font-label-md px-3 py-1 rounded-full flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">schedule</span> Dispo: &lt; 24h
+                        </span>
+<button class="bg-primary text-on-primary font-label-md px-5 py-2 rounded-lg hover:bg-primary-container hover:text-on-primary-container active:scale-95 transition-all shadow-sm">
+                            Affecter le dossier
+                        </button>
+</div>
+</article>
+</div>
+<!-- Pagination / Load More -->
+<div class="w-full flex justify-center mt-stack-lg">
+<button class="px-6 py-2 border border-outline-variant text-on-surface font-label-md rounded-lg hover:bg-surface-container-high transition-colors">
+                    Charger plus de spécialistes
+                </button>
+</div>
+</section>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-2 py-3 bg-surface shadow-[0_-1px_3px_rgba(0,0,0,0.05)] rounded-t-xl">
+<button class="flex flex-col items-center justify-center text-on-surface-variant opacity-70 hover:text-primary transition-colors active:scale-95 duration-200">
+<span class="material-symbols-outlined">folder_shared</span>
+<span class="font-label-sm text-label-sm mt-1">Dossiers</span>
+</button>
+<button class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-4 py-1 active:scale-95 transition-transform duration-200">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">medical_services</span>
+<span class="font-label-sm text-label-sm mt-1">Médecins</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant opacity-70 hover:text-primary transition-colors active:scale-95 duration-200">
+<span class="material-symbols-outlined">chat</span>
+<span class="font-label-sm text-label-sm mt-1">Messages</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant opacity-70 hover:text-primary transition-colors active:scale-95 duration-200">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-sm text-label-sm mt-1">Profil</span>
+</button>
+</nav>
+</body></html>

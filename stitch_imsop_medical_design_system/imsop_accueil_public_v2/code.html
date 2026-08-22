@@ -1,0 +1,208 @@
+<!DOCTYPE html><html class="light" lang="fr"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>IMSOP - International Medical Second Opinion Platform</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error": "#ffffff",
+                        "tertiary-fixed-dim": "#ffb694",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed-variant": "#00531a",
+                        "surface-dim": "#d9d9e2",
+                        "on-secondary": "#ffffff",
+                        "primary-container": "#0056b3",
+                        "surface-variant": "#e1e2ea",
+                        "tertiary-fixed": "#ffdbcc",
+                        "tertiary": "#722b00",
+                        "on-tertiary-container": "#ffc2a7",
+                        "error-container": "#ffdad6",
+                        "on-tertiary-fixed-variant": "#7b2f00",
+                        "on-surface-variant": "#424752",
+                        "outline-variant": "#c2c6d4",
+                        "tertiary-container": "#983c00",
+                        "inverse-on-surface": "#f0f0f9",
+                        "inverse-surface": "#2e3037",
+                        "error": "#ba1a1a",
+                        "on-primary-fixed": "#001a40",
+                        "text-main": "#1A1C1E",
+                        "on-secondary-fixed": "#002106",
+                        "on-primary": "#ffffff",
+                        "on-primary-container": "#bbd0ff",
+                        "background-alt": "#F8F9FA",
+                        "background": "#f9f9ff",
+                        "status-error": "#DC3545",
+                        "on-secondary-container": "#007327",
+                        "surface-container-highest": "#e1e2ea",
+                        "inverse-primary": "#acc7ff",
+                        "surface-container-low": "#f2f3fc",
+                        "surface-tint": "#115cb9",
+                        "on-tertiary-fixed": "#351000",
+                        "secondary": "#006e25",
+                        "status-warning": "#FFC107",
+                        "primary": "#003f87",
+                        "primary-fixed": "#d7e2ff",
+                        "on-background": "#191c21",
+                        "on-tertiary": "#ffffff",
+                        "secondary-fixed-dim": "#66df75",
+                        "outline": "#727784",
+                        "on-error-container": "#93000a",
+                        "on-surface": "#191c21",
+                        "surface-container": "#ededf6",
+                        "on-primary-fixed-variant": "#004491",
+                        "secondary-fixed": "#83fc8e",
+                        "surface-bright": "#f9f9ff",
+                        "secondary-container": "#80f98b",
+                        "surface-container-high": "#e7e8f0",
+                        "primary-fixed-dim": "#acc7ff",
+                        "surface": "#f9f9ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "1rem",
+                        "stack-md": "1rem",
+                        "margin-desktop": "2rem",
+                        "stack-lg": "2rem",
+                        "stack-sm": "0.5rem",
+                        "margin-mobile": "1rem"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "headline-md": ["20px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                        "label-sm": ["12px", {"lineHeight": "1.2", "fontWeight": "500"}],
+                        "label-md": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                        "headline-lg": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                        "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-background font-body-lg text-body-lg min-h-screen flex flex-col pt-12 md:pt-0"><!-- Navbar -->
+<nav class="fixed top-0 w-full z-50 bg-surface border-b border-outline-variant px-4 md:px-margin-desktop h-16 flex justify-between items-center">
+<div class="flex items-center">
+<span class="font-headline-md text-headline-md font-bold text-primary">IMSOP</span>
+</div>
+<div class="flex items-center gap-2 md:gap-4">
+<button class="text-primary text-sm font-label-md hover:bg-surface-container-low px-2 py-2 rounded-lg transition-colors">Se connecter</button>
+<button class="bg-primary text-on-primary text-sm font-label-md px-4 py-2 rounded-full shadow-md hover:opacity-90 transition-opacity">Créer un compte</button>
+</div>
+</nav>
+<main class="flex-1 pt-16">
+<!-- Hero Section -->
+<section class="bg-surface-container-lowest px-margin-mobile md:px-margin-desktop py-16 md:py-24 border-b border-outline-variant">
+<div class="max-w-4xl mx-auto text-center">
+<h1 class="font-headline-lg-mobile md:font-headline-lg text-primary mb-6">
+                L'expertise médicale internationale, accessible d'où que vous soyez
+            </h1>
+<p class="text-body-lg text-on-surface-variant mb-10 max-w-2xl mx-auto">
+                Obtenez un deuxième avis de spécialistes reconnus sans vous déplacer.
+            </p>
+<button class="bg-primary text-on-primary font-label-md py-4 px-10 rounded-full shadow-lg hover:opacity-90 transition-opacity">
+                Commencer mon dossier
+            </button>
+</div>
+</section>
+<!-- Reassurance Section (Stats) -->
+<section class="bg-background px-margin-mobile md:px-margin-desktop py-12">
+<div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+<div class="flex flex-col items-center text-center">
+<span class="material-symbols-outlined text-primary text-4xl mb-2" data-icon="groups">groups</span>
+<div class="font-headline-md text-primary">50+</div>
+<div class="text-on-surface-variant">Spécialistes Européens</div>
+</div>
+<div class="flex flex-col items-center text-center">
+<span class="material-symbols-outlined text-primary text-4xl mb-2" data-icon="schedule">schedule</span>
+<div class="font-headline-md text-primary">48h</div>
+<div class="text-on-surface-variant">Réponse moyenne</div>
+</div>
+<div class="flex flex-col items-center text-center">
+<span class="material-symbols-outlined text-primary text-4xl mb-2" data-icon="verified_user">verified_user</span>
+<div class="font-headline-md text-primary">100%</div>
+<div class="text-on-surface-variant">Sécurisé et Confidentiel</div>
+</div>
+</div>
+</section>
+<!-- How it Works Section -->
+<section class="bg-surface px-margin-mobile md:px-margin-desktop py-16 md:py-20">
+<div class="max-w-6xl mx-auto">
+<h2 class="font-headline-md text-center text-on-surface mb-12">Comment obtenir votre avis</h2>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<div class="bg-surface-container-lowest p-8 rounded-xl border border-outline-variant shadow-sm">
+<div class="w-12 h-12 rounded-full bg-primary-container/10 text-primary flex items-center justify-center font-bold mb-4">1</div>
+<h3 class="font-label-md mb-2">Inscription</h3>
+<p class="text-body-md text-on-surface-variant">Inscrivez-vous et décrivez votre cas médical en quelques minutes.</p>
+</div>
+<div class="bg-surface-container-lowest p-8 rounded-xl border border-outline-variant shadow-sm">
+<div class="w-12 h-12 rounded-full bg-primary-container/10 text-primary flex items-center justify-center font-bold mb-4">2</div>
+<h3 class="font-label-md mb-2">Documents</h3>
+<p class="text-body-md text-on-surface-variant">Téléversez vos documents de manière sécurisée sur notre plateforme.</p>
+</div>
+<div class="bg-surface-container-lowest p-8 rounded-xl border border-outline-variant shadow-sm">
+<div class="w-12 h-12 rounded-full bg-primary-container/10 text-primary flex items-center justify-center font-bold mb-4">3</div>
+<h3 class="font-label-md mb-2">Avis Expert</h3>
+<p class="text-body-md text-on-surface-variant">Recevez l'avis d'un expert international directement dans votre espace.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Final CTA Section -->
+<section class="px-margin-mobile md:px-margin-desktop py-16">
+<div class="max-w-4xl mx-auto bg-primary rounded-3xl p-8 md:p-16 text-center text-on-primary shadow-xl">
+<h2 class="font-headline-md mb-6">Prêt à obtenir un avis médical expert ?</h2>
+<p class="mb-10 opacity-90 max-w-xl mx-auto">Rejoignez des milliers de patients qui ont fait confiance à IMSOP pour leur santé.</p>
+<button class="bg-surface text-primary font-label-md py-4 px-10 rounded-full hover:bg-surface-container transition-colors">
+                Créer mon compte patient
+            </button>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-high py-12 px-margin-mobile md:px-margin-desktop">
+<div class="max-w-6xl mx-auto">
+<div class="flex flex-col md:flex-row justify-between items-center gap-8 border-b border-outline-variant pb-8 mb-8">
+<span class="font-headline-md text-primary font-bold">IMSOP</span>
+<div class="flex flex-wrap justify-center gap-6 text-on-surface-variant font-label-md">
+<a class="hover:text-primary" href="#">Mentions légales</a>
+<a class="hover:text-primary" href="#">Politique de confidentialité</a>
+<a class="hover:text-primary" href="#">Contact</a>
+</div>
+</div>
+<p class="text-center text-sm text-on-surface-variant opacity-60">© 2024 IMSOP. Tous droits réservés.</p>
+</div>
+</footer>
+
+</body></html>

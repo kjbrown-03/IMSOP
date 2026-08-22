@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+
+<html class="light" lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>IMSOP - International Medical Second Opinion Platform</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error": "#ffffff",
+                        "tertiary-fixed-dim": "#ffb694",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed-variant": "#00531a",
+                        "surface-dim": "#d9d9e2",
+                        "on-secondary": "#ffffff",
+                        "primary-container": "#0056b3",
+                        "surface-variant": "#e1e2ea",
+                        "tertiary-fixed": "#ffdbcc",
+                        "tertiary": "#722b00",
+                        "on-tertiary-container": "#ffc2a7",
+                        "error-container": "#ffdad6",
+                        "on-tertiary-fixed-variant": "#7b2f00",
+                        "on-surface-variant": "#424752",
+                        "outline-variant": "#c2c6d4",
+                        "tertiary-container": "#983c00",
+                        "inverse-on-surface": "#f0f0f9",
+                        "inverse-surface": "#2e3037",
+                        "error": "#ba1a1a",
+                        "on-primary-fixed": "#001a40",
+                        "text-main": "#1A1C1E",
+                        "on-secondary-fixed": "#002106",
+                        "on-primary": "#ffffff",
+                        "on-primary-container": "#bbd0ff",
+                        "background-alt": "#F8F9FA",
+                        "background": "#f9f9ff",
+                        "status-error": "#DC3545",
+                        "on-secondary-container": "#007327",
+                        "surface-container-highest": "#e1e2ea",
+                        "inverse-primary": "#acc7ff",
+                        "surface-container-low": "#f2f3fc",
+                        "surface-tint": "#115cb9",
+                        "on-tertiary-fixed": "#351000",
+                        "secondary": "#006e25",
+                        "status-warning": "#FFC107",
+                        "primary": "#003f87",
+                        "primary-fixed": "#d7e2ff",
+                        "on-background": "#191c21",
+                        "on-tertiary": "#ffffff",
+                        "secondary-fixed-dim": "#66df75",
+                        "outline": "#727784",
+                        "on-error-container": "#93000a",
+                        "on-surface": "#191c21",
+                        "surface-container": "#ededf6",
+                        "on-primary-fixed-variant": "#004491",
+                        "secondary-fixed": "#83fc8e",
+                        "surface-bright": "#f9f9ff",
+                        "secondary-container": "#80f98b",
+                        "surface-container-high": "#e7e8f0",
+                        "primary-fixed-dim": "#acc7ff",
+                        "surface": "#f9f9ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "1rem",
+                        "stack-md": "1rem",
+                        "margin-desktop": "2rem",
+                        "stack-lg": "2rem",
+                        "stack-sm": "0.5rem",
+                        "margin-mobile": "1rem"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "headline-md": ["20px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                        "label-sm": ["12px", {"lineHeight": "1.2", "fontWeight": "500"}],
+                        "label-md": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                        "headline-lg": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                        "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+    .screen-container {
+        display: none;
+        opacity: 0;
+        transition: opacity 0.3s ease-in-out;
+    }
+    .screen-container.active {
+        display: block;
+        opacity: 1;
+    }
+  </style>
+</head>
+<body class="bg-background text-on-background font-body-lg text-body-lg min-h-screen relative">
+<!-- Screen 10: Home -->
+<div class="screen-container active flex flex-col min-h-screen pt-12 md:pt-0" id="screen-home">
+<nav class="fixed top-0 w-full z-50 bg-surface border-b border-outline-variant px-4 md:px-margin-desktop h-16 flex justify-between items-center">
+<div class="flex items-center">
+<span class="font-headline-md text-headline-md font-bold text-primary">IMSOP</span>
+</div>
+<div class="flex items-center gap-2 md:gap-4">
+<button class="text-primary text-sm font-label-md hover:bg-surface-container-low px-2 py-2 rounded-lg transition-colors" onclick="navigate('screen-home', 'screen-infos')">Se connecter</button>
+<button class="bg-primary text-on-primary text-sm font-label-md px-4 py-2 rounded-full shadow-md hover:opacity-90 transition-opacity" onclick="navigate('screen-home', 'screen-infos')">Créer un compte</button>
+</div>
+</nav>
+<main class="flex-1 pt-16">
+<!-- Hero Section -->
+<section class="bg-surface-container-lowest px-margin-mobile md:px-margin-desktop py-16 md:py-24 border-b border-outline-variant">
+<div class="max-w-4xl mx-auto text-center">
+<h1 class="font-headline-lg-mobile md:font-headline-lg text-primary mb-6">
+                    L'expertise médicale internationale, accessible d'où que vous soyez
+                </h1>
+<p class="text-body-lg text-on-surface-variant mb-10 max-w-2xl mx-auto">
+                    Obtenez un deuxième avis de spécialistes reconnus sans vous déplacer.
+                </p>
+<button class="bg-primary text-on-primary font-label-md py-4 px-10 rounded-full shadow-lg hover:opacity-90 transition-opacity" onclick="navigate('screen-home', 'screen-infos')">
+                    Commencer mon dossier
+                </button>
+</div>
+</section>
+<!-- Reassurance Section (Stats) -->
+<section class="bg-background px-margin-mobile md:px-margin-desktop py-12">
+<div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+<div class="flex flex-col items-center text-center">
+<span class="material-symbols-outlined text-primary text-4xl mb-2" data-icon="groups">groups</span>
+<div class="font-headline-md text-primary">50+</div>
+<div class="text-on-surface-variant">Spécialistes Européens</div>
+</div>
+<div class="flex flex-col items-center text-center">
+<span class="material-symbols-outlined text-primary text-4xl mb-2" data-icon="schedule">schedule</span>
+<div class="font-headline-md text-primary">48h</div>
+<div class="text-on-surface-variant">Réponse moyenne</div>
+</div>
+<div class="flex flex-col items-center text-center">
+<span class="material-symbols-outlined text-primary text-4xl mb-2" data-icon="verified_user">verified_user</span>
+<div class="font-headline-md text-primary">100%</div>
+<div class="text-on-surface-variant">Sécurisé et Confidentiel</div>
+</div>
+</div>
+</section>
+<!-- How it Works Section -->
+<section class="bg-surface px-margin-mobile md:px-margin-desktop py-16 md:py-20">
+<div class="max-w-6xl mx-auto">
+<h2 class="font-headline-md text-center text-on-surface mb-12">Comment obtenir votre avis</h2>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<div class="bg-surface-container-lowest p-8 rounded-xl border border-outline-variant shadow-sm">
+<div class="w-12 h-12 rounded-full bg-primary-container/10 text-primary flex items-center justify-center font-bold mb-4">1</div>
+<h3 class="font-label-md mb-2">Inscription</h3>
+<p class="text-body-md text-on-surface-variant">Inscrivez-vous et décrivez votre cas médical en quelques minutes.</p>
+</div>
+<div class="bg-surface-container-lowest p-8 rounded-xl border border-outline-variant shadow-sm">
+<div class="w-12 h-12 rounded-full bg-primary-container/10 text-primary flex items-center justify-center font-bold mb-4">2</div>
+<h3 class="font-label-md mb-2">Documents</h3>
+<p class="text-body-md text-on-surface-variant">Téléversez vos documents de manière sécurisée sur notre plateforme.</p>
+</div>
+<div class="bg-surface-container-lowest p-8 rounded-xl border border-outline-variant shadow-sm">
+<div class="w-12 h-12 rounded-full bg-primary-container/10 text-primary flex items-center justify-center font-bold mb-4">3</div>
+<h3 class="font-label-md mb-2">Avis Expert</h3>
+<p class="text-body-md text-on-surface-variant">Recevez l'avis d'un expert international directement dans votre espace.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Final CTA Section -->
+<section class="px-margin-mobile md:px-margin-desktop py-16">
+<div class="max-w-4xl mx-auto bg-primary rounded-3xl p-8 md:p-16 text-center text-on-primary shadow-xl">
+<h2 class="font-headline-md mb-6">Prêt à obtenir un avis médical expert ?</h2>
+<p class="mb-10 opacity-90 max-w-xl mx-auto">Rejoignez des milliers de patients qui ont fait confiance à IMSOP pour leur santé.</p>
+<button class="bg-surface text-primary font-label-md py-4 px-10 rounded-full hover:bg-surface-container transition-colors" onclick="navigate('screen-home', 'screen-infos')">
+                    Créer mon compte patient
+                </button>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-high py-12 px-margin-mobile md:px-margin-desktop">
+<div class="max-w-6xl mx-auto">
+<div class="flex flex-col md:flex-row justify-between items-center gap-8 border-b border-outline-variant pb-8 mb-8">
+<span class="font-headline-md text-primary font-bold">IMSOP</span>
+<div class="flex flex-wrap justify-center gap-6 text-on-surface-variant font-label-md">
+<a class="hover:text-primary" href="#">Mentions légales</a>
+<a class="hover:text-primary" href="#">Politique de confidentialité</a>
+<a class="hover:text-primary" href="#">Contact</a>
+</div>
+</div>
+<p class="text-center text-sm text-on-surface-variant opacity-60">© 2024 IMSOP. Tous droits réservés.</p>
+</div>
+</footer>
+</div>
+<!-- Screen 13: Infos Patient -->
+<div class="screen-container min-h-screen" id="screen-infos">
+<header class="bg-surface dark:bg-surface-dim fixed top-0 w-full z-50 border-b border-outline-variant dark:border-outline flex justify-between items-center px-margin-mobile h-12">
+<div class="flex items-center gap-3">
+<button class="text-on-surface-variant hover:bg-surface-container-high transition-colors active:opacity-80 rounded-full p-1 flex items-center justify-center" onclick="navigate('screen-infos', 'screen-home')">
+<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+</button>
+<h1 class="font-headline-md text-headline-md-mobile font-bold text-primary dark:text-primary-fixed">IMSOP</h1>
+</div>
+</header>
+<main class="flex-grow pt-[48px] px-margin-mobile pb-24 md:pb-8 flex flex-col items-center md:max-w-[1200px] md:mx-auto w-full">
+<div class="w-full max-w-lg mt-stack-md flex flex-col gap-stack-lg">
+<div class="text-center md:text-left">
+<h2 class="font-headline-lg-mobile md:font-headline-lg text-on-surface mb-2">Informations Personnelles</h2>
+<p class="font-body-md text-on-surface-variant">Veuillez renseigner vos informations pour créer votre dossier médical sécurisé.</p>
+</div>
+<div class="w-full flex items-center justify-between relative px-2">
+<div class="absolute top-1/2 left-0 right-0 h-[2px] bg-outline-variant -z-10 transform -translate-y-1/2 mx-6"></div>
+<div class="absolute top-1/2 left-0 w-[0%] h-[2px] bg-primary -z-10 transform -translate-y-1/2 mx-6 transition-all duration-300"></div>
+<div class="flex flex-col items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center font-label-md shadow-sm">1</div>
+<span class="font-label-sm text-primary">Infos</span>
+</div>
+<div class="flex flex-col items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-surface-container-highest text-outline flex items-center justify-center font-label-md border border-outline-variant">2</div>
+<span class="font-label-sm text-outline">Détails</span>
+</div>
+<div class="flex flex-col items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-surface-container-highest text-outline flex items-center justify-center font-label-md border border-outline-variant">3</div>
+<span class="font-label-sm text-outline">Validation</span>
+</div>
+</div>
+<form class="flex flex-col gap-stack-md bg-surface-container-lowest p-6 rounded-xl border border-outline-variant shadow-sm" method="POST">
+<div class="flex flex-col gap-1">
+<label class="font-label-md text-on-surface">Nom Complet</label>
+<input class="h-12 px-4 rounded-lg border border-outline-variant bg-surface focus:border-primary focus:ring-1 focus:ring-primary font-body-md text-on-surface" placeholder="Ex: Jean Dupont" type="text"/>
+</div>
+</form>
+<div class="fixed bottom-0 left-0 w-full p-margin-mobile bg-surface/90 backdrop-blur-sm border-t border-outline-variant/50 md:relative md:bg-transparent md:border-none md:p-0 md:mt-4 z-40">
+<div class="max-w-lg mx-auto w-full">
+<button class="w-full h-12 flex items-center justify-center bg-primary text-on-primary rounded-xl font-label-md hover:bg-primary-fixed-variant transition-colors shadow-sm" onclick="navigate('screen-infos', 'screen-dashboard')" type="button">
+                                Suivant
+                                <span class="material-symbols-outlined ml-2">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Screen 8: Questionnaire -->
+<div class="screen-container min-h-screen flex-col" id="screen-questionnaire">
+<header class="fixed top-0 w-full z-50 bg-surface border-b border-outline-variant flex justify-between items-center px-margin-mobile h-12 md:hidden">
+<button class="text-on-surface-variant flex items-center justify-center p-2" onclick="navigate('screen-questionnaire', 'screen-dashboard')">
+<span class="material-symbols-outlined" data-icon="close">arrow_back</span>
+</button>
+<span class="font-headline-md text-headline-md font-bold text-primary">IMSOP</span>
+<div class="w-10"></div>
+</header>
+<main class="flex-1 w-full max-w-[1200px] mx-auto pt-16 pb-24 md:py-8 px-margin-mobile md:px-margin-desktop flex flex-col">
+<div class="mb-stack-lg w-full max-w-2xl mx-auto mt-4">
+<div class="text-center md:hidden mb-4"><span class="font-label-md text-primary">Étape 2: Détails Médicaux</span></div>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 shadow-sm">
+<h2 class="font-headline-md text-on-surface mb-6">Motif de consultation &amp; Symptômes</h2>
+<form class="flex flex-col gap-stack-md">
+<div class="flex flex-col gap-2">
+<label class="font-label-md text-on-surface">Description des symptômes</label>
+<textarea class="w-full bg-surface border border-outline-variant rounded-lg px-4 py-3 font-body-md text-on-surface focus:ring-primary" placeholder="Décrivez vos symptômes actuels..." rows="4"></textarea>
+</div>
+</form>
+</div>
+</div>
+<div class="fixed bottom-0 left-0 w-full bg-surface border-t border-outline-variant p-margin-mobile md:static md:bg-transparent md:border-none md:p-0 md:mt-stack-lg max-w-2xl mx-auto flex gap-4">
+<button class="flex-1 md:flex-none md:w-32 bg-surface-container-high text-on-surface font-label-md py-3 px-6 rounded-lg" onclick="navigate('screen-questionnaire', 'screen-dashboard')">Retour</button>
+<button class="flex-[2] md:flex-1 bg-primary text-on-primary font-label-md py-3 px-6 rounded-lg flex items-center justify-center gap-2" onclick="navigate('screen-questionnaire', 'screen-paiement')">Suivant <span class="material-symbols-outlined">arrow_forward</span></button>
+</div>
+</main>
+</div>
+<!-- Screen 4: Paiement -->
+<div class="screen-container min-h-screen flex-col" id="screen-paiement">
+<header class="bg-surface text-primary font-headline-md font-bold flex justify-between items-center px-margin-mobile w-full h-14 sticky top-0 z-50">
+<button class="p-2 rounded-full hover:bg-surface-container-low text-primary" onclick="navigate('screen-paiement', 'screen-questionnaire')"><span class="material-symbols-outlined">arrow_back</span></button>
+<span class="truncate flex-1 text-center">IMSOP</span>
+<div class="w-10"></div>
+</header>
+<main class="max-w-[1200px] mx-auto px-margin-mobile md:px-margin-desktop py-stack-lg flex-1 w-full">
+<div class="mb-stack-lg">
+<h1 class="font-headline-lg-mobile md:font-headline-lg text-primary mb-2">Paiement sécurisé</h1>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-stack-lg">
+<div class="lg:col-span-8 space-y-stack-md">
+<section class="bg-surface-container-lowest p-stack-md rounded-xl border border-outline-variant shadow-sm">
+<h2 class="font-headline-md mb-stack-md">Mode de paiement</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter mb-4">
+<label class="relative flex flex-col p-4 cursor-pointer rounded-lg border-2 border-primary bg-primary-fixed-dim/20"><span class="font-label-md text-primary">Carte Bancaire</span></label>
+</div>
+</section>
+</div>
+<div class="lg:col-span-4">
+<aside class="bg-surface-container-lowest p-stack-md rounded-xl border border-outline-variant shadow-sm">
+<h2 class="font-headline-md mb-stack-md">Résumé du dossier</h2>
+<div class="flex justify-between items-center mb-stack-lg bg-surface-container-low p-4 rounded-lg">
+<span class="font-headline-md text-primary">Total à payer</span><span class="font-headline-md text-primary">175,00 €</span>
+</div>
+<button class="w-full h-12 bg-primary text-on-primary font-label-md rounded-full shadow-sm flex items-center justify-center gap-2" onclick="navigate('screen-paiement', 'screen-dashboard')">
+<span class="material-symbols-outlined">lock</span> Payer et envoyer le dossier
+        </button>
+</aside>
+</div>
+</div>
+</main>
+</div>
+<!-- Screen 29: Dashboard -->
+<div class="screen-container min-h-screen flex-col pb-24" id="screen-dashboard">
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-margin-mobile h-12 bg-surface border-b border-outline-variant shadow-sm md:shadow-none">
+<div class="h-8 w-8 rounded-full overflow-hidden border border-outline-variant bg-surface-container-high flex items-center justify-center shrink-0">
+<img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDK7kbasOvPYwqO7ziWxo4wFl0fQor5pFTivz6vZGqRg4ml06M0jh3-xtI3PEGqYtPHaymqkzwFDsi3rw-JmwHlktL0zdSAXfZ_OlFFLBuAiofj9U9DIJVEx3KOFkte6jhJFPu8He7Ix4jItyDGzPWvc1xdbGyk77h8RsFHm7VC_TDoCVN-K7dBNHOy_SXBfIk8GeVeltfqhRM9F957-w338JTsfbktngF0yMJb8wgAcgd9IoDQcakx"/>
+</div>
+<h1 class="font-headline-md font-bold text-primary flex-1 text-center">IMSOP</h1>
+<button class="h-8 w-8 shrink-0"><span class="material-symbols-outlined text-primary">notifications</span></button>
+</header>
+<main class="flex-1 w-full max-w-[1200px] mx-auto mt-16 px-margin-mobile flex flex-col gap-stack-lg">
+<section class="flex flex-col gap-stack-md w-full">
+<h2 class="font-headline-md">Vos Dossiers Actifs</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+<!-- Make Cardiologie (or Oncologie) clickable -->
+<article class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex flex-col gap-4 cursor-pointer" onclick="navigate('screen-dashboard', 'screen-rapport')">
+<div class="flex justify-between items-start">
+<div class="flex flex-col"><span class="font-label-md">Cardiologie</span><span class="font-label-sm text-on-surface-variant">Réf: #A-8902</span></div>
+</div>
+<div class="flex-1"><p class="font-body-md text-on-surface-variant text-sm">Demande d'un second avis médical suite à des palpitations régulières et un ECG anormal.</p></div>
+<div class="flex items-center justify-between mt-auto border-t border-outline-variant/30 pt-3">
+<div class="inline-flex items-center gap-1.5 px-3 py-1 bg-secondary text-on-secondary rounded-full">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+<span class="font-label-sm font-medium">Rapport prêt</span>
+</div>
+</div>
+</article>
+</div>
+</section>
+</main>
+<button class="fixed bottom-24 right-margin-mobile bg-primary hover:bg-primary-container text-on-primary hover:text-on-primary-container font-label-md text-label-md h-14 px-6 rounded-full shadow-lg flex items-center justify-center gap-2 z-40 active:scale-95 transition-all duration-200" onclick="navigate('screen-dashboard', 'screen-questionnaire')">
+<span class="material-symbols-outlined">add</span>
+        Nouvelle Demande
+    </button>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-2 py-3 bg-surface shadow-[0_-1px_3px_rgba(0,0,0,0.05)] rounded-t-xl md:hidden">
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-4 py-1 active:scale-95 transition-transform duration-200" href="#" onclick="navigate(getCurrentScreen(), 'screen-dashboard')">
+<span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">folder_shared</span>
+<span class="font-label-sm text-label-sm mt-0.5">Dossiers</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant opacity-70 hover:text-primary transition-colors active:scale-95 duration-200" href="#">
+<span class="material-symbols-outlined text-[24px]">chat</span>
+<span class="font-label-sm text-label-sm mt-0.5">Messages</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant opacity-70 hover:text-primary transition-colors active:scale-95 duration-200" href="#">
+<span class="material-symbols-outlined text-[24px]">person</span>
+<span class="font-label-sm text-label-sm mt-0.5">Profil</span>
+</a>
+</nav>
+</div>
+<!-- Screen 6: Rapport Final -->
+<div class="screen-container min-h-screen flex-col pb-16" id="screen-rapport">
+<header class="md:hidden flex justify-between items-center px-margin-mobile h-12 w-full z-50 fixed top-0 bg-surface border-b border-outline-variant">
+<button class="text-primary p-2" onclick="navigate('screen-rapport', 'screen-dashboard')"><span class="material-symbols-outlined">arrow_back</span></button>
+<h1 class="text-headline-md font-bold text-primary">IMSOP</h1>
+<div class="w-8"></div>
+</header>
+<main class="flex-1 max-w-[1200px] w-full mx-auto px-margin-mobile pt-16 pb-16">
+<div class="mb-stack-lg flex flex-col gap-4">
+<div>
+<h2 class="font-headline-lg-mobile text-on-surface">Rapport Final de Consultation</h2>
+<p class="font-body-md text-on-surface-variant mt-1">Dossier #IMS-2023-089A</p>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<div class="bg-surface-container-lowest border border-surface-variant rounded-xl p-6 shadow-sm md:col-span-3">
+<h3 class="font-headline-md text-primary mb-4 flex items-center"><span class="material-symbols-outlined mr-2">stethoscope</span> Diagnostic Principal</h3>
+<div class="bg-surface-container-low p-4 rounded-lg border-l-4 border-primary">
+<p class="font-body-lg text-on-surface">L'analyse détaillée de l'ECG transmis et de l'historique clinique révèle des épisodes de fibrillation auriculaire paroxystique...</p>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-2 py-3 bg-surface shadow-[0_-1px_3px_rgba(0,0,0,0.05)] rounded-t-xl md:hidden">
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-4 py-1 active:scale-95 transition-transform duration-200" href="#" onclick="navigate(getCurrentScreen(), 'screen-dashboard')">
+<span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">folder_shared</span>
+<span class="font-label-sm text-label-sm mt-0.5">Dossiers</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant opacity-70 hover:text-primary transition-colors active:scale-95 duration-200" href="#">
+<span class="material-symbols-outlined text-[24px]">chat</span>
+<span class="font-label-sm text-label-sm mt-0.5">Messages</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant opacity-70 hover:text-primary transition-colors active:scale-95 duration-200" href="#">
+<span class="material-symbols-outlined text-[24px]">person</span>
+<span class="font-label-sm text-label-sm mt-0.5">Profil</span>
+</a>
+</nav>
+</div>
+<script>
+    let currentActiveScreenId = 'screen-home';
+
+    function getCurrentScreen() {
+        return currentActiveScreenId;
+    }
+
+    function navigate(fromId, toId) {
+        const fromEl = document.getElementById(fromId);
+        const toEl = document.getElementById(toId);
+        
+        if(fromEl && toEl) {
+            fromEl.style.opacity = 0;
+            setTimeout(() => {
+                fromEl.classList.remove('active');
+                fromEl.style.display = 'none';
+                fromEl.classList.remove('flex'); // remove flex to completely hide
+
+                toEl.style.display = 'flex';
+                toEl.classList.add('active');
+                toEl.classList.add('flex'); // add flex layout back
+                // force reflow
+                void toEl.offsetWidth;
+                toEl.style.opacity = 1;
+                
+                currentActiveScreenId = toId;
+                window.scrollTo(0, 0);
+            }, 300);
+        }
+    }
+</script>
+</body></html>

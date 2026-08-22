@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+
+<html class="light" lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>IMSOP - Inscription Patient</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-variant": "#e1e2ea",
+                      "status-error": "#DC3545",
+                      "on-primary-fixed": "#001a40",
+                      "background": "#f9f9ff",
+                      "tertiary-fixed": "#ffdbcc",
+                      "primary-fixed": "#d7e2ff",
+                      "status-warning": "#FFC107",
+                      "on-error": "#ffffff",
+                      "on-tertiary-container": "#ffc2a7",
+                      "secondary-fixed-dim": "#66df75",
+                      "surface-container": "#ededf6",
+                      "on-tertiary": "#ffffff",
+                      "on-surface": "#191c21",
+                      "primary": "#003f87",
+                      "background-alt": "#F8F9FA",
+                      "outline-variant": "#c2c6d4",
+                      "primary-fixed-dim": "#acc7ff",
+                      "on-secondary-fixed-variant": "#00531a",
+                      "tertiary-fixed-dim": "#ffb694",
+                      "surface-container-lowest": "#ffffff",
+                      "secondary": "#006e25",
+                      "surface-container-highest": "#e1e2ea",
+                      "surface": "#f9f9ff",
+                      "text-main": "#1A1C1E",
+                      "on-background": "#191c21",
+                      "on-surface-variant": "#424752",
+                      "on-tertiary-fixed-variant": "#7b2f00",
+                      "tertiary-container": "#983c00",
+                      "secondary-container": "#80f98b",
+                      "error-container": "#ffdad6",
+                      "on-secondary-fixed": "#002106",
+                      "on-primary-container": "#bbd0ff",
+                      "secondary-fixed": "#83fc8e",
+                      "surface-tint": "#115cb9",
+                      "on-secondary": "#ffffff",
+                      "primary-container": "#0056b3",
+                      "on-primary-fixed-variant": "#004491",
+                      "surface-dim": "#d9d9e2",
+                      "inverse-on-surface": "#f0f0f9",
+                      "on-error-container": "#93000a",
+                      "inverse-primary": "#acc7ff",
+                      "on-secondary-container": "#007327",
+                      "error": "#ba1a1a",
+                      "inverse-surface": "#2e3037",
+                      "outline": "#727784",
+                      "surface-container-high": "#e7e8f0",
+                      "tertiary": "#722b00",
+                      "on-tertiary-fixed": "#351000",
+                      "surface-bright": "#f9f9ff",
+                      "surface-container-low": "#f2f3fc",
+                      "on-primary": "#ffffff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "margin-mobile": "1rem",
+                      "stack-lg": "2rem",
+                      "margin-desktop": "2rem",
+                      "stack-md": "1rem",
+                      "gutter": "1rem",
+                      "stack-sm": "0.5rem"
+              },
+              "fontFamily": {
+                      "headline-md": ["Inter"],
+                      "headline-lg-mobile": ["Inter"],
+                      "label-md": ["Inter"],
+                      "headline-lg": ["Inter"],
+                      "label-sm": ["Inter"],
+                      "body-md": ["Inter"],
+                      "body-lg": ["Inter"]
+              },
+              "fontSize": {
+                      "headline-md": ["20px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                      "headline-lg-mobile": ["24px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                      "label-md": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                      "headline-lg": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                      "label-sm": ["12px", {"lineHeight": "1.2", "fontWeight": "500"}],
+                      "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                      "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}]
+              }
+            }
+          }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col md:flex-row font-body-md">
+<!-- Left Side: Image / Branding (Desktop only) -->
+<div class="hidden md:flex md:w-1/2 bg-surface-container-low relative flex-col justify-between p-12">
+<div class="z-10">
+<h1 class="font-headline-lg text-headline-lg text-primary mb-4">IMSOP</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-md">Rejoignez notre réseau de santé international. Vos données médicales sécurisées, accessibles aux meilleurs spécialistes.</p>
+</div>
+<div class="z-10 absolute inset-0 overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-tr from-primary/10 to-transparent"></div>
+<!-- Decorative elements -->
+<div class="absolute top-1/4 left-1/4 w-64 h-64 bg-primary-fixed rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob"></div>
+<div class="absolute top-1/3 right-1/4 w-72 h-72 bg-tertiary-fixed rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob animation-delay-2000"></div>
+</div>
+<div class="z-10 mt-auto">
+<div class="flex items-center gap-4 bg-surface p-6 rounded-xl border border-outline-variant shadow-sm max-w-sm">
+<span class="material-symbols-outlined text-secondary text-3xl" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+<div>
+<h3 class="font-label-md text-label-md text-on-surface">Sécurité de niveau clinique</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-1">Données chiffrées de bout en bout et conformité RGPD stricte.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Side: Form Content -->
+<div class="w-full md:w-1/2 flex flex-col min-h-screen overflow-y-auto">
+<!-- Mobile Header (Visible only on mobile) -->
+<header class="md:hidden flex justify-between items-center px-margin-mobile h-12 w-full bg-surface z-50">
+<div class="font-headline-md text-headline-md font-bold text-primary">IMSOP</div>
+</header>
+<main class="flex-grow flex flex-col items-center justify-center p-margin-mobile md:p-12">
+<div class="w-full max-w-md">
+<!-- Stepper Progress -->
+<div class="mb-stack-lg">
+<div class="flex justify-between items-center relative">
+<div class="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-surface-variant z-0 rounded-full"></div>
+<div class="absolute left-0 top-1/2 -translate-y-1/2 w-1/2 h-1 bg-primary z-0 rounded-full transition-all duration-300"></div>
+<!-- Step 1 -->
+<div class="relative z-10 flex flex-col items-center">
+<div class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center font-label-md text-label-md font-bold shadow-sm ring-4 ring-background">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">check</span>
+</div>
+<span class="absolute top-10 font-label-sm text-label-sm text-primary whitespace-nowrap">Infos</span>
+</div>
+<!-- Step 2 (Active) -->
+<div class="relative z-10 flex flex-col items-center">
+<div class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center font-label-md text-label-md font-bold shadow-sm ring-4 ring-background">
+                                2
+                            </div>
+<span class="absolute top-10 font-label-sm text-label-sm text-primary font-semibold whitespace-nowrap">Sécurité</span>
+</div>
+<!-- Step 3 -->
+<div class="relative z-10 flex flex-col items-center">
+<div class="w-8 h-8 rounded-full bg-surface-variant text-on-surface-variant flex items-center justify-center font-label-md text-label-md font-bold shadow-sm ring-4 ring-background">
+                                3
+                            </div>
+<span class="absolute top-10 font-label-sm text-label-sm text-on-surface-variant whitespace-nowrap">Validation</span>
+</div>
+</div>
+</div>
+<!-- Form Header -->
+<div class="mt-8 mb-stack-md text-center md:text-left">
+<h2 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface mb-2">Sécuriser votre compte</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Créez un mot de passe robuste pour protéger vos informations médicales.</p>
+</div>
+<!-- Form Fields -->
+<form class="space-y-stack-md w-full mt-8">
+<!-- Password Field -->
+<div class="flex flex-col gap-2">
+<label class="font-label-md text-label-md text-on-surface" for="password">Mot de passe</label>
+<div class="relative">
+<input class="w-full h-12 px-4 bg-surface border border-outline-variant rounded-lg font-body-md text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-colors" id="password" name="password" placeholder="••••••••" type="password"/>
+<button class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary transition-colors" type="button">
+<span class="material-symbols-outlined">visibility_off</span>
+</button>
+</div>
+<!-- Password Requirements -->
+<ul class="mt-2 space-y-1">
+<li class="flex items-center gap-2 font-label-sm text-label-sm text-secondary">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">check_circle</span> 8 caractères minimum
+                            </li>
+<li class="flex items-center gap-2 font-label-sm text-label-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-sm">radio_button_unchecked</span> 1 majuscule
+                            </li>
+<li class="flex items-center gap-2 font-label-sm text-label-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-sm">radio_button_unchecked</span> 1 chiffre et 1 caractère spécial
+                            </li>
+</ul>
+</div>
+<!-- Confirm Password Field -->
+<div class="flex flex-col gap-2 pt-4">
+<label class="font-label-md text-label-md text-on-surface" for="confirm_password">Confirmer le mot de passe</label>
+<div class="relative">
+<input class="w-full h-12 px-4 bg-surface border border-outline-variant rounded-lg font-body-md text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-colors" id="confirm_password" name="confirm_password" placeholder="••••••••" type="password"/>
+</div>
+</div>
+<!-- 2FA Optional Setup -->
+<div class="mt-stack-lg p-4 bg-surface-container-low border border-outline-variant rounded-xl flex items-start gap-4">
+<div class="mt-1">
+<span class="material-symbols-outlined text-primary text-2xl" style="font-variation-settings: 'FILL' 1;">shield_person</span>
+</div>
+<div class="flex-grow">
+<h4 class="font-label-md text-label-md text-on-surface">Authentification à deux facteurs (2FA)</h4>
+<p class="font-body-sm text-label-sm text-on-surface-variant mt-1 mb-3">Recommandé pour une sécurité maximale de vos dossiers cliniques.</p>
+<label class="flex items-center gap-3 cursor-pointer">
+<input class="w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary bg-surface" type="checkbox"/>
+<span class="font-body-md text-body-md text-on-surface">Configurer plus tard</span>
+</label>
+</div>
+</div>
+<!-- Action Buttons -->
+<div class="flex gap-4 pt-stack-lg">
+<button class="w-1/3 h-12 flex items-center justify-center bg-surface border border-outline-variant rounded-full font-label-md text-label-md text-on-surface hover:bg-surface-variant transition-colors" type="button">
+                            Retour
+                        </button>
+<button class="w-2/3 h-12 flex items-center justify-center bg-primary text-on-primary rounded-full font-label-md text-label-md shadow-sm hover:bg-primary-container hover:text-on-primary-container transition-colors" type="submit">
+                            Suivant <span class="material-symbols-outlined ml-2 text-sm">arrow_forward</span>
+</button>
+</div>
+<!-- Legal / RGPD -->
+<p class="text-center font-label-sm text-label-sm text-on-surface-variant mt-stack-md">
+                        En continuant, vous acceptez nos <a class="text-primary underline" href="#">Conditions d'utilisation</a> et notre <a class="text-primary underline" href="#">Politique de confidentialité</a> concernant le traitement des données de santé.
+                    </p>
+</form>
+</div>
+</main>
+</div>
+<style>
+        @keyframes blob {
+            0% { transform: translate(0px, 0px) scale(1); }
+            33% { transform: translate(30px, -50px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+            100% { transform: translate(0px, 0px) scale(1); }
+        }
+        .animate-blob {
+            animation: blob 7s infinite;
+        }
+        .animation-delay-2000 {
+            animation-delay: 2s;
+        }
+    </style>
+</body></html>

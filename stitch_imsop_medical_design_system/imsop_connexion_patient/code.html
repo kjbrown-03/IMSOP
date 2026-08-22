@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+
+<html lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>IMSOP - Connexion Patient</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-variant": "#e1e2ea",
+                      "status-error": "#DC3545",
+                      "on-primary-fixed": "#001a40",
+                      "background": "#f9f9ff",
+                      "tertiary-fixed": "#ffdbcc",
+                      "primary-fixed": "#d7e2ff",
+                      "status-warning": "#FFC107",
+                      "on-error": "#ffffff",
+                      "on-tertiary-container": "#ffc2a7",
+                      "secondary-fixed-dim": "#66df75",
+                      "surface-container": "#ededf6",
+                      "on-tertiary": "#ffffff",
+                      "on-surface": "#191c21",
+                      "primary": "#003f87",
+                      "background-alt": "#F8F9FA",
+                      "outline-variant": "#c2c6d4",
+                      "primary-fixed-dim": "#acc7ff",
+                      "on-secondary-fixed-variant": "#00531a",
+                      "tertiary-fixed-dim": "#ffb694",
+                      "surface-container-lowest": "#ffffff",
+                      "secondary": "#006e25",
+                      "surface-container-highest": "#e1e2ea",
+                      "surface": "#f9f9ff",
+                      "text-main": "#1A1C1E",
+                      "on-background": "#191c21",
+                      "on-surface-variant": "#424752",
+                      "on-tertiary-fixed-variant": "#7b2f00",
+                      "tertiary-container": "#983c00",
+                      "secondary-container": "#80f98b",
+                      "error-container": "#ffdad6",
+                      "on-secondary-fixed": "#002106",
+                      "on-primary-container": "#bbd0ff",
+                      "secondary-fixed": "#83fc8e",
+                      "surface-tint": "#115cb9",
+                      "on-secondary": "#ffffff",
+                      "primary-container": "#0056b3",
+                      "on-primary-fixed-variant": "#004491",
+                      "surface-dim": "#d9d9e2",
+                      "inverse-on-surface": "#f0f0f9",
+                      "on-error-container": "#93000a",
+                      "inverse-primary": "#acc7ff",
+                      "on-secondary-container": "#007327",
+                      "error": "#ba1a1a",
+                      "inverse-surface": "#2e3037",
+                      "outline": "#727784",
+                      "surface-container-high": "#e7e8f0",
+                      "tertiary": "#722b00",
+                      "on-tertiary-fixed": "#351000",
+                      "surface-bright": "#f9f9ff",
+                      "surface-container-low": "#f2f3fc",
+                      "on-primary": "#ffffff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "margin-mobile": "1rem",
+                      "stack-lg": "2rem",
+                      "margin-desktop": "2rem",
+                      "stack-md": "1rem",
+                      "gutter": "1rem",
+                      "stack-sm": "0.5rem"
+              },
+              "fontFamily": {
+                      "headline-md": [
+                              "Inter"
+                      ],
+                      "headline-lg-mobile": [
+                              "Inter"
+                      ],
+                      "label-md": [
+                              "Inter"
+                      ],
+                      "headline-lg": [
+                              "Inter"
+                      ],
+                      "label-sm": [
+                              "Inter"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "headline-md": [
+                              "20px",
+                              {
+                                      "lineHeight": "1.4",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-lg-mobile": [
+                              "24px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "label-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "letterSpacing": "0.02em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "label-sm": [
+                              "12px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "1.5",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "1.6",
+                                      "fontWeight": "400"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col md:flex-row font-body-md">
+<!-- Decorative Left Column (Hidden on Mobile) -->
+<div class="hidden md:flex md:w-1/2 bg-surface-container flex-col justify-center items-center p-8 relative overflow-hidden">
+<!-- Abstract Medical Background -->
+<div class="absolute inset-0 opacity-20 pointer-events-none" data-alt="A clean, abstract medical background featuring subtle geometric patterns and soft, glowing blue shapes reminiscent of DNA strands or digital connectivity, set against a pristine white and light blue gradient. The mood is highly professional, secure, and technologically advanced, conveying trust and modern healthcare. The lighting is soft and diffused, creating a serene, light-mode aesthetic perfect for a corporate medical interface." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDbRl7GesOHu-Lfi-WNnIBihqiuLfuM8OFWaX3UbM6sSvNittQVW9heDa6bPeqR5pefeLbGtlQV82Wprhj_0bXSDFbI8BOxwXBOOlZ0AvFQNRwDNluEcWFHCaD65EXkQ4NIFC-cQrY-JbvO8qgdPoZ3T9d-84fS5yRxriIzvhCGt4ysLjRsP0SzNm3hjuDMk5YMAhRdx3Oj7XeHBeUWS--pOdMPUHjSBH9sZiy2Hs2BaUwHt0EIsXKq')"></div>
+<div class="relative z-10 max-w-md text-center">
+<h2 class="font-headline-lg text-headline-lg text-primary mb-6">Votre Santé,<br/>Notre Priorité.</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant mb-8">Accédez à votre dossier médical sécurisé et connectez-vous avec des spécialistes européens depuis l'Afrique.</p>
+<!-- Trust Badges -->
+<div class="flex justify-center gap-6">
+<div class="flex flex-col items-center">
+<span class="material-symbols-outlined text-4xl text-primary mb-2" data-weight="fill" style="font-variation-settings: 'FILL' 1;">encrypted</span>
+<span class="font-label-md text-label-md text-on-surface-variant">Données Sécurisées</span>
+</div>
+<div class="flex flex-col items-center">
+<span class="material-symbols-outlined text-4xl text-primary mb-2" data-weight="fill" style="font-variation-settings: 'FILL' 1;">medical_services</span>
+<span class="font-label-md text-label-md text-on-surface-variant">Experts Médicaux</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Login Container -->
+<div class="flex-1 flex flex-col justify-center px-margin-mobile py-8 md:px-12 lg:px-24 xl:px-32 relative z-10 bg-surface">
+<div class="max-w-md w-full mx-auto">
+<!-- Header -->
+<div class="text-center mb-10">
+<h1 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-primary mb-2 tracking-tight">IMSOP</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Espace Patient Sécurisé</p>
+</div>
+<!-- Form -->
+<form class="space-y-6">
+<!-- Email Field -->
+<div>
+<label class="block font-label-md text-label-md text-on-surface mb-2" for="email">Adresse E-mail</label>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-outline">mail</span>
+</div>
+<input class="block w-full pl-10 pr-3 py-3 border border-outline-variant rounded-lg bg-surface-container-lowest text-on-surface focus:ring-2 focus:ring-primary focus:border-primary transition-colors font-body-md h-12" id="email" name="email" placeholder="votre.email@exemple.com" required="" type="email"/>
+</div>
+</div>
+<!-- Password Field -->
+<div>
+<label class="block font-label-md text-label-md text-on-surface mb-2" for="password">Mot de passe</label>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-outline">lock</span>
+</div>
+<input class="block w-full pl-10 pr-10 py-3 border border-outline-variant rounded-lg bg-surface-container-lowest text-on-surface focus:ring-2 focus:ring-primary focus:border-primary transition-colors font-body-md h-12" id="password" name="password" placeholder="••••••••" required="" type="password"/>
+<div class="absolute inset-y-0 right-0 pr-3 flex items-center">
+<button aria-label="Afficher le mot de passe" class="text-outline hover:text-on-surface transition-colors focus:outline-none" type="button">
+<span class="material-symbols-outlined">visibility</span>
+</button>
+</div>
+</div>
+<div class="mt-2 text-right">
+<a class="font-label-sm text-label-sm text-primary hover:underline transition-all" href="#">Mot de passe oublié ?</a>
+</div>
+</div>
+<!-- Login Button -->
+<button class="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-lg shadow-sm font-label-md text-label-md text-on-primary bg-primary-container hover:bg-primary transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary h-12" type="submit">
+                    Se connecter
+                </button>
+</form>
+<!-- Divider -->
+<div class="mt-8 mb-6 relative">
+<div aria-hidden="true" class="absolute inset-0 flex items-center">
+<div class="w-full border-t border-outline-variant"></div>
+</div>
+<div class="relative flex justify-center text-sm">
+<span class="px-2 bg-surface text-on-surface-variant font-label-sm text-label-sm">Nouveau patient ?</span>
+</div>
+</div>
+<!-- Create Account Button -->
+<a class="w-full flex justify-center items-center py-3 px-4 border border-primary rounded-lg font-label-md text-label-md text-primary bg-surface hover:bg-surface-container transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary h-12" href="#">
+                Créer un compte
+            </a>
+<!-- Security Assurance -->
+<div class="mt-10 p-4 bg-surface-container-low border border-outline-variant rounded-lg flex items-start gap-3">
+<span class="material-symbols-outlined text-secondary shrink-0" data-weight="fill" style="font-variation-settings: 'FILL' 1;">shield</span>
+<p class="font-label-sm text-label-sm text-on-surface-variant leading-relaxed">
+                    Vos données de santé sont chiffrées de bout en bout et hébergées sur des serveurs certifiés HDS (Hébergeur de Données de Santé). IMSOP garantit la stricte confidentialité de vos informations médicales.
+                </p>
+</div>
+</div>
+</div>
+</body></html>

@@ -1,0 +1,731 @@
+{
+  "nav": {
+    "howItWorks": "Comment ça marche",
+    "specialties": "Spécialités",
+    "forDoctors": "Pour les médecins",
+    "login": "Se connecter",
+    "or": "OU"
+  },
+  "common": {
+    "back": "Retour",
+    "loading": "Chargement...",
+    "email": "Adresse E-mail",
+    "password": "Mot de passe",
+    "confirmPassword": "Confirmer le mot de passe",
+    "forgotPassword": "Mot de passe oublié ?",
+    "newAccount": "Créer un compte",
+    "sending": "Envoi...",
+    "close": "Fermer",
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "saving": "Enregistrement...",
+    "edit": "Modifier",
+    "refresh": "Actualiser",
+    "specialites": {
+      "oncologie": "Oncologie",
+      "cardiologie": "Cardiologie",
+      "neurologie": "Neurologie",
+      "orthopedie": "Orthopédie",
+      "radiologie": "Radiologie",
+      "anatomopathologie": "Anatomopathologie",
+      "pediatrie": "Pédiatrie",
+      "gynecologie": "Gynécologie-obstétrique",
+      "nephrologie": "Néphrologie",
+      "gastroenterologie": "Gastro-entérologie",
+      "pneumologie": "Pneumologie"
+    }
+  },
+  "public": {
+    "home": {
+      "heroTitle": "EXPERTISE MÉDICALE MONDIALE, DÉCISIONS CONFIANTES",
+      "heroSub": "Connectez-vous avec des spécialistes de classe mondiale pour des décisions médicales éclairées via notre plateforme sécurisée.",
+      "heroPrimaryCta": "DEMANDER UN AVIS",
+      "heroSecondaryCta": "OU TROUVEZ VOTRE SPÉCIALISTE",
+      "badgeIso": "CERTIFIÉ ISO",
+      "badgeGdpr": "CONFORME RGPD",
+      "badgeDoctors": "+1000 MÉDECINS EU",
+      "badgeTrust": "CONFIANCE MONDIALE",
+      "badgeSecure": "SÉCURISÉ & CHIFFRÉ",
+      "processEyebrow": "Processus",
+      "processTitle": "Un parcours patient simplifié et sécurisé",
+      "step1Title": "Création du Dossier",
+      "step1Text": "Soumettez votre demande et téléversez vos documents médicaux (analyses, imageries) via notre plateforme hautement sécurisée.",
+      "step2Title": "Analyse par l'Expert",
+      "step2Text": "Un spécialiste européen qualifié est assigné à votre cas. Il étudie minutieusement votre dossier de manière confidentielle.",
+      "step3Title": "Rapport Médical Détaillé",
+      "step3Text": "Recevez un rapport complet avec un diagnostic confirmé et des recommandations de traitement claires en moins de 72h.",
+      "specialtiesEyebrow": "Domaines d'expertise",
+      "specialtiesTitle": "Spécialités prises en charge",
+      "specialtiesSub": "Pour cette phase pilote, IMSOP met en avant les spécialités où l'expertise internationale apporte la plus grande valeur ajoutée.",
+      "specOncology": "Oncologie",
+      "specCardiology": "Cardiologie",
+      "specNeurology": "Neurologie",
+      "specOrthopedics": "Orthopédie",
+      "specRadiology": "Radiologie",
+      "specPathology": "Anatomopathologie"
+    },
+    "forDoctors": {
+      "eyebrow": "Pour les professionnels de santé",
+      "title": "Une expertise complémentaire, jamais un remplacement",
+      "intro": "IMSOP repose sur un principe simple : le spécialiste international n'intervient jamais à la place du médecin local — il l'accompagne. Le médecin traitant reste l'acteur central du parcours de son patient.",
+      "doctorsTitle": "Médecins locaux",
+      "doctorsText": "Inscrivez vos patients sur la plateforme avec leur autorisation, transmettez les éléments médicaux utiles, et suivez l'avancement du dossier jusqu'à la réception du rapport.",
+      "doctorsItem1": "Créer un compte professionnel vérifié",
+      "doctorsItem2": "Enregistrer un patient avec son consentement",
+      "doctorsItem3": "Échanger directement avec le spécialiste assigné",
+      "specialistsTitle": "Spécialistes internationaux",
+      "specialistsText": "Rejoignez le réseau IMSOP en soumettant vos diplômes et références professionnelles pour vérification par notre comité médical avant activation de votre compte.",
+      "specialistsItem1": "Vérification des diplômes et de l'autorisation d'exercer",
+      "specialistsItem2": "Gestion de vos disponibilités et de vos tarifs",
+      "specialistsItem3": "Rémunération selon les conditions contractuelles convenues",
+      "ctaTitle": "Vous êtes médecin ou établissement de santé ?",
+      "ctaText": "Rejoignez le réseau IMSOP pour offrir à vos patients un accès simple à une expertise médicale internationale.",
+      "ctaButton": "Contacter l'équipe IMSOP"
+    }
+  },
+  "auth": {
+    "roleSelection": {
+      "subtitle": "Sélectionnez votre profil pour accéder à votre espace sécurisé.",
+      "patientTitle": "Patient",
+      "patientDesc": "Accédez à votre dossier médical et à votre deuxième avis.",
+      "specialistTitle": "Spécialiste",
+      "specialistDesc": "Consultez les dossiers qui vous sont affectés.",
+      "coordinatorTitle": "Coordinateur médical",
+      "coordinatorDesc": "Gérez les dossiers, affectations et urgences.",
+      "newPatient": "Nouveau patient ?"
+    },
+    "loginPatient": {
+      "heading": "Votre Santé,<br/>Notre Priorité.",
+      "tagline": "Accédez à votre dossier médical sécurisé et connectez-vous avec des spécialistes européens depuis l'Afrique.",
+      "badgeSecure": "Données Sécurisées",
+      "badgeExperts": "Experts Médicaux",
+      "subtitle": "Espace Patient Sécurisé",
+      "submit": "Se connecter",
+      "submitting": "Connexion...",
+      "newPatient": "Nouveau patient ?",
+      "createAccount": "Créer un compte",
+      "securityNote": "Vos données de santé sont chiffrées de bout en bout et hébergées sur des serveurs certifiés HDS (Hébergeur de Données de Santé). IMSOP garantit la stricte confidentialité de vos informations médicales."
+    },
+    "loginCoordinator": {
+      "portalLabel": "Espace Administration",
+      "title": "Connexion Coordinateur",
+      "subtitle": "Accès sécurisé à la gestion des dossiers médicaux.",
+      "forgot": "Oublié ?",
+      "twoFaTitle": "Authentification à deux facteurs requise",
+      "twoFaText": "Un code sera envoyé sur votre appareil mobile autorisé après validation.",
+      "submit": "S'authentifier",
+      "submitting": "Authentification...",
+      "footer": "© 2026 IMSOP - International Medical Second Opinion.<br/>Accès strictement réservé au personnel autorisé."
+    },
+    "loginSpecialist": {
+      "title": "Portail IMSOP",
+      "badge": "Accès Praticien",
+      "intro": "Veuillez vous authentifier pour accéder aux dossiers médicaux sécurisés.",
+      "remember": "Se souvenir de moi",
+      "forgot": "Mot de passe oublié ?",
+      "submit": "Connexion Sécurisée",
+      "submitting": "Connexion...",
+      "help": "Problème d'accès ?",
+      "contactSupport": "Contacter le support technique"
+    },
+    "twoFactor": {
+      "title": "Vérification en deux étapes",
+      "subtitle": "Saisissez le code à 6 chiffres envoyé à votre adresse e-mail professionnelle.",
+      "codeLabel": "Code de vérification",
+      "submit": "Valider",
+      "submitting": "Vérification...",
+      "expired": "Session de connexion expirée. Veuillez vous reconnecter."
+    },
+    "verifyEmail": {
+      "title": "Vérifiez votre e-mail",
+      "subtitle": "Saisissez le code à 6 chiffres envoyé à",
+      "codeLabel": "Code de vérification",
+      "submit": "Valider",
+      "submitting": "Vérification...",
+      "resend": "Renvoyer le code",
+      "resent": "Un nouveau code a été envoyé.",
+      "expired": "Session expirée. Veuillez vous reconnecter."
+    },
+    "forgotPassword": {
+      "title": "Mot de passe oublié",
+      "subtitle": "Indiquez votre adresse e-mail, nous vous enverrons un lien pour créer un nouveau mot de passe.",
+      "sent": "Si cet e-mail est associé à un compte, un lien de réinitialisation vient de vous être envoyé. Vérifiez votre boîte de réception.",
+      "submit": "Envoyer le lien de réinitialisation",
+      "backToLogin": "Retour à la connexion"
+    },
+    "resetPassword": {
+      "invalidLink": "Ce lien de réinitialisation est invalide. Merci de refaire une demande.",
+      "requestNewLink": "Demander un nouveau lien",
+      "title": "Nouveau mot de passe",
+      "subtitle": "Choisissez un nouveau mot de passe pour votre compte.",
+      "success": "Votre mot de passe a été réinitialisé avec succès.",
+      "goToLogin": "Se connecter",
+      "newPassword": "Nouveau mot de passe",
+      "mismatch": "Les mots de passe ne correspondent pas.",
+      "submit": "Réinitialiser le mot de passe",
+      "submitting": "Réinitialisation..."
+    },
+    "animatedLogin": {
+      "orEmail": "Ou utilisez votre email",
+      "forgotPassword": "Mot de passe oublié ?",
+      "submit": "Se connecter",
+      "submitting": "Connexion en cours...",
+      "newPatient": "Nouveau patient ?",
+      "createAccount": "Créer un compte",
+      "roles": {
+        "PATIENT": {
+          "title": "Connexion Patient",
+          "subtitle": "Accédez à votre espace santé et vos dossiers médicaux."
+        },
+        "SPECIALISTE": {
+          "title": "Espace Expert",
+          "subtitle": "Consultez et répondez aux demandes de second avis."
+        },
+        "COORDINATEUR": {
+          "title": "Administration",
+          "subtitle": "Gérez les dossiers et affectations IMSOP."
+        },
+        "ADMIN": {
+          "title": "Espace Administrateur",
+          "subtitle": "Gestion de la plateforme, des comptes et suivi d'activité."
+        }
+      }
+    },
+    "registrationStepper": {
+      "infos": "Infos",
+      "security": "Sécurité",
+      "validation": "Validation"
+    },
+    "registerInfos": {
+      "title": "Informations Personnelles",
+      "subtitle": "Veuillez renseigner vos informations pour créer votre dossier médical sécurisé.",
+      "fullName": "Nom Complet",
+      "fullNamePlaceholder": "Ex: Jean Dupont",
+      "dob": "Date de Naissance",
+      "gender": "Genre",
+      "genderHomme": "homme",
+      "genderFemme": "femme",
+      "genderAutre": "autre",
+      "phone": "Numéro de Téléphone",
+      "country": "Pays de Résidence",
+      "countrySelect": "Sélectionnez un pays",
+      "nationality": "Nationalité",
+      "nationalitySelect": "Sélectionnez une nationalité",
+      "city": "Ville de Résidence",
+      "cityPlaceholder": "Ex: Douala",
+      "preferredLanguage": "Langue Préférée",
+      "emergencyTitle": "Personne à contacter en cas de besoin",
+      "emergencySubtitle": "Facultatif, mais recommandé pour votre sécurité.",
+      "emergencyName": "Nom du contact",
+      "emergencyPhone": "Téléphone du contact",
+      "next": "Suivant",
+      "countries": {
+        "sn": "Sénégal",
+        "ci": "Côte d'Ivoire",
+        "cm": "Cameroun",
+        "fr": "France",
+        "be": "Belgique",
+        "ch": "Suisse"
+      },
+      "languages": {
+        "fr": "Français",
+        "en": "English"
+      }
+    },
+    "registerSecurity": {
+      "sideTagline": "Rejoignez notre réseau de santé international. Vos données médicales sécurisées, accessibles aux meilleurs spécialistes.",
+      "sideCardTitle": "Sécurité de niveau clinique",
+      "sideCardText": "Données chiffrées de bout en bout et conformité RGPD stricte.",
+      "title": "Sécuriser votre compte",
+      "subtitle": "Créez un mot de passe robuste pour protéger vos informations médicales.",
+      "password": "Mot de passe",
+      "checkLength": "8 caractères minimum",
+      "checkUpper": "1 majuscule",
+      "checkDigit": "1 chiffre et 1 caractère spécial",
+      "confirmPassword": "Confirmer le mot de passe",
+      "mismatch": "Les mots de passe ne correspondent pas.",
+      "twoFaTitle": "Authentification à deux facteurs (2FA)",
+      "twoFaText": "Recommandé pour une sécurité maximale de vos dossiers cliniques.",
+      "twoFaLater": "Configurer plus tard",
+      "back": "Retour",
+      "next": "Suivant",
+      "legal": "En continuant, vous acceptez nos <cgu>Conditions d'utilisation</cgu> et notre <privacy>Politique de confidentialité</privacy> concernant le traitement des données de santé."
+    },
+    "registerValidation": {
+      "title": "Validation et Consentement",
+      "subtitle": "Dernière étape pour finaliser la création de votre dossier médical sécurisé.",
+      "completeTitle": "Informations complètes",
+      "completeText": "Vos données ont été pré-validées avec succès.",
+      "summaryTitle": "Résumé de l'inscription",
+      "summaryIdentity": "Identité renseignée",
+      "summaryContacts": "Contacts renseignés",
+      "summarySecurity": "Sécurité du compte configurée",
+      "consentTitle": "Consentement au traitement des données (HDS / RGPD)",
+      "consentText": "J'accepte que mes données de santé personnelles soient traitées et stockées de manière sécurisée par IMSOP pour les besoins de ma prise en charge médicale, conformément aux réglementations RGPD et HDS en vigueur.",
+      "submit": "Finaliser l'inscription",
+      "submitting": "Création du compte..."
+    }
+  },
+  "errors": {
+    "loadCasesFailed": "Impossible de charger vos dossiers",
+    "loadMessagesFailed": "Impossible de charger vos messages",
+    "conversationNotFound": "Conversation introuvable",
+    "sendMessageFailed": "L'envoi du message a échoué",
+    "caseNotFound": "Dossier introuvable",
+    "reportUnavailable": "Le rapport n'est pas encore disponible",
+    "pdfUnavailable": "Le PDF n'est pas encore disponible",
+    "createCaseFailed": "La création du dossier a échoué. Veuillez réessayer.",
+    "paymentFailed": "Le paiement n'a pas pu être traité.",
+    "caseNotFoundRestart": "Dossier introuvable. Veuillez recommencer votre demande."
+  },
+  "patient": {
+    "dossierStatus": {
+      "BROUILLON": "Brouillon",
+      "SOUMIS": "Soumis",
+      "EN_ATTENTE_PAIEMENT": "En attente de paiement",
+      "EN_VERIFICATION": "En vérification",
+      "COMPLET": "Dossier complet",
+      "EN_ATTENTE_AFFECTATION": "En attente d'affectation",
+      "AFFECTE": "Spécialiste affecté",
+      "EN_ANALYSE": "En analyse",
+      "RAPPORT_EN_PREPARATION": "Rapport en préparation",
+      "RAPPORT_SOUMIS": "Rapport soumis",
+      "RAPPORT_VALIDE": "Rapport validé",
+      "RAPPORT_TRANSMIS": "Rapport prêt",
+      "CLOTURE": "Clôturé",
+      "ANNULE": "Annulé",
+      "REFUSE": "Refusé"
+    },
+    "dashboard": {
+      "newRequest": "Nouvelle Demande",
+      "verifyEmailTitle": "Vérifiez votre e-mail",
+      "verifyEmailText": "Confirmez votre adresse e-mail pour sécuriser votre compte et recevoir vos rapports médicaux.",
+      "verifyEmailCta": "Vérifier maintenant",
+      "actionRequired": "Action Requise",
+      "paymentPending": "Votre dossier {{specialite}} (#{{reference}}) est en attente de paiement.",
+      "finalizePayment": "Finaliser le paiement",
+      "activeCases": "Vos Dossiers Actifs",
+      "loading": "Chargement de vos dossiers...",
+      "empty": "Vous n'avez pas encore de dossier de deuxième avis.",
+      "createFirst": "Créer ma première demande",
+      "reference": "Réf"
+    },
+    "questionnaire": {
+      "closeAria": "Fermer le questionnaire",
+      "title": "Nouveau Dossier Médical",
+      "stepIdentity": "Identité",
+      "stepMedical": "Détails Médicaux",
+      "stepDocuments": "Documents",
+      "stepMobile": "Étape 2 : Détails Médicaux",
+      "formTitle": "Motif de consultation & Symptômes",
+      "specialiteLabel": "Spécialité recherchée",
+      "specialiteSelect": "Sélectionnez une spécialité...",
+      "motifLabel": "Motif principal de la demande",
+      "motifSelect": "Sélectionnez une catégorie...",
+      "motifSecondAvis": "Demande de second avis médical",
+      "motifDiagDifficile": "Diagnostic complexe / incertain",
+      "motifSuivi": "Suivi post-opératoire",
+      "motifAutre": "Autre motif",
+      "symptomesLabel": "Description des symptômes",
+      "symptomesPlaceholder": "Décrivez vos symptômes actuels, leur date d'apparition et leur évolution...",
+      "symptomesHint": "Soyez le plus précis possible pour aider le spécialiste.",
+      "antecedentsQuestion": "Avez-vous des antécédents médicaux pertinents ?",
+      "antecedentsOui": "oui",
+      "antecedentsNon": "non",
+      "traitementLabel": "Traitements en cours",
+      "optional": "(Optionnel)",
+      "traitementPlaceholder": "Ex: Paracétamol 1g, 3 fois par jour...",
+      "back": "Retour",
+      "submitting": "Envoi en cours...",
+      "next": "Étape suivante"
+    },
+    "documents": {
+      "stepMobile": "Étape 3 : Documents",
+      "title": "Documents médicaux",
+      "subtitle": "Ajoutez vos analyses, imageries ou comptes rendus pour aider le spécialiste dans son analyse. Vous pourrez aussi en ajouter plus tard depuis votre dossier.",
+      "categoryLabel": "Type de document",
+      "categoryAnalyse": "Analyse biologique",
+      "categoryImagerie": "Imagerie (radio, scanner, IRM...)",
+      "categoryOrdonnance": "Ordonnance",
+      "categoryCompteRendu": "Compte rendu médical",
+      "categoryAutre": "Autre",
+      "chooseFile": "Choisir un fichier",
+      "noFileChosen": "Aucun fichier sélectionné",
+      "acceptedFormats": "PDF, JPEG, PNG ou DICOM — 25 Mo maximum",
+      "uploadButton": "Ajouter le document",
+      "uploading": "Envoi en cours...",
+      "uploadedListTitle": "Documents ajoutés",
+      "empty": "Aucun document ajouté pour le moment.",
+      "skipNote": "Vous pouvez continuer sans document pour l'instant, mais le spécialiste ne pourra analyser votre dossier qu'une fois vos examens reçus.",
+      "back": "Retour",
+      "finish": "Continuer vers le paiement",
+      "submitting": "Envoi...",
+      "selectFileFirst": "Sélectionnez un fichier avant d'ajouter le document."
+    },
+    "payment": {
+      "title": "Paiement sécurisé",
+      "subtitle": "Dernière étape avant la transmission de votre dossier à notre équipe de coordination médicale.",
+      "methodTitle": "Mode de paiement",
+      "methodCard": "Carte Bancaire",
+      "methodMobileMoney": "Mobile Money",
+      "methodInsurance": "Prise en charge Assurance",
+      "cardNumber": "Numéro de carte",
+      "cardExpiry": "MM/AA",
+      "cardCvc": "CVC",
+      "mobileMoneyPlaceholder": "Numéro Mobile Money (+237 6XX XXX XXX)",
+      "insuranceNote": "Votre demande de prise en charge sera transmise à votre assureur. Vous recevrez la confirmation dans votre espace messages.",
+      "securityNote": "Paiement chiffré et sécurisé. Votre dossier ne sera transmis au coordinateur médical qu'après confirmation réelle du paiement.",
+      "summaryTitle": "Résumé du dossier",
+      "standardOpinion": "Deuxième avis standard",
+      "caseFee": "Frais de dossier",
+      "totalDue": "Total à payer",
+      "processing": "Traitement du paiement...",
+      "payAndSend": "Payer et envoyer le dossier"
+    },
+    "matching": {
+      "confirmedTitle": "Paiement confirmé, dossier transmis à la coordination médicale",
+      "confirmedText": "Notre équipe vérifie votre dossier et vous attribuera un spécialiste adapté à votre pathologie sous peu. Vous serez notifié à chaque étape."
+    },
+    "messages": {
+      "title": "Messages Sécurisés",
+      "subtitle": "Communications confidentielles avec votre équipe médicale.",
+      "loading": "Chargement...",
+      "empty": "Vous n'avez pas encore de conversation. Une messagerie s'ouvre automatiquement dès qu'un spécialiste est affecté à votre dossier.",
+      "noMessageYet": "Aucun message pour le moment — écrivez au spécialiste."
+    },
+    "chat": {
+      "loading": "Chargement de la conversation...",
+      "backToMessages": "Retour aux messages",
+      "empty": "Aucun message pour le moment. Écrivez au spécialiste pour démarrer la conversation.",
+      "closed": "Cette conversation est fermée (14 jours après l'affectation du dossier).",
+      "placeholder": "Écrivez votre message...",
+      "sendAria": "Envoyer"
+    },
+    "report": {
+      "title": "Rapport Médical",
+      "heading": "Rapport de Consultation",
+      "caseLabel": "Dossier",
+      "validatedOn": "Validé le",
+      "validated": "Validé",
+      "preparing": "Préparation...",
+      "download": "Télécharger",
+      "notAvailableTitle": "Rapport pas encore disponible",
+      "caseInfoTitle": "Informations Dossier",
+      "patientLabel": "Patient",
+      "specialiteLabel": "Spécialité",
+      "motifLabel": "Motif de Consultation",
+      "synthesisTitle": "Synthèse & Diagnostic",
+      "noDiagnostic": "Aucun diagnostic renseigné.",
+      "clinicalSynthesis": "Synthèse clinique",
+      "noSynthesis": "Aucune synthèse renseignée.",
+      "therapeuticOptions": "Options Thérapeutiques"
+    },
+    "profile": {
+      "title": "Mon Profil",
+      "defaultName": "Patient IMSOP",
+      "roleBadge": "Patient",
+      "identityTitle": "Vérification d'identité",
+      "identityVerified": "Identité vérifiée",
+      "identityRejected": "Document refusé",
+      "identityPending": "En cours de vérification",
+      "identityNone": "Non vérifiée",
+      "rejectedReason": "Motif du refus",
+      "uploadNew": "Téléverser un nouveau document",
+      "uploadFirst": "Téléverser ma pièce d'identité",
+      "uploadHint": "JPEG, PNG ou PDF — carte d'identité ou passeport.",
+      "infoTitle": "Informations",
+      "email": "Email",
+      "phone": "Téléphone",
+      "dob": "Date de naissance",
+      "documentsTitle": "Documents",
+      "documentsText": "Gérez vos ordonnances, résultats d'analyses et rapports de consultation sécurisés.",
+      "analyses": "Analyses",
+      "prescriptions": "Ordonnances",
+      "viewCases": "Voir les dossiers",
+      "settingsTitle": "Paramètres",
+      "language": "Langue",
+      "languageFr": "Français",
+      "languageEn": "English",
+      "notifications": "Notifications",
+      "notificationsValue": "Email & SMS",
+      "security": "Sécurité",
+      "securityValue": "Mot de passe & 2FA",
+      "logout": "Déconnexion"
+    }
+  },
+  "coordinateur": {
+    "overviewTitle": "Vue d'ensemble",
+    "overviewSubtitle": "Missions nécessitant votre attention aujourd'hui.",
+    "metrics": {
+      "nouveaux": "Nouveaux",
+      "incomplets": "Incomplets",
+      "aAffecter": "À Affecter",
+      "urgents": "Urgents"
+    },
+    "dashboard": {
+      "loadFailed": "Impossible de charger le tableau de bord",
+      "loading": "Chargement...",
+      "pendingTitle": "Dossiers en attente d'affectation",
+      "viewExperts": "Voir les experts",
+      "emptyPending": "Aucun dossier en attente d'affectation.",
+      "urgent": "Urgent",
+      "receivedOn": "Reçu le",
+      "assign": "Affecter expert",
+      "reportsToValidateTitle": "Rapports à valider",
+      "emptyReports": "Aucun rapport en attente de validation.",
+      "validating": "Validation...",
+      "validateAndSend": "Valider et transmettre au patient",
+      "validateFailed": "La validation a échoué"
+    },
+    "exceptions": {
+      "manualAssignTitle": "Dossiers nécessitant une affectation manuelle",
+      "loadFailed": "Impossible de charger les dossiers",
+      "loading": "Chargement...",
+      "emptyManual": "Aucun dossier en attente d'affectation manuelle.",
+      "assignManually": "Affecter manuellement"
+    },
+    "assign": {
+      "loadingCase": "Chargement du dossier...",
+      "title": "Affectation de Dossier",
+      "caseLabel": "Dossier",
+      "patientLabel": "Patient",
+      "specialiteLabel": "Spécialité requise",
+      "motifLabel": "Motif principal",
+      "symptomsLabel": "Symptômes décrits",
+      "priority": "Prioritaire",
+      "urgent": "Urgent",
+      "recommendedTitle": "Spécialistes recommandés",
+      "recommendedSub": "Spécialistes vérifiés et disponibles dans la spécialité demandée.",
+      "noneAvailable": "Aucun spécialiste disponible pour cette spécialité pour le moment.",
+      "assigning": "Affectation...",
+      "assignThis": "Affecter ce spécialiste",
+      "assignFailed": "L'affectation a échoué"
+    },
+    "search": {
+      "title": "Annuaire des Spécialistes",
+      "subtitle": "Parcourez le réseau de spécialistes internationaux partenaires.",
+      "allSpecialties": "Toutes les spécialités",
+      "countryPlaceholder": "Pays (ex: France)",
+      "availableOnly": "Disponibles uniquement",
+      "searching": "Recherche...",
+      "found_one": "{{count}} spécialiste trouvé",
+      "found_other": "{{count}} spécialistes trouvés",
+      "noMatch": "Aucun spécialiste ne correspond à ces critères.",
+      "available": "Disponible",
+      "unavailable": "Indisponible",
+      "verified": "Vérifié",
+      "loadFailed": "Impossible de charger les spécialistes"
+    },
+    "identities": {
+      "title": "Vérification d'identité",
+      "subtitle": "Comparez la pièce d'identité au nom déclaré, puis validez ou refusez avec un motif.",
+      "loading": "Chargement...",
+      "empty": "Aucune vérification d'identité en attente.",
+      "viewDocument": "Voir le document",
+      "validate": "Valider",
+      "reject": "Refuser",
+      "cancel": "Annuler",
+      "confirmReject": "Confirmer le refus",
+      "rejectPlaceholder": "Motif du refus (ex : photo illisible, document expiré, nom ne correspondant pas...)"
+    }
+  },
+  "specialiste": {
+    "dashboard": {
+      "title": "Vos Dossiers Médicaux",
+      "subtitle": "Vue d'ensemble des cas qui vous sont assignés pour analyse et validation.",
+      "availabilityTitle": "Statut de disponibilité",
+      "availabilityText": "Signale au coordinateur que vous êtes disponible pour recevoir de nouveaux dossiers.",
+      "available": "Disponible",
+      "unavailable": "Indisponible",
+      "tabAll": "Tous",
+      "tabNew": "Nouveau",
+      "tabInProgress": "En cours",
+      "tabDone": "Terminé",
+      "loading": "Chargement...",
+      "empty": "Aucun dossier dans cette catégorie.",
+      "cancel": "Annuler",
+      "confirm": "Confirmer",
+      "refuse": "Refuser",
+      "accept": "Accepter",
+      "rejectPlaceholder": "Motif du refus (optionnel)",
+      "badgeNew": "Nouveau",
+      "badgeInProgress": "En cours",
+      "badgeDone": "Terminé"
+    },
+    "report": {
+      "loadingCase": "Chargement du dossier...",
+      "backToDashboard": "Retour au tableau de bord",
+      "age": "Âge",
+      "years": "ans",
+      "caseLabel": "Dossier",
+      "documents_one": "{{count}} document original",
+      "documents_other": "{{count}} documents originaux",
+      "noDocuments": "Aucun document déposé pour ce dossier.",
+      "questionTitle": "Question posée par le médecin",
+      "alreadySubmitted": "Ce rapport a déjà été soumis et n'est plus modifiable.",
+      "synthesisTitle": "Synthèse du cas",
+      "synthesisPlaceholder": "Résumé des antécédents et du motif de consultation...",
+      "diagnosticTitle": "Diagnostic & Analyse",
+      "diagnosticPlaceholder": "Interprétation des résultats, diagnostic différentiel et diagnostic retenu...",
+      "therapeuticTitle": "Options Thérapeutiques",
+      "therapeuticPlaceholder": "Recommandations de traitement, posologie, suivi nécessaire...",
+      "saveDraft": "Enregistrer le brouillon",
+      "saving": "Enregistrement...",
+      "submit": "Finaliser et Envoyer",
+      "submitting": "Envoi...",
+      "saveFailed": "L'enregistrement a échoué",
+      "submitFailed": "L'envoi du rapport a échoué"
+    }
+  },
+  "admin": {
+    "dashboard": {
+      "title": "Tableau de bord administrateur",
+      "subtitle": "Vue d'ensemble de l'activité de la plateforme.",
+      "loadError": "Impossible de charger le tableau de bord",
+      "recentActivity": "Activité récente",
+      "viewJournal": "Voir le journal complet",
+      "metrics": {
+        "nouveaux": "Nouveaux",
+        "incomplets": "Incomplets",
+        "aAffecter": "À affecter",
+        "urgents": "Urgents",
+        "patients": "Patients",
+        "specialistes": "Spécialistes",
+        "coordinateurs": "Coordinateurs",
+        "rapportsValides": "Rapports validés"
+      }
+    },
+    "specialistes": {
+      "title": "Gestion des spécialistes",
+      "subtitle": "Créez, modifiez ou désactivez les comptes des spécialistes internationaux.",
+      "newButton": "Nouveau spécialiste",
+      "createTitle": "Nouveau spécialiste",
+      "specialitePlaceholder": "Spécialité (ex : Cardiologie)",
+      "paysPlaceholder": "Pays",
+      "etablissementPlaceholder": "Établissement",
+      "languesPlaceholder": "Langues parlées (ex : FR, EN)",
+      "bioPlaceholder": "Courte biographie professionnelle",
+      "verified": "Vérifié"
+    },
+    "coordinateurs": {
+      "title": "Gestion des coordinateurs",
+      "subtitle": "Créez, modifiez ou désactivez les comptes des coordinateurs médicaux.",
+      "newButton": "Nouveau coordinateur",
+      "createTitle": "Nouveau coordinateur"
+    },
+    "users": {
+      "loadError": "Impossible de charger la liste",
+      "saveError": "L'enregistrement a échoué",
+      "searchPlaceholder": "Rechercher par nom ou email...",
+      "editTitle": "Modifier le compte",
+      "createdTitle": "Compte créé",
+      "createdHint": "Communiquez ces identifiants de façon sécurisée à la personne concernée. Le mot de passe ne sera plus jamais affiché.",
+      "temporaryPassword": "Mot de passe temporaire",
+      "fullNamePlaceholder": "Nom complet",
+      "phonePlaceholder": "Téléphone",
+      "empty": "Aucun compte trouvé.",
+      "active": "Actif",
+      "inactive": "Désactivé",
+      "deactivate": "Désactiver",
+      "reactivate": "Réactiver",
+      "createdOn": "Créé le"
+    },
+    "journal": {
+      "title": "Journal d'activité",
+      "subtitle": "Traçabilité de toutes les actions sensibles effectuées sur la plateforme.",
+      "empty": "Aucune activité enregistrée.",
+      "systemActor": "Système"
+    }
+  },
+  "shell": {
+    "adminNav": {
+      "dashboard": "Tableau de bord",
+      "specialistes": "Spécialistes",
+      "coordinateurs": "Coordinateurs",
+      "journal": "Journal"
+    },
+    "patientNav": {
+      "dossiers": "Dossiers",
+      "medecins": "Médecins",
+      "messages": "Messages",
+      "profil": "Profil"
+    },
+    "specialistNav": {
+      "dossiers": "Dossiers",
+      "compte": "Compte"
+    },
+    "coordinatorNav": {
+      "dashboard": "Dashboard",
+      "dossiers": "Dossiers",
+      "experts": "Experts",
+      "identites": "Identités",
+      "parametres": "Paramètres"
+    },
+    "userMenu": {
+      "user": "Utilisateur",
+      "notProvided": "Non renseigné",
+      "logout": "Déconnexion"
+    }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "aria": "Notifications",
+    "ariaUnread": "Notifications, {{count}} non lues",
+    "markAllRead": "Tout marquer lu",
+    "loading": "Chargement…",
+    "empty": "Aucune notification pour le moment.",
+    "time": {
+      "now": "à l'instant",
+      "minutes": "il y a {{count}} min",
+      "hours": "il y a {{count}} h",
+      "days": "il y a {{count}} j"
+    },
+    "types": {
+      "MESSAGE_RECU": {
+        "title": "Message de {{sender}}",
+        "titleFallback": "Nouveau message sécurisé",
+        "preview": "Ouvrir la conversation"
+      },
+      "DOSSIER_SOUMIS": {
+        "title": "Dossier soumis",
+        "preview": "Votre dossier {{reference}} est en cours de vérification."
+      },
+      "DOSSIER_AFFECTE": {
+        "title": "Spécialiste affecté",
+        "preview": "Un spécialiste a pris en charge le dossier {{reference}}."
+      },
+      "RAPPORT_DISPONIBLE": {
+        "title": "Rapport disponible",
+        "preview": "Le rapport du dossier {{reference}} est consultable."
+      },
+      "PAIEMENT_CONFIRME": {
+        "title": "Paiement confirmé",
+        "preview": "Le paiement du dossier {{reference}} a été validé."
+      },
+      "NOUVEAU_DOSSIER_SPECIALISTE": {
+        "title": "Nouveau dossier assigné",
+        "preview": "Le dossier {{reference}} vous a été assigné."
+      },
+      "VERIFICATION_EMAIL": {
+        "title": "Vérifiez votre e-mail",
+        "preview": "Un code de vérification vous a été envoyé."
+      },
+      "MOT_DE_PASSE_RESET": {
+        "title": "Réinitialisation du mot de passe",
+        "preview": "Un lien de réinitialisation vous a été envoyé."
+      },
+      "IDENTITE_VALIDEE": {
+        "title": "Identité vérifiée",
+        "preview": "Votre pièce d’identité a été validée."
+      },
+      "IDENTITE_REFUSEE": {
+        "title": "Identité refusée",
+        "preview": "Merci de téléverser un nouveau document."
+      },
+      "fallback": {
+        "title": "Notification",
+        "preview": "Dossier {{reference}}"
+      }
+    }
+  }
+}

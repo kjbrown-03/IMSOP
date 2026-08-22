@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+
+<html class="light" lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Profil - IMSOP</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-surface-variant": "#424752",
+                      "on-background": "#191c21",
+                      "on-secondary-container": "#007327",
+                      "inverse-on-surface": "#f0f0f9",
+                      "on-primary-container": "#bbd0ff",
+                      "surface-tint": "#115cb9",
+                      "surface-dim": "#d9d9e2",
+                      "surface-container-low": "#f2f3fc",
+                      "error": "#ba1a1a",
+                      "surface-container-lowest": "#ffffff",
+                      "secondary-fixed": "#83fc8e",
+                      "primary-fixed": "#d7e2ff",
+                      "inverse-surface": "#2e3037",
+                      "tertiary": "#722b00",
+                      "tertiary-container": "#983c00",
+                      "surface-variant": "#e1e2ea",
+                      "on-primary-fixed-variant": "#004491",
+                      "surface-container": "#ededf6",
+                      "secondary": "#006e25",
+                      "on-primary-fixed": "#001a40",
+                      "status-warning": "#FFC107",
+                      "outline": "#727784",
+                      "primary": "#003f87",
+                      "on-secondary-fixed-variant": "#00531a",
+                      "on-tertiary-fixed-variant": "#7b2f00",
+                      "status-error": "#DC3545",
+                      "on-tertiary-container": "#ffc2a7",
+                      "surface-container-highest": "#e1e2ea",
+                      "on-secondary": "#ffffff",
+                      "secondary-fixed-dim": "#66df75",
+                      "on-tertiary-fixed": "#351000",
+                      "on-secondary-fixed": "#002106",
+                      "error-container": "#ffdad6",
+                      "surface-bright": "#f9f9ff",
+                      "primary-fixed-dim": "#acc7ff",
+                      "on-tertiary": "#ffffff",
+                      "primary-container": "#0056b3",
+                      "secondary-container": "#80f98b",
+                      "background-alt": "#F8F9FA",
+                      "on-primary": "#ffffff",
+                      "surface-container-high": "#e7e8f0",
+                      "on-error-container": "#93000a",
+                      "tertiary-fixed-dim": "#ffb694",
+                      "surface": "#f9f9ff",
+                      "tertiary-fixed": "#ffdbcc",
+                      "on-surface": "#191c21",
+                      "outline-variant": "#c2c6d4",
+                      "inverse-primary": "#acc7ff",
+                      "text-main": "#1A1C1E",
+                      "on-error": "#ffffff",
+                      "background": "#f9f9ff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "stack-lg": "2rem",
+                      "stack-sm": "0.5rem",
+                      "margin-mobile": "1rem",
+                      "stack-md": "1rem",
+                      "gutter": "1rem",
+                      "margin-desktop": "2rem"
+              },
+              "fontFamily": {
+                      "label-md": [
+                              "Inter"
+                      ],
+                      "label-sm": [
+                              "Inter"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "headline-md": [
+                              "Inter"
+                      ],
+                      "headline-lg-mobile": [
+                              "Inter"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ],
+                      "headline-lg": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "label-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "letterSpacing": "0.02em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "label-sm": [
+                              "12px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "1.5",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-md": [
+                              "20px",
+                              {
+                                      "lineHeight": "1.4",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-lg-mobile": [
+                              "24px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "1.6",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "fontWeight": "700"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen pb-24 md:pb-0">
+<!-- TopAppBar Mobile -->
+<header class="md:hidden flex justify-between items-center px-margin-mobile w-full h-14 bg-surface dark:bg-surface-dim border-b border-outline-variant dark:border-outline sticky top-0 z-50">
+<button class="text-on-surface-variant dark:text-surface-variant p-2 hover:bg-surface-container-low dark:hover:bg-inverse-surface rounded-full transition-colors duration-200 ease-in-out">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+</button>
+<div class="text-headline-md font-headline-md font-bold text-primary dark:text-primary-fixed">
+            IMSOP
+        </div>
+<button class="text-on-surface-variant dark:text-surface-variant p-2 hover:bg-surface-container-low dark:hover:bg-inverse-surface rounded-full transition-colors duration-200 ease-in-out">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+</header>
+<!-- Top Navigation Desktop -->
+<nav class="hidden md:flex flex-row justify-between items-center px-margin-desktop py-4 bg-surface border-b border-outline-variant sticky top-0 z-50 shadow-sm">
+<div class="text-headline-md font-headline-md font-bold text-primary">
+            IMSOP
+        </div>
+<div class="flex space-x-8">
+<a class="text-on-surface-variant font-label-md text-label-md hover:text-primary transition-colors" href="#">Accueil</a>
+<a class="text-on-surface-variant font-label-md text-label-md hover:text-primary transition-colors" href="#">Dossiers</a>
+<a class="text-on-surface-variant font-label-md text-label-md hover:text-primary transition-colors" href="#">Messages</a>
+<a class="text-primary font-label-md text-label-md font-bold transition-colors" href="#">Profil</a>
+</div>
+<div class="flex space-x-4 items-center">
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container font-bold overflow-hidden">
+<img class="object-cover w-full h-full" data-alt="A close-up portrait of an African patient, mid-40s, looking slightly off-camera with a calm expression. Soft, diffused lighting highlights features. The background is a blurred, light modern clinical setting. Colors are natural with a hint of medical blue in the ambient light." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCj1xOJ0_mnvLxG0TcMkoc9Ugb0KKZZ6pPRIY7g2RuO05brcHjB5aS-HYyqkixfVpERhFx6aykFbssfHXJCmr9EGjIslSVOHWRaeurxdhsP6mXoAmAClOxWmp9RQ-EOLlUkl4PuLgzbMSmxxtmmmma9OAXZjvj4Wr1nrYv7EN-DKpWM23VxsSCu8xlujflAjfKKr6KGCNUchLoNeM-rrVFe7qUUu4_zaIamHwROryMO6A7gDC6UHewf"/>
+</div>
+</div>
+</nav>
+<main class="max-w-[1200px] mx-auto px-margin-mobile md:px-margin-desktop pt-stack-md md:pt-stack-lg flex flex-col gap-stack-lg">
+<!-- Header Section -->
+<section class="flex flex-col md:flex-row items-center md:items-start gap-stack-md bg-surface-container-lowest p-stack-md rounded-xl border border-outline-variant shadow-sm">
+<div class="relative w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden border-4 border-surface-container-low flex-shrink-0">
+<img class="object-cover w-full h-full" data-alt="A close-up portrait of an African patient, mid-40s, looking slightly off-camera with a calm expression. Soft, diffused lighting highlights features. The background is a blurred, light modern clinical setting. Colors are natural with a hint of medical blue in the ambient light." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCoaSuIidDTjWtdTFJd0KrP9XPr3mg1gOpIiFkj0985V-rIxmsgdPPv84IY9kdSbwb7dT3vdpgHjEYOtZv--BnGxnfcoFUcD6X-zIN2ljixr4UWCxoGmfYY6qORhOJLruxxe64Jcf9_G-E2M-PvPgvNikBh3VUCgS2NFRtu7rSGE9KJygLC1ibHIM_N4gsqjHmTa1n18z1bXkYNPsMWRF9M1Y9PHznOY5GJHgflzxgNAuDO8VP19ED3"/>
+<button class="absolute bottom-0 right-0 bg-primary text-on-primary p-1.5 rounded-full shadow-sm hover:bg-primary-container transition-colors">
+<span class="material-symbols-outlined text-sm">edit</span>
+</button>
+</div>
+<div class="flex flex-col items-center md:items-start text-center md:text-left pt-2">
+<h1 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-primary">Jean Dupont</h1>
+<span class="font-label-md text-label-md text-secondary bg-secondary-container px-3 py-1 rounded-full mt-2 inline-block">Patient</span>
+<p class="font-body-md text-body-md text-on-surface-variant mt-2 max-w-md">Dossier ID: #IMS-2023-8942</p>
+</div>
+</section>
+<!-- Bento Grid Layout for Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-stack-md">
+<!-- Informations personnelles -->
+<section class="bg-surface-container-lowest rounded-xl border border-outline-variant p-stack-md shadow-sm flex flex-col gap-stack-sm h-full">
+<div class="flex items-center gap-2 mb-2 border-b border-surface-container-high pb-2">
+<span class="material-symbols-outlined text-primary">person</span>
+<h2 class="font-headline-md text-headline-md text-on-surface">Informations</h2>
+</div>
+<div class="flex flex-col gap-3">
+<div>
+<span class="font-label-sm text-label-sm text-on-surface-variant block mb-1">Email</span>
+<div class="font-body-md text-body-md text-on-surface flex items-center justify-between">
+                            jean.dupont@email.com
+                            <button class="text-primary hover:text-primary-container"><span class="material-symbols-outlined text-sm">edit</span></button>
+</div>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-on-surface-variant block mb-1">Téléphone</span>
+<div class="font-body-md text-body-md text-on-surface flex items-center justify-between">
+                            +221 77 123 45 67
+                            <button class="text-primary hover:text-primary-container"><span class="material-symbols-outlined text-sm">edit</span></button>
+</div>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-on-surface-variant block mb-1">Date de naissance</span>
+<div class="font-body-md text-body-md text-on-surface">15 Mars 1980</div>
+</div>
+</div>
+</section>
+<!-- Documents médicaux -->
+<section class="bg-surface-container-lowest rounded-xl border border-outline-variant p-stack-md shadow-sm flex flex-col gap-stack-sm h-full lg:col-span-2">
+<div class="flex items-center gap-2 mb-2 border-b border-surface-container-high pb-2">
+<span class="material-symbols-outlined text-primary">medical_information</span>
+<h2 class="font-headline-md text-headline-md text-on-surface">Documents médicaux</h2>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mb-4">Gérez vos ordonnances, résultats d'analyses et rapports de consultation sécurisés.</p>
+<div class="grid grid-cols-2 gap-4 mb-4 flex-grow">
+<div class="bg-surface-container-low rounded-lg p-3 flex flex-col items-center justify-center text-center border border-outline-variant border-dashed">
+<span class="material-symbols-outlined text-primary mb-2" style="font-variation-settings: 'FILL' 1;">description</span>
+<span class="font-label-md text-label-md text-on-surface">3 Analyses</span>
+</div>
+<div class="bg-surface-container-low rounded-lg p-3 flex flex-col items-center justify-center text-center border border-outline-variant border-dashed">
+<span class="material-symbols-outlined text-primary mb-2" style="font-variation-settings: 'FILL' 1;">receipt_long</span>
+<span class="font-label-md text-label-md text-on-surface">2 Ordonnances</span>
+</div>
+</div>
+<button class="w-full bg-primary text-on-primary font-label-md text-label-md py-3 px-4 rounded-lg flex items-center justify-center gap-2 hover:bg-primary-container transition-colors min-h-[48px]">
+<span class="material-symbols-outlined">folder_open</span>
+                    Voir tous les dossiers
+                </button>
+</section>
+<!-- Paramètres -->
+<section class="bg-surface-container-lowest rounded-xl border border-outline-variant p-stack-md shadow-sm flex flex-col gap-stack-sm h-full md:col-span-2 lg:col-span-3">
+<div class="flex items-center gap-2 mb-2 border-b border-surface-container-high pb-2">
+<span class="material-symbols-outlined text-primary">settings</span>
+<h2 class="font-headline-md text-headline-md text-on-surface">Paramètres</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<!-- Langue -->
+<div class="flex items-center justify-between p-3 rounded-lg hover:bg-surface-container-low transition-colors cursor-pointer border border-transparent hover:border-outline-variant">
+<div class="flex items-center gap-3">
+<div class="bg-surface-variant p-2 rounded-full text-on-surface-variant flex items-center justify-center">
+<span class="material-symbols-outlined">language</span>
+</div>
+<div>
+<span class="font-label-md text-label-md text-on-surface block">Langue</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Français</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline">chevron_right</span>
+</div>
+<!-- Notifications -->
+<div class="flex items-center justify-between p-3 rounded-lg hover:bg-surface-container-low transition-colors cursor-pointer border border-transparent hover:border-outline-variant">
+<div class="flex items-center gap-3">
+<div class="bg-surface-variant p-2 rounded-full text-on-surface-variant flex items-center justify-center">
+<span class="material-symbols-outlined">notifications_active</span>
+</div>
+<div>
+<span class="font-label-md text-label-md text-on-surface block">Notifications</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Email &amp; SMS</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline">chevron_right</span>
+</div>
+<!-- Sécurité -->
+<div class="flex items-center justify-between p-3 rounded-lg hover:bg-surface-container-low transition-colors cursor-pointer border border-transparent hover:border-outline-variant">
+<div class="flex items-center gap-3">
+<div class="bg-surface-variant p-2 rounded-full text-on-surface-variant flex items-center justify-center">
+<span class="material-symbols-outlined">lock</span>
+</div>
+<div>
+<span class="font-label-md text-label-md text-on-surface block">Sécurité</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Mot de passe &amp; 2FA</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline">chevron_right</span>
+</div>
+</div>
+</section>
+</div>
+<!-- Logout Button -->
+<div class="mt-stack-md flex justify-center md:justify-end pb-8">
+<button class="w-full md:w-auto bg-error-container text-on-error-container border border-error-container hover:bg-error hover:text-on-error font-label-md text-label-md py-3 px-6 rounded-lg flex items-center justify-center gap-2 transition-colors min-h-[48px]">
+<span class="material-symbols-outlined">logout</span>
+                Déconnexion
+            </button>
+</div>
+</main>
+<!-- BottomNavBar Mobile -->
+<nav class="md:hidden fixed bottom-0 w-full z-50 flex justify-around items-center px-4 py-2 h-16 bg-surface dark:bg-inverse-surface shadow-md rounded-t-xl transition-transform duration-150">
+<!-- Inactive: Accueil -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant p-2 hover:bg-surface-container-highest dark:hover:bg-on-surface-variant rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-label-sm text-label-sm mt-1">Accueil</span>
+</a>
+<!-- Inactive: Dossiers -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant p-2 hover:bg-surface-container-highest dark:hover:bg-on-surface-variant rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="folder_shared">folder_shared</span>
+<span class="font-label-sm text-label-sm mt-1">Dossiers</span>
+</a>
+<!-- Inactive: Messages -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant p-2 hover:bg-surface-container-highest dark:hover:bg-on-surface-variant rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="chat">chat</span>
+<span class="font-label-sm text-label-sm mt-1">Messages</span>
+</a>
+<!-- Active: Profil -->
+<a class="flex flex-col items-center justify-center bg-secondary-container dark:bg-on-secondary-fixed-variant text-on-secondary-container dark:text-secondary-fixed rounded-full px-4 py-1 hover:bg-surface-container-highest dark:hover:bg-on-surface-variant transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="person" style="font-variation-settings: 'FILL' 1;">person</span>
+<span class="font-label-sm text-label-sm mt-1 font-bold">Profil</span>
+</a>
+</nav>
+</body></html>

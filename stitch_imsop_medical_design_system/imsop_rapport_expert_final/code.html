@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+
+<html lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Rapport Médical Final - IMSOP</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-tint": "#115cb9",
+                        "surface-container-low": "#f2f3fc",
+                        "on-secondary-container": "#007327",
+                        "on-primary": "#ffffff",
+                        "primary-container": "#0056b3",
+                        "tertiary-fixed-dim": "#ffb694",
+                        "on-tertiary-fixed": "#351000",
+                        "text-main": "#1A1C1E",
+                        "status-warning": "#FFC107",
+                        "tertiary": "#722b00",
+                        "inverse-surface": "#2e3037",
+                        "primary-fixed": "#d7e2ff",
+                        "secondary": "#006e25",
+                        "background-alt": "#F8F9FA",
+                        "on-tertiary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "background": "#f9f9ff",
+                        "surface-container": "#ededf6",
+                        "secondary-fixed-dim": "#66df75",
+                        "on-tertiary-fixed-variant": "#7b2f00",
+                        "on-surface-variant": "#424752",
+                        "on-tertiary-container": "#ffc2a7",
+                        "surface-bright": "#f9f9ff",
+                        "status-error": "#DC3545",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-variant": "#e1e2ea",
+                        "primary": "#003f87",
+                        "inverse-on-surface": "#f0f0f9",
+                        "secondary-container": "#80f98b",
+                        "on-surface": "#191c21",
+                        "outline": "#727784",
+                        "error-container": "#ffdad6",
+                        "on-primary-container": "#bbd0ff",
+                        "on-error-container": "#93000a",
+                        "secondary-fixed": "#83fc8e",
+                        "error": "#ba1a1a",
+                        "on-background": "#191c21",
+                        "on-secondary-fixed-variant": "#00531a",
+                        "primary-fixed-dim": "#acc7ff",
+                        "surface": "#f9f9ff",
+                        "on-primary-fixed": "#001a40",
+                        "on-secondary-fixed": "#002106",
+                        "tertiary-container": "#983c00",
+                        "on-secondary": "#ffffff",
+                        "surface-dim": "#d9d9e2",
+                        "surface-container-high": "#e7e8f0",
+                        "surface-container-highest": "#e1e2ea",
+                        "tertiary-fixed": "#ffdbcc",
+                        "inverse-primary": "#acc7ff",
+                        "on-primary-fixed-variant": "#004491",
+                        "outline-variant": "#c2c6d4"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-lg": "2rem",
+                        "stack-md": "1rem",
+                        "stack-sm": "0.5rem",
+                        "gutter": "1rem",
+                        "margin-mobile": "1rem",
+                        "margin-desktop": "2rem"
+                    },
+                    "fontFamily": {
+                        "label-md": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-md": ["14px", { "lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "600" }],
+                        "label-sm": ["12px", { "lineHeight": "1.2", "fontWeight": "500" }],
+                        "headline-lg": ["32px", { "lineHeight": "1.2", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "1.2", "fontWeight": "700" }],
+                        "headline-md": ["20px", { "lineHeight": "1.4", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-md antialiased min-h-screen flex flex-col pt-12 pb-16 md:pb-0 md:pl-80">
+<!-- TopAppBar (Mobile) -->
+<header class="md:hidden flex justify-between items-center px-margin-mobile h-12 w-full z-50 fixed top-0 bg-surface dark:bg-on-surface border-b border-outline-variant dark:border-outline transition-colors duration-200">
+<button aria-label="Menu" class="text-primary dark:text-primary-fixed-dim hover:bg-surface-container-low rounded-full p-2">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+<h1 class="text-headline-md font-headline-md text-primary dark:text-primary-fixed-dim font-bold tracking-tight">IMSOP</h1>
+<button aria-label="Profil Utilisateur" class="text-primary dark:text-primary-fixed-dim hover:bg-surface-container-low rounded-full p-2">
+<img class="w-8 h-8 rounded-full object-cover" data-alt="A small, professional portrait photograph of an African patient, lit with soft natural light against a neutral grey background. The image should convey dignity and clarity, fitting for a medical profile avatar. 50x50 pixels, circular crop." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBktXp5LfBzpxBywd8V50nSMDXC3vGYwEzk8vC2_iBPfSGM2if8MdHl81koyxJ1UGepdn5HrGfug7cOccQAXA7ry72N0P_mfbExBNJfWz25WrYpSd_wOEbiGia1z42L9LgV3qG3EW1RT8Pi4DsPG0-d3CcDl7STLNkkv3pywPilxT37zsovId3Zig4lR4rfXtYruYd42n2mmaAso_bRk4D1mMRUUtAVvJxg1ITck63_T_9d5MXfoYgV"/>
+</button>
+</header>
+<!-- NavigationDrawer (Desktop) -->
+<aside class="hidden md:flex fixed inset-y-0 left-0 z-[60] flex-col h-full w-80 shadow-xl bg-surface dark:bg-on-surface transition-all duration-300">
+<div class="p-margin-desktop flex items-center space-x-4 border-b border-outline-variant">
+<img class="w-12 h-12 rounded-full object-cover" data-alt="A small, professional portrait photograph of a European medical specialist, wearing a white coat, smiling reassuringly. Soft clinical lighting, neutral background, conveying expertise and trust. 60x60 pixels, circular crop." src="https://lh3.googleusercontent.com/aida-public/AB6AXuClA8L_7-HkxZ_Ws3WRonsx1lRfIHMWwhMIEajfnNFMVjmg5VqDGtrqB3BukNZ_3PGSN7qwg9LdHkjAXTjOjTBVS2sU8rASTD4TtaaLUXPYSGpM8q8puG6vjVM1XGxyoFs8EnFUXyVg8X4YyzrA1EbcETh-CuHfDK9p8GW4mY5i_TJa4xjv5JIrCuEq_0f_SbX_sbJcNTAQB5JQI3o7vxJB6fWX83ga2tEHcYSqdPu6U1AnIMwLla-j"/>
+<div>
+<div class="font-headline-md text-headline-md text-primary dark:text-primary-fixed-dim">Medical Case Manager</div>
+<div class="font-body-md text-body-md text-on-surface-variant">coordinator@imsop.org</div>
+</div>
+</div>
+<nav class="flex-1 py-4 overflow-y-auto">
+<ul class="space-y-2">
+<li>
+<a class="flex items-center space-x-4 px-margin-desktop py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200 font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span>My Profile</span>
+</a>
+</li>
+<li>
+<a class="flex items-center space-x-4 px-margin-desktop py-3 bg-secondary-container text-on-secondary-container font-bold rounded-r-full transition-colors duration-200 font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="medical_services">medical_services</span>
+<span>Medical Records</span>
+</a>
+</li>
+<li>
+<a class="flex items-center space-x-4 px-margin-desktop py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200 font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="clinical_notes">clinical_notes</span>
+<span>Specialists</span>
+</a>
+</li>
+<li>
+<a class="flex items-center space-x-4 px-margin-desktop py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200 font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span>Billing</span>
+</a>
+</li>
+<li>
+<a class="flex items-center space-x-4 px-margin-desktop py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200 font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span>Help Center</span>
+</a>
+</li>
+</ul>
+</nav>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 max-w-[1200px] w-full mx-auto px-margin-mobile md:px-margin-desktop py-stack-lg">
+<!-- Header Section -->
+<div class="mb-stack-lg flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<a class="inline-flex items-center text-primary font-label-md text-label-md mb-2 hover:underline" href="#">
+<span class="material-symbols-outlined mr-1 text-sm" data-icon="arrow_back">arrow_back</span>
+                    Retour aux dossiers
+                </a>
+<h2 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface">Rapport Final de Consultation</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">Dossier #IMS-2023-089A • Rédigé le 24 Octobre 2023</p>
+</div>
+<div class="flex items-center space-x-3">
+<span class="inline-flex items-center px-3 py-1 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[16px] mr-1" data-icon="check_circle" data-weight="fill" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                    Validé
+                </span>
+<button class="flex items-center justify-center bg-primary text-on-primary px-4 py-2 rounded-lg font-label-md text-label-md hover:bg-primary-container transition-colors shadow-md w-full md:w-auto">
+<span class="material-symbols-outlined mr-2" data-icon="download">download</span>
+                    Télécharger en PDF
+                </button>
+</div>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<!-- Patient Info Card -->
+<div class="bg-surface-container-lowest border border-surface-variant rounded-xl p-6 shadow-sm md:col-span-1">
+<h3 class="font-headline-md text-headline-md text-primary mb-4 border-b border-surface-variant pb-2">Informations Patient</h3>
+<ul class="space-y-3 font-body-md text-body-md text-on-surface">
+<li class="flex flex-col">
+<span class="text-on-surface-variant text-sm">Nom</span>
+<span class="font-medium">Jean Dupont</span>
+</li>
+<li class="flex flex-col">
+<span class="text-on-surface-variant text-sm">Date de Naissance</span>
+<span class="font-medium">12 Mars 1975 (48 ans)</span>
+</li>
+<li class="flex flex-col">
+<span class="text-on-surface-variant text-sm">Motif de Consultation</span>
+<span class="font-medium">Douleurs thoraciques atypiques</span>
+</li>
+</ul>
+</div>
+<!-- Expert Info Card -->
+<div class="bg-surface-container-lowest border border-surface-variant rounded-xl p-6 shadow-sm md:col-span-2 flex flex-col md:flex-row items-center gap-6">
+<img class="w-24 h-24 rounded-full border-4 border-surface-container-low object-cover" data-alt="A professional headshot of a European cardiologist, male, late 50s, wearing a stethoscope and a white coat over a blue shirt. The background is a slightly blurred, modern, well-lit hospital corridor. Lighting is bright, crisp, and reassuring. 100x100 pixels, circular." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBZF9dD7_dBH4Fqy2DEQRzknbq_dWsamhLp9CVUa-pLMWUJ7ZjOp6GUdpnTtoVbqh1WNEc1alqp-BVgVx_x_jxoRVL6VldhenEHTdBlcWtXeYD0Yfx9OOmrfsAwtWXqgsvSLJ5mXwkUffEDJVV36Oz20vPz17bAE0GiX3mIHZT9jiS-Zclx6YgZmuMPMtRSZoJJpvdHh98McySwqVEzsrKdwPwt2TXUuhrhFCTshF-BlSD1wX4FNbLT"/>
+<div>
+<h3 class="font-headline-md text-headline-md text-primary mb-1">Dr. Alain Lemaire</h3>
+<p class="font-body-md text-body-md text-on-surface font-medium">Cardiologue Spécialiste, Hôpital Pitié-Salpêtrière, Paris</p>
+<p class="font-body-md text-body-md text-on-surface-variant mt-2 text-sm">Expertise reconnue en rythmologie complexe et imagerie cardiovasculaire non-invasive. Plus de 20 ans d'expérience clinique internationale.</p>
+</div>
+</div>
+<!-- Diagnostic Card -->
+<div class="bg-surface-container-lowest border border-surface-variant rounded-xl p-6 shadow-sm md:col-span-3">
+<h3 class="font-headline-md text-headline-md text-primary mb-4 flex items-center">
+<span class="material-symbols-outlined mr-2 text-primary" data-icon="stethoscope">stethoscope</span>
+                    Diagnostic Principal
+                </h3>
+<div class="bg-surface-container-low p-4 rounded-lg border-l-4 border-primary">
+<p class="font-body-lg text-body-lg text-on-surface leading-relaxed">
+                        L'analyse détaillée de l'ECG transmis et de l'historique clinique révèle des épisodes de fibrillation auriculaire paroxystique. L'échocardiographie indique une légère hypertrophie ventriculaire gauche, compatible avec l'hypertension artérielle documentée, mais sans signes d'insuffisance cardiaque congestive aiguë.
+                    </p>
+</div>
+<h4 class="font-label-md text-label-md text-on-surface-variant mt-6 mb-2 uppercase tracking-wider">Observations Complémentaires</h4>
+<ul class="list-disc pl-5 space-y-2 font-body-md text-body-md text-on-surface">
+<li>Fonction systolique du ventricule gauche conservée (FEVG estimée à 55%).</li>
+<li>Absence de valvulopathie significative à l'examen échographique.</li>
+<li>Nécessité de contrôler les facteurs de risque cardiovasculaire, notamment la pression artérielle.</li>
+</ul>
+</div>
+<!-- Recommendations Card -->
+<div class="bg-surface-container-lowest border border-surface-variant rounded-xl p-6 shadow-sm md:col-span-3">
+<h3 class="font-headline-md text-headline-md text-secondary mb-4 flex items-center">
+<span class="material-symbols-outlined mr-2 text-secondary" data-icon="prescriptions">prescriptions</span>
+                    Recommandations Thérapeutiques
+                </h3>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="bg-surface-container-low p-4 rounded-lg border border-surface-variant">
+<h4 class="font-label-md text-label-md text-on-surface mb-2 font-bold">Médication</h4>
+<ul class="space-y-2 font-body-md text-body-md text-on-surface">
+<li class="flex items-start">
+<span class="material-symbols-outlined text-secondary mr-2 text-[20px]" data-icon="medication">medication</span>
+<span>Introduction d'un traitement anticoagulant oral direct (AOD) pour la prévention thromboembolique.</span>
+</li>
+<li class="flex items-start">
+<span class="material-symbols-outlined text-secondary mr-2 text-[20px]" data-icon="medication">medication</span>
+<span>Optimisation du traitement antihypertenseur (ex: ajout d'un inhibiteur de l'ECA).</span>
+</li>
+</ul>
+</div>
+<div class="bg-surface-container-low p-4 rounded-lg border border-surface-variant">
+<h4 class="font-label-md text-label-md text-on-surface mb-2 font-bold">Suivi et Examens</h4>
+<ul class="space-y-2 font-body-md text-body-md text-on-surface">
+<li class="flex items-start">
+<span class="material-symbols-outlined text-secondary mr-2 text-[20px]" data-icon="monitor_heart">monitor_heart</span>
+<span>Holter ECG des 24 heures d'ici 3 mois.</span>
+</li>
+<li class="flex items-start">
+<span class="material-symbols-outlined text-secondary mr-2 text-[20px]" data-icon="biotech">biotech</span>
+<span>Bilan biologique de contrôle (fonction rénale, ionogramme) dans 1 mois.</span>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Mobile) -->
+<nav class="md:hidden fixed bottom-0 w-full z-50 flex justify-around items-center h-16 px-gutter shadow-lg bg-surface dark:bg-on-surface rounded-t-xl transition-colors duration-200">
+<button aria-label="Dashboard" class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary active:scale-95 transition-transform">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-sm text-label-sm">Dashboard</span>
+</button>
+<button aria-label="Cases" class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary active:scale-95 transition-transform">
+<span class="material-symbols-outlined" data-icon="folder_shared">folder_shared</span>
+<span class="font-label-sm text-label-sm">Cases</span>
+</button>
+<button aria-label="Reports" class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-4 py-1 active:scale-95 transition-transform">
+<span class="material-symbols-outlined" data-icon="description">description</span>
+<span class="font-label-sm text-label-sm">Reports</span>
+</button>
+<button aria-label="Settings" class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary active:scale-95 transition-transform">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-sm text-label-sm">Settings</span>
+</button>
+</nav>
+</body></html>

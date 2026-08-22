@@ -1,0 +1,731 @@
+{
+  "nav": {
+    "howItWorks": "How it works",
+    "specialties": "Specialties",
+    "forDoctors": "For doctors",
+    "login": "Log in",
+    "or": "OR"
+  },
+  "common": {
+    "back": "Back",
+    "loading": "Loading...",
+    "email": "Email Address",
+    "password": "Password",
+    "confirmPassword": "Confirm password",
+    "forgotPassword": "Forgot password?",
+    "newAccount": "Create an account",
+    "sending": "Sending...",
+    "close": "Close",
+    "cancel": "Cancel",
+    "save": "Save",
+    "saving": "Saving...",
+    "edit": "Edit",
+    "refresh": "Refresh",
+    "specialites": {
+      "oncologie": "Oncology",
+      "cardiologie": "Cardiology",
+      "neurologie": "Neurology",
+      "orthopedie": "Orthopedics",
+      "radiologie": "Radiology",
+      "anatomopathologie": "Pathology",
+      "pediatrie": "Pediatrics",
+      "gynecologie": "Obstetrics & Gynecology",
+      "nephrologie": "Nephrology",
+      "gastroenterologie": "Gastroenterology",
+      "pneumologie": "Pulmonology"
+    }
+  },
+  "public": {
+    "home": {
+      "heroTitle": "GLOBAL MEDICAL EXPERTISE, CONFIDENT DECISIONS",
+      "heroSub": "Connect with world-class specialists for confident medical decisions via our secure platform.",
+      "heroPrimaryCta": "GET A SECOND OPINION",
+      "heroSecondaryCta": "OR FIND YOUR SPECIALIST",
+      "badgeIso": "ISO CERTIFIED",
+      "badgeGdpr": "GDPR COMPLIANT",
+      "badgeDoctors": "1000+ EU DOCTORS",
+      "badgeTrust": "TRUSTED GLOBALLY",
+      "badgeSecure": "SECURE & ENCRYPTED",
+      "processEyebrow": "Process",
+      "processTitle": "A simplified, secure patient journey",
+      "step1Title": "Case Creation",
+      "step1Text": "Submit your request and upload your medical documents (lab results, imaging) through our highly secure platform.",
+      "step2Title": "Expert Review",
+      "step2Text": "A qualified European specialist is assigned to your case and reviews your file thoroughly and confidentially.",
+      "step3Title": "Detailed Medical Report",
+      "step3Text": "Receive a complete report with a confirmed diagnosis and clear treatment recommendations in under 72 hours.",
+      "specialtiesEyebrow": "Areas of expertise",
+      "specialtiesTitle": "Specialties covered",
+      "specialtiesSub": "For this pilot phase, IMSOP highlights the specialties where international expertise adds the most value.",
+      "specOncology": "Oncology",
+      "specCardiology": "Cardiology",
+      "specNeurology": "Neurology",
+      "specOrthopedics": "Orthopedics",
+      "specRadiology": "Radiology",
+      "specPathology": "Pathology"
+    },
+    "forDoctors": {
+      "eyebrow": "For healthcare professionals",
+      "title": "Complementary expertise, never a replacement",
+      "intro": "IMSOP rests on one simple principle: the international specialist never steps in for the local doctor — they support them. The treating physician remains the central figure in their patient's care.",
+      "doctorsTitle": "Local doctors",
+      "doctorsText": "Register your patients on the platform with their authorization, share the relevant medical information, and track the case until the report is received.",
+      "doctorsItem1": "Create a verified professional account",
+      "doctorsItem2": "Register a patient with their consent",
+      "doctorsItem3": "Communicate directly with the assigned specialist",
+      "specialistsTitle": "International specialists",
+      "specialistsText": "Join the IMSOP network by submitting your diplomas and professional references for review by our medical committee before your account is activated.",
+      "specialistsItem1": "Verification of diplomas and licence to practice",
+      "specialistsItem2": "Manage your availability and your rates",
+      "specialistsItem3": "Compensation under agreed contractual terms",
+      "ctaTitle": "Are you a doctor or a healthcare institution?",
+      "ctaText": "Join the IMSOP network to give your patients simple access to international medical expertise.",
+      "ctaButton": "Contact the IMSOP team"
+    }
+  },
+  "auth": {
+    "roleSelection": {
+      "subtitle": "Select your profile to access your secure space.",
+      "patientTitle": "Patient",
+      "patientDesc": "Access your medical file and your second opinion.",
+      "specialistTitle": "Specialist",
+      "specialistDesc": "Review the cases assigned to you.",
+      "coordinatorTitle": "Medical coordinator",
+      "coordinatorDesc": "Manage cases, assignments and emergencies.",
+      "newPatient": "New patient?"
+    },
+    "loginPatient": {
+      "heading": "Your Health,<br/>Our Priority.",
+      "tagline": "Access your secure medical file and connect with European specialists from Africa.",
+      "badgeSecure": "Secure Data",
+      "badgeExperts": "Medical Experts",
+      "subtitle": "Secure Patient Space",
+      "submit": "Log in",
+      "submitting": "Logging in...",
+      "newPatient": "New patient?",
+      "createAccount": "Create an account",
+      "securityNote": "Your health data is end-to-end encrypted and hosted on certified health-data servers (HDS). IMSOP guarantees the strict confidentiality of your medical information."
+    },
+    "loginCoordinator": {
+      "portalLabel": "Administration Area",
+      "title": "Coordinator Login",
+      "subtitle": "Secure access to medical case management.",
+      "forgot": "Forgot?",
+      "twoFaTitle": "Two-factor authentication required",
+      "twoFaText": "A code will be sent to your authorized mobile device after validation.",
+      "submit": "Authenticate",
+      "submitting": "Authenticating...",
+      "footer": "© 2026 IMSOP - International Medical Second Opinion.<br/>Access strictly reserved for authorized staff."
+    },
+    "loginSpecialist": {
+      "title": "IMSOP Portal",
+      "badge": "Practitioner Access",
+      "intro": "Please authenticate to access secure medical case files.",
+      "remember": "Remember me",
+      "forgot": "Forgot password?",
+      "submit": "Secure Login",
+      "submitting": "Logging in...",
+      "help": "Trouble accessing your account?",
+      "contactSupport": "Contact technical support"
+    },
+    "twoFactor": {
+      "title": "Two-step verification",
+      "subtitle": "Enter the 6-digit code sent to your professional email address.",
+      "codeLabel": "Verification code",
+      "submit": "Verify",
+      "submitting": "Verifying...",
+      "expired": "Your login session has expired. Please sign in again."
+    },
+    "verifyEmail": {
+      "title": "Verify your email",
+      "subtitle": "Enter the 6-digit code sent to",
+      "codeLabel": "Verification code",
+      "submit": "Verify",
+      "submitting": "Verifying...",
+      "resend": "Resend code",
+      "resent": "A new code has been sent.",
+      "expired": "Session expired. Please sign in again."
+    },
+    "forgotPassword": {
+      "title": "Forgot password",
+      "subtitle": "Enter your email address and we'll send you a link to create a new password.",
+      "sent": "If this email is linked to an account, a reset link has just been sent. Check your inbox.",
+      "submit": "Send reset link",
+      "backToLogin": "Back to login"
+    },
+    "resetPassword": {
+      "invalidLink": "This reset link is invalid. Please request a new one.",
+      "requestNewLink": "Request a new link",
+      "title": "New password",
+      "subtitle": "Choose a new password for your account.",
+      "success": "Your password has been reset successfully.",
+      "goToLogin": "Log in",
+      "newPassword": "New password",
+      "mismatch": "Passwords do not match.",
+      "submit": "Reset password",
+      "submitting": "Resetting..."
+    },
+    "animatedLogin": {
+      "orEmail": "Or use your email",
+      "forgotPassword": "Forgot password?",
+      "submit": "Log in",
+      "submitting": "Logging in...",
+      "newPatient": "New patient?",
+      "createAccount": "Create an account",
+      "roles": {
+        "PATIENT": {
+          "title": "Patient Login",
+          "subtitle": "Access your health space and medical records."
+        },
+        "SPECIALISTE": {
+          "title": "Expert Area",
+          "subtitle": "Review and respond to second-opinion requests."
+        },
+        "COORDINATEUR": {
+          "title": "Administration",
+          "subtitle": "Manage IMSOP cases and assignments."
+        },
+        "ADMIN": {
+          "title": "Administrator Area",
+          "subtitle": "Platform management, account administration and activity tracking."
+        }
+      }
+    },
+    "registrationStepper": {
+      "infos": "Info",
+      "security": "Security",
+      "validation": "Confirmation"
+    },
+    "registerInfos": {
+      "title": "Personal Information",
+      "subtitle": "Please fill in your information to create your secure medical file.",
+      "fullName": "Full Name",
+      "fullNamePlaceholder": "E.g. Jean Dupont",
+      "dob": "Date of Birth",
+      "gender": "Gender",
+      "genderHomme": "male",
+      "genderFemme": "female",
+      "genderAutre": "other",
+      "phone": "Phone Number",
+      "country": "Country of Residence",
+      "countrySelect": "Select a country",
+      "nationality": "Nationality",
+      "nationalitySelect": "Select a nationality",
+      "city": "City of Residence",
+      "cityPlaceholder": "E.g. Douala",
+      "preferredLanguage": "Preferred Language",
+      "emergencyTitle": "Emergency contact",
+      "emergencySubtitle": "Optional, but recommended for your safety.",
+      "emergencyName": "Contact name",
+      "emergencyPhone": "Contact phone number",
+      "next": "Next",
+      "countries": {
+        "sn": "Senegal",
+        "ci": "Ivory Coast",
+        "cm": "Cameroon",
+        "fr": "France",
+        "be": "Belgium",
+        "ch": "Switzerland"
+      },
+      "languages": {
+        "fr": "French",
+        "en": "English"
+      }
+    },
+    "registerSecurity": {
+      "sideTagline": "Join our international health network. Your medical data, secured, accessible to the best specialists.",
+      "sideCardTitle": "Clinical-grade security",
+      "sideCardText": "End-to-end encrypted data and strict GDPR compliance.",
+      "title": "Secure your account",
+      "subtitle": "Create a strong password to protect your medical information.",
+      "password": "Password",
+      "checkLength": "At least 8 characters",
+      "checkUpper": "1 uppercase letter",
+      "checkDigit": "1 digit and 1 special character",
+      "confirmPassword": "Confirm password",
+      "mismatch": "Passwords do not match.",
+      "twoFaTitle": "Two-factor authentication (2FA)",
+      "twoFaText": "Recommended for maximum security of your clinical records.",
+      "twoFaLater": "Set up later",
+      "back": "Back",
+      "next": "Next",
+      "legal": "By continuing, you accept our <cgu>Terms of Use</cgu> and our <privacy>Privacy Policy</privacy> regarding the processing of health data."
+    },
+    "registerValidation": {
+      "title": "Confirmation & Consent",
+      "subtitle": "Last step to finalize the creation of your secure medical file.",
+      "completeTitle": "Information complete",
+      "completeText": "Your data has been pre-validated successfully.",
+      "summaryTitle": "Registration summary",
+      "summaryIdentity": "Identity provided",
+      "summaryContacts": "Contact details provided",
+      "summarySecurity": "Account security configured",
+      "consentTitle": "Consent to data processing (HDS / GDPR)",
+      "consentText": "I agree that my personal health data be processed and stored securely by IMSOP for the purposes of my medical care, in accordance with applicable GDPR and HDS regulations.",
+      "submit": "Complete registration",
+      "submitting": "Creating account..."
+    }
+  },
+  "errors": {
+    "loadCasesFailed": "Unable to load your cases",
+    "loadMessagesFailed": "Unable to load your messages",
+    "conversationNotFound": "Conversation not found",
+    "sendMessageFailed": "The message could not be sent",
+    "caseNotFound": "Case not found",
+    "reportUnavailable": "The report is not yet available",
+    "pdfUnavailable": "The PDF is not yet available",
+    "createCaseFailed": "The case could not be created. Please try again.",
+    "paymentFailed": "The payment could not be processed.",
+    "caseNotFoundRestart": "Case not found. Please start your request again."
+  },
+  "patient": {
+    "dossierStatus": {
+      "BROUILLON": "Draft",
+      "SOUMIS": "Submitted",
+      "EN_ATTENTE_PAIEMENT": "Awaiting payment",
+      "EN_VERIFICATION": "Under review",
+      "COMPLET": "Case complete",
+      "EN_ATTENTE_AFFECTATION": "Awaiting assignment",
+      "AFFECTE": "Specialist assigned",
+      "EN_ANALYSE": "Under analysis",
+      "RAPPORT_EN_PREPARATION": "Report in progress",
+      "RAPPORT_SOUMIS": "Report submitted",
+      "RAPPORT_VALIDE": "Report validated",
+      "RAPPORT_TRANSMIS": "Report ready",
+      "CLOTURE": "Closed",
+      "ANNULE": "Cancelled",
+      "REFUSE": "Declined"
+    },
+    "dashboard": {
+      "newRequest": "New Request",
+      "verifyEmailTitle": "Verify your email",
+      "verifyEmailText": "Confirm your email address to secure your account and receive your medical reports.",
+      "verifyEmailCta": "Verify now",
+      "actionRequired": "Action Required",
+      "paymentPending": "Your {{specialite}} case (#{{reference}}) is awaiting payment.",
+      "finalizePayment": "Complete payment",
+      "activeCases": "Your Active Cases",
+      "loading": "Loading your cases...",
+      "empty": "You don't have a second-opinion case yet.",
+      "createFirst": "Create my first request",
+      "reference": "Ref"
+    },
+    "questionnaire": {
+      "closeAria": "Close the questionnaire",
+      "title": "New Medical Case",
+      "stepIdentity": "Identity",
+      "stepMedical": "Medical Details",
+      "stepDocuments": "Documents",
+      "stepMobile": "Step 2: Medical Details",
+      "formTitle": "Reason for consultation & Symptoms",
+      "specialiteLabel": "Specialty requested",
+      "specialiteSelect": "Select a specialty...",
+      "motifLabel": "Main reason for the request",
+      "motifSelect": "Select a category...",
+      "motifSecondAvis": "Second medical opinion request",
+      "motifDiagDifficile": "Complex / uncertain diagnosis",
+      "motifSuivi": "Post-operative follow-up",
+      "motifAutre": "Other reason",
+      "symptomesLabel": "Description of symptoms",
+      "symptomesPlaceholder": "Describe your current symptoms, when they started and how they've evolved...",
+      "symptomesHint": "Be as precise as possible to help the specialist.",
+      "antecedentsQuestion": "Do you have relevant medical history?",
+      "antecedentsOui": "yes",
+      "antecedentsNon": "no",
+      "traitementLabel": "Current treatments",
+      "optional": "(Optional)",
+      "traitementPlaceholder": "E.g. Paracetamol 1g, 3 times a day...",
+      "back": "Back",
+      "submitting": "Sending...",
+      "next": "Next step"
+    },
+    "documents": {
+      "stepMobile": "Step 3: Documents",
+      "title": "Medical documents",
+      "subtitle": "Add your lab results, imaging, or medical reports to help the specialist's review. You can also add more later from your case.",
+      "categoryLabel": "Document type",
+      "categoryAnalyse": "Lab results",
+      "categoryImagerie": "Imaging (X-ray, CT, MRI...)",
+      "categoryOrdonnance": "Prescription",
+      "categoryCompteRendu": "Medical report",
+      "categoryAutre": "Other",
+      "chooseFile": "Choose a file",
+      "noFileChosen": "No file chosen",
+      "acceptedFormats": "PDF, JPEG, PNG or DICOM — 25 MB max",
+      "uploadButton": "Add document",
+      "uploading": "Uploading...",
+      "uploadedListTitle": "Uploaded documents",
+      "empty": "No document added yet.",
+      "skipNote": "You can continue without a document for now, but the specialist won't be able to review your case until your test results are received.",
+      "back": "Back",
+      "finish": "Continue to payment",
+      "submitting": "Sending...",
+      "selectFileFirst": "Select a file before adding the document."
+    },
+    "payment": {
+      "title": "Secure payment",
+      "subtitle": "Last step before your case is transmitted to our medical coordination team.",
+      "methodTitle": "Payment method",
+      "methodCard": "Credit Card",
+      "methodMobileMoney": "Mobile Money",
+      "methodInsurance": "Insurance coverage",
+      "cardNumber": "Card number",
+      "cardExpiry": "MM/YY",
+      "cardCvc": "CVC",
+      "mobileMoneyPlaceholder": "Mobile Money number (+237 6XX XXX XXX)",
+      "insuranceNote": "Your coverage request will be sent to your insurer. You will receive confirmation in your messages area.",
+      "securityNote": "Encrypted, secure payment. Your case will only be sent to the medical coordinator after payment is actually confirmed.",
+      "summaryTitle": "Case summary",
+      "standardOpinion": "Standard second opinion",
+      "caseFee": "Case fee",
+      "totalDue": "Total due",
+      "processing": "Processing payment...",
+      "payAndSend": "Pay and send the case"
+    },
+    "matching": {
+      "confirmedTitle": "Payment confirmed, case sent to medical coordination",
+      "confirmedText": "Our team is reviewing your case and will assign you a suitable specialist shortly. You'll be notified at every step."
+    },
+    "messages": {
+      "title": "Secure Messages",
+      "subtitle": "Confidential communication with your medical team.",
+      "loading": "Loading...",
+      "empty": "You don't have a conversation yet. A messaging thread opens automatically as soon as a specialist is assigned to your case.",
+      "noMessageYet": "No message yet — write to the specialist."
+    },
+    "chat": {
+      "loading": "Loading conversation...",
+      "backToMessages": "Back to messages",
+      "empty": "No message yet. Write to the specialist to start the conversation.",
+      "closed": "This conversation is closed (14 days after the case was assigned).",
+      "placeholder": "Write your message...",
+      "sendAria": "Send"
+    },
+    "report": {
+      "title": "Medical Report",
+      "heading": "Consultation Report",
+      "caseLabel": "Case",
+      "validatedOn": "Validated on",
+      "validated": "Validated",
+      "preparing": "Preparing...",
+      "download": "Download",
+      "notAvailableTitle": "Report not yet available",
+      "caseInfoTitle": "Case Information",
+      "patientLabel": "Patient",
+      "specialiteLabel": "Specialty",
+      "motifLabel": "Reason for Consultation",
+      "synthesisTitle": "Summary & Diagnosis",
+      "noDiagnostic": "No diagnosis provided.",
+      "clinicalSynthesis": "Clinical summary",
+      "noSynthesis": "No summary provided.",
+      "therapeuticOptions": "Treatment Options"
+    },
+    "profile": {
+      "title": "My Profile",
+      "defaultName": "IMSOP Patient",
+      "roleBadge": "Patient",
+      "identityTitle": "Identity verification",
+      "identityVerified": "Identity verified",
+      "identityRejected": "Document rejected",
+      "identityPending": "Under review",
+      "identityNone": "Not verified",
+      "rejectedReason": "Rejection reason",
+      "uploadNew": "Upload a new document",
+      "uploadFirst": "Upload my ID document",
+      "uploadHint": "JPEG, PNG or PDF — ID card or passport.",
+      "infoTitle": "Information",
+      "email": "Email",
+      "phone": "Phone",
+      "dob": "Date of birth",
+      "documentsTitle": "Documents",
+      "documentsText": "Manage your prescriptions, lab results and secure consultation reports.",
+      "analyses": "Lab results",
+      "prescriptions": "Prescriptions",
+      "viewCases": "View cases",
+      "settingsTitle": "Settings",
+      "language": "Language",
+      "languageFr": "Français",
+      "languageEn": "English",
+      "notifications": "Notifications",
+      "notificationsValue": "Email & SMS",
+      "security": "Security",
+      "securityValue": "Password & 2FA",
+      "logout": "Log out"
+    }
+  },
+  "coordinateur": {
+    "overviewTitle": "Overview",
+    "overviewSubtitle": "Tasks requiring your attention today.",
+    "metrics": {
+      "nouveaux": "New",
+      "incomplets": "Incomplete",
+      "aAffecter": "To Assign",
+      "urgents": "Urgent"
+    },
+    "dashboard": {
+      "loadFailed": "Unable to load the dashboard",
+      "loading": "Loading...",
+      "pendingTitle": "Cases awaiting assignment",
+      "viewExperts": "View experts",
+      "emptyPending": "No case awaiting assignment.",
+      "urgent": "Urgent",
+      "receivedOn": "Received on",
+      "assign": "Assign expert",
+      "reportsToValidateTitle": "Reports to validate",
+      "emptyReports": "No report awaiting validation.",
+      "validating": "Validating...",
+      "validateAndSend": "Validate and send to patient",
+      "validateFailed": "Validation failed"
+    },
+    "exceptions": {
+      "manualAssignTitle": "Cases requiring manual assignment",
+      "loadFailed": "Unable to load cases",
+      "loading": "Loading...",
+      "emptyManual": "No case awaiting manual assignment.",
+      "assignManually": "Assign manually"
+    },
+    "assign": {
+      "loadingCase": "Loading case...",
+      "title": "Case Assignment",
+      "caseLabel": "Case",
+      "patientLabel": "Patient",
+      "specialiteLabel": "Specialty requested",
+      "motifLabel": "Main reason",
+      "symptomsLabel": "Symptoms described",
+      "priority": "Priority",
+      "urgent": "Urgent",
+      "recommendedTitle": "Recommended specialists",
+      "recommendedSub": "Verified, available specialists in the requested specialty.",
+      "noneAvailable": "No specialist currently available for this specialty.",
+      "assigning": "Assigning...",
+      "assignThis": "Assign this specialist",
+      "assignFailed": "Assignment failed"
+    },
+    "search": {
+      "title": "Specialist Directory",
+      "subtitle": "Browse the network of international partner specialists.",
+      "allSpecialties": "All specialties",
+      "countryPlaceholder": "Country (e.g. France)",
+      "availableOnly": "Available only",
+      "searching": "Searching...",
+      "found_one": "{{count}} specialist found",
+      "found_other": "{{count}} specialists found",
+      "noMatch": "No specialist matches these criteria.",
+      "available": "Available",
+      "unavailable": "Unavailable",
+      "verified": "Verified",
+      "loadFailed": "Unable to load specialists"
+    },
+    "identities": {
+      "title": "Identity Verification",
+      "subtitle": "Compare the ID document to the declared name, then approve or reject with a reason.",
+      "loading": "Loading...",
+      "empty": "No identity verification pending.",
+      "viewDocument": "View document",
+      "validate": "Approve",
+      "reject": "Reject",
+      "cancel": "Cancel",
+      "confirmReject": "Confirm rejection",
+      "rejectPlaceholder": "Rejection reason (e.g. unclear photo, expired document, name mismatch...)"
+    }
+  },
+  "specialiste": {
+    "dashboard": {
+      "title": "Your Medical Cases",
+      "subtitle": "Overview of the cases assigned to you for review and validation.",
+      "availabilityTitle": "Availability status",
+      "availabilityText": "Signals to the coordinator that you're available to receive new cases.",
+      "available": "Available",
+      "unavailable": "Unavailable",
+      "tabAll": "All",
+      "tabNew": "New",
+      "tabInProgress": "In progress",
+      "tabDone": "Done",
+      "loading": "Loading...",
+      "empty": "No case in this category.",
+      "cancel": "Cancel",
+      "confirm": "Confirm",
+      "refuse": "Decline",
+      "accept": "Accept",
+      "rejectPlaceholder": "Reason for declining (optional)",
+      "badgeNew": "New",
+      "badgeInProgress": "In progress",
+      "badgeDone": "Done"
+    },
+    "report": {
+      "loadingCase": "Loading case...",
+      "backToDashboard": "Back to dashboard",
+      "age": "Age",
+      "years": "y/o",
+      "caseLabel": "Case",
+      "documents_one": "{{count}} original document",
+      "documents_other": "{{count}} original documents",
+      "noDocuments": "No document uploaded for this case.",
+      "questionTitle": "Question asked by the doctor",
+      "alreadySubmitted": "This report has already been submitted and can no longer be edited.",
+      "synthesisTitle": "Case Summary",
+      "synthesisPlaceholder": "Summary of medical history and reason for consultation...",
+      "diagnosticTitle": "Diagnosis & Analysis",
+      "diagnosticPlaceholder": "Interpretation of results, differential diagnosis and final diagnosis...",
+      "therapeuticTitle": "Treatment Options",
+      "therapeuticPlaceholder": "Treatment recommendations, dosage, follow-up needed...",
+      "saveDraft": "Save draft",
+      "saving": "Saving...",
+      "submit": "Finalize and Send",
+      "submitting": "Sending...",
+      "saveFailed": "Saving failed",
+      "submitFailed": "Sending the report failed"
+    }
+  },
+  "admin": {
+    "dashboard": {
+      "title": "Administrator dashboard",
+      "subtitle": "Platform-wide activity overview.",
+      "loadError": "Could not load the dashboard",
+      "recentActivity": "Recent activity",
+      "viewJournal": "View full journal",
+      "metrics": {
+        "nouveaux": "New",
+        "incomplets": "Incomplete",
+        "aAffecter": "To assign",
+        "urgents": "Urgent",
+        "patients": "Patients",
+        "specialistes": "Specialists",
+        "coordinateurs": "Coordinators",
+        "rapportsValides": "Validated reports"
+      }
+    },
+    "specialistes": {
+      "title": "Specialist management",
+      "subtitle": "Create, edit or deactivate international specialist accounts.",
+      "newButton": "New specialist",
+      "createTitle": "New specialist",
+      "specialitePlaceholder": "Specialty (e.g. Cardiology)",
+      "paysPlaceholder": "Country",
+      "etablissementPlaceholder": "Institution",
+      "languesPlaceholder": "Languages spoken (e.g. FR, EN)",
+      "bioPlaceholder": "Short professional bio",
+      "verified": "Verified"
+    },
+    "coordinateurs": {
+      "title": "Coordinator management",
+      "subtitle": "Create, edit or deactivate medical coordinator accounts.",
+      "newButton": "New coordinator",
+      "createTitle": "New coordinator"
+    },
+    "users": {
+      "loadError": "Could not load the list",
+      "saveError": "Saving failed",
+      "searchPlaceholder": "Search by name or email...",
+      "editTitle": "Edit account",
+      "createdTitle": "Account created",
+      "createdHint": "Share these credentials securely with the person concerned. The password will never be shown again.",
+      "temporaryPassword": "Temporary password",
+      "fullNamePlaceholder": "Full name",
+      "phonePlaceholder": "Phone",
+      "empty": "No account found.",
+      "active": "Active",
+      "inactive": "Deactivated",
+      "deactivate": "Deactivate",
+      "reactivate": "Reactivate",
+      "createdOn": "Created on"
+    },
+    "journal": {
+      "title": "Activity journal",
+      "subtitle": "Traceability of every sensitive action performed on the platform.",
+      "empty": "No activity recorded.",
+      "systemActor": "System"
+    }
+  },
+  "shell": {
+    "adminNav": {
+      "dashboard": "Dashboard",
+      "specialistes": "Specialists",
+      "coordinateurs": "Coordinators",
+      "journal": "Journal"
+    },
+    "patientNav": {
+      "dossiers": "Cases",
+      "medecins": "Doctors",
+      "messages": "Messages",
+      "profil": "Profile"
+    },
+    "specialistNav": {
+      "dossiers": "Cases",
+      "compte": "Account"
+    },
+    "coordinatorNav": {
+      "dashboard": "Dashboard",
+      "dossiers": "Cases",
+      "experts": "Experts",
+      "identites": "Identities",
+      "parametres": "Settings"
+    },
+    "userMenu": {
+      "user": "User",
+      "notProvided": "Not provided",
+      "logout": "Log out"
+    }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "aria": "Notifications",
+    "ariaUnread": "Notifications, {{count}} unread",
+    "markAllRead": "Mark all read",
+    "loading": "Loading…",
+    "empty": "No notifications yet.",
+    "time": {
+      "now": "just now",
+      "minutes": "{{count}} min ago",
+      "hours": "{{count}} h ago",
+      "days": "{{count}} d ago"
+    },
+    "types": {
+      "MESSAGE_RECU": {
+        "title": "Message from {{sender}}",
+        "titleFallback": "New secure message",
+        "preview": "Open the conversation"
+      },
+      "DOSSIER_SOUMIS": {
+        "title": "Case submitted",
+        "preview": "Your case {{reference}} is being reviewed."
+      },
+      "DOSSIER_AFFECTE": {
+        "title": "Specialist assigned",
+        "preview": "A specialist has taken on case {{reference}}."
+      },
+      "RAPPORT_DISPONIBLE": {
+        "title": "Report available",
+        "preview": "The report for case {{reference}} is ready to read."
+      },
+      "PAIEMENT_CONFIRME": {
+        "title": "Payment confirmed",
+        "preview": "Payment for case {{reference}} has been validated."
+      },
+      "NOUVEAU_DOSSIER_SPECIALISTE": {
+        "title": "New case assigned",
+        "preview": "Case {{reference}} has been assigned to you."
+      },
+      "VERIFICATION_EMAIL": {
+        "title": "Verify your e-mail",
+        "preview": "A verification code has been sent to you."
+      },
+      "MOT_DE_PASSE_RESET": {
+        "title": "Password reset",
+        "preview": "A reset link has been sent to you."
+      },
+      "IDENTITE_VALIDEE": {
+        "title": "Identity verified",
+        "preview": "Your identity document has been validated."
+      },
+      "IDENTITE_REFUSEE": {
+        "title": "Identity rejected",
+        "preview": "Please upload a new document."
+      },
+      "fallback": {
+        "title": "Notification",
+        "preview": "Case {{reference}}"
+      }
+    }
+  }
+}

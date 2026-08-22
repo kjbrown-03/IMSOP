@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+
+<html lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Informations Personnelles - IMSOP</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "background-alt": "#F8F9FA",
+                      "on-tertiary": "#ffffff",
+                      "inverse-on-surface": "#f0f0f9",
+                      "secondary-fixed": "#83fc8e",
+                      "tertiary-container": "#983c00",
+                      "outline": "#727784",
+                      "outline-variant": "#c2c6d4",
+                      "on-primary": "#ffffff",
+                      "status-warning": "#FFC107",
+                      "on-tertiary-container": "#ffc2a7",
+                      "on-background": "#191c21",
+                      "surface-container-lowest": "#ffffff",
+                      "tertiary-fixed-dim": "#ffb694",
+                      "on-primary-fixed": "#001a40",
+                      "surface-container": "#ededf6",
+                      "surface-container-high": "#e7e8f0",
+                      "surface-container-highest": "#e1e2ea",
+                      "on-error-container": "#93000a",
+                      "on-secondary-container": "#007327",
+                      "on-tertiary-fixed-variant": "#7b2f00",
+                      "on-error": "#ffffff",
+                      "surface-bright": "#f9f9ff",
+                      "inverse-primary": "#acc7ff",
+                      "secondary-fixed-dim": "#66df75",
+                      "on-secondary-fixed-variant": "#00531a",
+                      "surface-tint": "#115cb9",
+                      "surface": "#f9f9ff",
+                      "primary-fixed": "#d7e2ff",
+                      "tertiary": "#722b00",
+                      "error-container": "#ffdad6",
+                      "primary-fixed-dim": "#acc7ff",
+                      "primary-container": "#0056b3",
+                      "surface-container-low": "#f2f3fc",
+                      "on-primary-container": "#bbd0ff",
+                      "secondary": "#006e25",
+                      "status-error": "#DC3545",
+                      "on-secondary-fixed": "#002106",
+                      "tertiary-fixed": "#ffdbcc",
+                      "secondary-container": "#80f98b",
+                      "on-secondary": "#ffffff",
+                      "surface-dim": "#d9d9e2",
+                      "primary": "#003f87",
+                      "on-primary-fixed-variant": "#004491",
+                      "on-surface": "#191c21",
+                      "on-tertiary-fixed": "#351000",
+                      "on-surface-variant": "#424752",
+                      "background": "#f9f9ff",
+                      "error": "#ba1a1a",
+                      "inverse-surface": "#2e3037",
+                      "text-main": "#1A1C1E",
+                      "surface-variant": "#e1e2ea"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "stack-lg": "2rem",
+                      "margin-mobile": "1rem",
+                      "gutter": "1rem",
+                      "margin-desktop": "2rem",
+                      "stack-sm": "0.5rem",
+                      "stack-md": "1rem"
+              },
+              "fontFamily": {
+                      "body-lg": [
+                              "Inter"
+                      ],
+                      "label-sm": [
+                              "Inter"
+                      ],
+                      "headline-lg": [
+                              "Inter"
+                      ],
+                      "headline-lg-mobile": [
+                              "Inter"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "label-md": [
+                              "Inter"
+                      ],
+                      "headline-md": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "1.6",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "label-sm": [
+                              "12px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "headline-lg-mobile": [
+                              "24px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "1.5",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "label-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "letterSpacing": "0.02em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-md": [
+                              "20px",
+                              {
+                                      "lineHeight": "1.4",
+                                      "fontWeight": "600"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f9f9ff;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1;
+        }
+        /* Hide bottom nav on desktop, hide top full nav on mobile */
+        @media (min-width: 768px) {
+            .mobile-bottom-nav { display: none !important; }
+        }
+        @media (max-width: 767px) {
+            .desktop-top-nav-links { display: none !important; }
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background antialiased flex flex-col min-h-screen">
+<!-- Header (Suppressed bottom nav for linear flow, keeping top bar minimal) -->
+<header class="bg-surface dark:bg-surface-dim fixed top-0 w-full z-50 border-b border-outline-variant dark:border-outline flat no shadows flex justify-between items-center px-margin-mobile h-12 w-full">
+<div class="flex items-center gap-3">
+<!-- Back Button for task-focused flow -->
+<button class="text-on-surface-variant hover:bg-surface-container-high transition-colors active:opacity-80 rounded-full p-1 flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+</button>
+<h1 class="font-headline-md text-headline-md-mobile font-bold text-primary dark:text-primary-fixed">IMSOP</h1>
+</div>
+<div>
+<!-- Suppress trailing icon for this linear flow to focus on task -->
+<div class="w-8 h-8"></div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow pt-[48px] px-margin-mobile pb-24 md:pb-8 flex flex-col items-center md:max-w-[1200px] md:mx-auto w-full">
+<!-- Form Container -->
+<div class="w-full max-w-lg mt-stack-md flex flex-col gap-stack-lg">
+<!-- Header Section -->
+<div class="text-center md:text-left">
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg text-on-surface mb-2">Informations Personnelles</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Veuillez renseigner vos informations pour créer votre dossier médical sécurisé.</p>
+</div>
+<!-- Stepper -->
+<div class="w-full flex items-center justify-between relative px-2">
+<!-- Background Line -->
+<div class="absolute top-1/2 left-0 right-0 h-[2px] bg-outline-variant -z-10 transform -translate-y-1/2 mx-6"></div>
+<!-- Active Progress Line -->
+<div class="absolute top-1/2 left-0 w-[0%] h-[2px] bg-primary -z-10 transform -translate-y-1/2 mx-6 transition-all duration-300"></div>
+<!-- Step 1: Active -->
+<div class="flex flex-col items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center font-label-md text-label-md shadow-sm">
+                        1
+                    </div>
+<span class="font-label-sm text-label-sm text-primary">Infos</span>
+</div>
+<!-- Step 2: Inactive -->
+<div class="flex flex-col items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-surface-container-highest text-outline flex items-center justify-center font-label-md text-label-md border border-outline-variant">
+                        2
+                    </div>
+<span class="font-label-sm text-label-sm text-outline">Détails</span>
+</div>
+<!-- Step 3: Inactive -->
+<div class="flex flex-col items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-surface-container-highest text-outline flex items-center justify-center font-label-md text-label-md border border-outline-variant">
+                        3
+                    </div>
+<span class="font-label-sm text-label-sm text-outline">Validation</span>
+</div>
+</div>
+<!-- Form Fields -->
+<form action="#" class="flex flex-col gap-stack-md bg-surface-container-lowest p-6 rounded-xl border border-outline-variant shadow-sm" method="POST">
+<!-- Full Name -->
+<div class="flex flex-col gap-1">
+<label class="font-label-md text-label-md text-on-surface" for="fullName">Nom Complet</label>
+<input class="h-12 px-4 rounded-lg border border-outline-variant bg-surface focus:border-primary focus:ring-1 focus:ring-primary font-body-md text-body-md text-on-surface placeholder:text-outline-variant transition-colors" id="fullName" name="fullName" placeholder="Ex: Jean Dupont" required="" type="text"/>
+</div>
+<!-- Date of Birth -->
+<div class="flex flex-col gap-1">
+<label class="font-label-md text-label-md text-on-surface" for="dob">Date de Naissance</label>
+<input class="h-12 px-4 rounded-lg border border-outline-variant bg-surface focus:border-primary focus:ring-1 focus:ring-primary font-body-md text-body-md text-on-surface transition-colors" id="dob" name="dob" required="" type="date"/>
+</div>
+<!-- Gender -->
+<div class="flex flex-col gap-2 mt-2">
+<span class="font-label-md text-label-md text-on-surface">Genre</span>
+<div class="flex gap-4">
+<label class="flex items-center gap-2 cursor-pointer">
+<input class="w-5 h-5 text-primary border-outline-variant focus:ring-primary focus:ring-offset-background" name="gender" type="radio" value="homme"/>
+<span class="font-body-md text-body-md text-on-surface-variant">Homme</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer">
+<input class="w-5 h-5 text-primary border-outline-variant focus:ring-primary focus:ring-offset-background" name="gender" type="radio" value="femme"/>
+<span class="font-body-md text-body-md text-on-surface-variant">Femme</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer">
+<input class="w-5 h-5 text-primary border-outline-variant focus:ring-primary focus:ring-offset-background" name="gender" type="radio" value="autre"/>
+<span class="font-body-md text-body-md text-on-surface-variant">Autre</span>
+</label>
+</div>
+</div>
+<!-- Phone Number -->
+<div class="flex flex-col gap-1 mt-2">
+<label class="font-label-md text-label-md text-on-surface" for="phone">Numéro de Téléphone</label>
+<div class="flex relative">
+<span class="absolute left-4 top-1/2 -translate-y-1/2 text-outline material-symbols-outlined text-[20px]" data-icon="phone">phone</span>
+<input class="h-12 w-full pl-11 pr-4 rounded-lg border border-outline-variant bg-surface focus:border-primary focus:ring-1 focus:ring-primary font-body-md text-body-md text-on-surface placeholder:text-outline-variant transition-colors" id="phone" name="phone" placeholder="+33 6 12 34 56 78" required="" type="tel"/>
+</div>
+</div>
+<!-- Country of Residence -->
+<div class="flex flex-col gap-1">
+<label class="font-label-md text-label-md text-on-surface" for="country">Pays de Résidence</label>
+<div class="relative">
+<select class="h-12 w-full px-4 pr-10 appearance-none rounded-lg border border-outline-variant bg-surface focus:border-primary focus:ring-1 focus:ring-primary font-body-md text-body-md text-on-surface transition-colors cursor-pointer" id="country" name="country" required="">
+<option disabled="" selected="" value="">Sélectionnez un pays</option>
+<option value="sn">Sénégal</option>
+<option value="ci">Côte d'Ivoire</option>
+<option value="cm">Cameroun</option>
+<option value="fr">France</option>
+<option value="be">Belgique</option>
+<option value="ch">Suisse</option>
+</select>
+<span class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-outline material-symbols-outlined" data-icon="expand_more">expand_more</span>
+</div>
+</div>
+</form>
+<!-- Fixed Bottom Action Area (Mobile) / Normal Flow (Desktop) -->
+<div class="fixed bottom-0 left-0 w-full p-margin-mobile bg-surface/90 backdrop-blur-sm border-t border-outline-variant/50 md:relative md:bg-transparent md:border-none md:p-0 md:mt-4 z-40">
+<div class="max-w-lg mx-auto w-full">
+<button class="w-full h-12 flex items-center justify-center bg-primary text-on-primary rounded-xl font-label-md text-label-md hover:bg-primary-fixed-variant transition-colors shadow-sm active:scale-[0.98]" type="button">
+                        Suivant
+                        <span class="material-symbols-outlined ml-2 text-[20px]" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+<!-- Note: BottomNavBar is intentionally suppressed here as this is a linear/transactional onboarding flow -->
+</body></html>

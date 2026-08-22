@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+
+<html class="light" lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>IMSOP - Messages</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-surface-variant": "#424752",
+                      "on-background": "#191c21",
+                      "on-secondary-container": "#007327",
+                      "inverse-on-surface": "#f0f0f9",
+                      "on-primary-container": "#bbd0ff",
+                      "surface-tint": "#115cb9",
+                      "surface-dim": "#d9d9e2",
+                      "surface-container-low": "#f2f3fc",
+                      "error": "#ba1a1a",
+                      "surface-container-lowest": "#ffffff",
+                      "secondary-fixed": "#83fc8e",
+                      "primary-fixed": "#d7e2ff",
+                      "inverse-surface": "#2e3037",
+                      "tertiary": "#722b00",
+                      "tertiary-container": "#983c00",
+                      "surface-variant": "#e1e2ea",
+                      "on-primary-fixed-variant": "#004491",
+                      "surface-container": "#ededf6",
+                      "secondary": "#006e25",
+                      "on-primary-fixed": "#001a40",
+                      "status-warning": "#FFC107",
+                      "outline": "#727784",
+                      "primary": "#003f87",
+                      "on-secondary-fixed-variant": "#00531a",
+                      "on-tertiary-fixed-variant": "#7b2f00",
+                      "status-error": "#DC3545",
+                      "on-tertiary-container": "#ffc2a7",
+                      "surface-container-highest": "#e1e2ea",
+                      "on-secondary": "#ffffff",
+                      "secondary-fixed-dim": "#66df75",
+                      "on-tertiary-fixed": "#351000",
+                      "on-secondary-fixed": "#002106",
+                      "error-container": "#ffdad6",
+                      "surface-bright": "#f9f9ff",
+                      "primary-fixed-dim": "#acc7ff",
+                      "on-tertiary": "#ffffff",
+                      "primary-container": "#0056b3",
+                      "secondary-container": "#80f98b",
+                      "background-alt": "#F8F9FA",
+                      "on-primary": "#ffffff",
+                      "surface-container-high": "#e7e8f0",
+                      "on-error-container": "#93000a",
+                      "tertiary-fixed-dim": "#ffb694",
+                      "surface": "#f9f9ff",
+                      "tertiary-fixed": "#ffdbcc",
+                      "on-surface": "#191c21",
+                      "outline-variant": "#c2c6d4",
+                      "inverse-primary": "#acc7ff",
+                      "text-main": "#1A1C1E",
+                      "on-error": "#ffffff",
+                      "background": "#f9f9ff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "stack-lg": "2rem",
+                      "stack-sm": "0.5rem",
+                      "margin-mobile": "1rem",
+                      "stack-md": "1rem",
+                      "gutter": "1rem",
+                      "margin-desktop": "2rem"
+              },
+              "fontFamily": {
+                      "label-md": ["Inter"],
+                      "label-sm": ["Inter"],
+                      "body-md": ["Inter"],
+                      "headline-md": ["Inter"],
+                      "headline-lg-mobile": ["Inter"],
+                      "body-lg": ["Inter"],
+                      "headline-lg": ["Inter"]
+              },
+              "fontSize": {
+                      "label-md": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                      "label-sm": ["12px", {"lineHeight": "1.2", "fontWeight": "500"}],
+                      "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                      "headline-md": ["20px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                      "headline-lg-mobile": ["24px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                      "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                      "headline-lg": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}]
+              }
+            }
+          }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background antialiased min-h-screen pb-20 md:pb-0">
+<!-- TopAppBar -->
+<header class="bg-surface dark:bg-surface-dim docked full-width top-0 border-b border-outline-variant dark:border-outline flat no shadows flex justify-between items-center px-margin-mobile w-full h-14 z-40 fixed md:relative">
+<button class="text-primary dark:text-primary-fixed-dim hover:bg-surface-container-low dark:hover:bg-inverse-surface transition-colors duration-200 ease-in-out p-2 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+</button>
+<h1 class="text-headline-md font-headline-md font-bold text-primary dark:text-primary-fixed">IMSOP</h1>
+<button class="text-primary dark:text-primary-fixed-dim hover:bg-surface-container-low dark:hover:bg-inverse-surface transition-colors duration-200 ease-in-out p-2 rounded-full flex items-center justify-center relative">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-1 right-1 w-2.5 h-2.5 bg-status-error rounded-full border-2 border-surface"></span>
+</button>
+</header>
+<main class="max-w-[1200px] mx-auto px-margin-mobile md:px-margin-desktop py-stack-md pt-20 md:pt-stack-md">
+<div class="mb-stack-lg flex justify-between items-end">
+<div>
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg text-primary mb-stack-sm">Messages Sécurisés</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Communications confidentielles avec votre équipe médicale.</p>
+</div>
+<!-- Action Button Desktop Only -->
+<button class="hidden md:flex items-center gap-2 bg-primary text-on-primary font-label-md text-label-md px-4 py-2 rounded-lg hover:bg-primary-container transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="add_comment">add_comment</span>
+                Nouveau Message
+            </button>
+</div>
+<!-- Search / Filter Bar -->
+<div class="mb-stack-md relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline" data-icon="search">search</span>
+<input class="w-full bg-surface-container-low border border-outline-variant rounded-lg py-3 pl-10 pr-4 font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all" placeholder="Rechercher une conversation..." type="text"/>
+</div>
+<!-- Message List -->
+<div class="bg-surface rounded-xl border border-outline-variant overflow-hidden shadow-sm">
+<!-- Unread Message 1 -->
+<a class="flex items-start p-4 border-b border-outline-variant hover:bg-surface-container-lowest transition-colors relative block group cursor-pointer bg-primary-fixed/20" href="#">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-primary"></div>
+<div class="flex-shrink-0 relative mr-4">
+<img class="w-12 h-12 rounded-full object-cover border border-outline-variant" data-alt="A highly detailed professional portrait of a male doctor in a modern, well-lit clinical setting. He is wearing a white coat and a subtle smile, conveying trust and expertise. The lighting is soft and natural, emphasizing a high-end corporate medical aesthetic with a clean white and soft blue background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBlld9FFZFDaPWg37NkHpRABhWYBDfuGLFpkIHnDWyLz6Glm6-CsJ_B1McT8J14T3FITaFFQFFgDOUxJ0Ryg_HJC0UMs5SF7pJfREFX0wsyEum8T9vvj79dd2Zy_ef8qyvuUI7JBjMAsxNv2-AWZ3mr0ygohX0aXgcLqTHAUiBxPolD5WsAUibfnJA5k5kX5J-TFwcyugijI5imEWsu0OR7-lanF4s3F8qftwlETnp4dmi1C4rQMEZT"/>
+<span class="absolute bottom-0 right-0 w-3 h-3 bg-secondary rounded-full border-2 border-surface"></span>
+</div>
+<div class="flex-grow min-w-0">
+<div class="flex justify-between items-baseline mb-1">
+<h3 class="font-label-md text-label-md text-on-surface truncate pr-2">Dr. Laurent Dubois</h3>
+<span class="flex-shrink-0 font-label-sm text-label-sm text-primary font-bold">10:42</span>
+</div>
+<p class="font-label-sm text-label-sm text-primary mb-1">Cardiologue - Dossier #8492</p>
+<p class="font-body-md text-body-md text-on-surface truncate font-semibold">Les résultats de votre ECG sont disponibles. Tout semble normal, mais je voudrais...</p>
+</div>
+<div class="flex-shrink-0 ml-3 flex flex-col items-end">
+<span class="bg-primary text-on-primary font-label-sm text-[10px] px-1.5 py-0.5 rounded-full mt-1 flex items-center justify-center min-w-[20px]">1</span>
+</div>
+</a>
+<!-- Read Message 2 -->
+<a class="flex items-start p-4 border-b border-outline-variant hover:bg-surface-container-lowest transition-colors relative block group cursor-pointer" href="#">
+<div class="flex-shrink-0 relative mr-4">
+<div class="w-12 h-12 rounded-full bg-surface-variant flex items-center justify-center text-on-surface-variant font-headline-md text-headline-md border border-outline-variant">
+                        MC
+                    </div>
+</div>
+<div class="flex-grow min-w-0">
+<div class="flex justify-between items-baseline mb-1">
+<h3 class="font-label-md text-label-md text-on-surface truncate pr-2">Marie Coordinatrice</h3>
+<span class="flex-shrink-0 font-label-sm text-label-sm text-on-surface-variant">Hier</span>
+</div>
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-1">Coordination IMSOP</p>
+<p class="font-body-md text-body-md text-on-surface-variant truncate">Votre rendez-vous pour l'IRM a été confirmé pour le 15 Novembre à 14h00 à la Clinique des Lilas.</p>
+</div>
+</a>
+<!-- Read Message 3 -->
+<a class="flex items-start p-4 border-b border-outline-variant hover:bg-surface-container-lowest transition-colors relative block group cursor-pointer" href="#">
+<div class="flex-shrink-0 relative mr-4">
+<img class="w-12 h-12 rounded-full object-cover border border-outline-variant" data-alt="A highly detailed professional portrait of a female doctor in a modern, well-lit clinical setting. She is wearing a dark blue scrub top and a stethoscope, conveying trust and expertise. The lighting is soft and natural, emphasizing a high-end corporate medical aesthetic with a clean white and soft blue background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCb-eieAuNlEEmTqZcPijNxOWT2OsudngTrreMZawWpuMJPakkBEzrnybvBrCdY3rmKcSx1vhPllGOiHe-77UiTQNjemtH4dnmh319I5qlZndkeeRqtl7XhrMjlkPI7t918W45ajzCRn8jEBgB9XlXtbnpu3pcG3ApCaiegwB00brimLBZe9R5Alc2jvO-no_jv9hskT9BFXeTAqUR_doH2kj5Hr0AJj1HgsBa1hcw4rfX-bwLp-bfS"/>
+<span class="absolute bottom-0 right-0 w-3 h-3 bg-outline rounded-full border-2 border-surface"></span>
+</div>
+<div class="flex-grow min-w-0">
+<div class="flex justify-between items-baseline mb-1">
+<h3 class="font-label-md text-label-md text-on-surface truncate pr-2">Dr. Sophie Martin</h3>
+<span class="flex-shrink-0 font-label-sm text-label-sm text-on-surface-variant">Lun</span>
+</div>
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-1">Neurologue</p>
+<p class="font-body-md text-body-md text-on-surface-variant truncate">Merci pour les documents complémentaires. Je vais les examiner et revenir vers vous.</p>
+</div>
+</a>
+<!-- Read Message 4 -->
+<a class="flex items-start p-4 hover:bg-surface-container-lowest transition-colors relative block group cursor-pointer" href="#">
+<div class="flex-shrink-0 relative mr-4">
+<div class="w-12 h-12 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-headline-md text-headline-md border border-outline-variant">
+<span class="material-symbols-outlined" data-icon="support_agent">support_agent</span>
+</div>
+</div>
+<div class="flex-grow min-w-0">
+<div class="flex justify-between items-baseline mb-1">
+<h3 class="font-label-md text-label-md text-on-surface truncate pr-2">Support Technique</h3>
+<span class="flex-shrink-0 font-label-sm text-label-sm text-on-surface-variant">12 Oct</span>
+</div>
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-1">Assistance Plateforme</p>
+<p class="font-body-md text-body-md text-on-surface-variant truncate">Le problème de téléchargement de vos documents PDF a été résolu.</p>
+</div>
+</a>
+</div>
+<!-- Mobile FAB -->
+<button class="md:hidden fixed bottom-24 right-4 w-14 h-14 bg-primary text-on-primary rounded-xl shadow-lg flex items-center justify-center hover:bg-primary-container transition-colors active:scale-95 z-40">
+<span class="material-symbols-outlined" data-icon="add_comment">add_comment</span>
+</button>
+</main>
+<!-- BottomNavBar -->
+<nav class="md:hidden bg-surface dark:bg-inverse-surface shadow-md fixed bottom-0 w-full z-50 flex justify-around items-center px-4 py-2 h-16 rounded-t-xl border-t border-outline-variant/30">
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant p-2 scale-95 active:scale-90 transition-transform duration-150 hover:bg-surface-container-highest dark:hover:bg-on-surface-variant rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-label-sm text-label-sm mt-1">Accueil</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant p-2 scale-95 active:scale-90 transition-transform duration-150 hover:bg-surface-container-highest dark:hover:bg-on-surface-variant rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="folder_shared">folder_shared</span>
+<span class="font-label-sm text-label-sm mt-1">Dossiers</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-secondary-container dark:bg-on-secondary-fixed-variant text-on-secondary-container dark:text-secondary-fixed rounded-full px-4 py-1 scale-95 active:scale-90 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="chat">chat</span>
+<span class="font-label-sm text-label-sm mt-1">Messages</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant p-2 scale-95 active:scale-90 transition-transform duration-150 hover:bg-surface-container-highest dark:hover:bg-on-surface-variant rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-label-sm text-label-sm mt-1">Profil</span>
+</a>
+</nav>
+</body></html>

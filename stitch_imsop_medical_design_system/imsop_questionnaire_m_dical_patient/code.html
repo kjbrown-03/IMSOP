@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+
+<html class="light" lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Questionnaire Médical - IMSOP</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-tint": "#115cb9",
+                      "surface-container-low": "#f2f3fc",
+                      "on-secondary-container": "#007327",
+                      "on-primary": "#ffffff",
+                      "primary-container": "#0056b3",
+                      "tertiary-fixed-dim": "#ffb694",
+                      "on-tertiary-fixed": "#351000",
+                      "text-main": "#1A1C1E",
+                      "status-warning": "#FFC107",
+                      "tertiary": "#722b00",
+                      "inverse-surface": "#2e3037",
+                      "primary-fixed": "#d7e2ff",
+                      "secondary": "#006e25",
+                      "background-alt": "#F8F9FA",
+                      "on-tertiary": "#ffffff",
+                      "on-error": "#ffffff",
+                      "background": "#f9f9ff",
+                      "surface-container": "#ededf6",
+                      "secondary-fixed-dim": "#66df75",
+                      "on-tertiary-fixed-variant": "#7b2f00",
+                      "on-surface-variant": "#424752",
+                      "on-tertiary-container": "#ffc2a7",
+                      "surface-bright": "#f9f9ff",
+                      "status-error": "#DC3545",
+                      "surface-container-lowest": "#ffffff",
+                      "surface-variant": "#e1e2ea",
+                      "primary": "#003f87",
+                      "inverse-on-surface": "#f0f0f9",
+                      "secondary-container": "#80f98b",
+                      "on-surface": "#191c21",
+                      "outline": "#727784",
+                      "error-container": "#ffdad6",
+                      "on-primary-container": "#bbd0ff",
+                      "on-error-container": "#93000a",
+                      "secondary-fixed": "#83fc8e",
+                      "error": "#ba1a1a",
+                      "on-background": "#191c21",
+                      "on-secondary-fixed-variant": "#00531a",
+                      "primary-fixed-dim": "#acc7ff",
+                      "surface": "#f9f9ff",
+                      "on-primary-fixed": "#001a40",
+                      "on-secondary-fixed": "#002106",
+                      "tertiary-container": "#983c00",
+                      "on-secondary": "#ffffff",
+                      "surface-dim": "#d9d9e2",
+                      "surface-container-high": "#e7e8f0",
+                      "surface-container-highest": "#e1e2ea",
+                      "tertiary-fixed": "#ffdbcc",
+                      "inverse-primary": "#acc7ff",
+                      "on-primary-fixed-variant": "#004491",
+                      "outline-variant": "#c2c6d4"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "stack-lg": "2rem",
+                      "stack-md": "1rem",
+                      "stack-sm": "0.5rem",
+                      "gutter": "1rem",
+                      "margin-mobile": "1rem",
+                      "margin-desktop": "2rem"
+              },
+              "fontFamily": {
+                      "label-md": ["Inter"],
+                      "label-sm": ["Inter"],
+                      "headline-lg": ["Inter"],
+                      "body-md": ["Inter"],
+                      "headline-lg-mobile": ["Inter"],
+                      "headline-md": ["Inter"],
+                      "body-lg": ["Inter"]
+              },
+              "fontSize": {
+                      "label-md": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                      "label-sm": ["12px", {"lineHeight": "1.2", "fontWeight": "500"}],
+                      "headline-lg": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                      "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                      "headline-lg-mobile": ["24px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                      "headline-md": ["20px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                      "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface min-h-screen flex flex-col md:flex-row">
+<!-- Mobile Top App Bar (Suppress Nav shell logic: Transactional page) -->
+<!-- The prompt says "Écran de questionnaire médical initial... Formulaire...". This is a linear/transactional flow (onboarding/stepper). Thus, we SUPPRESS the main TopAppBar, SideNav, and BottomNavBar as per the Shared Components Logic. -->
+<!-- Custom Header for Stepper / Form Flow -->
+<header class="fixed top-0 w-full z-50 bg-surface border-b border-outline-variant flex justify-between items-center px-margin-mobile h-12 md:hidden">
+<button aria-label="Fermer le questionnaire" class="text-on-surface-variant flex items-center justify-center p-2">
+<span class="material-symbols-outlined" data-icon="close">close</span>
+</button>
+<span class="font-headline-md text-headline-md font-bold text-primary">IMSOP</span>
+<div class="w-10"></div> <!-- Spacer for balance -->
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 w-full max-w-[1200px] mx-auto pt-16 pb-24 md:py-8 px-margin-mobile md:px-margin-desktop flex flex-col">
+<!-- Desktop Header / Back Button -->
+<div class="hidden md:flex items-center mb-stack-lg">
+<button aria-label="Retour" class="text-on-surface-variant hover:bg-surface-container rounded-full p-2 mr-4 transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+</button>
+<h1 class="font-headline-lg text-headline-lg text-on-surface">Nouveau Dossier Médical</h1>
+</div>
+<!-- Stepper Component -->
+<div class="mb-stack-lg w-full max-w-2xl mx-auto">
+<div class="flex items-center justify-between relative">
+<!-- Line background -->
+<div class="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-surface-container z-0 rounded-full"></div>
+<!-- Line progress -->
+<div class="absolute left-0 top-1/2 -translate-y-1/2 w-1/2 h-1 bg-primary z-0 rounded-full"></div>
+<!-- Step 1: Completed -->
+<div class="relative z-10 flex flex-col items-center">
+<div class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center font-label-md text-label-md shadow-sm">
+<span class="material-symbols-outlined text-[16px]" data-icon="check">check</span>
+</div>
+<span class="mt-2 font-label-sm text-label-sm text-on-surface-variant hidden md:block">Identité</span>
+</div>
+<!-- Step 2: Active -->
+<div class="relative z-10 flex flex-col items-center">
+<div class="w-8 h-8 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-label-md text-label-md ring-4 ring-surface shadow-sm">
+                        2
+                    </div>
+<span class="mt-2 font-label-md text-label-md text-primary hidden md:block">Détails Médicaux</span>
+</div>
+<!-- Step 3: Pending -->
+<div class="relative z-10 flex flex-col items-center">
+<div class="w-8 h-8 rounded-full bg-surface-variant text-on-surface-variant flex items-center justify-center font-label-md text-label-md shadow-sm">
+                        3
+                    </div>
+<span class="mt-2 font-label-sm text-label-sm text-on-surface-variant hidden md:block">Documents</span>
+</div>
+</div>
+<!-- Mobile Step Indicator text -->
+<div class="text-center mt-4 md:hidden">
+<span class="font-label-md text-label-md text-primary">Étape 2: Détails Médicaux</span>
+</div>
+</div>
+<!-- Form Area -->
+<div class="flex-1 max-w-2xl mx-auto w-full">
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 shadow-sm">
+<h2 class="font-headline-md text-headline-md text-on-surface mb-6">Motif de consultation &amp; Symptômes</h2>
+<form class="flex flex-col gap-stack-md">
+<!-- Field: Motif Principal -->
+<div class="flex flex-col gap-2">
+<label class="font-label-md text-label-md text-on-surface" for="motif">Motif principal de la demande <span class="text-status-error">*</span></label>
+<select class="w-full bg-surface border border-outline-variant rounded-lg px-4 py-3 font-body-md text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-shadow appearance-none" id="motif">
+<option disabled="" selected="" value="">Sélectionnez une catégorie...</option>
+<option value="second_avis">Demande de second avis médical</option>
+<option value="diag_difficile">Diagnostic complexe / incertain</option>
+<option value="suivi">Suivi post-opératoire</option>
+<option value="autre">Autre motif</option>
+</select>
+<!-- Custom Select Arrow -->
+<div class="relative">
+<span class="material-symbols-outlined absolute right-4 -top-[38px] pointer-events-none text-on-surface-variant" data-icon="expand_more">expand_more</span>
+</div>
+</div>
+<!-- Field: Description des symptômes -->
+<div class="flex flex-col gap-2">
+<label class="font-label-md text-label-md text-on-surface" for="symptomes">Description des symptômes <span class="text-status-error">*</span></label>
+<textarea class="w-full bg-surface border border-outline-variant rounded-lg px-4 py-3 font-body-md text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-shadow resize-y" id="symptomes" placeholder="Décrivez vos symptômes actuels, leur date d'apparition et leur évolution..." rows="4"></textarea>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Soyez le plus précis possible pour aider le spécialiste.</p>
+</div>
+<!-- Field: Antécédents (Radio group as cards) -->
+<div class="flex flex-col gap-2 mt-2">
+<label class="font-label-md text-label-md text-on-surface">Avez-vous des antécédents médicaux pertinents ?</label>
+<div class="grid grid-cols-2 gap-4">
+<label class="cursor-pointer">
+<input class="peer sr-only" name="antecedents" type="radio" value="oui"/>
+<div class="bg-surface border border-outline-variant rounded-lg p-4 text-center peer-checked:bg-primary-container peer-checked:border-primary peer-checked:text-on-primary-container transition-colors hover:bg-surface-container">
+<span class="font-label-md text-label-md">Oui</span>
+</div>
+</label>
+<label class="cursor-pointer">
+<input checked="" class="peer sr-only" name="antecedents" type="radio" value="non"/>
+<div class="bg-surface border border-outline-variant rounded-lg p-4 text-center peer-checked:bg-primary-container peer-checked:border-primary peer-checked:text-on-primary-container transition-colors hover:bg-surface-container">
+<span class="font-label-md text-label-md">Non</span>
+</div>
+</label>
+</div>
+</div>
+<!-- Field: Traitement en cours -->
+<div class="flex flex-col gap-2 mt-2">
+<label class="font-label-md text-label-md text-on-surface" for="traitement">Traitements en cours (Optionnel)</label>
+<input class="w-full bg-surface border border-outline-variant rounded-lg px-4 py-3 font-body-md text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-shadow" id="traitement" placeholder="Médicaments, posologie..." type="text"/>
+</div>
+</form>
+</div>
+</div>
+<!-- Fixed Bottom Actions (Mobile) / Normal Flow (Desktop) -->
+<div class="fixed bottom-0 left-0 w-full bg-surface border-t border-outline-variant p-margin-mobile md:static md:bg-transparent md:border-none md:p-0 md:mt-stack-lg max-w-2xl mx-auto flex gap-4">
+<button class="flex-1 md:flex-none md:w-32 bg-surface-container-high hover:bg-surface-variant text-on-surface font-label-md text-label-md py-3 px-6 rounded-lg transition-colors flex items-center justify-center">
+                Retour
+            </button>
+<button class="flex-[2] md:flex-1 bg-primary hover:bg-primary-container text-on-primary font-label-md text-label-md py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2 shadow-sm">
+                Suivant
+                <span class="material-symbols-outlined text-[20px]" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+<!-- Spacer for mobile fixed bottom bar -->
+<div class="h-20 md:hidden"></div>
+</main>
+</body></html>
