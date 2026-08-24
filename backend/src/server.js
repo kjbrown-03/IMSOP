@@ -3,6 +3,7 @@ const env = require('./config/env')
 const { prisma } = require('./lib/prisma')
 const { ensureBucket } = require('./lib/s3')
 const { startMessagingCloseCron } = require('./services/messagingCloseService')
+const { initCallSignaling } = require('./services/callSignalingService')
 
 // A single uncaught error must never take the whole server down for every
 // connected user - log it and fail fast so the process manager (PM2/Docker/
@@ -29,6 +30,8 @@ async function start() {
   const server = app.listen(env.port, () => {
     console.log(`IMSOP backend listening on port ${env.port} (${env.nodeEnv})`)
   })
+
+  initCallSignaling(server)
 
   // Let in-flight requests finish before the process actually exits, so a
   // deploy/restart under load doesn't cut off users mid-request.

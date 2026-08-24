@@ -29,7 +29,7 @@ export default function AdminLayout({ children }) {
   ]
 
   return (
-    <DashboardShell title="IMSOP Admin" links={links}>
+    <DashboardShell title="IMSOP Admin" links={links} profileTo="/profil">
       {children}
     </DashboardShell>
   )

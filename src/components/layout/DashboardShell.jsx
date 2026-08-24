@@ -117,7 +117,7 @@ export default function DashboardShell({
       </Sidebar>
 
       <div className="flex flex-1 min-w-0 md:p-2">
-        <div className="flex flex-col flex-1 min-w-0 bg-white dark:bg-neutral-900 md:rounded-2xl md:border border-slate-200 dark:border-neutral-700 overflow-hidden shadow-sm">
+        <div className="flex flex-col flex-1 min-w-0 bg-white dark:bg-neutral-900 md:rounded-2xl md:border border-slate-200 dark:border-neutral-700 shadow-sm">
           {/* Desktop header: the mobile equivalent lives in the sidebar top bar. */}
           <header className="hidden md:flex items-center justify-between gap-4 px-8 h-16 shrink-0 border-b border-slate-100 dark:border-neutral-800">
             <div className="flex items-center gap-3 min-w-0">
@@ -134,7 +134,7 @@ export default function DashboardShell({
             </div>
           </header>
 
-          <main className="flex-1 overflow-y-auto px-4 sm:px-6 md:px-8 py-6 md:py-8 pb-28 md:pb-8 animate-fade-in">
+          <main className="flex-1 overflow-y-auto md:rounded-b-2xl px-4 sm:px-6 md:px-8 py-6 md:py-8 pb-28 md:pb-8 animate-fade-in">
             <div className="max-w-7xl mx-auto w-full flex flex-col gap-6">{children}</div>
           </main>
         </div>

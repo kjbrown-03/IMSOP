@@ -6,6 +6,12 @@ export default {
   content: ['./index.html', './src/**/*.{js,jsx}'],
   theme: {
     extend: {
+      // Without this, a bare `border`/`border-b` utility falls back to
+      // Tailwind's hardcoded gray-200 instead of the theme's dark-aware
+      // --color-border — invisible/wrong-colored hairlines in dark mode.
+      borderColor: {
+        DEFAULT: 'var(--color-border, #e2e8f0)',
+      },
       colors: {
         'background-alt': 'var(--color-background-alt, #F8F9FA)',
         'tertiary-container': 'var(--color-tertiary-container, #983c00)',
@@ -58,6 +64,34 @@ export default {
         'on-primary-fixed': 'var(--color-on-primary-fixed, #001a40)',
         'on-tertiary-container': 'var(--color-on-tertiary-container, #ffc2a7)',
         'on-secondary-fixed': 'var(--color-on-secondary-fixed, #002106)',
+
+        // shadcn-style semantic aliases used by the messaging UI (src/components/blocks).
+        // Each one reuses an existing --color-* variable so it stays on the
+        // app's own light/dark palette instead of introducing a second one.
+        foreground: 'var(--color-text-main, #1A1C1E)',
+        card: 'var(--color-surface, #f9f9ff)',
+        'card-foreground': 'var(--color-text-main, #1A1C1E)',
+        popover: 'var(--color-surface, #f9f9ff)',
+        'popover-foreground': 'var(--color-text-main, #1A1C1E)',
+        'primary-foreground': 'var(--color-on-primary, #ffffff)',
+        'secondary-foreground': 'var(--color-on-secondary, #ffffff)',
+        muted: 'var(--color-muted-surface, #f1f5f9)',
+        'muted-foreground': 'var(--color-text-secondary, #64748b)',
+        accent: 'var(--color-muted-surface, #f1f5f9)',
+        'accent-foreground': 'var(--color-text-main, #1A1C1E)',
+        destructive: 'var(--color-error, #ba1a1a)',
+        'destructive-foreground': 'var(--color-on-error, #ffffff)',
+        border: 'var(--color-border, #e2e8f0)',
+        input: 'var(--color-border, #e2e8f0)',
+        ring: 'var(--color-primary, #003f87)',
+        sidebar: 'var(--color-surface, #f9f9ff)',
+        'sidebar-foreground': 'var(--color-text-main, #1A1C1E)',
+        'sidebar-primary': 'var(--color-primary, #003f87)',
+        'sidebar-primary-foreground': 'var(--color-on-primary, #ffffff)',
+        'sidebar-accent': 'var(--color-muted-surface, #f1f5f9)',
+        'sidebar-accent-foreground': 'var(--color-text-main, #1A1C1E)',
+        'sidebar-border': 'var(--color-border, #e2e8f0)',
+        'sidebar-ring': 'var(--color-primary, #003f87)',
       },
       borderRadius: {
         DEFAULT: '0.25rem',

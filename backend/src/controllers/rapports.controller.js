@@ -6,6 +6,8 @@ const { buildRapportPdf } = require('../lib/pdf')
 const { loadDossierWithAccessCheck } = require('./dossiers.controller')
 const { safeUserSelect } = require('../lib/selectors')
 
+const DESTINATAIRES_RAPPORT_FINAL = new Set(['PATIENT', 'MEDECIN_LOCAL'])
+
 async function upsertBrouillon(req, res) {
   const { dossier, error, message } = await loadDossierWithAccessCheck(req, req.params.dossierId)
   if (error) return res.status(error).json({ message })
@@ -97,7 +99,7 @@ async function getRapport(req, res) {
   const rapport = await prisma.rapport.findUnique({ where: { dossierId: dossier.id } })
   if (!rapport) return res.status(404).json({ message: 'Aucun rapport pour ce dossier' })
 
-  if (req.userRole === 'PATIENT' && rapport.status !== 'VALIDE') {
+  if (DESTINATAIRES_RAPPORT_FINAL.has(req.userRole) && rapport.status !== 'VALIDE') {
     return res.status(403).json({ message: "Le rapport n'est pas encore disponible" })
   }
 
@@ -110,7 +112,7 @@ async function downloadRapportPdf(req, res) {
 
   const { error, message } = await loadDossierWithAccessCheck(req, rapport.dossierId)
   if (error) return res.status(error).json({ message })
-  if (req.userRole === 'PATIENT' && rapport.status !== 'VALIDE') {
+  if (DESTINATAIRES_RAPPORT_FINAL.has(req.userRole) && rapport.status !== 'VALIDE') {
     return res.status(403).json({ message: "Le rapport n'est pas encore disponible" })
   }
 

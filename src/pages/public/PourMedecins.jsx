@@ -8,7 +8,7 @@ export default function PourMedecins() {
   return (
     <div className="bg-[var(--color-bg)] text-[var(--color-text-main)] antialiased font-body-md overflow-x-hidden min-h-screen transition-colors duration-300">
       <Navbar />
-      <main className="pt-16">
+      <main className="pt-16 pb-28 md:pb-0">
         <section className="w-full py-16 px-margin-mobile md:px-margin-desktop bg-[var(--color-surface)] border-b border-[var(--color-border)]">
           <div className="max-w-[900px] mx-auto text-center">
             <span className="font-label-sm text-label-sm text-[var(--color-primary)] uppercase tracking-wider">

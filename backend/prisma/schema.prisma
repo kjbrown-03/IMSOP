@@ -22,15 +22,19 @@ enum DossierStatus {
   BROUILLON
   SOUMIS
   EN_ATTENTE_PAIEMENT
+  EN_ATTENTE_DOCUMENTS
   EN_VERIFICATION
   COMPLET
   EN_ATTENTE_AFFECTATION
   AFFECTE
+  ACCEPTE_PAR_SPECIALISTE
   EN_ANALYSE
+  INFORMATION_COMPLEMENTAIRE_DEMANDEE
   RAPPORT_EN_PREPARATION
   RAPPORT_SOUMIS
   RAPPORT_VALIDE
   RAPPORT_TRANSMIS
+  SUIVI
   CLOTURE
   ANNULE
   REFUSE
@@ -52,11 +56,30 @@ enum DocumentCategorie {
   AUTRE
 }
 
+enum VerificationStatus {
+  EN_VERIFICATION
+  VALIDE
+  SUSPENDU
+  EXPIRE
+  REVOQUE
+}
+
+enum ProfessionalDocumentType {
+  DIPLOME
+  LICENCE
+  INSCRIPTION_ORDRE
+  PIECE_IDENTITE
+  CV
+  REFERENCES
+  AUTRE
+}
+
 enum ConsentementType {
   TRAITEMENT_DONNEES
   TRANSMISSION_SPECIALISTE
   TELECONSULTATION
   COMMUNICATION_MEDECIN
+  UTILISATION_ANONYMISEE_RECHERCHE
 }
 
 enum PaiementStatus {
@@ -90,13 +113,14 @@ model User {
   specialiste  Specialiste?
   medecinLocal MedecinLocal?
 
-  refreshTokens       RefreshToken[]
-  twoFactorChallenges TwoFactorChallenge[]
-  passwordResetTokens PasswordResetToken[]
-  documentsUploaded   Document[]           @relation("DocumentUploadedBy")
-  messagesSent        Message[]            @relation("MessageSender")
-  auditLogs           AuditLog[]
-  notifications       Notification[]
+  refreshTokens         RefreshToken[]
+  twoFactorChallenges   TwoFactorChallenge[]
+  passwordResetTokens   PasswordResetToken[]
+  documentsUploaded     Document[]             @relation("DocumentUploadedBy")
+  professionalDocuments ProfessionalDocument[]
+  messagesSent          Message[]              @relation("MessageSender")
+  auditLogs             AuditLog[]
+  notifications         Notification[]
 
   @@index([role])
 }
@@ -172,9 +196,16 @@ model Specialiste {
   etablissement String?
   langues       String?
   bio           String?
-  verified      Boolean  @default(false)
   disponible    Boolean  @default(true)
   createdAt     DateTime @default(now())
+
+  verificationStatus   VerificationStatus @default(EN_VERIFICATION)
+  // Renseigne quand un coordinateur refuse, suspend ou revoque l'habilitation.
+  verificationMotif    String?
+  verifiedAt           DateTime?
+  verifiedById         String?
+  // Une licence d'exercice a une date de fin : au-dela, le compte passe EXPIRE.
+  habilitationExpireLe DateTime?
 
   dossiers Dossier[]
   rapports Rapport[]
@@ -191,8 +222,15 @@ model MedecinLocal {
   // manuellement par un coordinateur avant que le compte puisse être rattaché
   // à un dossier.
   numeroOrdre   String?
-  verified      Boolean  @default(false)
   createdAt     DateTime @default(now())
+
+  verificationStatus   VerificationStatus @default(EN_VERIFICATION)
+  // Renseigne quand un coordinateur refuse, suspend ou revoque l'habilitation.
+  verificationMotif    String?
+  verifiedAt           DateTime?
+  verifiedById         String?
+  // Une licence d'exercice a une date de fin : au-dela, le compte passe EXPIRE.
+  habilitationExpireLe DateTime?
 
   dossiers Dossier[]
 }
@@ -325,6 +363,27 @@ model Rapport {
   validatedAt DateTime?
 
   @@index([dossierId])
+}
+
+model ProfessionalDocument {
+  id         String                   @id @default(uuid())
+  userId     String
+  user       User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type       ProfessionalDocumentType
+  filename   String
+  mimeType   String
+  sizeBytes  Int
+  storageKey String
+  createdAt  DateTime                 @default(now())
+
+  @@index([userId])
+}
+
+// CDC 11 : le numero de dossier est un compteur, pas un tirage aleatoire.
+// Une ligne par cle (ex. "DOSSIER-2026"), incrementee atomiquement en base.
+model SequenceCompteur {
+  cle    String @id
+  valeur Int    @default(0)
 }
 
 model AuditLog {

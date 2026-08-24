@@ -51,11 +51,14 @@ export default function MotDePasseOublie() {
               />
             </div>
             <button
-              className="w-full flex justify-center items-center py-3 px-4 rounded-lg shadow-sm font-label-md text-label-md text-on-primary bg-primary hover:bg-primary-container transition-colors h-12 disabled:opacity-60"
+              className="group relative overflow-hidden w-full flex justify-center items-center py-3 px-4 rounded-lg shadow-sm border border-[var(--color-primary)] bg-[var(--color-surface)] h-12 disabled:opacity-60 z-[1] transition-all duration-300 active:scale-[0.98]"
               type="submit"
               disabled={loading}
             >
-              {loading ? t('common.sending') : t('auth.forgotPassword.submit')}
+              <div className="absolute inset-0 w-full h-full bg-[var(--color-primary)] scale-y-0 origin-bottom transition-transform duration-500 ease-in-out group-hover:scale-y-100 z-[-1]" />
+              <span className="relative z-10 flex items-center justify-center font-label-md text-label-md text-[var(--color-primary)] transition-colors duration-500 ease-in-out group-hover:text-[var(--color-on-primary)]">
+                {loading ? t('common.sending') : t('auth.forgotPassword.submit')}
+              </span>
             </button>
           </form>
         )}

@@ -16,7 +16,10 @@ const { dossierScoped: rapportDossierRoutes, idScoped: rapportIdRoutes } = requi
 const specialistesRoutes = require('./routes/specialistes.routes')
 const adminRoutes = require('./routes/admin.routes')
 const patientsRoutes = require('./routes/patients.routes')
+const professionnelsRoutes = require('./routes/professionnels.routes')
 const notificationsRoutes = require('./routes/notifications.routes')
+const usersRoutes = require('./routes/users.routes')
+const oauthRoutes = require('./routes/oauth.routes')
 
 const { notFoundHandler, errorHandler } = require('./middleware/errorHandler')
 const { apiLimiter } = require('./middleware/rateLimit')
@@ -42,6 +45,7 @@ app.get('/api/health', (req, res) => {
 app.use(/^\/api\/(?!paiements\/webhook)/, apiLimiter)
 
 app.use('/api/auth', authRoutes)
+app.use('/api/auth/oauth', oauthRoutes)
 app.use('/api/dossiers', dossiersRoutes)
 app.use('/api/dossiers/:dossierId/documents', documentsRoutes)
 app.use('/api/documents', documentDownloadRoutes)
@@ -54,7 +58,9 @@ app.use('/api/rapports', rapportIdRoutes)
 app.use('/api/specialistes', specialistesRoutes)
 app.use('/api/admin', adminRoutes)
 app.use('/api/patients', patientsRoutes)
+app.use('/api/professionnels', professionnelsRoutes)
 app.use('/api/notifications', notificationsRoutes)
+app.use('/api/users', usersRoutes)
 
 app.use(notFoundHandler)
 app.use(errorHandler)

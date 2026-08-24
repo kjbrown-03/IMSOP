@@ -46,4 +46,16 @@ module.exports = {
   messaging: {
     autoCloseDays: parseInt(process.env.MESSAGING_AUTO_CLOSE_DAYS || '14', 10),
   },
+
+  // Optional: "Sign in with Google" only appears functional once these are
+  // set. Without them the button still renders (existing frontend design)
+  // but oauth.controller rejects the attempt with a clear message instead
+  // of crashing, so a partial/dev deployment stays usable.
+  oauth: {
+    backendBaseUrl: process.env.BACKEND_BASE_URL || `http://localhost:${process.env.PORT || '4000'}`,
+    google: {
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    },
+  },
 }

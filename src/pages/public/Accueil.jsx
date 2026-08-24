@@ -43,7 +43,7 @@ export default function Accueil() {
     <div className="bg-[var(--color-bg)] text-[var(--color-text-main)] antialiased font-sans overflow-x-hidden transition-colors duration-300">
       <Navbar />
 
-      <main className="min-h-screen">
+      <main className="min-h-screen pb-28 md:pb-0">
         <section className="relative w-full pt-28 pb-16 px-4 md:px-8 max-w-[1440px] mx-auto overflow-hidden min-h-[700px] flex flex-col justify-center">
           {/* Background shapes */}
           <div className="absolute top-0 left-0 w-full h-24 bg-[var(--color-surface-container-highest)] -z-10 transition-colors duration-300" />

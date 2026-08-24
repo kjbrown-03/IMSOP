@@ -10,15 +10,19 @@ const STATUS_ICON = {
   BROUILLON: { bg: 'bg-slate-100 text-slate-700 ring-1 ring-slate-300', icon: Clock },
   SOUMIS: { bg: 'bg-primary-50 text-primary-700 ring-1 ring-primary-600/20', icon: RefreshCw },
   EN_ATTENTE_PAIEMENT: { bg: 'bg-amber-50 text-amber-700 ring-1 ring-amber-600/20', icon: AlertTriangle },
+  EN_ATTENTE_DOCUMENTS: { bg: 'bg-amber-50 text-amber-700 ring-1 ring-amber-600/20', icon: AlertTriangle },
   EN_VERIFICATION: { bg: 'bg-primary-50 text-primary-700 ring-1 ring-primary-600/20', icon: RefreshCw },
   COMPLET: { bg: 'bg-primary-50 text-primary-700 ring-1 ring-primary-600/20', icon: CheckCircle },
   EN_ATTENTE_AFFECTATION: { bg: 'bg-amber-50 text-amber-700 ring-1 ring-amber-600/20', icon: Clock },
   AFFECTE: { bg: 'bg-primary-50 text-primary-700 ring-1 ring-primary-600/20', icon: RefreshCw },
+  ACCEPTE_PAR_SPECIALISTE: { bg: 'bg-primary-50 text-primary-700 ring-1 ring-primary-600/20', icon: CheckCircle },
   EN_ANALYSE: { bg: 'bg-primary-50 text-primary-700 ring-1 ring-primary-600/20', icon: RefreshCw },
+  INFORMATION_COMPLEMENTAIRE_DEMANDEE: { bg: 'bg-amber-50 text-amber-700 ring-1 ring-amber-600/20', icon: AlertTriangle },
   RAPPORT_EN_PREPARATION: { bg: 'bg-primary-50 text-primary-700 ring-1 ring-primary-600/20', icon: RefreshCw },
   RAPPORT_SOUMIS: { bg: 'bg-primary-50 text-primary-700 ring-1 ring-primary-600/20', icon: RefreshCw },
   RAPPORT_VALIDE: { bg: 'bg-secondary-50 text-secondary-700 ring-1 ring-secondary-600/20', icon: CheckCircle },
   RAPPORT_TRANSMIS: { bg: 'bg-secondary-50 text-secondary-700 ring-1 ring-secondary-600/20', icon: CheckCircle },
+  SUIVI: { bg: 'bg-secondary-50 text-secondary-700 ring-1 ring-secondary-600/20', icon: RefreshCw },
   CLOTURE: { bg: 'bg-slate-100 text-slate-700 ring-1 ring-slate-300', icon: CheckCircle },
   ANNULE: { bg: 'bg-rose-50 text-rose-700 ring-1 ring-rose-300', icon: AlertTriangle },
   REFUSE: { bg: 'bg-rose-50 text-rose-700 ring-1 ring-rose-300', icon: AlertTriangle },
@@ -161,7 +165,7 @@ export default function DashboardPatient() {
               >
                 <div className="flex justify-between items-start">
                   <div className="flex flex-col">
-                    <span className="font-bold text-slate-900 text-lg">{d.specialiteRequise}</span>
+                    <span className="font-bold text-slate-900 dark:text-slate-100 text-lg">{d.specialiteRequise}</span>
                     <span className="text-xs font-semibold text-slate-500 mt-1">
                       {t('patient.dashboard.reference')}: #{d.reference} • {formatDate(d.createdAt)}
                     </span>

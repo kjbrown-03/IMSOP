@@ -58,17 +58,17 @@ export default function QuestionnaireMedical() {
   }
 
   return (
-    <div className="bg-gradient-to-br from-slate-50 to-primary-50/30 text-slate-900 min-h-screen flex flex-col md:flex-row font-sans selection:bg-primary-500/30">
+    <div className="bg-gradient-to-br from-slate-50 to-primary-50/30 dark:from-neutral-900 dark:to-neutral-900 text-slate-900 dark:text-white min-h-screen flex flex-col md:flex-row font-sans selection:bg-primary-500/30">
       <header className="fixed top-0 w-full z-50 glass-card border-b-0 flex justify-between items-center px-4 h-16 md:hidden">
         <button
           aria-label={t('patient.questionnaire.closeAria')}
-          className="text-slate-500 flex items-center justify-center p-2 hover:bg-slate-100 rounded-full transition-colors"
+          className="text-slate-500 dark:text-slate-400 flex items-center justify-center p-2 hover:bg-slate-100 dark:hover:bg-neutral-800 rounded-full transition-colors"
           onClick={() => navigate('/patient/dossiers')}
         >
           <X className="w-6 h-6" />
         </button>
-        <span className="font-display text-lg font-bold text-slate-900 flex items-center gap-2">
-           <Activity className="w-5 h-5 text-primary-600" /> IMSOP
+        <span className="font-display text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+           <Activity className="w-5 h-5 text-primary-600 dark:text-primary-400" /> IMSOP
         </span>
         <div className="w-10" />
       </header>
@@ -77,48 +77,48 @@ export default function QuestionnaireMedical() {
         <div className="hidden md:flex items-center mb-10">
           <button
             aria-label={t('common.back')}
-            className="h-10 w-10 shrink-0 rounded-full bg-white border border-slate-200/60 shadow-sm flex items-center justify-center hover:bg-slate-50 transition-colors text-slate-600 mr-4 group"
+            className="h-10 w-10 shrink-0 rounded-full bg-white dark:bg-neutral-800 border border-slate-200/60 dark:border-neutral-700 shadow-sm flex items-center justify-center hover:bg-slate-50 dark:hover:bg-neutral-700 transition-colors text-slate-600 dark:text-slate-400 mr-4 group"
             onClick={() => navigate('/patient/dossiers')}
           >
             <ArrowLeft className="w-5 h-5 group-hover:-translate-x-0.5 transition-transform" />
           </button>
-          <h1 className="font-display text-3xl font-bold text-slate-900">{t('patient.questionnaire.title')}</h1>
+          <h1 className="font-display text-3xl font-bold text-slate-900 dark:text-white">{t('patient.questionnaire.title')}</h1>
         </div>
 
         <div className="mb-10 w-full max-w-3xl mx-auto">
           <div className="flex items-center justify-between relative">
-            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-slate-200 z-0 rounded-full" />
+            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-slate-200 dark:bg-neutral-700 z-0 rounded-full" />
             <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1/2 h-1 bg-primary-500 z-0 rounded-full" />
 
             <div className="relative z-10 flex flex-col items-center">
               <div className="w-10 h-10 rounded-full bg-primary-600 text-white flex items-center justify-center font-bold shadow-md shadow-primary-900/20">
                 <Check className="w-5 h-5" />
               </div>
-              <span className="mt-3 font-semibold text-xs uppercase tracking-wider text-slate-500 hidden md:block">
+              <span className="mt-3 font-semibold text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400 hidden md:block">
                 {t('patient.questionnaire.stepIdentity')}
               </span>
             </div>
 
             <div className="relative z-10 flex flex-col items-center">
-              <div className="w-10 h-10 rounded-full bg-primary-50 text-primary-700 flex items-center justify-center font-bold ring-4 ring-white shadow-sm border border-primary-200">
+              <div className="w-10 h-10 rounded-full bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 flex items-center justify-center font-bold ring-4 ring-white dark:ring-neutral-900 shadow-sm border border-primary-200 dark:border-primary-800">
                 2
               </div>
-              <span className="mt-3 font-bold text-xs uppercase tracking-wider text-primary-700 hidden md:block">
+              <span className="mt-3 font-bold text-xs uppercase tracking-wider text-primary-700 dark:text-primary-400 hidden md:block">
                 {t('patient.questionnaire.stepMedical')}
               </span>
             </div>
 
             <div className="relative z-10 flex flex-col items-center">
-              <div className="w-10 h-10 rounded-full bg-white text-slate-400 border border-slate-200 flex items-center justify-center font-bold shadow-sm">
+              <div className="w-10 h-10 rounded-full bg-white dark:bg-neutral-800 text-slate-400 dark:text-slate-500 border border-slate-200 dark:border-neutral-700 flex items-center justify-center font-bold shadow-sm">
                 3
               </div>
-              <span className="mt-3 font-semibold text-xs uppercase tracking-wider text-slate-400 hidden md:block">
+              <span className="mt-3 font-semibold text-xs uppercase tracking-wider text-slate-400 dark:text-slate-500 hidden md:block">
                 {t('patient.questionnaire.stepDocuments')}
               </span>
             </div>
           </div>
           <div className="text-center mt-6 md:hidden">
-            <span className="font-bold text-sm text-primary-700 bg-primary-50 px-4 py-1.5 rounded-full border border-primary-100">
+            <span className="font-bold text-sm text-primary-700 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/30 px-4 py-1.5 rounded-full border border-primary-100 dark:border-primary-800">
               {t('patient.questionnaire.stepMobile')}
             </span>
           </div>
@@ -126,24 +126,24 @@ export default function QuestionnaireMedical() {
 
         <div className="flex-1 max-w-3xl mx-auto w-full">
           <div className="glass-card rounded-3xl p-6 sm:p-8 shadow-sm">
-            <h2 className="text-xl font-bold text-slate-900 mb-8 flex items-center gap-3 border-b border-slate-100/60 pb-4">
-               <FileText className="w-6 h-6 text-primary-600" /> {t('patient.questionnaire.formTitle')}
+            <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-8 flex items-center gap-3 border-b border-slate-100/60 dark:border-neutral-700 pb-4">
+               <FileText className="w-6 h-6 text-primary-600 dark:text-primary-400" /> {t('patient.questionnaire.formTitle')}
             </h2>
 
             {error && (
-              <div className="mb-6 bg-rose-50 border border-rose-200 text-rose-700 text-sm font-medium rounded-xl px-4 py-3">
+              <div className="mb-6 bg-rose-50 dark:bg-rose-900/30 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-400 text-sm font-medium rounded-xl px-4 py-3">
                 {error}
               </div>
             )}
 
             <form className="flex flex-col gap-8" onSubmit={onSubmit} id="questionnaire-form">
               <div className="flex flex-col gap-2.5">
-                <label className="font-bold text-sm text-slate-900" htmlFor="specialite">
-                  {t('patient.questionnaire.specialiteLabel')} <span className="text-rose-500">*</span>
+                <label className="font-bold text-sm text-slate-900 dark:text-white" htmlFor="specialite">
+                  {t('patient.questionnaire.specialiteLabel')} <span className="text-rose-500 dark:text-rose-400">*</span>
                 </label>
                 <div className="relative">
                   <select
-                    className="w-full bg-slate-50 border border-slate-200/60 rounded-xl px-4 py-3.5 text-sm font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all appearance-none cursor-pointer hover:bg-white"
+                    className="w-full bg-slate-50 dark:bg-neutral-800 border border-slate-200/60 dark:border-neutral-700 rounded-xl px-4 py-3.5 text-sm font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all appearance-none cursor-pointer hover:bg-white dark:hover:bg-neutral-700"
                     id="specialite"
                     required
                     value={specialiteKey}
@@ -158,17 +158,17 @@ export default function QuestionnaireMedical() {
                       </option>
                     ))}
                   </select>
-                  <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 w-5 h-5" />
+                  <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 dark:text-slate-500 w-5 h-5" />
                 </div>
               </div>
 
               <div className="flex flex-col gap-2.5">
-                <label className="font-bold text-sm text-slate-900" htmlFor="motif">
-                  {t('patient.questionnaire.motifLabel')} <span className="text-rose-500">*</span>
+                <label className="font-bold text-sm text-slate-900 dark:text-white" htmlFor="motif">
+                  {t('patient.questionnaire.motifLabel')} <span className="text-rose-500 dark:text-rose-400">*</span>
                 </label>
                 <div className="relative">
                   <select
-                    className="w-full bg-slate-50 border border-slate-200/60 rounded-xl px-4 py-3.5 text-sm font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all appearance-none cursor-pointer hover:bg-white"
+                    className="w-full bg-slate-50 dark:bg-neutral-800 border border-slate-200/60 dark:border-neutral-700 rounded-xl px-4 py-3.5 text-sm font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all appearance-none cursor-pointer hover:bg-white dark:hover:bg-neutral-700"
                     id="motif"
                     required
                     value={motif}
@@ -182,16 +182,16 @@ export default function QuestionnaireMedical() {
                     <option value="suivi">{t('patient.questionnaire.motifSuivi')}</option>
                     <option value="autre">{t('patient.questionnaire.motifAutre')}</option>
                   </select>
-                  <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 w-5 h-5" />
+                  <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 dark:text-slate-500 w-5 h-5" />
                 </div>
               </div>
 
               <div className="flex flex-col gap-2.5">
-                <label className="font-bold text-sm text-slate-900" htmlFor="symptomes">
-                  {t('patient.questionnaire.symptomesLabel')} <span className="text-rose-500">*</span>
+                <label className="font-bold text-sm text-slate-900 dark:text-white" htmlFor="symptomes">
+                  {t('patient.questionnaire.symptomesLabel')} <span className="text-rose-500 dark:text-rose-400">*</span>
                 </label>
                 <textarea
-                  className="w-full bg-slate-50 border border-slate-200/60 rounded-xl px-4 py-3.5 text-sm font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all resize-y placeholder:text-slate-400 hover:bg-white min-h-[120px]"
+                  className="w-full bg-slate-50 dark:bg-neutral-800 border border-slate-200/60 dark:border-neutral-700 rounded-xl px-4 py-3.5 text-sm font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all resize-y placeholder:text-slate-400 dark:placeholder:text-slate-500 hover:bg-white dark:hover:bg-neutral-700 min-h-[120px]"
                   id="symptomes"
                   placeholder={t('patient.questionnaire.symptomesPlaceholder')}
                   rows={4}
@@ -199,13 +199,13 @@ export default function QuestionnaireMedical() {
                   value={symptomes}
                   onChange={(e) => setSymptomes(e.target.value)}
                 />
-                <p className="text-xs font-semibold text-slate-500 mt-1">
+                <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-1">
                   {t('patient.questionnaire.symptomesHint')}
                 </p>
               </div>
 
               <div className="flex flex-col gap-3">
-                <label className="font-bold text-sm text-slate-900">
+                <label className="font-bold text-sm text-slate-900 dark:text-white">
                   {t('patient.questionnaire.antecedentsQuestion')}
                 </label>
                 <div className="grid grid-cols-2 gap-4">
@@ -216,8 +216,8 @@ export default function QuestionnaireMedical() {
                       onClick={() => setAntecedents(val)}
                       className={`rounded-xl p-4 text-center font-bold text-sm capitalize transition-all border shadow-sm ${
                         antecedents === val
-                          ? 'bg-primary-50 border-primary-500 text-primary-700 shadow-primary-900/5'
-                          : 'bg-slate-50 border-slate-200/60 text-slate-700 hover:bg-white'
+                          ? 'bg-primary-50 dark:bg-primary-900/30 border-primary-500 text-primary-700 dark:text-primary-400 shadow-primary-900/5'
+                          : 'bg-slate-50 dark:bg-neutral-800 border-slate-200/60 dark:border-neutral-700 text-slate-700 dark:text-slate-300 hover:bg-white dark:hover:bg-neutral-700'
                       }`}
                     >
                       {t(`patient.questionnaire.antecedents${val === 'oui' ? 'Oui' : 'Non'}`)}
@@ -227,12 +227,12 @@ export default function QuestionnaireMedical() {
               </div>
 
               <div className="flex flex-col gap-2.5">
-                <label className="font-bold text-sm text-slate-900" htmlFor="traitement">
+                <label className="font-bold text-sm text-slate-900 dark:text-white" htmlFor="traitement">
                   {t('patient.questionnaire.traitementLabel')}{' '}
-                  <span className="text-slate-400 font-medium">{t('patient.questionnaire.optional')}</span>
+                  <span className="text-slate-400 dark:text-slate-500 font-medium">{t('patient.questionnaire.optional')}</span>
                 </label>
                 <input
-                  className="w-full bg-slate-50 border border-slate-200/60 rounded-xl px-4 py-3.5 text-sm font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all placeholder:text-slate-400 hover:bg-white"
+                  className="w-full bg-slate-50 dark:bg-neutral-800 border border-slate-200/60 dark:border-neutral-700 rounded-xl px-4 py-3.5 text-sm font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all placeholder:text-slate-400 dark:placeholder:text-slate-500 hover:bg-white dark:hover:bg-neutral-700"
                   id="traitement"
                   placeholder={t('patient.questionnaire.traitementPlaceholder')}
                   type="text"
@@ -246,14 +246,14 @@ export default function QuestionnaireMedical() {
 
         <div className="fixed bottom-0 left-0 w-full glass-card border-b-0 border-x-0 p-4 md:static md:bg-transparent md:border-none md:p-0 md:mt-8 max-w-3xl mx-auto flex gap-4 md:shadow-none shadow-[0_-8px_30px_rgba(0,0,0,0.04)]">
           <button
-            className="flex-1 md:flex-none md:w-32 bg-white border border-slate-200 hover:bg-slate-50 hover:border-slate-300 text-slate-700 font-bold py-3.5 px-6 rounded-xl transition-all shadow-sm"
+            className="flex-1 md:flex-none md:w-32 bg-white dark:bg-neutral-800 border border-slate-200 dark:border-neutral-700 hover:bg-slate-50 dark:hover:bg-neutral-700 hover:border-slate-300 dark:hover:border-neutral-600 text-slate-700 dark:text-slate-300 font-bold py-3.5 px-6 rounded-xl transition-all shadow-sm"
             type="button"
             onClick={() => navigate('/patient/dossiers')}
           >
             {t('patient.questionnaire.back')}
           </button>
           <button
-            className="flex-[2] md:flex-1 bg-slate-900 hover:bg-primary-600 text-white font-bold py-3.5 px-6 rounded-xl transition-all flex items-center justify-center gap-2 shadow-md shadow-slate-900/10 group disabled:opacity-60"
+            className="flex-[2] md:flex-1 bg-slate-900 dark:bg-white hover:bg-primary-600 dark:hover:bg-primary-500 text-white dark:text-slate-900 dark:hover:text-white font-bold py-3.5 px-6 rounded-xl transition-all flex items-center justify-center gap-2 shadow-md shadow-slate-900/10 group disabled:opacity-60"
             type="submit"
             form="questionnaire-form"
             disabled={submitting}

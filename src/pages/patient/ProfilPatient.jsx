@@ -2,6 +2,7 @@ import { useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import PatientShell from '../../components/layout/PatientShell'
+import AvatarUploader from '../../components/ui/AvatarUploader'
 import { useAuthStore } from '../../store/useAuthStore'
 import { useLanguageStore } from '../../store/useLanguageStore'
 import {
@@ -9,8 +10,6 @@ import {
   ShieldCheck, ShieldAlert, ShieldQuestion, UploadCloud, Loader2,
 } from 'lucide-react'
 
-const AVATAR =
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuCoaSuIidDTjWtdTFJd0KrP9XPr3mg1gOpIiFkj0985V-rIxmsgdPPv84IY9kdSbwb7dT3vdpgHjEYOtZv--BnGxnfcoFUcD6X-zIN2ljixr4UWCxoGmfYY6qORhOJLruxxe64Jcf9_G-E2M-PvPgvNikBh3VUCgS2NFRtu7rSGE9KJygLC1ibHIM_N4gsqjHmTa1n18z1bXkYNPsMWRF9M1Y9PHznOY5GJHgflzxgNAuDO8VP19ED3'
 
 export default function ProfilPatient() {
   const navigate = useNavigate()
@@ -64,12 +63,7 @@ export default function ProfilPatient() {
   return (
     <PatientShell title={t('patient.profile.title')}>
       <section className="flex flex-col md:flex-row items-center md:items-start gap-6 glass-card dark:bg-neutral-900 p-6 md:p-8 rounded-3xl animate-fade-in-up shadow-sm">
-        <div className="relative w-28 h-28 md:w-32 md:h-32 rounded-full overflow-hidden border-4 border-white dark:border-neutral-800 shadow-lg flex-shrink-0 group">
-          <img className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300" src={user?.avatarUrl || AVATAR} alt="Photo de profil" />
-          <button className="absolute bottom-2 right-2 bg-primary-600 text-white p-2 rounded-full shadow-md hover:bg-primary-700 transition-colors z-10">
-            <Edit2 className="w-4 h-4" />
-          </button>
-        </div>
+        <AvatarUploader size={128} />
 
         <div className="flex flex-col items-center md:items-start text-center md:text-left pt-2">
           <h1 className="text-2xl md:text-3xl font-display font-bold text-slate-900 dark:text-white">

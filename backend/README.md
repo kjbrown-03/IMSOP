@@ -1,5 +1,8 @@
 # IMSOP Backend
 
+> Document fonctionnel de référence : [`docs/cahier-des-charges.md`](../docs/cahier-des-charges.md)
+> — écarts code ↔ CDC : [`docs/ecarts-implementation.md`](../docs/ecarts-implementation.md)
+
 API Node.js/Express + PostgreSQL (Prisma) + MinIO (documents) pour le MVP IMSOP.
 
 ## Démarrage
@@ -15,6 +18,7 @@ npm run dev                   # http://localhost:4000
 Comptes de test (mot de passe défini par `SEED_PASSWORD` dans `.env`, ou généré aléatoirement et affiché dans les logs si absent) :
 - `patient@imsop.dev`
 - `specialiste@imsop.dev` (2FA activée)
+- `medecin@imsop.dev` (2FA activée) — médecin traitant local
 - `coordinateur@imsop.dev` (2FA activée)
 - `admin@imsop.dev` (2FA activée)
 
@@ -22,11 +26,13 @@ En développement, le code 2FA n'est pas réellement envoyé par email : il est 
 
 ## Sécurité — points non négociables déjà en place
 
+- **Médecin local** : le patient désigne lui-même son médecin traitant sur un dossier (`POST /api/dossiers/:id/medecin-local`, par e-mail) et peut lui retirer l'accès à tout moment (`DELETE`). Le consentement `COMMUNICATION_MEDECIN` est écrit dans la même transaction, et l'accès est cloisonné au dossier désigné exactement comme celui du spécialiste.
 - **RBAC** : `src/middleware/rbac.js` + `loadDossierWithAccessCheck` dans `dossiers.controller.js` — un patient ne voit que son dossier, un spécialiste que les dossiers qui lui sont assignés.
 - **Audit trail** : `src/services/auditService.js`, appelé à chaque accès/modification sensible (consultation dossier, upload/téléchargement document, consentement, paiement, message, rapport).
 - **Paiement** : `src/controllers/paiements.controller.js#webhook` ne débloque jamais un dossier sur la seule foi du retour frontend — il ré-interroge l'API CinetPay (`verifyTransaction`) avant de faire passer le statut du paiement à `PAYE`.
 - **Mots de passe** : bcrypt (12 rounds). **JWT** : access token courte durée (15 min) + refresh token rotatif stocké haché en base.
 - **Documents** : stockés dans MinIO (S3-compatible), jamais sur le disque de l'API ; seules les métadonnées sont en base Postgres.
+- **Pièces jointes en messagerie** : `POST /api/dossiers/:id/messages/piece-jointe` (multipart). Le fichier devient un `Document` du dossier à part entière — même bucket, même piste d'audit, même téléchargement par URL signée — et le message pointe dessus. Une pièce déposée dans la conversation apparaît donc aussi dans le dossier que lit le spécialiste.
 - **Messagerie** : fermeture automatique 14 jours après l'affectation du dossier (`Dossier.messagingClosesAt`, vérifié à l'envoi + cron quotidien `messagingCloseService.js`).
 - **Validation d'entrée** : chaque route valide `body`/`query`/`params` avec un schéma Zod strict (`src/schemas/`, appliqué via `src/middleware/validate.js`) avant d'atteindre le contrôleur — rejet des champs inconnus et des types invalides en 400 plutôt qu'une 500 Prisma.
 - **Rate limiting** : `src/middleware/rateLimit.js` limite les tentatives sur `/api/auth/*` (brute force) et sur le webhook CinetPay (anti-flood).

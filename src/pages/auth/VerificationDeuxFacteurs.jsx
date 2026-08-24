@@ -2,13 +2,7 @@ import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '../../store/useAuthStore'
-
-const DASHBOARD_BY_ROLE = {
-  PATIENT: '/patient/dossiers',
-  COORDINATEUR: '/coordinateur/tableau-de-bord',
-  SPECIALISTE: '/specialiste/tableau-de-bord',
-  MEDECIN_LOCAL: '/medecin/dossiers',
-}
+import { ROLE_REDIRECTS } from '../../constants/roleRedirects'
 
 export default function VerificationDeuxFacteurs() {
   const navigate = useNavigate()
@@ -25,7 +19,7 @@ export default function VerificationDeuxFacteurs() {
     e.preventDefault()
     if (!challengeToken) return
     const result = await verifyTwoFactor(challengeToken, code)
-    if (result.ok) navigate(DASHBOARD_BY_ROLE[role] || '/')
+    if (result.ok) navigate(ROLE_REDIRECTS[role] || '/')
   }
 
   if (!challengeToken) {

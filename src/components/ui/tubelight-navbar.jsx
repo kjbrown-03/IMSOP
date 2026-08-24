@@ -3,6 +3,14 @@ import { motion } from 'framer-motion'
 import { Link, useLocation } from 'react-router-dom'
 import { cn } from '@/lib/utils'
 
+// Classes ecrites en toutes lettres : le JIT de Tailwind scanne le source, il ne
+// verrait pas un nom de classe reconstruit dynamiquement (`hidden ${bp}:inline`).
+const BREAKPOINTS = {
+  sm: { label: 'hidden sm:inline', icon: 'sm:hidden', padding: 'px-4 sm:px-6' },
+  md: { label: 'hidden md:inline', icon: 'md:hidden', padding: 'px-4 md:px-6' },
+  lg: { label: 'hidden lg:inline', icon: 'lg:hidden', padding: 'px-4 lg:px-6' },
+}
+
 /**
  * Barre de navigation "tubelight" : pilule arrondie avec un halo lumineux qui
  * glisse sous l'onglet actif (animation partagee via layoutId).
@@ -14,8 +22,11 @@ import { cn } from '@/lib/utils'
  *   integree dans un conteneur parent (`false`)
  * @param {(item: Object) => void} [props.onSelect] si fourni, chaque onglet est
  *   un <button> qui delegue la navigation (utile pour les ancres avec scroll doux)
+ * @param {'sm'|'md'|'lg'} [props.labelsFrom] palier a partir duquel les libelles
+ *   remplacent les icones. A monter si les libelles sont longs.
  */
-export function NavBar({ items, className, floating = true, onSelect }) {
+export function NavBar({ items, className, floating = true, onSelect, labelsFrom = 'md' }) {
+  const responsive = BREAKPOINTS[labelsFrom] ?? BREAKPOINTS.md
   const { pathname } = useLocation()
   const [activeTab, setActiveTab] = useState(
     () => items.find((item) => item.url === pathname)?.name ?? items[0].name,
@@ -42,8 +53,8 @@ export function NavBar({ items, className, floating = true, onSelect }) {
 
           const content = (
             <>
-              <span className="hidden md:inline">{item.name}</span>
-              <span className="md:hidden">
+              <span className={responsive.label}>{item.name}</span>
+              <span className={responsive.icon} aria-hidden="true">
                 <Icon size={18} strokeWidth={2.5} />
               </span>
               {isActive && (
@@ -65,7 +76,8 @@ export function NavBar({ items, className, floating = true, onSelect }) {
           )
 
           const classes = cn(
-            'relative cursor-pointer rounded-full px-6 py-2 text-sm font-semibold transition-colors',
+            'relative cursor-pointer whitespace-nowrap rounded-full py-2 text-sm font-semibold transition-colors',
+            responsive.padding,
             'text-[var(--color-on-surface)]/80 hover:text-[var(--color-primary)]',
             isActive && 'bg-[var(--color-surface-container-high)] text-[var(--color-primary)]',
           )
@@ -74,6 +86,8 @@ export function NavBar({ items, className, floating = true, onSelect }) {
             <button
               key={item.name}
               type="button"
+              aria-label={item.name}
+              aria-current={isActive ? 'page' : undefined}
               onClick={() => {
                 setActiveTab(item.name)
                 onSelect(item)
@@ -86,6 +100,8 @@ export function NavBar({ items, className, floating = true, onSelect }) {
             <Link
               key={item.name}
               to={item.url}
+              aria-label={item.name}
+              aria-current={isActive ? 'page' : undefined}
               onClick={() => setActiveTab(item.name)}
               className={classes}
             >

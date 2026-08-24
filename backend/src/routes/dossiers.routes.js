@@ -16,6 +16,10 @@ router.post('/:id/soumettre', requireRole('PATIENT'), validate(schema.idParam), 
 router.post('/:id/assigner', requireRole('COORDINATEUR', 'ADMIN'), validate(schema.assignerSpecialiste), ctrl.assignerSpecialiste)
 router.post('/:id/accepter', requireRole('SPECIALISTE'), validate(schema.idParam), ctrl.accepterDossier)
 router.post('/:id/refuser', requireRole('SPECIALISTE'), validate(schema.refuserDossier), ctrl.refuserDossier)
+router.post('/:id/analyser', requireRole('SPECIALISTE'), validate(schema.idParam), ctrl.demarrerAnalyse)
+router.post('/:id/demander-complement', requireRole('SPECIALISTE'), validate(schema.demanderComplement), ctrl.demanderComplement)
+router.post('/:id/complement-fourni', requireRole('PATIENT', 'MEDECIN_LOCAL', 'COORDINATEUR', 'ADMIN'), validate(schema.idParam), ctrl.complementFourni)
+router.post('/:id/statut', requireRole('COORDINATEUR', 'ADMIN'), validate(schema.changerStatut), ctrl.changerStatut)
 router.post('/:id/medecin-local', requireRole('PATIENT'), validate(schema.designerMedecinLocal), ctrl.designerMedecinLocal)
 router.delete('/:id/medecin-local', requireRole('PATIENT'), validate(schema.idParam), ctrl.retirerMedecinLocal)
 

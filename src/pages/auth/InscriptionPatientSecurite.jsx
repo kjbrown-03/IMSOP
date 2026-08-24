@@ -182,17 +182,23 @@ export default function InscriptionPatientSecurite() {
 
               <div className="flex gap-4 pt-stack-lg">
                 <button
-                  className="w-1/3 h-12 flex items-center justify-center bg-[var(--color-surface)] border border-[var(--color-border)] rounded-full font-label-md text-label-md text-[var(--color-text-main)] hover:bg-[var(--color-bg)] transition-colors"
+                  className="group relative overflow-hidden w-1/3 h-12 flex items-center justify-center bg-[var(--color-surface)] border border-[var(--color-border)] rounded-full z-[1] transition-all duration-300 active:scale-[0.98]"
                   type="button"
                   onClick={() => navigate('/inscription')}
                 >
-                  {t('auth.registerSecurity.back')}
+                  <div className="absolute inset-0 w-full h-full bg-[var(--color-bg)] scale-y-0 origin-bottom transition-transform duration-500 ease-in-out group-hover:scale-y-100 z-[-1]" />
+                  <span className="relative z-10 flex items-center justify-center font-label-md text-label-md text-[var(--color-text-main)] transition-colors duration-500 ease-in-out">
+                    {t('auth.registerSecurity.back')}
+                  </span>
                 </button>
                 <button
-                  className="w-2/3 h-12 flex items-center justify-center bg-[var(--color-primary)] text-[var(--color-on-primary)] rounded-full font-label-md text-label-md shadow-sm hover:bg-[var(--color-primary-container)] transition-colors"
+                  className="group relative overflow-hidden w-2/3 h-12 flex items-center justify-center bg-[var(--color-surface)] border border-[var(--color-primary)] rounded-full shadow-sm z-[1] transition-all duration-300 active:scale-[0.98]"
                   type="submit"
                 >
-                  {t('auth.registerSecurity.next')} <span className="material-symbols-outlined ml-2 text-sm">arrow_forward</span>
+                  <div className="absolute inset-0 w-full h-full bg-[var(--color-primary)] scale-y-0 origin-bottom transition-transform duration-500 ease-in-out group-hover:scale-y-100 z-[-1]" />
+                  <span className="relative z-10 flex items-center justify-center font-label-md text-label-md text-[var(--color-primary)] transition-colors duration-500 ease-in-out group-hover:text-[var(--color-on-primary)]">
+                    {t('auth.registerSecurity.next')} <span className="material-symbols-outlined ml-2 text-sm">arrow_forward</span>
+                  </span>
                 </button>
               </div>
 

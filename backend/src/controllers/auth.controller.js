@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken')
 const { prisma } = require('../lib/prisma')
 const { signAccessToken, signRefreshToken } = require('../middleware/auth')
 const { notify } = require('../services/notificationService')
+const { genererPatientRef } = require('../services/referenceService')
 const env = require('../config/env')
 
 const ROLES_REQUIRING_2FA = new Set(['SPECIALISTE', 'MEDECIN_LOCAL', 'COORDINATEUR', 'ADMIN'])
@@ -31,12 +32,15 @@ function serializeUser(user) {
     identityDocumentSubmitted: !!user.patient?.identityDocumentKey,
     identityRejectedReason: user.patient?.identityRejectedReason,
     specialite: user.specialiste?.specialite ?? user.medecinLocal?.specialite,
-    verified: user.specialiste?.verified,
     disponible: user.specialiste?.disponible,
-    etablissement: user.medecinLocal?.etablissement,
+    etablissement: user.medecinLocal?.etablissement ?? user.specialiste?.etablissement,
     numeroOrdre: user.medecinLocal?.numeroOrdre,
-    // Set by a coordinator once the ordre registration number has been checked.
-    medecinVerified: user.medecinLocal?.verified,
+    // CDC §16 : EN_VERIFICATION | VALIDE | SUSPENDU | EXPIRE | REVOQUE.
+    // Le front s'en sert pour afficher l'état de l'habilitation et, le cas
+    // échéant, le motif d'un refus ou d'une suspension.
+    verificationStatus: user.specialiste?.verificationStatus ?? user.medecinLocal?.verificationStatus,
+    verificationMotif: user.specialiste?.verificationMotif ?? user.medecinLocal?.verificationMotif,
+    habilitationExpireLe: user.specialiste?.habilitationExpireLe ?? user.medecinLocal?.habilitationExpireLe,
   }
 }
 
@@ -58,6 +62,20 @@ async function sendEmailVerificationCode(user) {
   // notify() records the notification then hands the SMTP round-trip off to the
   // background, so awaiting it does not slow registration down.
   await notify(user.id, user.email, 'VERIFICATION_EMAIL', { name: user.fullName, code })
+}
+
+async function issueTwoFactorChallenge(user) {
+  const code = crypto.randomInt(100000, 999999).toString()
+  const codeHash = hashToken(code)
+
+  await prisma.twoFactorChallenge.create({
+    data: { userId: user.id, codeHash, expiresAt: new Date(Date.now() + 10 * 60 * 1000) },
+  })
+
+  await notify(user.id, user.email, 'MESSAGE_RECU', { name: user.fullName, reference: 'Code de vérification' })
+  console.log(`[2FA] Code for ${user.email}: ${code}`)
+
+  return jwt.sign({ sub: user.id, purpose: '2fa' }, env.jwt.accessSecret, { expiresIn: '10m' })
 }
 
 async function issueSession(user) {
@@ -87,8 +105,7 @@ async function registerPatient(req, res) {
   if (existing) return res.status(409).json({ message: 'Un compte existe déjà avec cet email' })
 
   const passwordHash = await bcrypt.hash(password, 12)
-  const year = new Date().getFullYear()
-  const patientRef = `IMS-${year}-${crypto.randomInt(1000, 9999)}`
+  const patientRef = await genererPatientRef()
 
   const user = await prisma.user.create({
     data: {
@@ -178,17 +195,7 @@ async function login(req, res) {
   }
 
   if (ROLES_REQUIRING_2FA.has(user.role) || user.twoFactorEnabled) {
-    const code = crypto.randomInt(100000, 999999).toString()
-    const codeHash = hashToken(code)
-
-    await prisma.twoFactorChallenge.create({
-      data: { userId: user.id, codeHash, expiresAt: new Date(Date.now() + 10 * 60 * 1000) },
-    })
-
-    await notify(user.id, user.email, 'MESSAGE_RECU', { name: user.fullName, reference: 'Code de vérification' })
-    console.log(`[2FA] Code for ${user.email}: ${code}`)
-
-    const challengeToken = jwt.sign({ sub: user.id, purpose: '2fa' }, env.jwt.accessSecret, { expiresIn: '10m' })
+    const challengeToken = await issueTwoFactorChallenge(user)
     return res.json({ twoFactorRequired: true, challengeToken })
   }
 
@@ -344,4 +351,5 @@ module.exports = {
   registerMedecinLocal,
   registerPatient, login, verifyTwoFactor, refresh, logout, me,
   forgotPassword, resetPassword, verifyEmail, resendEmailVerification,
+  issueSession, issueTwoFactorChallenge, ROLES_REQUIRING_2FA,
 }

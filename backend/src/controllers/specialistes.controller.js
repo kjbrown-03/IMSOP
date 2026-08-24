@@ -1,4 +1,5 @@
 const { prisma } = require('../lib/prisma')
+const { logAction } = require('../services/auditService')
 
 async function listSpecialistes(req, res) {
   const { specialite, pays, disponible, page, pageSize } = req.query
@@ -27,7 +28,7 @@ async function getRecommandations(req, res) {
   if (!dossier) return res.status(404).json({ message: 'Dossier introuvable' })
 
   const specialistes = await prisma.specialiste.findMany({
-    where: { specialite: { contains: dossier.specialiteRequise, mode: 'insensitive' }, verified: true, disponible: true },
+    where: { specialite: { contains: dossier.specialiteRequise, mode: 'insensitive' }, verificationStatus: 'VALIDE', disponible: true },
     include: { user: { select: { id: true, fullName: true, email: true, avatarUrl: true } } },
     take: 10,
   })
@@ -37,11 +38,34 @@ async function getRecommandations(req, res) {
 
 async function updateMyAvailability(req, res) {
   const { disponible } = req.body
-  const specialiste = await prisma.specialiste.update({
+
+  const specialiste = await prisma.specialiste.findUnique({ where: { userId: req.userId } })
+  if (!specialiste) return res.status(404).json({ message: 'Profil spécialiste introuvable' })
+
+  // Se retirer est toujours permis ; se déclarer disponible suppose une
+  // habilitation active (CDC §16). Sans ce garde-fou, un praticien suspendu
+  // pourrait se remettre lui-même dans le moteur d'affectation.
+  if (disponible && specialiste.verificationStatus !== 'VALIDE') {
+    return res.status(403).json({
+      message: "Votre habilitation n'est pas active : vous ne pouvez pas vous déclarer disponible.",
+    })
+  }
+
+  const updated = await prisma.specialiste.update({
     where: { userId: req.userId },
     data: { disponible },
   })
-  res.json({ disponible: specialiste.disponible })
+
+  await logAction({
+    userId: req.userId,
+    action: 'SPECIALISTE_DISPONIBILITE',
+    entityType: 'Specialiste',
+    entityId: updated.id,
+    metadata: { disponible: updated.disponible },
+    ipAddress: req.ip,
+  })
+
+  res.json({ disponible: updated.disponible })
 }
 
 module.exports = { listSpecialistes, getRecommandations, updateMyAvailability }

@@ -95,7 +95,10 @@ async function createUser(req, res) {
     emailVerified: true,
   }
   if (role === 'SPECIALISTE') {
-    data.specialiste = { create: { specialite, pays, etablissement, langues, bio, verified: true } }
+    // CDC §16 : un compte créé par l'administration n'est pas habilité pour
+    // autant. Il naît EN_VERIFICATION et attend le dépôt puis le contrôle de ses
+    // justificatifs, comme un compte créé par le praticien lui-même.
+    data.specialiste = { create: { specialite, pays, etablissement, langues, bio } }
   }
 
   const user = await prisma.user.create({ data, include: { specialiste: true } })
@@ -119,7 +122,7 @@ async function updateUser(req, res) {
   if (!user) return res.status(404).json({ message: 'Utilisateur introuvable' })
   if (!assertManageableRole(user.role, res)) return
 
-  const { fullName, email, phone, specialite, pays, etablissement, langues, bio, verified, disponible } = req.body
+  const { fullName, email, phone, specialite, pays, etablissement, langues, bio, disponible } = req.body
 
   const data = {}
   if (fullName !== undefined) data.fullName = fullName
@@ -133,7 +136,6 @@ async function updateUser(req, res) {
     if (etablissement !== undefined) specialisteData.etablissement = etablissement
     if (langues !== undefined) specialisteData.langues = langues
     if (bio !== undefined) specialisteData.bio = bio
-    if (verified !== undefined) specialisteData.verified = verified
     if (disponible !== undefined) specialisteData.disponible = disponible
     if (Object.keys(specialisteData).length > 0) {
       data.specialiste = { update: specialisteData }

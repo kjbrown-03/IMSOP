@@ -1,5 +1,6 @@
 {
   "nav": {
+    "title": "Navigation",
     "howItWorks": "How it works",
     "specialties": "Specialties",
     "forDoctors": "For doctors",
@@ -557,7 +558,12 @@
       "rejectPlaceholder": "Reason for declining (optional)",
       "badgeNew": "New",
       "badgeInProgress": "In progress",
-      "badgeDone": "Done"
+      "badgeDone": "Done",
+      "startAnalysis": "Start analysis",
+      "askComplement": "Request more information",
+      "complementPlaceholder": "Specify the missing documents or information...",
+      "awaitingComplement": "Waiting for the information requested from the patient.",
+      "openReport": "Report"
     },
     "report": {
       "loadingCase": "Loading case...",
@@ -659,14 +665,17 @@
     },
     "specialistNav": {
       "dossiers": "Cases",
-      "compte": "Account"
+      "messages": "Messages",
+      "compte": "Account",
+      "justificatifs": "My credentials"
     },
     "coordinatorNav": {
       "dashboard": "Dashboard",
       "dossiers": "Cases",
       "experts": "Experts",
       "identites": "Identities",
-      "parametres": "Settings"
+      "parametres": "Settings",
+      "habilitations": "Credentials"
     },
     "userMenu": {
       "user": "User",
@@ -675,7 +684,11 @@
     },
     "medecinNav": {
       "dossiers": "My patients",
-      "profil": "My account"
+      "profil": "My account",
+      "justificatifs": "My credentials"
+    },
+    "coordinateurNav": {
+      "habilitations": "Credentials"
     }
   },
   "notifications": {
@@ -746,7 +759,22 @@
     "attachCaptionPlaceholder": "Add a message (optional)...",
     "attachTypeError": "Unsupported format. Accepted: PDF, JPEG, PNG, DICOM.",
     "attachSizeError": "File too large (25 MB maximum).",
-    "attachFailed": "Document upload failed"
+    "attachFailed": "Document upload failed",
+    "searchAria": "Search this conversation",
+    "searchPlaceholder": "Search for a word in this conversation...",
+    "searchResults": "{{count}} result(s)",
+    "searchNoResults": "No message matches this search.",
+    "callAria": "Video call",
+    "callDeclined": "The call was declined.",
+    "callUnavailable": "This person isn't currently available.",
+    "cameraError": "Couldn't access the camera or microphone.",
+    "incomingCall": "{{name}} is calling...",
+    "declineCall": "Decline",
+    "acceptCall": "Join",
+    "calling": "Calling...",
+    "connecting": "Connecting...",
+    "inCall": "Call in progress",
+    "hangUp": "Hang up"
   },
   "medecin": {
     "login": {
@@ -799,6 +827,53 @@
         "COMPTE_RENDU": "Report",
         "AUTRE": "Other"
       }
+    },
+    "habilitation": {
+      "EN_VERIFICATION": "Your credentials are being verified by our coordination team.",
+      "SUSPENDU": "Your credentials are suspended.",
+      "EXPIRE": "Your credentials have expired.",
+      "REVOQUE": "Your credentials have been revoked.",
+      "VALIDE": "Credentials approved."
+    },
+    "justificatifs": {
+      "title": "My credentials",
+      "subtitle": "Upload the documents required before your account is activated: degree, practising licence, medical council number, ID, CV.",
+      "upload": "Upload a document",
+      "type": "Document type",
+      "empty": "No document uploaded yet.",
+      "statusLabel": "Credentials",
+      "motifLabel": "Reason",
+      "expiresLabel": "Expires on",
+      "types": {
+        "DIPLOME": "Degree",
+        "LICENCE": "Practising licence",
+        "INSCRIPTION_ORDRE": "Medical council number",
+        "PIECE_IDENTITE": "ID document",
+        "CV": "CV",
+        "REFERENCES": "Professional references",
+        "AUTRE": "Other"
+      }
+    },
+    "verifications": {
+      "title": "Professional credentials",
+      "subtitle": "Review uploaded documents before activating a professional account.",
+      "empty": "No request in this state.",
+      "loading": "Loading...",
+      "documents": "document(s)",
+      "review": "Review",
+      "noDocuments": "This professional has not uploaded any document.",
+      "decide": "Decision",
+      "motifPlaceholder": "Reason (required unless approving)",
+      "apply": "Save decision",
+      "registered": "Registered on",
+      "ordre": "Council no."
+    },
+    "habilitationLabel": {
+      "EN_VERIFICATION": "Under review",
+      "VALIDE": "Approved",
+      "SUSPENDU": "Suspended",
+      "EXPIRE": "Expired",
+      "REVOQUE": "Revoked"
     }
   },
   "patientMedecin": {
@@ -816,5 +891,50 @@
     "unverified": "This doctor has not been verified by our team yet.",
     "designated": "Treating doctor designated.",
     "removed": "Access revoked."
+  },
+  "dossierStatus": {
+    "BROUILLON": "Draft",
+    "SOUMIS": "Submitted",
+    "EN_ATTENTE_PAIEMENT": "Awaiting payment",
+    "EN_ATTENTE_DOCUMENTS": "Awaiting documents",
+    "EN_VERIFICATION": "Under review",
+    "COMPLET": "Complete",
+    "EN_ATTENTE_AFFECTATION": "Awaiting assignment",
+    "AFFECTE": "Specialist assigned",
+    "ACCEPTE_PAR_SPECIALISTE": "Accepted by specialist",
+    "EN_ANALYSE": "Under analysis",
+    "INFORMATION_COMPLEMENTAIRE_DEMANDEE": "Further information requested",
+    "RAPPORT_EN_PREPARATION": "Report in preparation",
+    "RAPPORT_SOUMIS": "Report submitted",
+    "RAPPORT_VALIDE": "Report approved",
+    "RAPPORT_TRANSMIS": "Report delivered",
+    "SUIVI": "Follow-up",
+    "CLOTURE": "Closed",
+    "ANNULE": "Cancelled",
+    "REFUSE": "Refused"
+  },
+  "profile": {
+    "title": "My profile",
+    "unnamed": "User",
+    "changePhoto": "Change my photo",
+    "removePhoto": "Remove",
+    "uploading": "Uploading…",
+    "photoHint": "JPEG, PNG or WebP — 5 MB maximum",
+    "photoAlt": "Profile picture",
+    "errorFormat": "Unsupported format: choose a JPEG, PNG or WebP image.",
+    "errorSize": "Image too large: 5 MB maximum.",
+    "email": "Email",
+    "emailStatus": "Email status",
+    "emailVerified": "Address verified",
+    "emailUnverified": "Address not verified",
+    "phone": "Phone",
+    "phoneEmpty": "Not provided",
+    "roles": {
+      "PATIENT": "Patient",
+      "SPECIALISTE": "Specialist",
+      "MEDECIN_LOCAL": "Local doctor",
+      "COORDINATEUR": "Coordinator",
+      "ADMIN": "Administrator"
+    }
   }
 }

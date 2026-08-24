@@ -1,4 +1,4 @@
-const { S3Client, PutObjectCommand, GetObjectCommand, HeadBucketCommand, CreateBucketCommand } = require('@aws-sdk/client-s3')
+const { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand, HeadBucketCommand, CreateBucketCommand } = require('@aws-sdk/client-s3')
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner')
 const env = require('../config/env')
 
@@ -32,9 +32,21 @@ async function putObject(key, body, contentType) {
   return key
 }
 
+// Streams an object back through the API instead of handing out a signed URL.
+// Avatars are loaded by plain <img> tags, which can't carry an Authorization
+// header and can't follow a URL that expires - so the API stays the origin.
+async function getObjectStream(key) {
+  const result = await s3.send(new GetObjectCommand({ Bucket: env.s3.bucket, Key: key }))
+  return { body: result.Body, contentType: result.ContentType, contentLength: result.ContentLength }
+}
+
+async function deleteObject(key) {
+  await s3.send(new DeleteObjectCommand({ Bucket: env.s3.bucket, Key: key }))
+}
+
 async function getSignedDownloadUrl(key, expiresInSeconds = 300) {
   const command = new GetObjectCommand({ Bucket: env.s3.bucket, Key: key })
   return getSignedUrl(s3, command, { expiresIn: expiresInSeconds })
 }
 
-module.exports = { s3, ensureBucket, putObject, getSignedDownloadUrl }
+module.exports = { s3, ensureBucket, putObject, getObjectStream, deleteObject, getSignedDownloadUrl }

@@ -1,5 +1,6 @@
 {
   "nav": {
+    "title": "Navigation",
     "howItWorks": "Comment ça marche",
     "specialties": "Spécialités",
     "forDoctors": "Pour les médecins",
@@ -557,7 +558,12 @@
       "rejectPlaceholder": "Motif du refus (optionnel)",
       "badgeNew": "Nouveau",
       "badgeInProgress": "En cours",
-      "badgeDone": "Terminé"
+      "badgeDone": "Terminé",
+      "startAnalysis": "Commencer l'analyse",
+      "askComplement": "Demander un complément",
+      "complementPlaceholder": "Précisez les pièces ou informations manquantes...",
+      "awaitingComplement": "En attente du complément demandé au patient.",
+      "openReport": "Rapport"
     },
     "report": {
       "loadingCase": "Chargement du dossier...",
@@ -659,14 +665,17 @@
     },
     "specialistNav": {
       "dossiers": "Dossiers",
-      "compte": "Compte"
+      "messages": "Messagerie",
+      "compte": "Compte",
+      "justificatifs": "Mes justificatifs"
     },
     "coordinatorNav": {
       "dashboard": "Dashboard",
       "dossiers": "Dossiers",
       "experts": "Experts",
       "identites": "Identités",
-      "parametres": "Paramètres"
+      "parametres": "Paramètres",
+      "habilitations": "Habilitations"
     },
     "userMenu": {
       "user": "Utilisateur",
@@ -675,7 +684,11 @@
     },
     "medecinNav": {
       "dossiers": "Mes patients",
-      "profil": "Mon compte"
+      "profil": "Mon compte",
+      "justificatifs": "Mes justificatifs"
+    },
+    "coordinateurNav": {
+      "habilitations": "Habilitations"
     }
   },
   "notifications": {
@@ -746,7 +759,22 @@
     "attachCaptionPlaceholder": "Ajouter un message (facultatif)...",
     "attachTypeError": "Format non autorisé. Formats acceptés : PDF, JPEG, PNG, DICOM.",
     "attachSizeError": "Fichier trop volumineux (25 Mo maximum).",
-    "attachFailed": "L'envoi du document a échoué"
+    "attachFailed": "L'envoi du document a échoué",
+    "searchAria": "Rechercher dans la conversation",
+    "searchPlaceholder": "Rechercher un mot dans cette conversation...",
+    "searchResults": "{{count}} résultat(s)",
+    "searchNoResults": "Aucun message ne correspond à cette recherche.",
+    "callAria": "Appel vidéo",
+    "callDeclined": "L'appel a été refusé.",
+    "callUnavailable": "Cette personne n'est pas disponible actuellement.",
+    "cameraError": "Impossible d'accéder à la caméra ou au micro.",
+    "incomingCall": "{{name}} vous appelle...",
+    "declineCall": "Refuser",
+    "acceptCall": "Rejoindre",
+    "calling": "Appel en cours...",
+    "connecting": "Connexion...",
+    "inCall": "Appel en cours",
+    "hangUp": "Raccrocher"
   },
   "medecin": {
     "login": {
@@ -799,6 +827,53 @@
         "COMPTE_RENDU": "Compte rendu",
         "AUTRE": "Autre"
       }
+    },
+    "habilitation": {
+      "EN_VERIFICATION": "Votre habilitation est en cours de vérification par notre équipe de coordination.",
+      "SUSPENDU": "Votre habilitation est suspendue.",
+      "EXPIRE": "Votre habilitation a expiré.",
+      "REVOQUE": "Votre habilitation a été révoquée.",
+      "VALIDE": "Habilitation validée."
+    },
+    "justificatifs": {
+      "title": "Mes justificatifs",
+      "subtitle": "Déposez les pièces exigées avant l'activation de votre compte : diplôme, licence d'exercice, numéro d'inscription à l'ordre, pièce d'identité, CV.",
+      "upload": "Déposer une pièce",
+      "type": "Type de pièce",
+      "empty": "Aucune pièce déposée pour le moment.",
+      "statusLabel": "Habilitation",
+      "motifLabel": "Motif",
+      "expiresLabel": "Expire le",
+      "types": {
+        "DIPLOME": "Diplôme",
+        "LICENCE": "Licence d'exercice",
+        "INSCRIPTION_ORDRE": "Numéro d'inscription à l'ordre",
+        "PIECE_IDENTITE": "Pièce d'identité",
+        "CV": "CV",
+        "REFERENCES": "Références professionnelles",
+        "AUTRE": "Autre"
+      }
+    },
+    "verifications": {
+      "title": "Habilitations des professionnels",
+      "subtitle": "Contrôlez les justificatifs déposés avant d'activer un compte professionnel.",
+      "empty": "Aucune demande dans cet état.",
+      "loading": "Chargement...",
+      "documents": "justificatif(s)",
+      "review": "Examiner",
+      "noDocuments": "Ce professionnel n'a déposé aucune pièce.",
+      "decide": "Décision",
+      "motifPlaceholder": "Motif (obligatoire sauf pour valider)",
+      "apply": "Enregistrer la décision",
+      "registered": "Inscrit le",
+      "ordre": "N° d'ordre"
+    },
+    "habilitationLabel": {
+      "EN_VERIFICATION": "En vérification",
+      "VALIDE": "Validé",
+      "SUSPENDU": "Suspendu",
+      "EXPIRE": "Expiré",
+      "REVOQUE": "Révoqué"
     }
   },
   "patientMedecin": {
@@ -816,5 +891,50 @@
     "unverified": "Ce médecin n'a pas encore été vérifié par notre équipe.",
     "designated": "Médecin traitant désigné.",
     "removed": "Accès retiré."
+  },
+  "dossierStatus": {
+    "BROUILLON": "Brouillon",
+    "SOUMIS": "Soumis",
+    "EN_ATTENTE_PAIEMENT": "En attente de paiement",
+    "EN_ATTENTE_DOCUMENTS": "En attente de documents",
+    "EN_VERIFICATION": "En vérification",
+    "COMPLET": "Dossier complet",
+    "EN_ATTENTE_AFFECTATION": "En attente d'affectation",
+    "AFFECTE": "Spécialiste affecté",
+    "ACCEPTE_PAR_SPECIALISTE": "Accepté par le spécialiste",
+    "EN_ANALYSE": "En analyse",
+    "INFORMATION_COMPLEMENTAIRE_DEMANDEE": "Information complémentaire demandée",
+    "RAPPORT_EN_PREPARATION": "Rapport en préparation",
+    "RAPPORT_SOUMIS": "Rapport soumis",
+    "RAPPORT_VALIDE": "Rapport validé",
+    "RAPPORT_TRANSMIS": "Rapport transmis",
+    "SUIVI": "Suivi",
+    "CLOTURE": "Clôturé",
+    "ANNULE": "Annulé",
+    "REFUSE": "Refusé"
+  },
+  "profile": {
+    "title": "Mon profil",
+    "unnamed": "Utilisateur",
+    "changePhoto": "Changer ma photo",
+    "removePhoto": "Retirer",
+    "uploading": "Envoi en cours…",
+    "photoHint": "JPEG, PNG ou WebP — 5 Mo maximum",
+    "photoAlt": "Photo de profil",
+    "errorFormat": "Format non autorisé : choisissez une image JPEG, PNG ou WebP.",
+    "errorSize": "Image trop lourde : 5 Mo maximum.",
+    "email": "E-mail",
+    "emailStatus": "Statut de l'e-mail",
+    "emailVerified": "Adresse vérifiée",
+    "emailUnverified": "Adresse non vérifiée",
+    "phone": "Téléphone",
+    "phoneEmpty": "Non renseigné",
+    "roles": {
+      "PATIENT": "Patient",
+      "SPECIALISTE": "Spécialiste",
+      "MEDECIN_LOCAL": "Médecin traitant",
+      "COORDINATEUR": "Coordinateur",
+      "ADMIN": "Administrateur"
+    }
   }
 }

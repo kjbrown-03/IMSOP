@@ -142,7 +142,7 @@ export default function MonMedecinTraitant() {
                   <p className="text-xs text-slate-500 dark:text-neutral-400 truncate">
                     {[medecin.specialite, medecin.etablissement].filter(Boolean).join(' — ')}
                   </p>
-                  {medecin.verified === false && (
+                  {medecin.verificationStatus !== 'VALIDE' && (
                     <p className="text-xs text-amber-600 dark:text-amber-400 flex items-center gap-1 mt-1">
                       <ShieldAlert className="w-3.5 h-3.5" />
                       {t('patientMedecin.unverified')}

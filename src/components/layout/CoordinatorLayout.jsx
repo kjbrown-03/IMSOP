@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { LayoutDashboard, FolderOpen, Stethoscope, ShieldCheck, Settings } from 'lucide-react'
+import { LayoutDashboard, FolderOpen, Stethoscope, ShieldCheck, BadgeCheck, Settings } from 'lucide-react'
 import DashboardShell from './DashboardShell'
 
 export default function CoordinatorLayout({ children }) {
@@ -27,6 +27,11 @@ export default function CoordinatorLayout({ children }) {
       icon: <ShieldCheck className="w-5 h-5" />,
     },
     {
+      to: '/coordinateur/habilitations',
+      label: t('shell.coordinatorNav.habilitations'),
+      icon: <BadgeCheck className="w-5 h-5" />,
+    },
+    {
       to: '/coordinateur/exceptions',
       label: t('shell.coordinatorNav.parametres'),
       icon: <Settings className="w-5 h-5" />,
@@ -34,7 +39,7 @@ export default function CoordinatorLayout({ children }) {
   ]
 
   return (
-    <DashboardShell title="IMSOP Admin" links={links}>
+    <DashboardShell title="IMSOP Admin" links={links} profileTo="/profil">
       {children}
     </DashboardShell>
   )

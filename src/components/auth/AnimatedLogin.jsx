@@ -1,32 +1,44 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '../../store/useAuthStore';
+import { ROLE_REDIRECTS } from '../../constants/roleRedirects';
 import AppInput from '../ui/AppInput';
 import { Sun, Moon } from 'lucide-react';
 
-const socialIcons = [
-  {
-    id: 'google',
-    icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-        <path fill="currentColor" d="M21.35 11.1h-9.17v2.73h6.51c-.33 3.81-3.5 5.44-6.5 5.44C8.36 19.27 5 16.25 5 12c0-4.1 3.2-7.27 7.2-7.27c3.09 0 4.9 1.97 4.9 1.97L19 4.72S16.56 2 12.1 2C6.42 2 2.03 6.8 2.03 12c0 5.05 4.13 10 10.22 10c5.35 0 9.25-3.67 9.25-9.09c0-1.15-.15-1.81-.15-1.81Z" />
-      </svg>
-    ),
-    href: '#',
-    bg: 'bg-[var(--color-bg)]',
-  },
-  {
-    id: 'linkedin',
-    icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-        <path fill="currentColor" d="M6.94 5a2 2 0 1 1-4-.002a2 2 0 0 1 4 .002M7 8.48H3V21h4zm6.32 0H9.34V21h3.94v-6.57c0-3.66 4.77-4 4.77 0V21H22v-7.93c0-6.17-7.06-5.94-8.72-2.91z" />
-      </svg>
-    ),
-    href: '#',
-    bg: 'bg-[var(--color-bg)]',
-  }
-];
+// Full-page navigations (not XHR), so a plain relative href is enough: Vite's
+// dev proxy forwards /api/* to the backend the same way it does for fetch
+// calls, and in production this is served from the same origin behind a
+// reverse proxy - see vite.config.js and lib/api.js for the same assumption.
+// The role is passed as a query param so the backend knows, once Google
+// redirects back, which login page (and which required role) the click
+// came from - see oauth.controller.js.
+function getSocialIcons(role) {
+  return [
+    {
+      id: 'google',
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+          <path fill="currentColor" d="M21.35 11.1h-9.17v2.73h6.51c-.33 3.81-3.5 5.44-6.5 5.44C8.36 19.27 5 16.25 5 12c0-4.1 3.2-7.27 7.2-7.27c3.09 0 4.9 1.97 4.9 1.97L19 4.72S16.56 2 12.1 2C6.42 2 2.03 6.8 2.03 12c0 5.05 4.13 10 10.22 10c5.35 0 9.25-3.67 9.25-9.09c0-1.15-.15-1.81-.15-1.81Z" />
+        </svg>
+      ),
+      href: `/api/auth/oauth/google?role=${role}`,
+      bg: 'bg-[var(--color-bg)]',
+    },
+  ];
+}
+
+const OAUTH_ERROR_MESSAGES = {
+  not_configured: 'Cette méthode de connexion n\'est pas encore activée.',
+  access_denied: 'Connexion annulée.',
+  invalid_state: 'La session de connexion a expiré, veuillez réessayer.',
+  exchange_failed: 'La connexion a échoué, veuillez réessayer.',
+  no_email: 'Ce compte ne fournit pas d\'adresse email accessible.',
+  account_disabled: 'Ce compte a été désactivé. Contactez un administrateur.',
+  not_registered_patient: 'Aucun compte patient n\'est associé à cette adresse Google. Créez un compte pour continuer.',
+  not_registered_medecin: 'Aucun compte médecin traitant n\'est associé à cette adresse Google. Créez un compte pour continuer.',
+  not_registered_professional: 'Aucun compte n\'est associé à cette adresse Google pour cet espace. Ces comptes sont créés par l\'administration IMSOP - contactez votre administrateur.',
+};
 
 const ROLE_IMAGES = {
   PATIENT: 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&q=80',
@@ -46,17 +58,10 @@ const ROLE_LINKS = {
   ADMIN: { forgotLink: '/mot-de-passe-oublie', createLink: null },
 };
 
-const ROLE_REDIRECTS = {
-  PATIENT: '/patient/dossiers',
-  SPECIALISTE: '/specialiste/tableau-de-bord',
-  MEDECIN_LOCAL: '/medecin/dossiers',
-  COORDINATEUR: '/coordinateur/tableau-de-bord',
-  ADMIN: '/admin/tableau-de-bord',
-};
-
 const AnimatedLogin = ({ role = 'PATIENT' }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const login = useAuthStore((s) => s.login);
   const error = useAuthStore((s) => s.error);
   const loading = useAuthStore((s) => s.loading);
@@ -66,12 +71,18 @@ const AnimatedLogin = ({ role = 'PATIENT' }) => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isHovering, setIsHovering] = useState(false);
 
+  const oauthErrorCode = searchParams.get('oauthError');
+  const oauthError = oauthErrorCode
+    ? OAUTH_ERROR_MESSAGES[oauthErrorCode] || 'La connexion a échoué, veuillez réessayer.'
+    : null;
+
   const info = {
     title: t(`auth.animatedLogin.roles.${role}.title`),
     subtitle: t(`auth.animatedLogin.roles.${role}.subtitle`),
     image: ROLE_IMAGES[role] || ROLE_IMAGES.PATIENT,
     ...(ROLE_LINKS[role] || ROLE_LINKS.PATIENT),
   }
+  const socialIcons = getSocialIcons(role);
 
   const handleMouseMove = (e) => {
     const leftSection = e.currentTarget.getBoundingClientRect();
@@ -155,9 +166,9 @@ const AnimatedLogin = ({ role = 'PATIENT' }) => {
               <div className="flex-grow border-t border-[var(--color-border)]"></div>
             </div>
 
-            {error && (
+            {(error || oauthError) && (
               <div className="mb-4 bg-red-500/10 border border-red-500/50 text-red-500 text-sm rounded-lg px-4 py-3 text-center">
-                {error}
+                {error || oauthError}
               </div>
             )}
 
@@ -185,14 +196,12 @@ const AnimatedLogin = ({ role = 'PATIENT' }) => {
 
               <button 
                 disabled={loading}
-                className="group relative flex justify-center items-center overflow-hidden rounded-lg bg-[var(--color-text-primary)] mt-6 px-4 py-3 text-sm font-bold text-[var(--color-bg)] transition-all duration-300 hover:scale-[1.02] hover:shadow-lg disabled:opacity-70 disabled:hover:scale-100"
+                className="group relative flex justify-center items-center overflow-hidden rounded-lg bg-[var(--color-muted-surface)] border border-[var(--color-border)] mt-6 px-4 py-3 text-sm font-bold transition-all duration-300 disabled:opacity-70 z-[1]"
               >
-                <span className="relative z-10 px-2 py-1">
+                <div className="absolute inset-0 w-full h-full bg-[var(--color-text-primary)] scale-y-0 origin-bottom transition-transform duration-500 ease-in-out group-hover:scale-y-100 z-[-1]" />
+                <span className="relative z-10 px-2 py-1 text-[var(--color-text-primary)] transition-colors duration-500 ease-in-out group-hover:text-[var(--color-bg)]">
                   {loading ? t('auth.animatedLogin.submitting') : t('auth.animatedLogin.submit')}
                 </span>
-                <div className="absolute inset-0 flex h-full w-full justify-center [transform:skew(-13deg)_translateX(-100%)] group-hover:duration-1000 group-hover:[transform:skew(-13deg)_translateX(100%)] z-0">
-                  <div className="relative h-full w-8 bg-white/30" />
-                </div>
               </button>
             </form>
 

@@ -144,6 +144,56 @@ export const useAuthStore = create((set, get) => ({
     }
   },
 
+  // La photo de profil vit sur User, pas sur le profil d'un rôle : le même
+  // appel sert donc au patient, au spécialiste, au coordinateur et à l'admin.
+  // `loading` n'est volontairement pas touché ici, sinon l'envoi d'une photo
+  // ferait tourner le bouton du téléversement de pièce d'identité, qui lit le
+  // même drapeau global.
+  async uploadAvatar(file) {
+    set({ error: null })
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+      const { data } = await api.post('/users/me/avatar', formData)
+      get()._patchUser(data)
+      return { ok: true, avatarUrl: data.avatarUrl }
+    } catch (err) {
+      const message = errorMessage(err, "L'envoi de la photo a échoué")
+      set({ error: message })
+      return { ok: false, error: message }
+    }
+  },
+
+  async removeAvatar() {
+    set({ error: null })
+    try {
+      const { data } = await api.delete('/users/me/avatar')
+      get()._patchUser(data)
+      return { ok: true }
+    } catch (err) {
+      const message = errorMessage(err, 'La suppression de la photo a échoué')
+      set({ error: message })
+      return { ok: false, error: message }
+    }
+  },
+
+  // La disponibilité vit dans le profil utilisateur persisté, pas seulement dans
+  // l'état local d'un écran : sans ça, le basculement était perdu au premier
+  // remontage (navigation Dossiers <-> Compte, rechargement), et le praticien
+  // revoyait « Disponible » alors qu'il venait de se retirer.
+  async setDisponibilite(disponible) {
+    set({ error: null })
+    try {
+      const { data } = await api.patch('/specialistes/me/disponibilite', { disponible })
+      get()._patchUser({ disponible: data.disponible })
+      return { ok: true, disponible: data.disponible }
+    } catch (err) {
+      const message = errorMessage(err, 'Impossible de mettre à jour votre disponibilité')
+      set({ error: message })
+      return { ok: false, error: message }
+    }
+  },
+
   _patchUser(partial) {
     const user = { ...get().user, ...partial }
     localStorage.setItem('imsop_user', JSON.stringify(user))

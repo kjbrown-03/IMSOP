@@ -45,11 +45,12 @@ export default function DashboardMedecinLocal() {
         </p>
       </section>
 
-      {user?.medecinVerified === false && (
+      {user?.verificationStatus && user.verificationStatus !== 'VALIDE' && (
         <div className="glass-card bg-amber-50/80 dark:bg-amber-950/30 border-amber-200/60 dark:border-amber-900/40 rounded-2xl p-4 flex gap-3 items-start">
           <ShieldAlert className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
           <p className="text-sm text-amber-800 dark:text-amber-200 leading-relaxed">
-            {t('medecin.dashboard.pendingVerification')}
+            {t(`medecin.habilitation.${user.verificationStatus}`)}
+            {user.verificationMotif && <span className="block mt-1 font-medium">{user.verificationMotif}</span>}
           </p>
         </div>
       )}

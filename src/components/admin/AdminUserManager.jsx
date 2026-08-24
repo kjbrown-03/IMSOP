@@ -117,27 +117,27 @@ export default function AdminUserManager({ role }) {
     <div>
       <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4 animate-fade-in-up">
         <div>
-          <h2 className="text-3xl font-display font-bold text-slate-900 mb-2 flex items-center gap-3">
-            {isSpecialiste ? <BadgeCheck className="w-7 h-7 text-primary-600" /> : <ShieldCheck className="w-7 h-7 text-primary-600" />}
+          <h2 className="text-3xl font-display font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-3">
+            {isSpecialiste ? <BadgeCheck className="w-7 h-7 text-primary-600 dark:text-primary-400" /> : <ShieldCheck className="w-7 h-7 text-primary-600 dark:text-primary-400" />}
             {t(`admin.${ns}.title`)}
           </h2>
-          <p className="text-slate-500">{t(`admin.${ns}.subtitle`)}</p>
+          <p className="text-slate-500 dark:text-slate-400">{t(`admin.${ns}.subtitle`)}</p>
         </div>
         <button
           onClick={openCreate}
-          className="bg-slate-900 text-white text-sm font-semibold px-5 py-3 rounded-xl hover:bg-primary-600 transition-colors shadow-md shadow-slate-900/10 flex items-center gap-2 shrink-0"
+          className="bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-sm font-semibold px-5 py-3 rounded-xl hover:bg-primary-600 dark:hover:bg-primary-500 dark:hover:text-white transition-colors shadow-md shadow-slate-900/10 flex items-center gap-2 shrink-0"
         >
           <Plus className="w-4 h-4" /> {t(`admin.${ns}.newButton`)}
         </button>
       </div>
 
       <form onSubmit={onSearchSubmit} className="relative mb-6 max-w-md">
-        <Search className="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+        <Search className="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder={t('admin.users.searchPlaceholder')}
-          className="w-full h-11 pl-11 pr-4 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+          className="w-full h-11 pl-11 pr-4 rounded-xl border border-slate-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
         />
       </form>
 
@@ -182,7 +182,7 @@ export default function AdminUserManager({ role }) {
                   value={form.fullName}
                   onChange={(e) => setForm((f) => ({ ...f, fullName: e.target.value }))}
                   placeholder={t('admin.users.fullNamePlaceholder')}
-                  className="h-11 px-4 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                  className="h-11 px-4 rounded-xl border border-slate-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
                 />
                 <input
                   required
@@ -191,20 +191,20 @@ export default function AdminUserManager({ role }) {
                   value={form.email}
                   onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
                   placeholder={t('common.email')}
-                  className="h-11 px-4 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors disabled:bg-slate-50 disabled:text-slate-400"
+                  className="h-11 px-4 rounded-xl border border-slate-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors disabled:bg-slate-50 dark:disabled:bg-neutral-900 disabled:text-slate-400 dark:disabled:text-slate-500"
                 />
                 <input
                   value={form.phone}
                   onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
                   placeholder={t('admin.users.phonePlaceholder')}
-                  className="h-11 px-4 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                  className="h-11 px-4 rounded-xl border border-slate-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
                 />
                 {isSpecialiste && (
                   <input
                     value={form.specialite}
                     onChange={(e) => setForm((f) => ({ ...f, specialite: e.target.value }))}
                     placeholder={t('admin.specialistes.specialitePlaceholder')}
-                    className="h-11 px-4 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                    className="h-11 px-4 rounded-xl border border-slate-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
                   />
                 )}
                 {isSpecialiste && (
@@ -213,26 +213,26 @@ export default function AdminUserManager({ role }) {
                       value={form.pays}
                       onChange={(e) => setForm((f) => ({ ...f, pays: e.target.value }))}
                       placeholder={t('admin.specialistes.paysPlaceholder')}
-                      className="h-11 px-4 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                      className="h-11 px-4 rounded-xl border border-slate-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
                     />
                     <input
                       value={form.etablissement}
                       onChange={(e) => setForm((f) => ({ ...f, etablissement: e.target.value }))}
                       placeholder={t('admin.specialistes.etablissementPlaceholder')}
-                      className="h-11 px-4 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                      className="h-11 px-4 rounded-xl border border-slate-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
                     />
                     <input
                       value={form.langues}
                       onChange={(e) => setForm((f) => ({ ...f, langues: e.target.value }))}
                       placeholder={t('admin.specialistes.languesPlaceholder')}
-                      className="h-11 px-4 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors md:col-span-2"
+                      className="h-11 px-4 rounded-xl border border-slate-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors md:col-span-2"
                     />
                     <textarea
                       value={form.bio}
                       onChange={(e) => setForm((f) => ({ ...f, bio: e.target.value }))}
                       placeholder={t('admin.specialistes.bioPlaceholder')}
                       rows={2}
-                      className="px-4 py-3 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors md:col-span-2"
+                      className="px-4 py-3 rounded-xl border border-slate-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors md:col-span-2"
                     />
                   </>
                 )}
@@ -289,7 +289,7 @@ export default function AdminUserManager({ role }) {
                 >
                   {u.active ? t('admin.users.active') : t('admin.users.inactive')}
                 </span>
-                {isSpecialiste && u.specialiste?.verified && (
+                {isSpecialiste && u.specialiste?.verificationStatus === 'VALIDE' && (
                   <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200 flex items-center gap-1">
                     <BadgeCheck className="w-3 h-3" /> {t('admin.specialistes.verified')}
                   </span>

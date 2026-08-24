@@ -6,7 +6,7 @@ import { api } from '../../lib/api'
 import { useAuthStore } from '../../store/useAuthStore'
 import {
   HeartPulse, Brain, Microscope, Activity, Stethoscope, Calendar, Circle,
-  ShieldAlert, CheckCircle, ChevronRight, Filter, Check, X,
+  ShieldAlert, CheckCircle, ChevronRight, Filter, Check, X, Play, HelpCircle,
 } from 'lucide-react'
 
 const SPECIALITE_ICON = [
@@ -22,11 +22,14 @@ function specialiteVisual(specialite) {
 
 const GROUP_OF_STATUS = {
   AFFECTE: 'nouveau',
+  ACCEPTE_PAR_SPECIALISTE: 'en-cours',
   EN_ANALYSE: 'en-cours',
+  INFORMATION_COMPLEMENTAIRE_DEMANDEE: 'en-cours',
   RAPPORT_EN_PREPARATION: 'en-cours',
   RAPPORT_SOUMIS: 'en-cours',
   RAPPORT_VALIDE: 'termine',
   RAPPORT_TRANSMIS: 'termine',
+  SUIVI: 'termine',
   CLOTURE: 'termine',
 }
 
@@ -37,19 +40,22 @@ function formatDate(iso, lang) {
 export default function DashboardSpecialiste({ showAvailabilityToggle = false }) {
   const { t, i18n } = useTranslation()
   const user = useAuthStore((s) => s.user)
-  const [available, setAvailable] = useState(!!user?.disponible)
+  const setDisponibilite = useAuthStore((s) => s.setDisponibilite)
   const [togglingAvailability, setTogglingAvailability] = useState(false)
+  const [availabilityError, setAvailabilityError] = useState(null)
+
+  // Source unique : le profil persisté. L'ancien état local se désynchronisait
+  // du store et réaffichait « Disponible » à chaque remontage de l'écran.
+  const available = !!user?.disponible
   const [dossiers, setDossiers] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [activeTab, setActiveTab] = useState('tous')
   const [decidingId, setDecidingId] = useState(null)
+  const [complementId, setComplementId] = useState(null)
+  const [precisions, setPrecisions] = useState('')
   const [refusingId, setRefusingId] = useState(null)
   const [motif, setMotif] = useState('')
-
-  useEffect(() => {
-    setAvailable(!!user?.disponible)
-  }, [user?.disponible])
 
   async function load() {
     setLoading(true)
@@ -68,20 +74,42 @@ export default function DashboardSpecialiste({ showAvailabilityToggle = false })
   }, [])
 
   async function toggleAvailability() {
-    const next = !available
     setTogglingAvailability(true)
-    try {
-      await api.patch('/specialistes/me/disponibilite', { disponible: next })
-      setAvailable(next)
-    } finally {
-      setTogglingAvailability(false)
-    }
+    setAvailabilityError(null)
+    // Un échec doit se voir : sans message, un refus de l'API se lisait comme
+    // un interrupteur qui « ne marche pas ».
+    const result = await setDisponibilite(!available)
+    if (!result.ok) setAvailabilityError(result.error)
+    setTogglingAvailability(false)
   }
 
   async function accepter(id) {
     setDecidingId(id)
     try {
       await api.post(`/dossiers/${id}/accepter`)
+      await load()
+    } finally {
+      setDecidingId(null)
+    }
+  }
+
+  async function demarrerAnalyse(id) {
+    setDecidingId(id)
+    try {
+      await api.post(`/dossiers/${id}/analyser`)
+      await load()
+    } finally {
+      setDecidingId(null)
+    }
+  }
+
+  async function demanderComplement(id) {
+    if (!precisions.trim()) return
+    setDecidingId(id)
+    try {
+      await api.post(`/dossiers/${id}/demander-complement`, { precisions: precisions.trim() })
+      setComplementId(null)
+      setPrecisions('')
       await load()
     } finally {
       setDecidingId(null)
@@ -131,21 +159,26 @@ export default function DashboardSpecialiste({ showAvailabilityToggle = false })
               {t('specialiste.dashboard.availabilityText')}
             </p>
           </div>
-          <div className="flex items-center gap-4 bg-slate-50 dark:bg-neutral-800 p-2 pl-4 rounded-full border border-slate-200/60 dark:border-neutral-700">
-            <span className={`text-sm font-semibold ${available ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400 dark:text-slate-500'}`}>
-              {available ? t('specialiste.dashboard.available') : t('specialiste.dashboard.unavailable')}
-            </span>
-            <button
-              aria-checked={available}
-              role="switch"
-              onClick={toggleAvailability}
-              disabled={togglingAvailability}
-              className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors focus:outline-none disabled:opacity-60 ${
-                available ? 'bg-emerald-500' : 'bg-slate-300 dark:bg-neutral-600'
-              }`}
-            >
-              <span className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-sm transition-transform ${available ? 'translate-x-6' : 'translate-x-1'}`} />
-            </button>
+          <div className="flex flex-col items-start sm:items-end gap-2">
+            {availabilityError && (
+              <p className="text-xs text-rose-600 dark:text-rose-400 max-w-xs sm:text-right">{availabilityError}</p>
+            )}
+            <div className="flex items-center gap-4 bg-slate-50 dark:bg-neutral-800 p-2 pl-4 rounded-full border border-slate-200/60 dark:border-neutral-700">
+              <span className={`text-sm font-semibold ${available ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400 dark:text-slate-500'}`}>
+                {available ? t('specialiste.dashboard.available') : t('specialiste.dashboard.unavailable')}
+              </span>
+              <button
+                aria-checked={available}
+                role="switch"
+                onClick={toggleAvailability}
+                disabled={togglingAvailability}
+                className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors focus:outline-none disabled:opacity-60 ${
+                  available ? 'bg-emerald-500' : 'bg-slate-300 dark:bg-neutral-600'
+                }`}
+              >
+                <span className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-sm transition-transform ${available ? 'translate-x-6' : 'translate-x-1'}`} />
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -180,6 +213,9 @@ export default function DashboardSpecialiste({ showAvailabilityToggle = false })
           const BadgeIcon = badge.icon
           const { Icon: SpecialiteIcon, color, bg } = specialiteVisual(d.specialiteRequise)
           const isNew = d.status === 'AFFECTE'
+          const peutDemarrer = d.status === 'ACCEPTE_PAR_SPECIALISTE'
+          const peutDemanderComplement = ['ACCEPTE_PAR_SPECIALISTE', 'EN_ANALYSE', 'RAPPORT_EN_PREPARATION'].includes(d.status)
+          const attendComplement = d.status === 'INFORMATION_COMPLEMENTAIRE_DEMANDEE'
 
           return (
             <div
@@ -246,6 +282,65 @@ export default function DashboardSpecialiste({ showAvailabilityToggle = false })
                       >
                         <Check className="w-4 h-4" /> {decidingId === d.id ? '...' : t('specialiste.dashboard.accept')}
                       </button>
+                    </div>
+                  )}
+                </div>
+              ) : peutDemarrer || peutDemanderComplement || attendComplement ? (
+                <div className="mt-auto pt-5 border-t border-slate-100/60 dark:border-neutral-800 flex flex-col gap-3">
+                  {attendComplement && (
+                    <p className="text-xs text-amber-700 dark:text-amber-400 flex items-center gap-1.5">
+                      <HelpCircle className="w-4 h-4 shrink-0" />
+                      {t('specialiste.dashboard.awaitingComplement')}
+                    </p>
+                  )}
+                  {complementId === d.id ? (
+                    <>
+                      <textarea
+                        value={precisions}
+                        onChange={(e) => setPrecisions(e.target.value)}
+                        placeholder={t('specialiste.dashboard.complementPlaceholder')}
+                        className="w-full rounded-xl border border-slate-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-2.5 text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                        rows={3}
+                      />
+                      <div className="flex gap-2">
+                        <button onClick={() => { setComplementId(null); setPrecisions('') }} className="flex-1 text-sm font-semibold text-slate-500 dark:text-slate-400 px-4 py-2 rounded-xl hover:bg-slate-50 dark:hover:bg-neutral-800">
+                          {t('specialiste.dashboard.cancel')}
+                        </button>
+                        <button
+                          onClick={() => demanderComplement(d.id)}
+                          disabled={decidingId === d.id || !precisions.trim()}
+                          className="flex-1 bg-amber-600 text-white text-sm font-semibold px-4 py-2 rounded-xl hover:bg-amber-700 transition-colors disabled:opacity-60"
+                        >
+                          {t('specialiste.dashboard.confirm')}
+                        </button>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="flex flex-wrap gap-2">
+                      {peutDemarrer && (
+                        <button
+                          onClick={() => demarrerAnalyse(d.id)}
+                          disabled={decidingId === d.id}
+                          className="flex-1 min-w-[140px] bg-primary-600 text-white text-sm font-semibold px-4 py-2.5 rounded-xl hover:bg-primary-700 transition-colors flex items-center justify-center gap-1.5 disabled:opacity-60"
+                        >
+                          <Play className="w-4 h-4" /> {t('specialiste.dashboard.startAnalysis')}
+                        </button>
+                      )}
+                      {peutDemanderComplement && (
+                        <button
+                          onClick={() => setComplementId(d.id)}
+                          disabled={decidingId === d.id}
+                          className="flex-1 min-w-[140px] bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800 text-sm font-semibold px-4 py-2.5 rounded-xl hover:bg-amber-100 dark:hover:bg-amber-900/50 transition-colors flex items-center justify-center gap-1.5 disabled:opacity-60"
+                        >
+                          <HelpCircle className="w-4 h-4" /> {t('specialiste.dashboard.askComplement')}
+                        </button>
+                      )}
+                      <Link
+                        to={`/specialiste/redaction/${d.id}`}
+                        className="flex-1 min-w-[140px] bg-slate-100 dark:bg-neutral-800 text-slate-700 dark:text-neutral-200 text-sm font-semibold px-4 py-2.5 rounded-xl hover:bg-slate-200 dark:hover:bg-neutral-700 transition-colors flex items-center justify-center gap-1.5"
+                      >
+                        {t('specialiste.dashboard.openReport')}
+                      </Link>
                     </div>
                   )}
                 </div>

@@ -59,9 +59,13 @@ export default function Navbar() {
           <Logo light={false} size={52} />
         </Link>
 
-        <div className="hidden md:block">
-          <NavBar items={navItems} floating={false} onSelect={(item) => goToLink(item.url)} />
-        </div>
+        <NavBar
+          items={navItems}
+          floating={false}
+          labelsFrom="lg"
+          className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 md:static md:translate-x-0"
+          onSelect={(item) => goToLink(item.url)}
+        />
 
         <div className="hidden md:flex items-center gap-3">
           <ThemeToggle className="text-[var(--color-on-surface)] hover:text-[var(--color-primary)]" />
@@ -92,16 +96,7 @@ export default function Navbar() {
 
       {menuOpen && (
         <div className="md:hidden bg-[var(--color-surface)] border-t border-[var(--color-border)] px-margin-mobile py-4 flex flex-col gap-1">
-          {LINKS.map((link) => (
-            <button
-              key={link.key}
-              onClick={() => goToLink(link.href)}
-              className="text-left font-sans text-sm font-semibold uppercase tracking-wide text-[var(--color-on-surface)] hover:text-[var(--color-primary)] py-3 border-b border-[var(--color-border)]"
-            >
-              {t(`nav.${link.key}`)}
-            </button>
-          ))}
-          <div className="flex items-center justify-between pt-4">
+          <div className="flex items-center justify-between">
             <button
               onClick={toggleLang}
               className="flex items-center gap-1.5 text-[var(--color-on-surface)] font-label-sm text-label-sm border border-[var(--color-border)] rounded-full px-3 py-1.5"

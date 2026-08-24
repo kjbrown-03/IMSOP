@@ -155,12 +155,15 @@ export default function InscriptionPatientValidation() {
           </div>
           <div className="mt-auto pt-stack-lg pb-margin-mobile">
             <button
-              className="w-full bg-[var(--color-primary)] hover:bg-opacity-90 text-[var(--color-on-primary)] font-label-md text-label-md py-4 px-6 rounded-lg flex items-center justify-center gap-2 active:scale-[0.98] transition-all min-h-[48px] shadow-sm disabled:opacity-60"
+              className="group relative overflow-hidden w-full bg-[var(--color-surface)] border border-[var(--color-primary)] font-label-md text-label-md py-4 px-6 rounded-lg flex items-center justify-center gap-2 active:scale-[0.98] transition-all duration-300 min-h-[48px] shadow-sm disabled:opacity-60 z-[1]"
               type="submit"
               disabled={!consent || loading}
             >
-              {loading ? t('auth.registerValidation.submitting') : t('auth.registerValidation.submit')}
-              <span className="material-symbols-outlined text-sm">arrow_forward</span>
+              <div className="absolute inset-0 w-full h-full bg-[var(--color-primary)] scale-y-0 origin-bottom transition-transform duration-500 ease-in-out group-hover:scale-y-100 z-[-1]" />
+              <span className="relative z-10 flex items-center justify-center text-[var(--color-primary)] transition-colors duration-500 ease-in-out group-hover:text-[var(--color-on-primary)]">
+                {loading ? t('auth.registerValidation.submitting') : t('auth.registerValidation.submit')}
+                <span className="material-symbols-outlined text-sm ml-2">arrow_forward</span>
+              </span>
             </button>
           </div>
         </form>

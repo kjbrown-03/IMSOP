@@ -13,6 +13,7 @@ import ConnexionAdmin from './pages/auth/ConnexionAdmin'
 import ConnexionMedecinLocal from './pages/auth/ConnexionMedecinLocal'
 import InscriptionMedecinLocal from './pages/auth/InscriptionMedecinLocal'
 import VerificationDeuxFacteurs from './pages/auth/VerificationDeuxFacteurs'
+import OAuthCallback from './pages/auth/OAuthCallback'
 import VerificationEmail from './pages/auth/VerificationEmail'
 import MotDePasseOublie from './pages/auth/MotDePasseOublie'
 import ReinitialiserMotDePasse from './pages/auth/ReinitialiserMotDePasse'
@@ -24,12 +25,15 @@ import QuestionnaireMedical from './pages/patient/QuestionnaireMedical'
 import DocumentsUpload from './pages/patient/DocumentsUpload'
 import MatchingEnCours from './pages/patient/MatchingEnCours'
 import ProfilPatient from './pages/patient/ProfilPatient'
-import ListeMessages from './pages/patient/ListeMessages'
+import MonProfil from './pages/MonProfil'
 import ChatSecurise from './pages/patient/ChatSecurise'
+import Messagerie from './pages/patient/Messagerie'
 import RapportExpertFinal from './pages/patient/RapportExpertFinal'
 import MonMedecinTraitant from './pages/patient/MonMedecinTraitant'
 import DashboardMedecinLocal from './pages/medecin/DashboardMedecinLocal'
 import DossierMedecinLocal from './pages/medecin/DossierMedecinLocal'
+import MesJustificatifs from './pages/professionnel/MesJustificatifs'
+import RevueHabilitations from './pages/coordinateur/RevueHabilitations'
 import DashboardCoordinateur from './pages/coordinateur/DashboardCoordinateur'
 import AffectationExpert from './pages/coordinateur/AffectationExpert'
 import RechercheExpertCoordinateur from './pages/coordinateur/RechercheExpertCoordinateur'
@@ -44,6 +48,7 @@ import AdminDashboard from './pages/admin/AdminDashboard'
 import AdminSpecialistes from './pages/admin/AdminSpecialistes'
 import AdminCoordinateurs from './pages/admin/AdminCoordinateurs'
 import AdminJournal from './pages/admin/AdminJournal'
+import MessagerieSpecialiste from './pages/specialiste/MessagerieSpecialiste'
 
 export default function App() {
   const initTheme = useThemeStore((state) => state.initTheme)
@@ -68,6 +73,7 @@ export default function App() {
       <Route path="/inscription/medecin" element={<InscriptionMedecinLocal />} />
       <Route path="/connexion/admin" element={<ConnexionAdmin />} />
       <Route path="/verification-2fa" element={<VerificationDeuxFacteurs />} />
+      <Route path="/oauth/callback" element={<OAuthCallback />} />
       <Route path="/verifier-email" element={<VerificationEmail />} />
       <Route path="/mot-de-passe-oublie" element={<MotDePasseOublie />} />
       <Route path="/reinitialiser-mot-de-passe" element={<ReinitialiserMotDePasse />} />
@@ -117,6 +123,14 @@ export default function App() {
         }
       />
       <Route
+        path="/profil"
+        element={
+          <ProtectedRoute>
+            <MonProfil />
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path="/patient/profil"
         element={
           <ProtectedRoute role="PATIENT">
@@ -157,10 +171,26 @@ export default function App() {
         }
       />
       <Route
+        path="/professionnel/justificatifs"
+        element={
+          <ProtectedRoute role={['SPECIALISTE', 'MEDECIN_LOCAL']}>
+            <MesJustificatifs />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/coordinateur/habilitations"
+        element={
+          <ProtectedRoute role={['COORDINATEUR', 'ADMIN']}>
+            <RevueHabilitations />
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path="/medecin/profil"
         element={
           <ProtectedRoute role="MEDECIN_LOCAL">
-            <Placeholder title="Mon compte" />
+            <MonProfil />
           </ProtectedRoute>
         }
       />
@@ -168,7 +198,7 @@ export default function App() {
         path="/patient/messages"
         element={
           <ProtectedRoute role="PATIENT">
-            <ListeMessages />
+            <Messagerie />
           </ProtectedRoute>
         }
       />
@@ -176,7 +206,7 @@ export default function App() {
         path="/patient/messages/:id"
         element={
           <ProtectedRoute role="PATIENT">
-            <ChatSecurise />
+            <Messagerie />
           </ProtectedRoute>
         }
       />
@@ -253,6 +283,22 @@ export default function App() {
         element={
           <ProtectedRoute role="SPECIALISTE">
             <RedactionRapportExpert />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/specialiste/messagerie"
+        element={
+          <ProtectedRoute role="SPECIALISTE">
+            <MessagerieSpecialiste />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/specialiste/messagerie/:id"
+        element={
+          <ProtectedRoute role="SPECIALISTE">
+            <MessagerieSpecialiste />
           </ProtectedRoute>
         }
       />

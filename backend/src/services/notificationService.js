@@ -34,6 +34,18 @@ const TEMPLATES = {
     subject: 'Nouveau document dans la messagerie sécurisée',
     body: (ctx) => `Bonjour ${ctx.name},\n\n${ctx.senderName} a déposé un document (${ctx.filename}) dans la conversation du dossier ${ctx.reference}.\n\nL'équipe IMSOP`,
   },
+  COMPLEMENT_DEMANDE: {
+    subject: 'Information complémentaire demandée sur votre dossier',
+    body: (ctx) => `Bonjour ${ctx.name},\n\nLe spécialiste a besoin d'un complément pour poursuivre l'analyse du dossier ${ctx.reference} :\n\n${ctx.precisions}\n\nVous pouvez répondre et déposer les pièces demandées depuis la messagerie sécurisée.\n\nL'équipe IMSOP`,
+  },
+  COMPLEMENT_FOURNI: {
+    subject: 'Le complément demandé a été déposé',
+    body: (ctx) => `Bonjour ${ctx.name},\n\nLes informations complémentaires que vous aviez demandées pour le dossier ${ctx.reference} ont été déposées. Vous pouvez reprendre votre analyse.\n\nL'équipe IMSOP`,
+  },
+  HABILITATION_STATUT: {
+    subject: 'Mise à jour de votre habilitation IMSOP',
+    body: (ctx) => `Bonjour ${ctx.name},\n\nLe statut de votre habilitation professionnelle sur IMSOP est désormais : ${ctx.statut}.\n${ctx.motif ? `Motif : ${ctx.motif}` + '\n' : ''}\nL'équipe IMSOP`,
+  },
   MOT_DE_PASSE_RESET: {
     subject: 'Réinitialisation de votre mot de passe IMSOP',
     body: (ctx) => `Bonjour ${ctx.name},\n\nVous avez demandé la réinitialisation de votre mot de passe. Ce lien est valable 1 heure :\n${ctx.resetUrl}\n\nSi vous n'êtes pas à l'origine de cette demande, ignorez cet e-mail.\n\nL'équipe IMSOP`,

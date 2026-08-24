@@ -264,11 +264,14 @@ export default function InscriptionPatientInfos() {
             <div className="fixed bottom-0 left-0 w-full p-margin-mobile bg-[var(--color-surface)]/90 backdrop-blur-sm border-t border-[var(--color-border)] md:relative md:bg-transparent md:border-none md:p-0 md:mt-4 z-40">
               <div className="max-w-lg mx-auto w-full">
                 <button
-                  className="w-full h-12 flex items-center justify-center bg-[var(--color-primary)] text-[var(--color-on-primary)] rounded-xl font-label-md text-label-md hover:bg-[var(--color-primary-container)] transition-colors shadow-sm active:scale-[0.98]"
+                  className="group relative overflow-hidden w-full h-12 flex items-center justify-center bg-[var(--color-surface)] border border-[var(--color-primary)] rounded-xl shadow-sm z-[1] transition-all duration-300 active:scale-[0.98]"
                   type="submit"
                 >
-                  {t('auth.registerInfos.next')}
-                  <span className="material-symbols-outlined ml-2 text-[20px]">arrow_forward</span>
+                  <div className="absolute inset-0 w-full h-full bg-[var(--color-primary)] scale-y-0 origin-bottom transition-transform duration-500 ease-in-out group-hover:scale-y-100 z-[-1]" />
+                  <span className="relative z-10 flex items-center justify-center font-label-md text-label-md text-[var(--color-primary)] transition-colors duration-500 ease-in-out group-hover:text-[var(--color-on-primary)]">
+                    {t('auth.registerInfos.next')}
+                    <span className="material-symbols-outlined ml-2 text-[20px]">arrow_forward</span>
+                  </span>
                 </button>
               </div>
             </div>

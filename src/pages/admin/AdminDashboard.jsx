@@ -40,24 +40,24 @@ export default function AdminDashboard() {
   }, [t])
 
   const METRICS = stats && [
-    { label: t('admin.dashboard.metrics.nouveaux'), value: stats.nouveaux, icon: Sparkles, bg: 'bg-blue-50', fg: 'text-blue-600' },
-    { label: t('admin.dashboard.metrics.incomplets'), value: stats.incomplets, icon: AlertTriangle, bg: 'bg-amber-50', fg: 'text-amber-600' },
-    { label: t('admin.dashboard.metrics.aAffecter'), value: stats.aAffecter, icon: UserPlus, bg: 'bg-indigo-50', fg: 'text-indigo-600' },
-    { label: t('admin.dashboard.metrics.urgents'), value: stats.urgents, icon: Bell, bg: 'bg-rose-50', fg: 'text-rose-600' },
-    { label: t('admin.dashboard.metrics.patients'), value: stats.totalPatients, icon: Users, bg: 'bg-teal-50', fg: 'text-teal-600' },
-    { label: t('admin.dashboard.metrics.specialistes'), value: stats.totalSpecialistes, icon: Stethoscope, bg: 'bg-violet-50', fg: 'text-violet-600' },
-    { label: t('admin.dashboard.metrics.coordinateurs'), value: stats.totalCoordinateurs, icon: ShieldCheck, bg: 'bg-cyan-50', fg: 'text-cyan-600' },
-    { label: t('admin.dashboard.metrics.rapportsValides'), value: stats.rapportsValides, icon: FileCheck2, bg: 'bg-emerald-50', fg: 'text-emerald-600' },
+    { label: t('admin.dashboard.metrics.nouveaux'), value: stats.nouveaux, icon: Sparkles, bg: 'bg-blue-50 dark:bg-blue-900/30', fg: 'text-blue-600 dark:text-blue-400' },
+    { label: t('admin.dashboard.metrics.incomplets'), value: stats.incomplets, icon: AlertTriangle, bg: 'bg-amber-50 dark:bg-amber-900/30', fg: 'text-amber-600 dark:text-amber-400' },
+    { label: t('admin.dashboard.metrics.aAffecter'), value: stats.aAffecter, icon: UserPlus, bg: 'bg-indigo-50 dark:bg-indigo-900/30', fg: 'text-indigo-600 dark:text-indigo-400' },
+    { label: t('admin.dashboard.metrics.urgents'), value: stats.urgents, icon: Bell, bg: 'bg-rose-50 dark:bg-rose-900/30', fg: 'text-rose-600 dark:text-rose-400' },
+    { label: t('admin.dashboard.metrics.patients'), value: stats.totalPatients, icon: Users, bg: 'bg-teal-50 dark:bg-teal-900/30', fg: 'text-teal-600 dark:text-teal-400' },
+    { label: t('admin.dashboard.metrics.specialistes'), value: stats.totalSpecialistes, icon: Stethoscope, bg: 'bg-violet-50 dark:bg-violet-900/30', fg: 'text-violet-600 dark:text-violet-400' },
+    { label: t('admin.dashboard.metrics.coordinateurs'), value: stats.totalCoordinateurs, icon: ShieldCheck, bg: 'bg-cyan-50 dark:bg-cyan-900/30', fg: 'text-cyan-600 dark:text-cyan-400' },
+    { label: t('admin.dashboard.metrics.rapportsValides'), value: stats.rapportsValides, icon: FileCheck2, bg: 'bg-emerald-50 dark:bg-emerald-900/30', fg: 'text-emerald-600 dark:text-emerald-400' },
   ]
 
   return (
     <AdminLayout>
       <div className="mb-8 animate-fade-in-up">
-        <h2 className="text-3xl font-display font-bold text-slate-900 mb-2">{t('admin.dashboard.title')}</h2>
-        <p className="text-slate-500">{t('admin.dashboard.subtitle')}</p>
+        <h2 className="text-3xl font-display font-bold text-slate-900 dark:text-white mb-2">{t('admin.dashboard.title')}</h2>
+        <p className="text-slate-500 dark:text-slate-400">{t('admin.dashboard.subtitle')}</p>
       </div>
 
-      {error && <div className="bg-rose-50 border border-rose-200 text-rose-700 text-sm font-medium rounded-2xl px-5 py-4 mb-6">{error}</div>}
+      {error && <div className="bg-rose-50 dark:bg-rose-900/30 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-400 text-sm font-medium rounded-2xl px-5 py-4 mb-6">{error}</div>}
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mb-10">
         {(loading ? Array.from({ length: 8 }) : METRICS).map((m, idx) => (
@@ -72,20 +72,20 @@ export default function AdminDashboard() {
                   <m.icon className="w-6 h-6" />
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-slate-900">{m.value ?? 0}</div>
-                  <div className="text-xs font-bold text-slate-500 uppercase tracking-wider mt-1">{m.label}</div>
+                  <div className="text-2xl font-bold text-slate-900 dark:text-white">{m.value ?? 0}</div>
+                  <div className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mt-1">{m.label}</div>
                 </div>
               </>
             ) : (
-              <div className="h-24 w-full animate-pulse bg-slate-100 rounded-2xl" />
+              <div className="h-24 w-full animate-pulse bg-slate-100 dark:bg-neutral-800 rounded-2xl" />
             )}
           </div>
         ))}
       </div>
 
       <div className="flex justify-between items-center mb-6 animate-fade-in-up">
-        <h3 className="text-xl font-display font-bold text-slate-900">{t('admin.dashboard.recentActivity')}</h3>
-        <Link to="/admin/journal" className="text-sm font-semibold text-primary-600 hover:text-primary-700 flex items-center gap-1 group">
+        <h3 className="text-xl font-display font-bold text-slate-900 dark:text-white">{t('admin.dashboard.recentActivity')}</h3>
+        <Link to="/admin/journal" className="text-sm font-semibold text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 flex items-center gap-1 group">
           {t('admin.dashboard.viewJournal')} <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
         </Link>
       </div>

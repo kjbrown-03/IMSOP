@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { api } from '../../lib/api'
+import { useLiveRefresh } from '../../components/hooks/useLiveRefresh'
 
 const COORDINATOR_AVATAR =
   'https://lh3.googleusercontent.com/aida-public/AB6AXuC244iS5VLN_Ewwm4MnaUp2E4a7Qp16djsX_DfUYcZPJxZqQAMeIuBKC8T-TWhjBMl-DqLrYEAEf5TMtkB3WUbH8eAKSK6dV6l5Hn-qQSSPnUTJZtEXuo__7agmG224P6yvl9XluXoutvvnlRnCqLizjuVvF38AR8_2F5cEh43UhTTgfaADrXmyvI2keWrrrEqjPk_Io7PgrhmRN2yk6lSuo_9ABDsOzZ2aFcm1gTxmfnxQOqLF-ieP'
@@ -32,10 +33,11 @@ export default function RechercheExpertCoordinateur() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
-  useEffect(() => {
-    let cancelled = false
-    async function load() {
-      setLoading(true)
+  // `silencieux` : un rafraichissement de fond ne doit pas faire clignoter la
+  // liste en repassant par l'ecran de chargement.
+  const load = useCallback(
+    async ({ silencieux = false } = {}) => {
+      if (!silencieux) setLoading(true)
       try {
         const { data } = await api.get('/specialistes', {
           params: {
@@ -45,20 +47,25 @@ export default function RechercheExpertCoordinateur() {
             pageSize: 20,
           },
         })
-        if (cancelled) return
         setSpecialistes(data.items)
         setTotal(data.total)
+        setError(null)
       } catch (err) {
-        if (!cancelled) setError(err.response?.data?.message || t('coordinateur.search.loadFailed'))
+        if (!silencieux) setError(err.response?.data?.message || t('coordinateur.search.loadFailed'))
       } finally {
-        if (!cancelled) setLoading(false)
+        if (!silencieux) setLoading(false)
       }
-    }
+    },
+    [specialiteKey, pays, disponibleOnly, t],
+  )
+
+  useEffect(() => {
     load()
-    return () => {
-      cancelled = true
-    }
-  }, [specialiteKey, pays, disponibleOnly, t])
+  }, [load])
+
+  // La disponibilite d'un specialiste change depuis SON ecran a lui : sans
+  // relecture, le coordinateur gardait une liste perimee jusqu'au rechargement.
+  useLiveRefresh(() => load({ silencieux: true }))
 
   return (
     <div className="bg-background text-text-main font-body-md min-h-screen relative">
@@ -169,7 +176,7 @@ export default function RechercheExpertCoordinateur() {
                     <span className="material-symbols-outlined text-[16px]">{s.disponible ? 'check_circle' : 'schedule'}</span>
                     {s.disponible ? t('coordinateur.search.available') : t('coordinateur.search.unavailable')}
                   </span>
-                  {s.verified && (
+                  {s.verificationStatus === 'VALIDE' && (
                     <span className="text-primary font-label-md flex items-center gap-1">
                       <span className="material-symbols-outlined text-[16px]" style={{ fontVariationSettings: "'FILL' 1" }}>verified</span>
                       {t('coordinateur.search.verified')}

@@ -46,7 +46,6 @@ const updateUser = {
     etablissement: z.string().trim().max(200).optional(),
     langues: z.string().trim().max(200).optional(),
     bio: z.string().trim().max(2000).optional(),
-    verified: z.boolean().optional(),
     disponible: z.boolean().optional(),
   }).strict(),
 }

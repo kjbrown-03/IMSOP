@@ -19,7 +19,7 @@ export function formatSize(bytes) {
 // The storage key never reaches the browser. Downloading asks the API for a
 // short-lived signed URL, which re-checks that this user may see the dossier
 // and writes a DOCUMENT_DOWNLOAD audit entry on the way.
-export default function MessageAttachment({ document, mine }) {
+export default function MessageAttachment({ document, mine, basePath = '/documents' }) {
   const { t } = useTranslation()
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState(null)
@@ -30,7 +30,7 @@ export default function MessageAttachment({ document, mine }) {
     setBusy(true)
     setError(null)
     try {
-      const { data } = await api.get(`/documents/${document.id}/download`)
+      const { data } = await api.get(`${basePath}/${document.id}/download`)
       window.open(data.url, '_blank', 'noopener,noreferrer')
     } catch (err) {
       setError(err.response?.data?.message || t('errors.downloadFailed'))

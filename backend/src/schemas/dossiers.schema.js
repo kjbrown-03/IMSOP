@@ -2,10 +2,19 @@ const { z } = require('zod')
 const { uuid, paramsWithId, pagination } = require('./common.schema')
 
 const URGENCE = ['NORMAL', 'PRIORITAIRE', 'URGENT']
+// Les 19 statuts du CDC §53, dans l'ordre du workflow §52.
 const STATUS = [
-  'BROUILLON', 'SOUMIS', 'EN_ATTENTE_PAIEMENT', 'EN_VERIFICATION', 'COMPLET',
-  'EN_ATTENTE_AFFECTATION', 'AFFECTE', 'EN_ANALYSE', 'RAPPORT_EN_PREPARATION',
-  'RAPPORT_SOUMIS', 'RAPPORT_VALIDE', 'RAPPORT_TRANSMIS', 'CLOTURE', 'ANNULE', 'REFUSE',
+  'BROUILLON', 'SOUMIS', 'EN_ATTENTE_PAIEMENT', 'EN_ATTENTE_DOCUMENTS',
+  'EN_VERIFICATION', 'COMPLET', 'EN_ATTENTE_AFFECTATION', 'AFFECTE',
+  'ACCEPTE_PAR_SPECIALISTE', 'EN_ANALYSE', 'INFORMATION_COMPLEMENTAIRE_DEMANDEE',
+  'RAPPORT_EN_PREPARATION', 'RAPPORT_SOUMIS', 'RAPPORT_VALIDE', 'RAPPORT_TRANSMIS',
+  'SUIVI', 'CLOTURE', 'ANNULE', 'REFUSE',
+]
+
+// Sous-ensemble pilotable par la coordination, aligné sur TRANSITIONS_COORDINATION.
+const STATUS_COORDINATION = [
+  'EN_ATTENTE_DOCUMENTS', 'EN_VERIFICATION', 'COMPLET',
+  'EN_ATTENTE_AFFECTATION', 'SUIVI', 'CLOTURE', 'ANNULE',
 ]
 
 const longText = (max) => z.string().trim().min(1).max(max)
@@ -49,6 +58,19 @@ const assignerSpecialiste = {
   body: z.object({ specialisteId: uuid }).strict(),
 }
 
+const demanderComplement = {
+  params: paramsWithId('id'),
+  body: z.object({ precisions: z.string().trim().min(1).max(2000) }).strict(),
+}
+
+const changerStatut = {
+  params: paramsWithId('id'),
+  body: z.object({
+    status: z.enum(STATUS_COORDINATION),
+    motif: z.string().trim().max(1000).optional(),
+  }).strict(),
+}
+
 const designerMedecinLocal = {
   params: paramsWithId('id'),
   body: z.object({ email: z.string().trim().toLowerCase().email() }).strict(),
@@ -59,4 +81,14 @@ const refuserDossier = {
   body: z.object({ motif: z.string().trim().max(1000).optional() }).strict(),
 }
 
-module.exports = { createDossier, updateDossier, idParam, listDossiers, assignerSpecialiste, refuserDossier, designerMedecinLocal }
+module.exports = {
+  createDossier,
+  updateDossier,
+  idParam,
+  listDossiers,
+  assignerSpecialiste,
+  refuserDossier,
+  demanderComplement,
+  changerStatut,
+  designerMedecinLocal,
+}
