@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Mail, Phone, ShieldCheck, ShieldAlert } from 'lucide-react'
 import AdminLayout from '../components/layout/AdminLayout'
@@ -38,6 +39,13 @@ function InfoRow({ icon: Icon, label, value, muted }) {
 export default function MonProfil() {
   const { t } = useTranslation()
   const user = useAuthStore((s) => s.user)
+  const refreshMe = useAuthStore((s) => s.refreshMe)
+
+  // La photo affichée doit être celle du compte réellement connecté, jamais
+  // celle laissée en cache par une session précédente.
+  useEffect(() => {
+    refreshMe()
+  }, [refreshMe])
 
   const Shell = SHELL_BY_ROLE[user?.role]
   const EmailIcon = user?.emailVerified ? ShieldCheck : ShieldAlert
@@ -51,7 +59,7 @@ export default function MonProfil() {
           <h1 className="text-2xl md:text-3xl font-display font-bold text-slate-900 dark:text-white truncate max-w-full">
             {user?.fullName || t('profile.unnamed')}
           </h1>
-          <span className="mt-2 font-bold text-[10px] uppercase tracking-wider text-primary-700 dark:text-primary-400 bg-primary-100 dark:bg-primary-900/30 px-3 py-1 rounded-full">
+          <span className="mt-2 font-bold text-[10px] uppercase tracking-wider text-[var(--color-primary)] bg-[var(--color-surface-container-high)] px-3 py-1 rounded-full">
             {t(`profile.roles.${user?.role}`, { defaultValue: user?.role || '' })}
           </span>
         </div>

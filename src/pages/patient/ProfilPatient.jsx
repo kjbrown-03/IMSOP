@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import PatientShell from '../../components/layout/PatientShell'
@@ -17,11 +17,16 @@ export default function ProfilPatient() {
   const user = useAuthStore((s) => s.user)
   const logout = useAuthStore((s) => s.logout)
   const uploadIdentityDocument = useAuthStore((s) => s.uploadIdentityDocument)
+  const refreshMe = useAuthStore((s) => s.refreshMe)
   const loading = useAuthStore((s) => s.loading)
   const lang = useLanguageStore((s) => s.lang)
   const toggleLang = useLanguageStore((s) => s.toggleLang)
   const fileInputRef = useRef(null)
   const [uploadError, setUploadError] = useState(null)
+
+  useEffect(() => {
+    refreshMe()
+  }, [refreshMe])
 
   const IDENTITY_STATUS = {
     verified: { icon: ShieldCheck, bg: 'bg-emerald-50', color: 'text-emerald-600', label: t('patient.profile.identityVerified') },

@@ -4,6 +4,9 @@ dist/
 .env.local
 backend/.env
 backend/uploads/
+# Contains raw database dumps and copies of uploaded medical documents -
+# must never be committed, on this machine or any other clone of the repo.
+backend/backups/
 backend/node_modules/
 backend/dist/
 *.log

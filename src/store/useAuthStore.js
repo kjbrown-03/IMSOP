@@ -13,8 +13,42 @@ function errorMessage(err, fallback) {
   return data?.message || fallback
 }
 
+// Le navigateur ne garde qu'UNE session (une seule clé `imsop_user`, un seul
+// jeton). Si le profil mis en cache n'est pas celui du jeton courant — deuxième
+// compte ouvert dans un autre onglet, session d'un rôle précédent restée en
+// place — on affichait les données du mauvais compte, photo de profil comprise.
+// Le cache est donc jeté dès qu'il ne concorde plus.
+function sujetDuJeton(token) {
+  try {
+    const partie = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')
+    const rembourre = partie + '='.repeat((4 - (partie.length % 4)) % 4)
+    return JSON.parse(atob(rembourre)).sub || null
+  } catch {
+    return null
+  }
+}
+
+function utilisateurEnCache() {
+  const brut = localStorage.getItem('imsop_user')
+  if (!brut) return null
+  let user
+  try {
+    user = JSON.parse(brut)
+  } catch {
+    localStorage.removeItem('imsop_user')
+    return null
+  }
+  const token = localStorage.getItem('imsop_access_token')
+  const sujet = token ? sujetDuJeton(token) : null
+  if (sujet && user?.id && sujet !== user.id) {
+    localStorage.removeItem('imsop_user')
+    return null
+  }
+  return user
+}
+
 export const useAuthStore = create((set, get) => ({
-  user: JSON.parse(localStorage.getItem('imsop_user') || 'null'),
+  user: utilisateurEnCache(),
   isAuthenticated: !!localStorage.getItem('imsop_access_token'),
   loading: false,
   error: null,
@@ -141,6 +175,21 @@ export const useAuthStore = create((set, get) => ({
       const message = errorMessage(err, "Le téléversement a échoué")
       set({ loading: false, error: message })
       return { ok: false, error: message }
+    }
+  },
+
+  // Remplacement COMPLET du profil, contrairement à `_patchUser` : c'est ce qui
+  // garantit qu'aucun champ du compte précédent (photo, référence, statut) ne
+  // survive dans l'objet affiché. Le serveur répond d'après le jeton, donc la
+  // réponse appartient forcément au compte réellement connecté.
+  async refreshMe() {
+    try {
+      const { data } = await api.get('/auth/me')
+      localStorage.setItem('imsop_user', JSON.stringify(data))
+      set({ user: data })
+      return { ok: true, user: data }
+    } catch (err) {
+      return { ok: false, error: errorMessage(err, 'Profil indisponible') }
     }
   },
 

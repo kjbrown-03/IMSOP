@@ -125,7 +125,7 @@ export default function AvatarUploader({ size = 128, allowRemove = true, classNa
             type="button"
             onClick={() => inputRef.current?.click()}
             disabled={busy}
-            className="text-sm font-semibold text-primary-600 dark:text-primary-400 hover:underline disabled:opacity-50"
+            className="text-sm font-semibold text-[var(--color-primary)] hover:underline disabled:opacity-50"
           >
             {busy ? t('profile.uploading') : t('profile.changePhoto')}
           </button>

@@ -210,8 +210,15 @@ export const Home = () => {
   const closed = messagingClosesAt && new Date(messagingClosesAt) < new Date()
 
   const filteredContacts = contacts.filter(({ dossier }) => {
-    if (!search.trim()) return true
-    return counterpartOf(dossier)?.fullName?.toLowerCase().includes(search.trim().toLowerCase())
+    const q = search.trim().toLowerCase()
+    if (!q) return true
+    return [
+      counterpartOf(dossier)?.fullName,
+      dossier.specialiteRequise,
+      dossier.specialiste?.specialite,
+      dossier.reference,
+      dossier.motif,
+    ].some((champ) => champ?.toLowerCase().includes(q))
   })
 
   const visibleMessages = threadSearchQuery.trim()
@@ -554,7 +561,7 @@ export const Home = () => {
               <ScrollArea className="flex-grow">
                 {filteredContacts.map(({ dossier, last }) => {
                   const counterpart = counterpartOf(dossier)
-                  const subtitle = isPatient ? dossier.specialiste?.specialite : t('chat.patientFile')
+                  const specialite = isPatient ? dossier.specialiste?.specialite : dossier.specialiteRequise
                   return (
                     <button
                       key={dossier.id}
@@ -575,7 +582,13 @@ export const Home = () => {
                               <span className="shrink-0 text-xs text-muted-foreground">{formatListTime(last.createdAt)}</span>
                             )}
                           </div>
-                          <p className="text-xs text-muted-foreground truncate">{subtitle} · #{dossier.reference}</p>
+                          <p className="text-xs truncate">
+                            <span className="font-medium text-foreground/80">#{dossier.reference}</span>
+                            {specialite && <span className="text-muted-foreground"> · {specialite}</span>}
+                          </p>
+                          {dossier.motif && (
+                            <p className="text-xs text-muted-foreground/80 truncate italic">{dossier.motif}</p>
+                          )}
                           <p className="text-sm text-muted-foreground truncate">
                             {last ? last.body || t('chat.attachAria') : t('patient.messages.noMessageYet')}
                           </p>

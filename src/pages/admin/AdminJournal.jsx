@@ -33,21 +33,21 @@ export default function AdminJournal() {
     <AdminLayout>
       <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4 animate-fade-in-up">
         <div>
-          <h2 className="text-3xl font-display font-bold text-slate-900 mb-2 flex items-center gap-3">
-            <ScrollText className="w-7 h-7 text-primary-600" /> {t('admin.journal.title')}
+          <h2 className="text-3xl font-display font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-3">
+            <ScrollText className="w-7 h-7 text-primary-600 dark:text-primary-400" /> {t('admin.journal.title')}
           </h2>
-          <p className="text-slate-500">{t('admin.journal.subtitle')}</p>
+          <p className="text-slate-500 dark:text-slate-400">{t('admin.journal.subtitle')}</p>
         </div>
         <button
           onClick={load}
           disabled={loading}
-          className="bg-white text-slate-700 text-sm font-semibold px-4 py-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors flex items-center gap-2 disabled:opacity-60 shrink-0"
+          className="bg-white dark:bg-neutral-800 text-slate-700 dark:text-slate-300 text-sm font-semibold px-4 py-2.5 rounded-xl border border-slate-200 dark:border-neutral-700 hover:bg-slate-50 dark:hover:bg-neutral-700 transition-colors flex items-center gap-2 disabled:opacity-60 shrink-0"
         >
           <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} /> {t('common.refresh')}
         </button>
       </div>
 
-      {error && <div className="bg-rose-50 border border-rose-200 text-rose-700 text-sm font-medium rounded-2xl px-5 py-4 mb-6">{error}</div>}
+      {error && <div className="bg-rose-50 dark:bg-rose-900/30 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-400 text-sm font-medium rounded-2xl px-5 py-4 mb-6">{error}</div>}
 
       <AuditLogFeed logs={logs} loading={loading} />
     </AdminLayout>
