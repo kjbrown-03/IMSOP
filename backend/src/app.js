@@ -30,7 +30,9 @@ const app = express()
 app.set('trust proxy', 1)
 app.use(helmet())
 app.use(cors({ origin: env.corsOrigin, credentials: true }))
-app.use(morgan(env.nodeEnv === 'development' ? 'dev' : 'combined'))
+// Silenced under test: the suite issues hundreds of requests, and an access
+// log line per request buries the assertion that actually failed.
+app.use(morgan(env.nodeEnv === 'development' ? 'dev' : 'combined', { skip: () => env.nodeEnv === 'test' }))
 
 // CinetPay webhook must read the raw body before JSON parsing is scoped elsewhere,
 // but express.json() as a global parser is fine since CinetPay posts JSON too.

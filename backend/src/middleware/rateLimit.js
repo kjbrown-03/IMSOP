@@ -1,5 +1,13 @@
 const rateLimit = require('express-rate-limit')
 
+// The automated suite drives hundreds of requests through supertest from a
+// single loopback address, which is exactly the shape these limiters exist to
+// block - without this, tests start failing at the 21st login for a reason
+// that has nothing to do with the behaviour under test. Keyed on NODE_ENV
+// rather than a dedicated flag so it can never be switched on in production
+// by a stray environment variable.
+const enTest = () => process.env.NODE_ENV === 'test'
+
 // Baseline protection on every route - generous enough not to bother a real
 // user, tight enough that one runaway client (buggy script, scraping,
 // misbehaving frontend retry loop) can't starve everyone else on this
@@ -10,6 +18,7 @@ const apiLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   message: { message: 'Trop de requêtes, veuillez ralentir' },
+  skip: enTest,
 })
 
 // Login/register/2FA are the classic brute-force and credential-stuffing
@@ -22,6 +31,7 @@ const authLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   message: { message: 'Trop de tentatives, réessayez dans quelques minutes' },
+  skip: enTest,
 })
 
 // CinetPay may retry a notification a few times; this only guards against a
@@ -31,6 +41,7 @@ const webhookLimiter = rateLimit({
   limit: 120,
   standardHeaders: true,
   legacyHeaders: false,
+  skip: enTest,
 })
 
 module.exports = { apiLimiter, authLimiter, webhookLimiter }

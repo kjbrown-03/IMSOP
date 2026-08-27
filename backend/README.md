@@ -24,6 +24,15 @@ Comptes de test (mot de passe défini par `SEED_PASSWORD` dans `.env`, ou géné
 
 En développement, le code 2FA n'est pas réellement envoyé par email : il est affiché dans les logs du serveur (`[2FA] Code for ...`).
 
+## Tests
+
+```bash
+npm test        # suite backend (node:test + supertest), ~1 min
+```
+
+Nécessite une base dédiée `imsop_test` — préparation, garde-fous et
+particularités : [`docs/TESTS.md`](docs/TESTS.md).
+
 ## Sécurité — points non négociables déjà en place
 
 - **Médecin local** : le patient désigne lui-même son médecin traitant sur un dossier (`POST /api/dossiers/:id/medecin-local`, par e-mail) et peut lui retirer l'accès à tout moment (`DELETE`). Le consentement `COMMUNICATION_MEDECIN` est écrit dans la même transaction, et l'accès est cloisonné au dossier désigné exactement comme celui du spécialiste.

@@ -17,7 +17,17 @@ const transporter = nodemailer.createTransport({
 const DEV_MAILBOX_PATH = path.join(__dirname, '..', '..', '.dev-mailbox.log')
 
 async function sendMail({ to, subject, html, text }) {
-  if (env.nodeEnv === 'development' && !env.smtp.user) {
+  // No SMTP credentials outside production means there is no relay to talk to:
+  // attempting the round-trip would hang the caller on a connection timeout.
+  // Production is deliberately excluded from this branch - there, a missing
+  // SMTP_USER must surface as a real error, not silently drop the mail.
+  if (env.nodeEnv !== 'production' && !env.smtp.user) {
+    // The automated suite calls this on nearly every request (notify() is
+    // wired into registration, 2FA, assignment...). Mirroring all of it to
+    // stdout and to the dev mailbox would bury the test report and grow the
+    // log file on every run, so tests get the no-op without the paperwork.
+    if (env.nodeEnv === 'test') return { skipped: true }
+
     const entry = `[${new Date().toISOString()}] To: ${to} | Subject: ${subject}\n${text || html}\n---\n`
     console.log(`[mailer:dev] To: ${to} | Subject: ${subject}\n${text || html}`)
     try {
