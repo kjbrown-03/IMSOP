@@ -45,7 +45,15 @@ async function listMessages(req, res) {
   if (conversationInterdite(req, res)) return
 
   const messages = await prisma.message.findMany({
-    where: { dossierId: dossier.id },
+    where: {
+      dossierId: dossier.id,
+      // Le fil est un canal coordination <-> specialiste, et rien d'autre.
+      // Des messages de patients et de medecins locaux subsistent des versions
+      // ou la messagerie leur etait ouverte : les rendre ici melangerait deux
+      // conversations qui n'ont jamais eu vocation a se croiser, et donnerait
+      // au coordinateur des echanges qu'il n'a ni ecrits ni recus.
+      sender: { role: { in: [...ROLES_MESSAGERIE] } },
+    },
     orderBy: { createdAt: 'asc' },
     include: {
       sender: senderSelect,

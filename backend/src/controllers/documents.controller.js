@@ -9,6 +9,15 @@ async function uploadDocument(req, res) {
   if (error) return res.status(error).json({ message })
   if (!req.file) return res.status(400).json({ message: 'Aucun fichier reçu' })
 
+  // CONSENTEMENT n'est jamais un choix de téléversement manuel : ce n'est
+  // généré et attaché que par consentements.controller.js quand un
+  // consentement électronique valide est effectivement enregistré. Sans
+  // cette garde, n'importe qui pourrait déposer un fichier quelconque sous
+  // cette étiquette pour contourner la vérification avant transmission.
+  if (req.body.category === 'CONSENTEMENT') {
+    return res.status(400).json({ message: 'Cette catégorie est réservée au consentement signé électroniquement' })
+  }
+
   const key = `dossiers/${dossier.id}/${uuidv4()}-${req.file.originalname}`
   await putObject(key, req.file.buffer, req.file.mimetype)
 

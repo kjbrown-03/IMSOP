@@ -82,7 +82,9 @@ function separateur(doc) {
   doc.moveDown(0.5)
 }
 
-function blocSignature(doc, titre, mentions = []) {
+// `signe` non-null indique que CE bloc est celui du signataire électronique
+// (patient ou médecin traitant demandeur, jamais les deux) : { nom, date }.
+function blocSignature(doc, titre, mentions = [], signe = null) {
   doc.fontSize(10).font('Helvetica-Bold').fillColor(NOIR).text(titre)
   doc.moveDown(0.2)
   for (const m of mentions) {
@@ -90,15 +92,28 @@ function blocSignature(doc, titre, mentions = []) {
   }
   doc.moveDown(0.5)
   doc.fontSize(9).fillColor(GRIS).font('Helvetica')
-  doc.text(`Nom et prénom : ${'.'.repeat(40)}`)
+  doc.text(`Nom et prénom : ${signe?.nom ? signe.nom : '.'.repeat(40)}`)
   doc.moveDown(0.3)
-  doc.text(`Fait à ${'.'.repeat(22)}   le ${'.'.repeat(6)} / ${'.'.repeat(6)} / ${'.'.repeat(8)}`)
+  if (signe?.date) {
+    doc.text(`Signé électroniquement le ${new Date(signe.date).toLocaleString('fr-FR')}`)
+  } else {
+    doc.text(`Fait à ${'.'.repeat(22)}   le ${'.'.repeat(6)} / ${'.'.repeat(6)} / ${'.'.repeat(8)}`)
+  }
   doc.moveDown(0.3)
-  doc.text('Signature :')
+  if (signe?.nom) {
+    doc.font('Helvetica-Oblique').fillColor(ENCRE).text(`Signature électronique : ${signe.nom}`)
+  } else {
+    doc.text('Signature :')
+  }
   doc.moveDown(2)
 }
 
-function buildConsentementPdf({ patient = {}, dossier = {}, medecinLocal = null } = {}) {
+// `signature`, quand présent, marque le document comme signé électroniquement :
+// { nom, date, type: 'patient' | 'medecin', accepted }. `type` détermine quel
+// bloc de signature (patient ou médecin traitant) reçoit le nom et la date -
+// une demande ouverte par le médecin traitant lui-même (patient anonymisé,
+// sans compte) est signée par lui, pas par un patient qui n'existe pas ici.
+function buildConsentementPdf({ patient = {}, dossier = {}, medecinLocal = null, signature = null } = {}) {
   return new Promise((resolve, reject) => {
     const doc = new PDFDocument({ margin: 50, size: 'A4' })
     const chunks = []
@@ -212,10 +227,12 @@ function buildConsentementPdf({ patient = {}, dossier = {}, medecinLocal = null 
 
     caseACocher(doc,
       "J'ACCEPTE que mes données de santé soient transmises par la plateforme IMSOP aux " +
-      "destinataires énumérés à l'article 4, y compris hors de mon pays de résidence.")
+      "destinataires énumérés à l'article 4, y compris hors de mon pays de résidence.",
+      signature?.accepted === true)
     doc.moveDown(0.2)
     caseACocher(doc,
-      "JE REFUSE. Je comprends que ma demande de deuxième avis ne pourra alors pas être traitée.")
+      "JE REFUSE. Je comprends que ma demande de deuxième avis ne pourra alors pas être traitée.",
+      signature?.accepted === false)
 
     doc.moveDown(1)
     separateur(doc)
@@ -223,7 +240,7 @@ function buildConsentementPdf({ patient = {}, dossier = {}, medecinLocal = null 
     // ---------- Signatures ----------
     titreSection(doc, '9. Signatures')
 
-    blocSignature(doc, 'Le patient')
+    blocSignature(doc, 'Le patient', [], signature?.type === 'patient' ? signature : null)
 
     blocSignature(doc, 'Le représentant légal — si le patient est mineur ou protégé', [
       "À compléter uniquement lorsque le patient n'est pas en mesure de consentir personnellement.",
@@ -231,11 +248,15 @@ function buildConsentementPdf({ patient = {}, dossier = {}, medecinLocal = null 
     ])
 
     blocSignature(doc, 'Le médecin traitant — attestation', [
-      "Cette attestation ne remplace pas le consentement du patient. Le praticien atteste avoir " +
-      "informé le patient de l'objet et des limites de la demande, avoir recueilli son accord au " +
-      "préalable, et que les documents transmis sont exacts et complets à sa connaissance.",
+      signature?.type === 'medecin'
+        ? "Demande ouverte par le médecin traitant lui-même pour un patient anonymisé : il n'y a pas " +
+          "de consentement distinct du patient dans ce cas précis, le praticien engage sa propre " +
+          "responsabilité en signant ci-dessous."
+        : "Cette attestation ne remplace pas le consentement du patient. Le praticien atteste avoir " +
+          "informé le patient de l'objet et des limites de la demande, avoir recueilli son accord au " +
+          "préalable, et que les documents transmis sont exacts et complets à sa connaissance.",
       "Numéro d'inscription à l'ordre : ...........................................",
-    ])
+    ], signature?.type === 'medecin' ? signature : null)
 
     // ---------- Pied de page ----------
     doc.moveDown(0.5)

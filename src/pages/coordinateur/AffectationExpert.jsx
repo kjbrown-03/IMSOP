@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { nomPatient } from '../../lib/dossier'
 import { api } from '../../lib/api'
 
 export default function AffectationExpert() {
@@ -82,7 +83,7 @@ export default function AffectationExpert() {
                   <div>
                     <h2 className="font-headline-md text-headline-md text-primary">{t('coordinateur.assign.caseLabel')} #{dossier.reference}</h2>
                     <p className="font-body-md text-body-md text-on-surface-variant mt-1">
-                      {t('coordinateur.assign.patientLabel')} : {dossier.patient.user.fullName}
+                      {t('coordinateur.assign.patientLabel')} : {nomPatient(dossier, t)}
                     </p>
                   </div>
                   {URGENCE_LABEL[dossier.urgence] && (

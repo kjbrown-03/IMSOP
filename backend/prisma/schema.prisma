@@ -61,6 +61,10 @@ enum DocumentCategorie {
   COMPTE_RENDU
   // Pièce déposée dans la messagerie sécurisée plutôt que dans le tunnel de demande.
   MESSAGERIE
+  // Généré automatiquement par le serveur quand le patient (ou le médecin
+  // traitant demandeur) accepte et signe électroniquement - jamais téléversé
+  // manuellement par un utilisateur.
+  CONSENTEMENT
   AUTRE
 }
 
@@ -338,13 +342,20 @@ model Consentement {
   id         String           @id @default(uuid())
   dossierId  String?
   dossier    Dossier?         @relation(fields: [dossierId], references: [id], onDelete: Cascade)
-  patientId  String
-  type       ConsentementType
-  version    String           @default("1.0")
-  accepted   Boolean
-  ipAddress  String?
-  acceptedAt DateTime         @default(now())
-  revokedAt  DateTime?
+  // Nullable : une demande ouverte par un médecin traitant décrit un patient
+  // anonymisé, sans compte - donc sans patientId. Le consentement y est alors
+  // donné par le médecin traitant demandeur lui-même (voir nomSignataire).
+  patientId     String?
+  type          ConsentementType
+  version       String           @default("1.0")
+  accepted      Boolean
+  // Nom complet tapé par le signataire pour la signature électronique du
+  // formulaire de consentement (§ transmission au spécialiste) - absent pour
+  // les autres types de consentement, qui restent de simples cases à cocher.
+  nomSignataire String?
+  ipAddress     String?
+  acceptedAt    DateTime         @default(now())
+  revokedAt     DateTime?
 
   @@index([dossierId])
   @@index([patientId])

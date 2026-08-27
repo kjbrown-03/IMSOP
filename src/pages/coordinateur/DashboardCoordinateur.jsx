@@ -2,7 +2,9 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import CoordinatorLayout from '../../components/layout/CoordinatorLayout'
+import { useLiveRefresh } from '../../components/hooks/useLiveRefresh'
 import { api } from '../../lib/api'
+import { nomPatient } from '../../lib/dossier'
 import { Sparkles, AlertTriangle, UserPlus, Bell, ChevronRight, ShieldAlert, FileText, FileSearch, ArrowRight, CheckCircle2, ClipboardCheck } from 'lucide-react'
 
 export default function DashboardCoordinateur() {
@@ -25,8 +27,12 @@ export default function DashboardCoordinateur() {
     return new Date(iso).toLocaleDateString(i18n.language === 'en' ? 'en-GB' : 'fr-FR', { day: '2-digit', month: 'short', year: 'numeric' })
   }
 
-  async function load() {
-    setLoading(true)
+  // `silencieux` garde les donnees deja affichees pendant la relecture. Sans
+  // lui, chaque rafraichissement vidait l'ecran et le faisait repasser par
+  // l'etat de chargement, ce qui donnait l'impression d'un tableau de bord
+  // long a reagir.
+  async function load({ silencieux = false } = {}) {
+    if (!silencieux) setLoading(true)
     try {
       const [{ data: statsData }, { data: dossiersData }, { data: soumisData }] = await Promise.all([
         api.get('/admin/stats'),
@@ -37,17 +43,12 @@ export default function DashboardCoordinateur() {
       const sorted = [...dossiersData.items].sort((a, b) => (a.urgence === 'URGENT' ? -1 : b.urgence === 'URGENT' ? 1 : 0))
       setDossiers(sorted)
 
-      const rapports = await Promise.all(
-        soumisData.items.map(async (d) => {
-          try {
-            const { data: rapport } = await api.get(`/dossiers/${d.id}/rapport`)
-            return { dossier: d, rapport }
-          } catch {
-            return null
-          }
-        }),
+      // Le rapport est desormais renvoye avec le dossier : la liste ne coute
+      // plus un appel supplementaire par ligne.
+      setRapportsAValider(
+        soumisData.items.filter((d) => d.rapport).map((d) => ({ dossier: d, rapport: d.rapport })),
       )
-      setRapportsAValider(rapports.filter(Boolean))
+      setError(null)
     } catch (err) {
       setError(err.response?.data?.message || t('coordinateur.dashboard.loadFailed'))
     } finally {
@@ -60,11 +61,19 @@ export default function DashboardCoordinateur() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  // Un coordinateur laisse cet ecran ouvert pendant que les praticiens
+  // travaillent : la relecture periodique evite d'avoir a recharger la page
+  // pour voir arriver un nouveau dossier ou un rapport soumis.
+  useLiveRefresh(() => load({ silencieux: true }))
+
   async function validerRapport(rapportId) {
     setValidatingId(rapportId)
     try {
       await api.post(`/rapports/${rapportId}/valider`)
-      await load()
+      // Le rapport valide quitte la file d'attente : on le retire tout de
+      // suite plutot que de faire patienter devant un ecran de chargement.
+      setRapportsAValider((liste) => liste.filter((r) => r.rapport.id !== rapportId))
+      await load({ silencieux: true })
     } catch (err) {
       setError(err.response?.data?.message || t('coordinateur.dashboard.validateFailed'))
     } finally {
@@ -133,7 +142,7 @@ export default function DashboardCoordinateur() {
                 )}
               </div>
               <div>
-                <h4 className="text-lg font-bold text-slate-900 dark:text-white">{d.patient.user.fullName}</h4>
+                <h4 className="text-lg font-bold text-slate-900 dark:text-white">{nomPatient(d, t)}</h4>
                 <div className="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-1.5 mt-0.5">
                   <FileText className="w-4 h-4" /> {d.specialiteRequise}
                 </div>
@@ -175,7 +184,7 @@ export default function DashboardCoordinateur() {
                 #{d.reference}
               </span>
               <div>
-                <h4 className="text-lg font-bold text-slate-900 dark:text-white">{d.patient.user.fullName}</h4>
+                <h4 className="text-lg font-bold text-slate-900 dark:text-white">{nomPatient(d, t)}</h4>
                 <div className="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-1.5 mt-0.5">
                   <FileText className="w-4 h-4" /> {d.specialiteRequise} — Dr. {d.specialiste?.user?.fullName}
                 </div>

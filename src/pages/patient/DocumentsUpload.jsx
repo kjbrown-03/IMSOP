@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { X, ArrowLeft, Check, ArrowRight, Activity, UploadCloud, FileText, FileImage, Loader2 } from 'lucide-react'
+import ConsentementGate from '../../components/ui/ConsentementGate'
 import { api } from '../../lib/api'
 
 const CATEGORIES = [
@@ -32,6 +33,8 @@ export default function DocumentsUpload() {
   const [uploading, setUploading] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState(null)
+  const [consentementAccepte, setConsentementAccepte] = useState(false)
+  const [nomSignataire, setNomSignataire] = useState('')
 
   useEffect(() => {
     if (!dossierId) {
@@ -81,9 +84,21 @@ export default function DocumentsUpload() {
   }
 
   async function handleContinue() {
+    if (!consentementAccepte || nomSignataire.trim().length < 2) {
+      setError(t('consentement.required'))
+      return
+    }
     setSubmitting(true)
     setError(null)
     try {
+      // Le consentement doit exister comme document du dossier avant que
+      // celui-ci ne puisse être soumis (voir soumettreDossier côté serveur) :
+      // il est donc enregistré ici, juste avant l'appel qui soumet le dossier.
+      await api.post(`/dossiers/${dossierId}/consentements`, {
+        type: 'TRANSMISSION_SPECIALISTE',
+        accepted: true,
+        nomSignataire: nomSignataire.trim(),
+      })
       await api.post(`/dossiers/${dossierId}/soumettre`)
       navigate('/patient/paiement', { state: { dossierId } })
     } catch (err) {
@@ -284,6 +299,14 @@ export default function DocumentsUpload() {
               {t('patient.documents.skipNote')}
             </p>
           )}
+
+          <ConsentementGate
+            accepted={consentementAccepte}
+            onAcceptedChange={setConsentementAccepte}
+            nomSignataire={nomSignataire}
+            onNomChange={setNomSignataire}
+            disabled={submitting}
+          />
         </div>
 
         <div className="fixed bottom-0 left-0 w-full glass-card border-b-0 border-x-0 p-4 md:static md:bg-transparent md:border-none md:p-0 md:mt-8 max-w-3xl mx-auto flex gap-4 md:shadow-none shadow-[0_-8px_30px_rgba(0,0,0,0.04)]">
@@ -298,7 +321,7 @@ export default function DocumentsUpload() {
             className="flex-[2] md:flex-1 bg-slate-900 dark:bg-white hover:bg-primary-600 dark:hover:bg-primary-500 text-white dark:text-slate-900 dark:hover:text-white font-bold py-3.5 px-6 rounded-xl transition-all flex items-center justify-center gap-2 shadow-md shadow-slate-900/10 group disabled:opacity-60"
             type="button"
             onClick={handleContinue}
-            disabled={submitting}
+            disabled={submitting || !consentementAccepte || nomSignataire.trim().length < 2}
           >
             {submitting ? t('patient.documents.submitting') : t('patient.documents.finish')}
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />

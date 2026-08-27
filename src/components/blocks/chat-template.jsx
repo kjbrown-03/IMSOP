@@ -171,7 +171,10 @@ export const Home = () => {
         )
         if (cancelled) return
         setContacts(withLastMessage)
-        setActiveDossierId((prev) => prev ?? withLastMessage[0]?.dossier.id ?? null)
+        // Ouvrir d'office le premier dossier affichait un correspondant avec
+        // qui rien n'a jamais ete echange. On n'ouvre que si une conversation
+        // existe reellement.
+        setActiveDossierId((prev) => prev ?? withLastMessage.find((c) => c.last)?.dossier.id ?? null)
       } catch (err) {
         if (!cancelled) setContactsError(err.response?.data?.message || t('errors.loadMessagesFailed'))
       } finally {
@@ -227,9 +230,18 @@ export const Home = () => {
     : ''
   const closed = messagingClosesAt && new Date(messagingClosesAt) < new Date()
 
-  const filteredContacts = contacts.filter(({ dossier }) => {
+  const rechercheActive = search.trim().length > 0
+
+  // Une messagerie s'ouvre des qu'un correspondant est rattache au dossier,
+  // mais tant que personne n'a ecrit il n'y a rien a montrer : la liste
+  // repetait le meme correspondant autant de fois qu'il avait de dossiers,
+  // sans qu'aucun echange n'existe. On n'affiche donc que les conversations
+  // reellement engagees. Les autres restent joignables par la recherche, qui
+  // est le point d'entree pour demarrer un echange, et celle qui est ouverte
+  // reste visible tant qu'elle l'est.
+  const filteredContacts = contacts.filter(({ dossier, last }) => {
     const q = search.trim().toLowerCase()
-    if (!q) return true
+    if (!q) return Boolean(last) || dossier.id === activeDossierId
     return [
       counterpartOf(dossier)?.fullName,
       dossier.specialiteRequise,
@@ -597,7 +609,13 @@ export const Home = () => {
                 <div className="mx-2 rounded-lg bg-destructive/10 text-destructive text-sm px-3 py-2">{contactsError}</div>
               )}
               {!loadingContacts && !contactsError && filteredContacts.length === 0 && (
-                <p className="px-4 py-2 text-sm text-muted-foreground">{t('patient.messages.empty')}</p>
+                <p className="px-4 py-2 text-sm text-muted-foreground">
+                  {contacts.length === 0
+                    ? t('patient.messages.empty')
+                    : rechercheActive
+                      ? t('patient.messages.noSearchResults')
+                      : t('patient.messages.emptyStart')}
+                </p>
               )}
 
               <ScrollArea className="flex-grow">
@@ -619,13 +637,19 @@ export const Home = () => {
                         </Avatar>
                         <div className="space-y-1 min-w-0 flex-1">
                           <div className="flex justify-between items-baseline gap-2">
-                            <p className="font-semibold truncate">{counterpart?.fullName}</p>
+                            {/* Le dossier fait le titre, pas le correspondant :
+                                un meme interlocuteur suit plusieurs dossiers, et
+                                son nom seul produisait des lignes strictement
+                                identiques. Cote specialiste le probleme etait
+                                pire encore, tous les fils affichant le meme
+                                contact « Coordination medicale ». */}
+                            <p className="font-semibold truncate">#{dossier.reference}</p>
                             {last && (
                               <span className="shrink-0 text-xs text-muted-foreground">{formatListTime(last.createdAt)}</span>
                             )}
                           </div>
                           <p className="text-xs truncate">
-                            <span className="font-medium text-foreground/80">#{dossier.reference}</span>
+                            <span className="font-medium text-foreground/80">{counterpart?.fullName}</span>
                             {specialite && <span className="text-muted-foreground"> · {specialite}</span>}
                           </p>
                           {dossier.motif && (

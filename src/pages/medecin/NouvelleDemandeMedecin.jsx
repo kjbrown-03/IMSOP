@@ -3,12 +3,29 @@ import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { FileUp, Loader2, Send, Trash2 } from 'lucide-react'
 import MedecinShell from '../../components/layout/MedecinShell'
+import ConsentementGate from '../../components/ui/ConsentementGate'
 import { api } from '../../lib/api'
 
 const SEXES = ['femme', 'homme', 'autre']
 const TYPES_ACCEPTES = 'application/pdf,image/jpeg,image/png,application/dicom'
 const CHAMP =
   'w-full rounded-lg border border-slate-300 dark:border-neutral-700 bg-transparent px-3 py-2 text-slate-900 dark:text-white'
+
+const SPECIALITE_KEYS = [
+  'oncologie', 'cardiologie', 'neurologie', 'orthopedie', 'radiologie', 'anatomopathologie',
+  'pediatrie', 'gynecologie', 'nephrologie', 'gastroenterologie', 'pneumologie',
+]
+
+// Stored in French regardless of UI language: same canonical values as the
+// patient's own nouvelle-demande flow (QuestionnaireMedical.jsx) and the
+// coordinator's search filters, so a case created here matches specialists
+// the same way one created by a patient does.
+const SPECIALITE_FR = {
+  oncologie: 'Oncologie', cardiologie: 'Cardiologie', neurologie: 'Neurologie', orthopedie: 'Orthopédie',
+  radiologie: 'Radiologie', anatomopathologie: 'Anatomopathologie', pediatrie: 'Pédiatrie',
+  gynecologie: 'Gynécologie-obstétrique', nephrologie: 'Néphrologie',
+  gastroenterologie: 'Gastro-entérologie', pneumologie: 'Pneumologie',
+}
 
 const CHAMPS_INITIAUX = {
   specialiteRequise: '',
@@ -50,6 +67,8 @@ export default function NouvelleDemandeMedecin() {
   const [fichiers, setFichiers] = useState([])
   const [envoi, setEnvoi] = useState(false)
   const [erreur, setErreur] = useState(null)
+  const [consentementAccepte, setConsentementAccepte] = useState(false)
+  const [nomSignataire, setNomSignataire] = useState('')
 
   const modifier = (nom) => (e) => setChamps((c) => ({ ...c, [nom]: e.target.value }))
 
@@ -63,7 +82,9 @@ export default function NouvelleDemandeMedecin() {
     champs.specialiteRequise.trim() &&
     champs.patientAge !== '' &&
     champs.motif.trim() &&
-    champs.question.trim()
+    champs.question.trim() &&
+    consentementAccepte &&
+    nomSignataire.trim().length >= 2
 
   async function envoyer(e) {
     e.preventDefault()
@@ -72,10 +93,12 @@ export default function NouvelleDemandeMedecin() {
     setEnvoi(true)
 
     try {
-      // Trois temps : la demande, puis ses pièces, puis la transmission. Les
-      // pièces doivent être attachées avant que la coordination ne la reçoive.
+      // Quatre temps : la demande, sa signature de consentement, ses pièces,
+      // puis la transmission. Le consentement doit exister comme document du
+      // dossier avant la transmission (voir transmettreDemandeMedecin côté
+      // serveur), donc il est enregistré juste après la création du dossier.
       const { data: dossier } = await api.post('/dossiers/demande-medecin', {
-        specialiteRequise: champs.specialiteRequise.trim(),
+        specialiteRequise: SPECIALITE_FR[champs.specialiteRequise] || champs.specialiteRequise,
         patientAge: Number(champs.patientAge),
         patientSexe: champs.patientSexe,
         motif: champs.motif.trim(),
@@ -83,6 +106,12 @@ export default function NouvelleDemandeMedecin() {
         symptomes: champs.symptomes.trim() || undefined,
         antecedents: champs.antecedents.trim() || undefined,
         traitementEnCours: champs.traitementEnCours.trim() || undefined,
+      })
+
+      await api.post('/dossiers/' + dossier.id + '/consentements', {
+        type: 'TRANSMISSION_SPECIALISTE',
+        accepted: true,
+        nomSignataire: nomSignataire.trim(),
       })
 
       for (const fichier of fichiers) {
@@ -141,14 +170,21 @@ export default function NouvelleDemandeMedecin() {
               </select>
             </Champ>
             <Champ label={t('medecin.nouvelleDemande.specialite')}>
-              <input
-                type="text"
+              <select
                 required
-                placeholder={t('medecin.nouvelleDemande.specialitePlaceholder')}
                 value={champs.specialiteRequise}
                 onChange={modifier('specialiteRequise')}
                 className={CHAMP}
-              />
+              >
+                <option value="" disabled className="text-slate-900">
+                  {t('medecin.nouvelleDemande.specialitePlaceholder')}
+                </option>
+                {SPECIALITE_KEYS.map((key) => (
+                  <option key={key} value={key} className="text-slate-900">
+                    {t(`common.specialites.${key}`)}
+                  </option>
+                ))}
+              </select>
             </Champ>
           </div>
         </section>
@@ -241,6 +277,14 @@ export default function NouvelleDemandeMedecin() {
             className={CHAMP + ' resize-y'}
           />
         </section>
+
+        <ConsentementGate
+          accepted={consentementAccepte}
+          onAcceptedChange={setConsentementAccepte}
+          nomSignataire={nomSignataire}
+          onNomChange={setNomSignataire}
+          disabled={envoi}
+        />
 
         {erreur && <p className="text-sm font-semibold text-rose-600">{erreur}</p>}
 

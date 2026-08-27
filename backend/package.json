@@ -11,6 +11,7 @@
     "prisma:studio": "prisma studio",
     "db:seed": "node prisma/seed.js",
     "test": "node --test --test-concurrency=1 \"tests/**/*.test.js\"",
+    "db:seed:specialistes": "node prisma/seed-specialistes.js",
     "backup": "node scripts/backup.js",
     "restore": "node scripts/restore.js"
   },
@@ -37,7 +38,8 @@
   },
   "devDependencies": {
     "nodemon": "^3.1.4",
-    "prisma": "^5.22.0"
+    "prisma": "^5.22.0",
+    "supertest": "^7.2.2"
   },
   "description": "API Node.js/Express + PostgreSQL (Prisma) + MinIO (documents) pour le MVP IMSOP.",
   "keywords": [],

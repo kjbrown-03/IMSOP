@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { nomPatient } from '../../lib/dossier'
 import { api } from '../../lib/api'
 
 function computeAge(dob) {
@@ -129,7 +130,7 @@ export default function RedactionRapportExpert() {
       <main className="flex-grow flex flex-col w-full max-w-[1200px] mx-auto px-margin-mobile md:px-margin-desktop py-stack-md">
         <section className="bg-surface-container-lowest border border-outline-variant rounded-lg p-stack-md mb-stack-lg flex flex-col md:flex-row md:justify-between md:items-start gap-stack-md">
           <div>
-            <h2 className="text-headline-md font-headline-md text-on-surface mb-1">{dossier.patient.user.fullName}</h2>
+            <h2 className="text-headline-md font-headline-md text-on-surface mb-1">{nomPatient(dossier, t)}</h2>
             <div className="flex flex-wrap gap-2 text-body-md font-body-md text-on-surface-variant">
               {age !== null && (
                 <>

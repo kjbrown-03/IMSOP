@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { Navigate } from 'react-router-dom'
-import { lireSession } from '../lib/session'
+import { lireSession, roleActif } from '../lib/session'
 import { useAuthStore } from '../store/useAuthStore'
 
 const LOGIN_ROUTES = {
@@ -25,7 +25,17 @@ export default function ProtectedRoute({ role, children }) {
   const allowed = role == null ? null : [].concat(role)
   // Lu directement dans le stockage, pas dans l'état React : le tout premier
   // rendu doit déjà savoir si une session existe, sinon il redirige à tort.
-  const roleCible = allowed ? allowed.find((r) => lireSession(r)) ?? null : null
+  //
+  // Une route partagée (ex: /professionnel/justificatifs, ouverte au
+  // spécialiste ET au médecin local) doit rester dans le rôle que cet onglet
+  // utilisait déjà, s'il fait partie des rôles acceptés - sinon le simple fait
+  // d'avoir aussi une session spécialiste ouverte dans ce navigateur faisait
+  // basculer un médecin local vers l'espace spécialiste au moindre clic sur un
+  // onglet du menu, l'ordre du tableau `allowed` l'emportant à tort.
+  const actif = allowed ? roleActif() : null
+  const roleCible = allowed
+    ? (allowed.includes(actif) && lireSession(actif) ? actif : allowed.find((r) => lireSession(r)) ?? null)
+    : null
 
   useEffect(() => {
     if (roleCible) activerRole(roleCible)

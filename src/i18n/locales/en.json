@@ -36,7 +36,9 @@
       "pneumologie": "Pulmonology"
     },
     "showPassword": "Show password",
-    "hidePassword": "Hide password"
+    "hidePassword": "Hide password",
+    "anonymousPatient": "Anonymised patient",
+    "yearsOld": "{{age}} years old"
   },
   "public": {
     "home": {
@@ -425,6 +427,7 @@
       "categoryImagerie": "Imaging (X-ray, CT, MRI...)",
       "categoryOrdonnance": "Prescription",
       "categoryCompteRendu": "Medical report",
+      "categoryConsentement": "Signed consent",
       "categoryAutre": "Other",
       "chooseFile": "Choose one or more files",
       "noFileChosen": "No file chosen",
@@ -451,9 +454,6 @@
       "methodCard": "Credit Card",
       "methodMobileMoney": "Mobile Money",
       "methodInsurance": "Insurance coverage",
-      "cardNumber": "Card number",
-      "cardExpiry": "MM/YY",
-      "cardCvc": "CVC",
       "mobileMoneyPlaceholder": "Mobile Money number (+237 6XX XXX XXX)",
       "insuranceNote": "Your coverage request will be sent to your insurer. You will receive confirmation in your messages area.",
       "securityNote": "Encrypted, secure payment. Your case will only be sent to the medical coordinator after payment is actually confirmed.",
@@ -462,7 +462,13 @@
       "caseFee": "Case fee",
       "totalDue": "Total due",
       "processing": "Processing payment...",
-      "payAndSend": "Pay and send the case"
+      "payAndSend": "Pay and send the case",
+      "cardHolder": "Cardholder",
+      "cardReference": "Case",
+      "showBreakdown": "View breakdown",
+      "showTotal": "View total",
+      "cardRedirectNote": "You will be redirected to CinetPay’s secure page to enter your card. IMSOP never sees your card details.",
+      "mobileRedirectNote": "Orange Money, MTN MoMo. Confirmation happens on your phone."
     },
     "matching": {
       "confirmedTitle": "Payment confirmed, case sent to medical coordination",
@@ -473,7 +479,9 @@
       "subtitle": "Confidential communication with your medical team.",
       "loading": "Loading...",
       "empty": "You don't have a conversation yet. A messaging thread opens automatically as soon as a specialist is assigned to your case.",
-      "noMessageYet": "No message yet — write to the specialist."
+      "noMessageYet": "No message yet — write to the specialist.",
+      "emptyStart": "No conversation yet. Use the search above to find a case and start one.",
+      "noSearchResults": "No contact matches this search."
     },
     "chat": {
       "loading": "Loading conversation...",
@@ -834,6 +842,16 @@
     "coordinateurNav": {
       "habilitations": "Credentials"
     }
+  },
+  "consentement": {
+    "title": "Consent to data transmission",
+    "help": "Download and read the form, then accept the conditions and sign electronically by typing your full name. Without this signed consent, the request cannot be sent.",
+    "download": "Download the consent form",
+    "downloadError": "Could not download the form. Please try again.",
+    "checkboxLabel": "I have read and I accept that my health data will be transmitted by the IMSOP platform to the assigned specialist, the medical coordination team and, if designated, my treating doctor.",
+    "signatureLabel": "Full name (electronic signature)",
+    "signaturePlaceholder": "Type your full name to sign",
+    "required": "You must accept the conditions and sign before you can send the request."
   },
   "temoignage": {
     "title": "Leave a comment",

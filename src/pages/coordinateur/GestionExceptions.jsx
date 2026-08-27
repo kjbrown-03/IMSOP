@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import CoordinatorLayout from '../../components/layout/CoordinatorLayout'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { nomPatient } from '../../lib/dossier'
 import { api } from '../../lib/api'
 
 export default function GestionExceptions() {
@@ -95,7 +96,7 @@ export default function GestionExceptions() {
                   )}
                 </div>
                 <div>
-                  <h4 className="font-headline-md text-headline-md text-text-main">{d.patient.user.fullName}</h4>
+                  <h4 className="font-headline-md text-headline-md text-text-main">{nomPatient(d, t)}</h4>
                   <div className="font-body-md text-body-md text-error font-bold flex items-center gap-2 mt-1">
                     <span className="material-symbols-outlined text-sm">psychiatry</span> {d.specialiteRequise}
                   </div>

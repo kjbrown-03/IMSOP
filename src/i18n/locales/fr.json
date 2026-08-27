@@ -36,7 +36,9 @@
       "pneumologie": "Pneumologie"
     },
     "showPassword": "Afficher le mot de passe",
-    "hidePassword": "Masquer le mot de passe"
+    "hidePassword": "Masquer le mot de passe",
+    "anonymousPatient": "Patient anonymisé",
+    "yearsOld": "{{age}} ans"
   },
   "public": {
     "home": {
@@ -425,6 +427,7 @@
       "categoryImagerie": "Imagerie (radio, scanner, IRM...)",
       "categoryOrdonnance": "Ordonnance",
       "categoryCompteRendu": "Compte rendu médical",
+      "categoryConsentement": "Consentement signé",
       "categoryAutre": "Autre",
       "chooseFile": "Choisir un ou plusieurs fichiers",
       "noFileChosen": "Aucun fichier sélectionné",
@@ -451,9 +454,6 @@
       "methodCard": "Carte Bancaire",
       "methodMobileMoney": "Mobile Money",
       "methodInsurance": "Prise en charge Assurance",
-      "cardNumber": "Numéro de carte",
-      "cardExpiry": "MM/AA",
-      "cardCvc": "CVC",
       "mobileMoneyPlaceholder": "Numéro Mobile Money (+237 6XX XXX XXX)",
       "insuranceNote": "Votre demande de prise en charge sera transmise à votre assureur. Vous recevrez la confirmation dans votre espace messages.",
       "securityNote": "Paiement chiffré et sécurisé. Votre dossier ne sera transmis au coordinateur médical qu'après confirmation réelle du paiement.",
@@ -462,7 +462,13 @@
       "caseFee": "Frais de dossier",
       "totalDue": "Total à payer",
       "processing": "Traitement du paiement...",
-      "payAndSend": "Payer et envoyer le dossier"
+      "payAndSend": "Payer et envoyer le dossier",
+      "cardHolder": "Titulaire",
+      "cardReference": "Dossier",
+      "showBreakdown": "Voir le détail",
+      "showTotal": "Voir le total",
+      "cardRedirectNote": "Vous serez redirigé vers la page sécurisée de CinetPay pour saisir votre carte. IMSOP ne voit jamais vos coordonnées bancaires.",
+      "mobileRedirectNote": "Orange Money, MTN MoMo. La confirmation se fait sur votre téléphone."
     },
     "matching": {
       "confirmedTitle": "Paiement confirmé, dossier transmis à la coordination médicale",
@@ -473,7 +479,9 @@
       "subtitle": "Communications confidentielles avec votre équipe médicale.",
       "loading": "Chargement...",
       "empty": "Vous n'avez pas encore de conversation. Une messagerie s'ouvre automatiquement dès qu'un spécialiste est affecté à votre dossier.",
-      "noMessageYet": "Aucun message pour le moment — écrivez au spécialiste."
+      "noMessageYet": "Aucun message pour le moment — écrivez au spécialiste.",
+      "emptyStart": "Aucune conversation en cours. Utilisez la recherche ci-dessus pour trouver un dossier et démarrer un échange.",
+      "noSearchResults": "Aucun correspondant ne correspond à cette recherche."
     },
     "chat": {
       "loading": "Chargement de la conversation...",
@@ -834,6 +842,16 @@
     "coordinateurNav": {
       "habilitations": "Habilitations"
     }
+  },
+  "consentement": {
+    "title": "Consentement à la transmission des données",
+    "help": "Téléchargez et lisez le formulaire, puis acceptez les conditions et signez électroniquement en tapant votre nom complet. Sans ce consentement signé, la demande ne peut pas être envoyée.",
+    "download": "Télécharger le formulaire de consentement",
+    "downloadError": "Impossible de télécharger le formulaire. Réessayez.",
+    "checkboxLabel": "J'ai lu et j'accepte que mes données de santé soient transmises par la plateforme IMSOP au spécialiste assigné, à la coordination médicale et, si désigné, à mon médecin traitant.",
+    "signatureLabel": "Nom complet (signature électronique)",
+    "signaturePlaceholder": "Tapez votre nom complet pour signer",
+    "required": "Vous devez accepter les conditions et signer avant de pouvoir envoyer la demande."
   },
   "temoignage": {
     "title": "Laisser un commentaire",

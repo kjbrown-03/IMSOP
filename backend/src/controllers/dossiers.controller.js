@@ -141,6 +141,18 @@ async function transmettreDemandeMedecin(req, res) {
     return res.status(400).json({ message: 'Cette demande a deja ete transmise' })
   }
 
+  // Le consentement (signature électronique + PDF généré automatiquement,
+  // voir consentements.controller.js) est une pièce obligatoire au même
+  // titre que les documents médicaux : sans elle, la demande ne part pas.
+  const consentementPresent = await prisma.document.findFirst({
+    where: { dossierId: dossier.id, category: 'CONSENTEMENT' },
+  })
+  if (!consentementPresent) {
+    return res.status(400).json({
+      message: 'Il manque le consentement signé : téléchargez le formulaire, acceptez les conditions et signez avant de transmettre la demande.',
+    })
+  }
+
   // Pas d'etape de paiement patient dans ce parcours : la demande arrive
   // directement dans la file de la coordination.
   const misAJour = await prisma.dossier.update({
@@ -179,6 +191,12 @@ async function listDossiers(req, res) {
 
   const { page, pageSize } = req.query
 
+  // Le tableau de bord de coordination a besoin de l'identifiant du rapport
+  // pour pouvoir le valider. Sans lui, il refaisait un appel par dossier
+  // affiche. On n'expose que l'identifiant et le statut - jamais le contenu
+  // medical - et seulement aux roles qui pilotent la validation.
+  const pourCoordination = req.userRole === 'COORDINATEUR' || req.userRole === 'ADMIN'
+
   const [dossiers, total] = await Promise.all([
     prisma.dossier.findMany({
       where,
@@ -189,6 +207,7 @@ async function listDossiers(req, res) {
         patient: { include: { user: { select: safeUserSelect } } },
         specialiste: { include: { user: { select: safeUserSelect } } },
         medecinLocal: { include: { user: { select: safeUserSelect } } },
+        ...(pourCoordination ? { rapport: { select: { id: true, status: true } } } : {}),
       },
     }),
     prisma.dossier.count({ where }),
@@ -232,6 +251,18 @@ async function soumettreDossier(req, res) {
   const { dossier, error, message } = await loadDossierWithAccessCheck(req, req.params.id)
   if (error) return res.status(error).json({ message })
   if (dossier.status !== 'BROUILLON') return res.status(400).json({ message: 'Ce dossier a déjà été soumis' })
+
+  // Même règle que pour une demande ouverte par un médecin traitant : le
+  // consentement signé électroniquement doit exister comme document du
+  // dossier avant que celui-ci ne puisse avancer vers le paiement.
+  const consentementPresent = await prisma.document.findFirst({
+    where: { dossierId: dossier.id, category: 'CONSENTEMENT' },
+  })
+  if (!consentementPresent) {
+    return res.status(400).json({
+      message: 'Il manque le consentement signé : téléchargez le formulaire, acceptez les conditions et signez avant de soumettre votre dossier.',
+    })
+  }
 
   const updated = await prisma.dossier.update({
     where: { id: dossier.id },
