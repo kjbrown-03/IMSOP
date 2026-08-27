@@ -1,6 +1,18 @@
 import { create } from 'zustand'
 import { api } from '../lib/api'
+import {
+  definirRoleActif,
+  ecrireSession,
+  migrerAncienneSession,
+  roleActif,
+  rolesConnectes,
+  sessionActive,
+  supprimerSession,
+} from '../lib/session'
 import { useNotificationStore } from './useNotificationStore'
+
+// Les sessions d'avant le cloisonnement par rôle sont reprises au chargement.
+migrerAncienneSession()
 
 // L'API répond aux violations de schéma par un message générique ("Requête
 // invalide") accompagné d'un tableau `errors` par champ. Les afficher évite
@@ -13,45 +25,13 @@ function errorMessage(err, fallback) {
   return data?.message || fallback
 }
 
-// Le navigateur ne garde qu'UNE session (une seule clé `imsop_user`, un seul
-// jeton). Si le profil mis en cache n'est pas celui du jeton courant — deuxième
-// compte ouvert dans un autre onglet, session d'un rôle précédent restée en
-// place — on affichait les données du mauvais compte, photo de profil comprise.
-// Le cache est donc jeté dès qu'il ne concorde plus.
-function sujetDuJeton(token) {
-  try {
-    const partie = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')
-    const rembourre = partie + '='.repeat((4 - (partie.length % 4)) % 4)
-    return JSON.parse(atob(rembourre)).sub || null
-  } catch {
-    return null
-  }
-}
-
-function utilisateurEnCache() {
-  const brut = localStorage.getItem('imsop_user')
-  if (!brut) return null
-  let user
-  try {
-    user = JSON.parse(brut)
-  } catch {
-    localStorage.removeItem('imsop_user')
-    return null
-  }
-  const token = localStorage.getItem('imsop_access_token')
-  const sujet = token ? sujetDuJeton(token) : null
-  if (sujet && user?.id && sujet !== user.id) {
-    localStorage.removeItem('imsop_user')
-    return null
-  }
-  return user
-}
-
 export const useAuthStore = create((set, get) => ({
-  user: utilisateurEnCache(),
-  isAuthenticated: !!localStorage.getItem('imsop_access_token'),
+  user: sessionActive()?.user ?? null,
+  isAuthenticated: !!sessionActive(),
   loading: false,
   error: null,
+  // Les rôles pour lesquels une session est ouverte dans ce navigateur.
+  rolesOuverts: rolesConnectes(),
 
   async login(email, password, role) {
     set({ loading: true, error: null })
@@ -109,30 +89,41 @@ export const useAuthStore = create((set, get) => ({
     }
   },
 
-  async register(payload) {
+  // L'API repond desormais la meme chose que l'adresse soit libre ou deja prise
+  // (202, sans session) : c'est ce qui empeche un bot de moissonner les comptes
+  // existants. On enchaine donc sur une connexion normale avec les identifiants
+  // qui viennent d'etre saisis — elle ne reussit que si le compte a reellement
+  // ete cree a l'instant, ce qui preserve l'entree directe dans l'application.
+  async _inscrire(route, payload, role) {
     set({ loading: true, error: null })
     try {
-      const { data } = await api.post('/auth/register/patient', payload)
-      get()._persistSession(data)
-      return { ok: true }
-    } catch (err) {
-      const message = errorMessage(err, "Inscription impossible")
-      set({ loading: false, error: message })
-      return { ok: false, error: message }
-    }
-  },
-
-  async registerMedecinLocal(payload) {
-    set({ loading: true, error: null })
-    try {
-      const { data } = await api.post('/auth/register/medecin-local', payload)
-      get()._persistSession(data)
-      return { ok: true }
+      await api.post(route, payload)
     } catch (err) {
       const message = errorMessage(err, 'Inscription impossible')
       set({ loading: false, error: message })
       return { ok: false, error: message }
     }
+
+    const connexion = await get().login(payload.email, payload.password, role)
+    set({ loading: false })
+
+    if (connexion.ok) return { ok: true }
+    if (connexion.twoFactorRequired) {
+      return { ok: true, twoFactorRequired: true, challengeToken: connexion.challengeToken }
+    }
+
+    // Adresse deja utilisee : on ne le dit pas, le titulaire est prevenu par
+    // e-mail. L'erreur de connexion ne doit pas remonter a l'ecran.
+    set({ error: null })
+    return { ok: true, verificationEnAttente: true }
+  },
+
+  async register(payload) {
+    return get()._inscrire('/auth/register/patient', payload, 'PATIENT')
+  },
+
+  async registerMedecinLocal(payload) {
+    return get()._inscrire('/auth/register/medecin-local', payload, 'MEDECIN_LOCAL')
   },
 
   async verifyEmailCode(code) {
@@ -185,7 +176,9 @@ export const useAuthStore = create((set, get) => ({
   async refreshMe() {
     try {
       const { data } = await api.get('/auth/me')
-      localStorage.setItem('imsop_user', JSON.stringify(data))
+      const role = roleActif()
+      const session = sessionActive()
+      if (role && session) ecrireSession(role, { ...session, user: data })
       set({ user: data })
       return { ok: true, user: data }
     } catch (err) {
@@ -244,25 +237,102 @@ export const useAuthStore = create((set, get) => ({
   },
 
   _patchUser(partial) {
-    const user = { ...get().user, ...partial }
-    localStorage.setItem('imsop_user', JSON.stringify(user))
+    const role = roleActif()
+    const session = sessionActive()
+    if (!role || !session) return
+    const user = { ...session.user, ...partial }
+    ecrireSession(role, { ...session, user })
     set({ user })
   },
 
   _persistSession(data) {
-    localStorage.setItem('imsop_access_token', data.accessToken)
-    localStorage.setItem('imsop_refresh_token', data.refreshToken)
-    localStorage.setItem('imsop_user', JSON.stringify(data.user))
-    set({ user: data.user, isAuthenticated: true, loading: false, error: null })
+    ecrireSession(data.user.role, {
+      accessToken: data.accessToken,
+      refreshToken: data.refreshToken,
+      user: data.user,
+    })
+    definirRoleActif(data.user.role)
+    set({
+      user: data.user,
+      isAuthenticated: true,
+      loading: false,
+      error: null,
+      rolesOuverts: rolesConnectes(),
+    })
   },
 
+  // Appelé au montage d'une route protégée : un onglet qui entre dans l'espace
+  // d'un autre rôle bascule sur la session de ce rôle si elle existe, au lieu
+  // de continuer avec celle du rôle précédent.
+  activerRole(role) {
+    if (!role || role === roleActif()) return
+    definirRoleActif(role)
+    const session = sessionActive()
+    set({
+      user: session?.user ?? null,
+      isAuthenticated: !!session,
+      rolesOuverts: rolesConnectes(),
+    })
+  },
+
+  // Ne ferme que l'espace courant : les autres rôles connectés dans ce
+  // navigateur gardent leur session.
   logout() {
-    localStorage.removeItem('imsop_access_token')
-    localStorage.removeItem('imsop_refresh_token')
-    localStorage.removeItem('imsop_user')
+    supprimerSession(roleActif())
     // Clear the bell too, otherwise the next account to sign in on this device
     // briefly sees the previous user's unread count and previews.
     useNotificationStore.getState().reset()
-    set({ user: null, isAuthenticated: false })
+    const session = sessionActive()
+    set({
+      user: session?.user ?? null,
+      isAuthenticated: !!session,
+      rolesOuverts: rolesConnectes(),
+    })
   },
 }))
+
+// Les sessions étant cloisonnées par rôle, un autre onglet ne peut plus voler
+// celle-ci : il écrit dans SON emplacement. L'écoute sert donc uniquement à
+// rester synchronisé, sans jamais changer le rôle de cet onglet.
+//
+// L'événement `storage` ne se déclenche que dans les AUTRES onglets, jamais dans
+// celui qui écrit : pas de boucle de rechargement possible.
+function surStockageModifie(event) {
+    if (!event.key || !event.key.startsWith('imsop_session_')) return
+
+    const role = event.key.slice('imsop_session_'.length)
+    const etat = useAuthStore.getState()
+
+    // Une session ouverte ou fermée pour un AUTRE rôle : rien à changer ici,
+    // on met juste à jour la liste des espaces disponibles.
+    if (role !== roleActif()) {
+      useAuthStore.setState({ rolesOuverts: rolesConnectes() })
+      return
+    }
+
+    const session = sessionActive()
+
+    // Déconnexion de CE rôle faite dans un autre onglet : on suit.
+    if (!session) {
+      useNotificationStore.getState().reset()
+      useAuthStore.setState({ user: null, isAuthenticated: false, rolesOuverts: rolesConnectes() })
+      return
+    }
+
+    // Même compte, profil mis à jour ailleurs (photo, nom, disponibilité) :
+    // on recopie la valeur sans toucher à la navigation.
+    if (session.user?.id !== etat.user?.id || session.user !== etat.user) {
+      useAuthStore.setState({ user: session.user, isAuthenticated: true, rolesOuverts: rolesConnectes() })
+    }
+}
+
+if (typeof window !== 'undefined') {
+  window.addEventListener('storage', surStockageModifie)
+
+  // Rechargement a chaud (dev) : sans ce nettoyage, l'ancien ecouteur reste
+  // attache en plus du nouveau. Deux ecouteurs de generations differentes, c'est
+  // exactement ce qui pouvait renvoyer un onglet vers la connexion.
+  if (import.meta.hot) {
+    import.meta.hot.dispose(() => window.removeEventListener('storage', surStockageModifie))
+  }
+}

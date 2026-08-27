@@ -49,6 +49,7 @@ import {
 import { api } from '@/lib/api'
 import { getCallSocket } from '@/lib/socket'
 import { useAuthStore } from '@/store/useAuthStore'
+import { useNotificationStore } from '@/store/useNotificationStore'
 import MessageAttachment, { formatSize } from '@/components/ui/MessageAttachment'
 
 // Mirrors backend/src/middleware/upload.js — matching it here turns an
@@ -69,18 +70,21 @@ export const Home = () => {
   const { id: urlDossierId } = useParams()
   const user = useAuthStore((s) => s.user)
   const logout = useAuthStore((s) => s.logout)
-  const isPatient = user?.role === 'PATIENT'
-  const basePath = isPatient ? '/patient/messages' : '/specialiste/messagerie'
+  const markReadByDossier = useNotificationStore((s) => s.markReadByDossier)
+  // The secure messaging thread is coordination ↔ specialist only (the
+  // patient and the médecin local no longer have a conversation view at
+  // all - see dossiers.controller.js's poserQuestionMedecinLocal for how
+  // the médecin local's side of this works instead).
+  const isCoordinateur = user?.role === 'COORDINATEUR' || user?.role === 'ADMIN'
+  const basePath = isCoordinateur ? '/coordinateur/messages' : '/specialiste/messagerie'
 
-  // Same nav destinations as PatientShell / SpecialistShell — this page is
-  // standalone (its own Sidebar, not wrapped in either shell), so it needs
-  // its own way back to the rest of each role's app.
-  const navItems = isPatient
+  // Same nav destinations as CoordinatorLayout / SpecialistShell — this page
+  // is standalone (its own Sidebar, not wrapped in either shell), so it
+  // needs its own way back to the rest of each role's app.
+  const navItems = isCoordinateur
     ? [
-        { to: '/patient/dossiers', label: t('shell.patientNav.dossiers'), icon: FolderOpen },
-        { to: '/patient/medecins', label: t('shell.patientNav.medecins'), icon: Stethoscope },
-        { to: basePath, label: t('shell.patientNav.messages'), icon: MessageCircle, active: true },
-        { to: '/patient/profil', label: t('shell.patientNav.profil'), icon: User },
+        { to: '/coordinateur/tableau-de-bord', label: t('shell.coordinatorNav.dashboard'), icon: LayoutDashboard },
+        { to: basePath, label: t('shell.coordinatorNav.messages'), icon: MessageCircle, active: true },
       ]
     : [
         { to: '/specialiste/tableau-de-bord', label: t('shell.specialistNav.dossiers'), icon: LayoutDashboard },
@@ -105,6 +109,7 @@ export const Home = () => {
   const [callStatus, setCallStatus] = useState('idle') // idle | calling | ringing | connecting | in-call
   const [incomingCall, setIncomingCall] = useState(null)
   const [callError, setCallError] = useState(null)
+  const inviteTimeoutRef = useRef(null)
   const localVideoRef = useRef(null)
   const remoteVideoRef = useRef(null)
   const localStreamRef = useRef(null)
@@ -119,8 +124,20 @@ export const Home = () => {
   const fileInputRef = useRef(null)
   const bottomRef = useRef(null)
 
+  // A coordinateur's counterpart is the real specialist assigned to that
+  // dossier. A specialist has no single named counterpart - any
+  // coordinateur/admin can be handling the thread - so they get a fixed
+  // pseudo-contact standing in for the coordination team. It has no real
+  // user id, which is also what disables the video-call button for it below:
+  // there's no one specific person to ring.
+  const COORDINATION_CONTACT = { id: null, fullName: t('chat.coordinationTeam'), avatarUrl: null }
+
   function counterpartOf(dossier) {
-    return isPatient ? dossier.specialiste?.user : dossier.patient?.user
+    // GET /dossiers already scopes a specialist's list to their own
+    // assignments, so every dossier here is relevant - unlike the
+    // coordinateur side, no per-dossier check is needed.
+    if (isCoordinateur) return dossier.specialiste?.user || null
+    return COORDINATION_CONTACT
   }
 
   function formatListTime(iso) {
@@ -166,7 +183,7 @@ export const Home = () => {
       cancelled = true
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isPatient, t])
+  }, [isCoordinateur, t])
 
   useEffect(() => {
     setThreadSearchOpen(false)
@@ -184,6 +201,7 @@ export const Home = () => {
         if (cancelled) return
         setMessages(data.messages)
         setMessagingClosesAt(data.messagingClosesAt)
+        markReadByDossier(activeDossierId)
       } catch (err) {
         if (!cancelled) setThreadError(err.response?.data?.message || t('errors.conversationNotFound'))
       } finally {
@@ -203,7 +221,7 @@ export const Home = () => {
   const activeContact = contacts.find((c) => c.dossier.id === activeDossierId)
   const activeCounterpart = activeContact ? counterpartOf(activeContact.dossier) : null
   const activeSubtitle = activeContact
-    ? isPatient
+    ? isCoordinateur
       ? activeContact.dossier.specialiste?.specialite
       : t('chat.patientFile')
     : ''
@@ -391,6 +409,15 @@ export const Home = () => {
     callDossierIdRef.current = activeDossierId
     setCallStatus('calling')
     getCallSocket().emit('call:invite', { dossierId: activeDossierId, toUserId: activeCounterpart.id })
+
+    // Sans cette limite, une invitation restée sans réponse laissait l'écran
+    // sur « appel en cours » pour toujours.
+    clearTimeout(inviteTimeoutRef.current)
+    inviteTimeoutRef.current = setTimeout(() => {
+      setCallError(t('chat.callNoAnswer'))
+      cleanupCall()
+      setCallStatus('idle')
+    }, 30000)
   }
 
   async function acceptIncomingCall() {
@@ -428,17 +455,29 @@ export const Home = () => {
   }
 
   useEffect(() => {
+    // The connection itself lives at the App level for as long as the
+    // session does (see App.jsx) — otherwise leaving this page (Dossiers,
+    // Profil...) would drop it and make this user look unreachable to a
+    // caller even while still logged in. Here we only attach/detach the
+    // listeners this page cares about.
     const socket = getCallSocket()
-    socket.connect()
 
     function onInvite({ dossierId, fromUserId, fromName }) {
       setIncomingCall({ dossierId, fromUserId, fromName })
       setCallStatus('ringing')
     }
     function onAccept({ fromUserId }) {
+      clearTimeout(inviteTimeoutRef.current)
       startWebRTCOffer(fromUserId)
     }
+    function onRejected({ motif }) {
+      clearTimeout(inviteTimeoutRef.current)
+      setCallError(t(motif === 'NON_AUTORISE' ? 'chat.callNotAllowed' : 'chat.callFailed'))
+      cleanupCall()
+      setCallStatus('idle')
+    }
     function onDecline() {
+      clearTimeout(inviteTimeoutRef.current)
       setCallError(t('chat.callDeclined'))
       cleanupCall()
       setCallStatus('idle')
@@ -451,6 +490,7 @@ export const Home = () => {
       setCallStatus('idle')
     }
     function onUnavailable() {
+      clearTimeout(inviteTimeoutRef.current)
       setCallError(t('chat.callUnavailable'))
       cleanupCall()
       setCallStatus('idle')
@@ -462,6 +502,7 @@ export const Home = () => {
     socket.on('call:signal', onSignal)
     socket.on('call:end', onEnd)
     socket.on('call:unavailable', onUnavailable)
+    socket.on('call:rejected', onRejected)
 
     return () => {
       socket.off('call:invite', onInvite)
@@ -470,8 +511,9 @@ export const Home = () => {
       socket.off('call:signal', onSignal)
       socket.off('call:end', onEnd)
       socket.off('call:unavailable', onUnavailable)
+      socket.off('call:rejected', onRejected)
+      clearTimeout(inviteTimeoutRef.current)
       cleanupCall()
-      socket.disconnect()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -561,7 +603,7 @@ export const Home = () => {
               <ScrollArea className="flex-grow">
                 {filteredContacts.map(({ dossier, last }) => {
                   const counterpart = counterpartOf(dossier)
-                  const specialite = isPatient ? dossier.specialiste?.specialite : dossier.specialiteRequise
+                  const specialite = isCoordinateur ? dossier.specialiste?.specialite : dossier.specialiteRequise
                   return (
                     <button
                       key={dossier.id}
@@ -623,15 +665,17 @@ export const Home = () => {
                       </p>
                     </div>
                     <div className="flex-grow flex justify-end gap-2">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={startCall}
-                        disabled={callStatus !== 'idle'}
-                        aria-label={t('chat.callAria')}
-                      >
-                        <Video />
-                      </Button>
+                      {activeCounterpart?.id && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={startCall}
+                          disabled={callStatus !== 'idle'}
+                          aria-label={t('chat.callAria')}
+                        >
+                          <Video />
+                        </Button>
+                      )}
                       <Button
                         variant="ghost"
                         size="icon"

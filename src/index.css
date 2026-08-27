@@ -8,6 +8,49 @@
   }
 }
 
+/* 21 écrans posent `glass-card` sur leurs cartes, mais la règle n'avait jamais été
+   écrite : Tailwind ignore silencieusement une classe inconnue, et ces cartes se
+   retrouvaient donc sans fond ni bordure. Elle vit dans @layer components, pas
+   @layer utilities, pour que les utilitaires gardent la priorité — plusieurs appels
+   la surchargent déjà (`glass-card bg-amber-50/80`, `glass-card dark:bg-neutral-900`).
+   Ni rayon ni ombre ici : chaque appelant pose les siens (`rounded-2xl`, `shadow-sm`). */
+@layer components {
+  .glass-card {
+    @apply bg-white/80 dark:bg-neutral-900/70 backdrop-blur-md
+           border border-slate-200/70 dark:border-neutral-700/60;
+  }
+}
+
+/* Défilement horizontal continu (témoignages, bandeau de confiance).
+   La piste contient deux copies identiques du contenu : la décaler de la moitié
+   de sa largeur la ramène exactement sur elle-même, la boucle est donc
+   invisible. L'espacement est porté par chaque carte (marge à droite) et non
+   par un `gap` sur la piste, sinon la moitié ne tomberait pas juste. */
+@keyframes imsop-defilement {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.marquee-piste {
+  animation: imsop-defilement var(--marquee-duree, 40s) linear infinite;
+  will-change: transform;
+}
+
+/* Le survol met en pause : sans ça, impossible de lire une carte ou de cliquer.
+   `focus-within` fait la même chose pour la navigation au clavier. */
+.marquee-pause:hover .marquee-piste,
+.marquee-pause:focus-within .marquee-piste {
+  animation-play-state: paused;
+}
+
+/* Mouvement permanent = gêne réelle pour une partie des utilisateurs
+   (vestibulaire, troubles de l'attention). On respecte leur réglage système. */
+@media (prefers-reduced-motion: reduce) {
+  .marquee-piste {
+    animation: none;
+  }
+}
+
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;

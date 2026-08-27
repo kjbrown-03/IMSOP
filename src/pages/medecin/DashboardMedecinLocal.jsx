@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { MessageSquare, FolderOpen, ShieldAlert, Stethoscope } from 'lucide-react'
+import { FolderOpen, Plus, ShieldAlert, Stethoscope } from 'lucide-react'
 import MedecinShell from '../../components/layout/MedecinShell'
+import TemoignageForm from '../../components/ui/TemoignageForm'
 import { useAuthStore } from '../../store/useAuthStore'
 import { api } from '../../lib/api'
 
@@ -36,13 +37,22 @@ export default function DashboardMedecinLocal() {
 
   return (
     <MedecinShell>
-      <section className="flex flex-col gap-2">
+      <section className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+        <div className="flex flex-col gap-2">
         <h1 className="font-display text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white tracking-tight">
           {t('medecin.dashboard.title')}
         </h1>
         <p className="text-slate-500 dark:text-neutral-400 text-sm">
           {t('medecin.dashboard.subtitle')}
         </p>
+        </div>
+        <Link
+          to="/medecin/nouvelle-demande"
+          className="shrink-0 flex items-center gap-2 rounded-full bg-[var(--color-primary)] text-white px-5 py-2.5 text-sm font-bold hover:opacity-90 transition-opacity"
+        >
+          <Plus className="w-4 h-4" />
+          {t('medecin.nouvelleDemande.nouvelle')}
+        </Link>
       </section>
 
       {user?.verificationStatus && user.verificationStatus !== 'VALIDE' && (
@@ -98,15 +108,8 @@ export default function DashboardMedecinLocal() {
 
               <div className="flex gap-2 mt-1">
                 <Link
-                  to={`/medecin/messages/${d.id}`}
-                  className="flex-1 flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium rounded-xl py-2.5 transition-colors"
-                >
-                  <MessageSquare className="w-4 h-4" />
-                  {t('medecin.dashboard.openChat')}
-                </Link>
-                <Link
                   to={`/medecin/dossiers/${d.id}`}
-                  className="flex-1 flex items-center justify-center gap-2 bg-slate-100 dark:bg-neutral-800 hover:bg-slate-200 dark:hover:bg-neutral-700 text-slate-700 dark:text-neutral-200 text-sm font-medium rounded-xl py-2.5 transition-colors"
+                  className="flex-1 flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium rounded-xl py-2.5 transition-colors"
                 >
                   <FolderOpen className="w-4 h-4" />
                   {t('medecin.dashboard.openFile')}
@@ -116,6 +119,8 @@ export default function DashboardMedecinLocal() {
           ))}
         </div>
       )}
+
+      <TemoignageForm />
     </MedecinShell>
   )
 }

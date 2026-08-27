@@ -9,6 +9,10 @@ const router = express.Router()
 router.use(authenticate)
 
 router.post('/', requireRole('PATIENT'), validate(schema.createDossier), ctrl.createDossier)
+
+// Parcours medecin : le praticien ouvre lui-meme une demande de second avis.
+router.post('/demande-medecin', requireRole('MEDECIN_LOCAL'), validate(schema.creerDemandeMedecin), ctrl.creerDemandeMedecin)
+router.post('/:id/transmettre', requireRole('MEDECIN_LOCAL'), validate(schema.idParam), ctrl.transmettreDemandeMedecin)
 router.get('/', validate(schema.listDossiers), ctrl.listDossiers)
 router.get('/:id', validate(schema.idParam), ctrl.getDossier)
 router.patch('/:id', validate(schema.updateDossier), ctrl.updateDossier)
@@ -22,5 +26,6 @@ router.post('/:id/complement-fourni', requireRole('PATIENT', 'MEDECIN_LOCAL', 'C
 router.post('/:id/statut', requireRole('COORDINATEUR', 'ADMIN'), validate(schema.changerStatut), ctrl.changerStatut)
 router.post('/:id/medecin-local', requireRole('PATIENT'), validate(schema.designerMedecinLocal), ctrl.designerMedecinLocal)
 router.delete('/:id/medecin-local', requireRole('PATIENT'), validate(schema.idParam), ctrl.retirerMedecinLocal)
+router.post('/:id/question-medecin-local', requireRole('MEDECIN_LOCAL'), validate(schema.poserQuestionMedecinLocal), ctrl.poserQuestionMedecinLocal)
 
 module.exports = router

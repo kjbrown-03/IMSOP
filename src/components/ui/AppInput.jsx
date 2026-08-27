@@ -1,9 +1,15 @@
 import React, { useState } from 'react';
+import BasculeVisibilite from './BasculeVisibilite';
 
 const AppInput = (props) => {
   const { label, placeholder, icon, ...rest } = props;
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isHovering, setIsHovering] = useState(false);
+  // Un champ de mot de passe reçoit sa bascule automatiquement : la page de
+  // connexion n'a rien à déclarer, et le style du champ reste inchangé.
+  const [motDePasseVisible, setMotDePasseVisible] = useState(false);
+  const estMotDePasse = rest.type === 'password';
+  const typeEffectif = estMotDePasse && motDePasseVisible ? 'text' : rest.type;
 
   const handleMouseMove = (e) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -22,12 +28,13 @@ const AppInput = (props) => {
       }
       <div className="relative w-full">
         <input
-          className="peer relative z-10 border-2 border-[var(--color-border)] h-12 w-full rounded-md bg-[var(--color-surface)] px-4 font-medium text-[var(--color-text-primary)] outline-none drop-shadow-sm transition-all duration-200 ease-in-out focus:bg-[var(--color-bg)] placeholder:font-medium placeholder:text-[var(--color-text-secondary)]"
+          className={`peer relative z-10 border-2 border-[var(--color-border)] h-12 w-full rounded-md bg-[var(--color-surface)] px-4 font-medium text-[var(--color-text-primary)] outline-none drop-shadow-sm transition-all duration-200 ease-in-out focus:bg-[var(--color-bg)] placeholder:font-medium placeholder:text-[var(--color-text-secondary)] ${estMotDePasse ? 'pr-12' : ''}`}
           placeholder={placeholder}
           onMouseMove={handleMouseMove}
           onMouseEnter={() => setIsHovering(true)}
           onMouseLeave={() => setIsHovering(false)}
           {...rest}
+          type={typeEffectif}
         />
         {isHovering && (
           <>
@@ -45,10 +52,18 @@ const AppInput = (props) => {
             />
           </>
         )}
-        {icon && (
-          <div className="absolute right-3 top-1/2 -translate-y-1/2 z-20 text-[var(--color-text-secondary)]">
-            {icon}
-          </div>
+        {estMotDePasse ? (
+          <BasculeVisibilite
+            visible={motDePasseVisible}
+            onToggle={() => setMotDePasseVisible((v) => !v)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 z-20"
+          />
+        ) : (
+          icon && (
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 z-20 text-[var(--color-text-secondary)]">
+              {icon}
+            </div>
+          )
         )}
       </div>
     </div>

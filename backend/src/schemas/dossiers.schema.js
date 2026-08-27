@@ -31,6 +31,24 @@ const createDossier = {
   }).strict(),
 }
 
+// Le medecin traitant decrit un patient ANONYMISE : age et sexe suffisent au
+// specialiste pour interpreter le cas, et rien d'identifiant n'est demande. La
+// question est obligatoire ici — c'est l'objet meme de la demande, contrairement
+// au parcours patient ou elle est facultative.
+const creerDemandeMedecin = {
+  body: z.object({
+    specialiteRequise: z.string().trim().min(1).max(200),
+    patientAge: z.coerce.number().int().min(0).max(120),
+    patientSexe: z.enum(['homme', 'femme', 'autre']),
+    motif: longText(2000),
+    question: longText(2000),
+    symptomes: longText(2000).optional(),
+    antecedents: longText(2000).optional(),
+    traitementEnCours: longText(2000).optional(),
+    urgence: z.enum(URGENCE).optional(),
+  }).strict(),
+}
+
 const updateDossier = {
   params: paramsWithId('id'),
   body: z.object({
@@ -81,8 +99,14 @@ const refuserDossier = {
   body: z.object({ motif: z.string().trim().max(1000).optional() }).strict(),
 }
 
+const poserQuestionMedecinLocal = {
+  params: paramsWithId('id'),
+  body: z.object({ question: longText(2000) }).strict(),
+}
+
 module.exports = {
   createDossier,
+  creerDemandeMedecin,
   updateDossier,
   idParam,
   listDossiers,
@@ -91,4 +115,5 @@ module.exports = {
   demanderComplement,
   changerStatut,
   designerMedecinLocal,
+  poserQuestionMedecinLocal,
 }

@@ -5,4 +5,6 @@ const list = { query: z.object({ ...pagination }).strict() }
 
 const idParam = { params: z.object({ id: uuid }).passthrough() }
 
-module.exports = { list, idParam }
+const dossierIdParam = { params: z.object({ dossierId: uuid }).passthrough() }
+
+module.exports = { list, idParam, dossierIdParam }

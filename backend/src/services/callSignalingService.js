@@ -27,10 +27,14 @@ function removeSocket(userId, socketId) {
 async function sharesDossier(dossierId, userIdA, userIdB) {
   const dossier = await prisma.dossier.findUnique({
     where: { id: dossierId },
-    include: { patient: true, specialiste: true },
+    include: { patient: true, specialiste: true, medecinLocal: true },
   })
   if (!dossier) return false
-  const participants = [dossier.patient?.userId, dossier.specialiste?.userId].filter(Boolean)
+  const participants = [
+    dossier.patient?.userId,
+    dossier.specialiste?.userId,
+    dossier.medecinLocal?.userId,
+  ].filter(Boolean)
   return participants.includes(userIdA) && participants.includes(userIdB)
 }
 
@@ -66,8 +70,13 @@ function initCallSignaling(server) {
     addSocket(socket.userId, socket.id)
 
     socket.on('call:invite', async ({ dossierId, toUserId }) => {
-      if (!dossierId || !toUserId) return
-      if (!(await sharesDossier(dossierId, socket.userId, toUserId))) return
+      if (!dossierId || !toUserId) {
+        return socket.emit('call:rejected', { motif: 'REQUETE_INVALIDE' })
+      }
+      if (!(await sharesDossier(dossierId, socket.userId, toUserId))) {
+        // Refuser sans rien dire laissait l'interface sonner dans le vide.
+        return socket.emit('call:rejected', { dossierId, toUserId, motif: 'NON_AUTORISE' })
+      }
       const delivered = emitToUser(toUserId, 'call:invite', {
         dossierId,
         fromUserId: socket.userId,

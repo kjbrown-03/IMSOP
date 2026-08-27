@@ -3,7 +3,14 @@ const { prisma } = require('../lib/prisma')
 // The stored payload doubles as the e-mail template context, so it can hold
 // secrets (verification codes, reset links). Only the keys the bell actually
 // renders are echoed back over HTTP.
-const PUBLIC_PAYLOAD_KEYS = ['name', 'reference', 'senderName', 'senderRole', 'excerpt', 'reason']
+// Ajouts du 25/08 : la cloche affiche desormais la donnee reelle pour trois
+// types (nom du fichier depose, precision demandee par le specialiste, motif et
+// statut d'habilitation). Sans ces cles dans la liste blanche, les apercus
+// retombaient silencieusement sur la phrase generique.
+const PUBLIC_PAYLOAD_KEYS = [
+  'name', 'reference', 'senderName', 'senderRole', 'excerpt', 'reason',
+  'filename', 'precisions', 'statut', 'motif', 'patientName',
+]
 
 function publicPayload(payload) {
   if (!payload || typeof payload !== 'object') return {}
@@ -75,4 +82,16 @@ async function markAllRead(req, res) {
   res.json({ unreadCount: 0 })
 }
 
-module.exports = { listNotifications, markRead, markAllRead }
+// Opening a conversation is itself "reading" whatever notified the user
+// about it, so the bell doesn't keep nagging about messages already seen in
+// context, not just the ones explicitly clicked from the bell.
+async function markReadByDossier(req, res) {
+  await prisma.notification.updateMany({
+    where: { userId: req.userId, dossierId: req.params.dossierId, readAt: null },
+    data: { readAt: new Date() },
+  })
+
+  res.json({ unreadCount: await unreadCountFor(req.userId) })
+}
+
+module.exports = { listNotifications, markRead, markAllRead, markReadByDossier }

@@ -55,4 +55,12 @@ const setUserActive = {
   body: z.object({ active: z.boolean() }).strict(),
 }
 
-module.exports = { listAuditLogs, listUsers, createUser, updateUser, setUserActive, idParam }
+const statistiques = {
+  query: z.object({
+    depuis: z.coerce.date().optional(),
+    jusquA: z.coerce.date().optional(),
+  }).passthrough(),
+}
+
+module.exports = {
+  statistiques, listAuditLogs, listUsers, createUser, updateUser, setUserActive, idParam }

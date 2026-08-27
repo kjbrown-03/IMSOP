@@ -1,13 +1,11 @@
 import { NavLink } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { FolderOpen, Stethoscope, MessageSquare, User } from 'lucide-react'
+import { FolderOpen, User } from 'lucide-react'
 
 export default function BottomNav() {
   const { t } = useTranslation()
   const items = [
     { to: '/patient/dossiers', label: t('shell.patientNav.dossiers'), icon: FolderOpen },
-    { to: '/patient/medecins', label: t('shell.patientNav.medecins'), icon: Stethoscope },
-    { to: '/patient/messages', label: t('shell.patientNav.messages'), icon: MessageSquare, dot: true },
     { to: '/patient/profil', label: t('shell.patientNav.profil'), icon: User },
   ]
 

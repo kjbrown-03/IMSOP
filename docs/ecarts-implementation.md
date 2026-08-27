@@ -221,7 +221,7 @@ Le §49 énumère le contenu minimal du MVP. État :
 | Paiement | ✅ CinetPay, vérification côté serveur |
 | Tableau de bord administrateur | ✅ |
 | Gestion des rôles, audit trail, sécurité | ✅ |
-| **Statistiques de base** | ❌ aucun KPI du §63 n'est calculé |
+| **Statistiques de base** | ✅ 10 des 13 KPI calculés, 3 signalés indisponibles (voir §4bis) |
 
 ### Hors MVP, correctement absents
 
@@ -246,6 +246,42 @@ mobile native (§48 — le responsive web suffit au MVP, comme le CDC l'autorise
 - **§34 recherche transverse** : recherche par dossier/patient/spécialiste absente.
 - **§9 sécurité de session** : 2FA et OTP présents ; détection des connexions
   inhabituelles et gestion des appareils autorisés absentes.
+
+---
+
+## 3bis. Statistiques et indicateurs — §62, §63 — **FAIT**
+
+`GET /api/admin/statistiques` ([`statistiquesService.js`](../backend/src/services/statistiquesService.js)),
+avec bornes de période optionnelles (`depuis`, `jusquA`) et l'écran
+[`AdminStatistiques.jsx`](../src/pages/admin/AdminStatistiques.jsx).
+
+**Dix des treize indicateurs du §63 sont calculés.** Les trois autres sont renvoyés
+avec `disponible: false` et un motif — pas avec un zéro, qui se lirait comme
+« aucune réclamation » alors que la vraie réponse est « on ne sait pas la mesurer » :
+
+| KPI | Pourquoi indisponible |
+|---|---|
+| 7 — satisfaction patient | module de notation absent (§43, hors MVP) |
+| 8 — satisfaction médecin | idem |
+| 9 — coût moyen par dossier | rémunération des spécialistes et commissions non modélisées (§39) |
+
+Deux réserves sur les valeurs produites :
+
+- **KPI 12, établissements partenaires** : approximé par les établissements distincts
+  déclarés par les spécialistes, faute du modèle Hôpital (§26, phase 2). Le champ
+  `approximation: true` le signale dans la réponse.
+- **Finance en plusieurs devises** : les montants sont agrégés **par devise**, jamais
+  additionnés — la table de conversion du §39 n'existe pas, et sommer des XAF avec
+  des EUR produirait un nombre faux.
+
+**Cloisonnement (§32)** : la table RBAC refuse l'accès aux paiements au coordinateur
+médical. Le bloc `finance` et les KPI financiers sont donc retirés de la réponse pour
+tout rôle autre qu'`ADMIN`. Vérifié : admin → finance visible ; coordinateur → finance
+masquée, activité/performance/qualité conservées ; spécialiste et patient → 403.
+
+Reste ouvert : le **tableau de bord médical du coordinateur** (§28) n'a pas d'écran
+dédié — l'API lui sert déjà le sous-ensemble correct, mais la page est sous
+`/admin/statistiques` et réservée à l'administrateur.
 
 ---
 
@@ -281,8 +317,7 @@ Reste à faire, dans l'ordre suggéré :
 
 1. **Compléter le rôle médecin traitant** (§5.2) — invitation médecin → patient et
    création d'une demande par le médecin.
-2. **Statistiques de base** (§49, §63) — dernier élément MVP non entamé.
-3. **Lecture du consentement courant** (§30) — la ligne la plus récente par
+2. **Lecture du consentement courant** (§30) — la ligne la plus récente par
    `(dossierId, type)`.
 4. **Conflit d'intérêts** (§14, §18) — déclaration par le spécialiste et réaffectation.
 5. **Canal SMS** des notifications (§23).

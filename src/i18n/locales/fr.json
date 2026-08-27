@@ -34,53 +34,106 @@
       "nephrologie": "Néphrologie",
       "gastroenterologie": "Gastro-entérologie",
       "pneumologie": "Pneumologie"
-    }
+    },
+    "showPassword": "Afficher le mot de passe",
+    "hidePassword": "Masquer le mot de passe"
   },
   "public": {
     "home": {
-      "heroTitle": "EXPERTISE MÉDICALE MONDIALE, DÉCISIONS CONFIANTES",
-      "heroSub": "Connectez-vous avec des spécialistes de classe mondiale pour des décisions médicales éclairées via notre plateforme sécurisée.",
+      "heroTitlePart1": "Deuxième",
+      "heroTitlePart2": "Avis Médical",
       "heroPrimaryCta": "DEMANDER UN AVIS",
-      "heroSecondaryCta": "OU TROUVEZ VOTRE SPÉCIALISTE",
+      "heroNetworkCaption": "Un réseau de spécialistes vérifiés<br/>en Europe et à l'international",
       "badgeIso": "CERTIFIÉ ISO",
       "badgeGdpr": "CONFORME RGPD",
       "badgeDoctors": "+1000 MÉDECINS EU",
       "badgeTrust": "CONFIANCE MONDIALE",
       "badgeSecure": "SÉCURISÉ & CHIFFRÉ",
-      "processEyebrow": "Processus",
-      "processTitle": "Un parcours patient simplifié et sécurisé",
+      "processEyebrow": "Comment ça marche",
+      "processTitle": "Dix étapes, trois moments simples",
+      "processSub": "Votre médecin reste au centre du parcours. IMSOP organise l'accès à une expertise complémentaire lorsque c'est médicalement pertinent.",
+      "phase1Label": "1 · Votre dossier",
+      "phase2Label": "2 · L'expertise",
+      "phase3Label": "3 · Votre réponse",
       "step1Title": "Création du Dossier",
       "step1Text": "Soumettez votre demande et téléversez vos documents médicaux (analyses, imageries) via notre plateforme hautement sécurisée.",
       "step2Title": "Analyse par l'Expert",
       "step2Text": "Un spécialiste européen qualifié est assigné à votre cas. Il étudie minutieusement votre dossier de manière confidentielle.",
+      "step2Quote": "Un patient africain, un médecin local, une expertise internationale lorsque cela est nécessaire.",
       "step3Title": "Rapport Médical Détaillé",
       "step3Text": "Recevez un rapport complet avec un diagnostic confirmé et des recommandations de traitement claires en moins de 72h.",
+      "delayNote": "Délai moyen visé : <bold>72 heures</bold> après dossier complet.",
       "specialtiesEyebrow": "Domaines d'expertise",
       "specialtiesTitle": "Spécialités prises en charge",
-      "specialtiesSub": "Pour cette phase pilote, IMSOP met en avant les spécialités où l'expertise internationale apporte la plus grande valeur ajoutée.",
+      "specialtiesSub": "IMSOP met en avant les spécialités où l'expertise internationale apporte une valeur ajoutée.",
+      "specialtiesFooterNote": "Pédiatrie, néphrologie, gastro-entérologie, pneumologie et maladies rares suivront après la phase pilote.",
       "specOncology": "Oncologie",
+      "specOncologySub": "Diagnostic & protocoles",
       "specCardiology": "Cardiologie",
+      "specCardiologySub": "Chirurgie cardiovasculaire",
       "specNeurology": "Neurologie",
+      "specNeurologySub": "Neurochirurgie",
       "specOrthopedics": "Orthopédie",
+      "specOrthopedicsSub": "Traumatologie",
       "specRadiology": "Radiologie",
-      "specPathology": "Anatomopathologie"
+      "specRadiologySub": "Relecture d'imagerie",
+      "specPathology": "Anatomopathologie",
+      "specPathologySub": "Relecture de lames",
+      "testimonialsEyebrow": "Témoignages",
+      "testimonialsTitle": "Ils ont témoigné...",
+      "testimonial1Quote": "Avant l'opération, nous voulions être sûrs. Le rapport a confirmé le diagnostic et proposé une alternative moins lourde.",
+      "testimonial1Meta": "Douala · Oncologie",
+      "testimonial2Quote": "Tout s'est fait depuis Yaoundé, sans voyage. Mon médecin a reçu le rapport en même temps que moi.",
+      "testimonial2Meta": "Yaoundé · Cardiologie",
+      "testimonial3Quote": "L'avis du confrère européen a complété mon analyse. Le patient est resté suivi ici, avec plus de sécurité.",
+      "testimonial3Meta": "Médecin traitant · Douala",
+      "testimonialPatientLabel": "Nom du patient",
+      "testimonialDoctorLabel": "Nom du médecin",
+      "testimonialAnonymous": "Utilisateur IMSOP",
+      "testimonialRolePatient": "Patient",
+      "testimonialRoleDoctor": "Médecin traitant",
+      "finalCtaTitle": "Un doute avant une décision importante ?",
+      "finalCtaText": "Créez votre dossier en quelques minutes. Vous ne payez qu'une fois le dossier complet et vérifié.",
+      "testimonialsExamplesTitle": "À quoi ressemble un deuxième avis",
+      "testimonialsExamplesNotice": "Situations types, données à titre d'illustration. Aucun témoignage de patient n'est encore publié : les premiers apparaîtront ici après validation par la coordination médicale.",
+      "testimonialExampleLabel": "Situation type",
+      "testimonial4Quote": "Le rapport a recommandé des examens complémentaires avant toute décision. Nous avons gagné en clarté sans perdre de temps.",
+      "testimonial4Meta": "Bafoussam · Neurologie",
+      "testimonial5Quote": "Recevoir un avis extérieur documenté m'a permis d'expliquer plus sereinement les options à ma patiente.",
+      "testimonial5Meta": "Médecin traitant · Yaoundé"
+    },
+    "footer": {
+      "tagline": "International Medical Second Opinion Platform. Programme africain de deuxième avis médical et de télé-expertise médicale internationale. Pays pilote : Cameroun.",
+      "colPatients": "Patients",
+      "colProfessionals": "Professionnels",
+      "colTrust": "Confiance",
+      "linkPricing": "Tarifs",
+      "linkFaq": "Questions fréquentes",
+      "linkLocalDoctors": "Médecins locaux",
+      "linkInternationalSpecialists": "Spécialistes internationaux",
+      "linkInstitutions": "Établissements & assureurs",
+      "linkDataProtection": "Protection des données",
+      "linkConsent": "Consentement & RGPD",
+      "linkLegal": "Mentions légales",
+      "linkContact": "Nous contacter",
+      "copyright": "IMSOP — International Medical Second Opinion.",
+      "disclaimer": "IMSOP ne remplace pas votre médecin traitant. Aucune urgence médicale ne doit passer par la plateforme."
     },
     "forDoctors": {
       "eyebrow": "Pour les professionnels de santé",
-      "title": "Une expertise complémentaire, jamais un remplacement",
+      "title": "Un avis complémentaire, jamais un remplacement",
       "intro": "IMSOP repose sur un principe simple : le spécialiste international n'intervient jamais à la place du médecin local — il l'accompagne. Le médecin traitant reste l'acteur central du parcours de son patient.",
       "doctorsTitle": "Médecins locaux",
-      "doctorsText": "Inscrivez vos patients sur la plateforme avec leur autorisation, transmettez les éléments médicaux utiles, et suivez l'avancement du dossier jusqu'à la réception du rapport.",
+      "doctorsText": "Inscrivez vos problématiques sur la plateforme et recevez une réponse.",
       "doctorsItem1": "Créer un compte professionnel vérifié",
-      "doctorsItem2": "Enregistrer un patient avec son consentement",
-      "doctorsItem3": "Échanger directement avec le spécialiste assigné",
+      "doctorsItem2": "Transmettre une question précise à l'équipe de coordination, à laquelle le spécialiste répond dans son rapport",
       "specialistsTitle": "Spécialistes internationaux",
       "specialistsText": "Rejoignez le réseau IMSOP en soumettant vos diplômes et références professionnelles pour vérification par notre comité médical avant activation de votre compte.",
       "specialistsItem1": "Vérification des diplômes et de l'autorisation d'exercer",
       "specialistsItem2": "Gestion de vos disponibilités et de vos tarifs",
       "specialistsItem3": "Rémunération selon les conditions contractuelles convenues",
       "ctaTitle": "Vous êtes médecin ou établissement de santé ?",
-      "ctaText": "Rejoignez le réseau IMSOP pour offrir à vos patients un accès simple à une expertise médicale internationale.",
+      "ctaText": "Rejoignez le réseau IMSOP pour recevoir un avis sur vos problématiques par une expertise internationale.",
       "ctaButton": "Contacter l'équipe IMSOP"
     }
   },
@@ -139,6 +192,22 @@
       "submitting": "Vérification...",
       "expired": "Session de connexion expirée. Veuillez vous reconnecter."
     },
+    "oauth": {
+      "notConfigured": "Cette méthode de connexion n'est pas encore activée.",
+      "accessDenied": "Connexion annulée.",
+      "invalidState": "La session de connexion a expiré, veuillez réessayer.",
+      "exchangeFailed": "La connexion a échoué, veuillez réessayer.",
+      "noEmail": "Ce compte ne fournit pas d'adresse email accessible.",
+      "accountDisabled": "Ce compte a été désactivé. Contactez un administrateur.",
+      "notRegisteredPatient": "Aucun compte patient n'est associé à cette adresse Google. Créez un compte pour continuer.",
+      "notRegisteredMedecin": "Aucun compte médecin traitant n'est associé à cette adresse Google. Créez un compte pour continuer.",
+      "notRegisteredProfessional": "Aucun compte n'est associé à cette adresse Google pour cet espace. Ces comptes sont créés par l'administration IMSOP - contactez votre administrateur.",
+      "genericError": "La connexion a échoué, veuillez réessayer.",
+      "callbackNoSession": "La connexion a échoué : aucune session reçue.",
+      "callbackFailed": "La connexion a échoué. Veuillez réessayer.",
+      "connecting": "Connexion en cours...",
+      "backToLogin": "Retour à la connexion"
+    },
     "verifyEmail": {
       "title": "Vérifiez votre e-mail",
       "subtitle": "Saisissez le code à 6 chiffres envoyé à",
@@ -181,7 +250,7 @@
           "subtitle": "Accédez à votre espace santé et vos dossiers médicaux."
         },
         "SPECIALISTE": {
-          "title": "Espace Expert",
+          "title": "Espace Spécialiste",
           "subtitle": "Consultez et répondez aux demandes de second avis."
         },
         "COORDINATEUR": {
@@ -194,7 +263,7 @@
         },
         "MEDECIN_LOCAL": {
           "title": "Espace Médecin Traitant",
-          "subtitle": "Accompagnez vos patients dans leur demande de deuxième avis."
+          "subtitle": "Accompagnez vos centres de santé pour un deuxième avis médical."
         }
       }
     },
@@ -320,7 +389,7 @@
     },
     "questionnaire": {
       "closeAria": "Fermer le questionnaire",
-      "title": "Nouveau Dossier Médical",
+      "title": "Nouvelle demande de second avis",
       "stepIdentity": "Identité",
       "stepMedical": "Détails Médicaux",
       "stepDocuments": "Documents",
@@ -357,10 +426,14 @@
       "categoryOrdonnance": "Ordonnance",
       "categoryCompteRendu": "Compte rendu médical",
       "categoryAutre": "Autre",
-      "chooseFile": "Choisir un fichier",
+      "chooseFile": "Choisir un ou plusieurs fichiers",
       "noFileChosen": "Aucun fichier sélectionné",
-      "acceptedFormats": "PDF, JPEG, PNG ou DICOM — 25 Mo maximum",
-      "uploadButton": "Ajouter le document",
+      "filesSelected_one": "{{count}} fichier sélectionné",
+      "filesSelected_other": "{{count}} fichiers sélectionnés",
+      "removeFile": "Retirer ce fichier",
+      "acceptedFormats": "PDF, JPEG, PNG ou DICOM — 25 Mo maximum par fichier",
+      "uploadButton_one": "Ajouter le document",
+      "uploadButton_other": "Ajouter les {{count}} documents",
       "uploading": "Envoi en cours...",
       "uploadedListTitle": "Documents ajoutés",
       "empty": "Aucun document ajouté pour le moment.",
@@ -368,7 +441,8 @@
       "back": "Retour",
       "finish": "Continuer vers le paiement",
       "submitting": "Envoi...",
-      "selectFileFirst": "Sélectionnez un fichier avant d'ajouter le document."
+      "selectFileFirst": "Sélectionnez au moins un fichier avant de l'ajouter.",
+      "someFilesFailed": "{{count}} fichier(s) n'ont pas pu être ajoutés."
     },
     "payment": {
       "title": "Paiement sécurisé",
@@ -483,6 +557,7 @@
       "emptyReports": "Aucun rapport en attente de validation.",
       "validating": "Validation...",
       "validateAndSend": "Valider et transmettre au patient",
+      "consult": "Consulter",
       "validateFailed": "La validation a échoué"
     },
     "exceptions": {
@@ -535,6 +610,27 @@
       "cancel": "Annuler",
       "confirmReject": "Confirmer le refus",
       "rejectPlaceholder": "Motif du refus (ex : photo illisible, document expiré, nom ne correspondant pas...)"
+    },
+    "temoignages": {
+      "title": "Témoignages",
+      "subtitle": "Validez les commentaires des patients et médecins traitants avant leur publication sur la page d'accueil.",
+      "loading": "Chargement...",
+      "loadError": "Impossible de charger les témoignages",
+      "empty": "Aucun témoignage dans cette catégorie.",
+      "approve": "Publier",
+      "reject": "Rejeter",
+      "motifPlaceholder": "Motif du rejet (requis pour rejeter)",
+      "motifLabel": "Motif",
+      "actionError": "Impossible d'effectuer cette action. Réessayez.",
+      "statuts": {
+        "EN_ATTENTE": "En attente",
+        "PUBLIE": "Publiés",
+        "REJETE": "Rejetés"
+      },
+      "roles": {
+        "PATIENT": "Patient",
+        "MEDECIN_LOCAL": "Médecin traitant"
+      }
     }
   },
   "specialiste": {
@@ -575,6 +671,7 @@
       "documents_other": "{{count}} documents originaux",
       "noDocuments": "Aucun document déposé pour ce dossier.",
       "questionTitle": "Question posée par le médecin",
+      "doctorQuestionTitle": "Question du médecin traitant — à traiter dans ce rapport",
       "alreadySubmitted": "Ce rapport a déjà été soumis et n'est plus modifiable.",
       "synthesisTitle": "Synthèse du cas",
       "synthesisPlaceholder": "Résumé des antécédents et du motif de consultation...",
@@ -648,6 +745,51 @@
       "subtitle": "Traçabilité de toutes les actions sensibles effectuées sur la plateforme.",
       "empty": "Aucune activité enregistrée.",
       "systemActor": "Système"
+    },
+    "stats": {
+      "title": "Statistiques & indicateurs",
+      "subtitle": "Activité, performance, finance et qualité de la plateforme.",
+      "loading": "Calcul des indicateurs...",
+      "loadFailed": "Impossible de charger les statistiques",
+      "kpisTitle": "Indicateurs clés",
+      "kpisSubtitle": "Les 13 indicateurs du cahier des charges (§63).",
+      "indicateur": "Indicateur",
+      "valeur": "Valeur",
+      "jours": "j",
+      "vueTableau": "Vue tableau",
+      "vueGraphique": "Vue graphique",
+      "aucuneDonnee": "Aucune donnée sur cette période.",
+      "aucunRapportValide": "Aucun rapport validé sur cette période.",
+      "aucunPaiement": "Aucun paiement confirmé sur cette période.",
+      "activite": "Activité",
+      "performance": "Performance",
+      "finance": "Finance",
+      "qualite": "Qualité",
+      "specialitesDemandees": "Spécialités les plus demandées",
+      "paysPatients": "Pays des patients",
+      "delaiParSpecialiste": "Délai moyen par spécialiste",
+      "revenusParSpecialite": "Revenus par spécialité",
+      "periodes": {
+        "tout": "Tout",
+        "douzeMois": "12 mois",
+        "trenteJours": "30 jours",
+        "septJours": "7 jours"
+      },
+      "kpi": {
+        "patients": "Patients",
+        "demandes": "Demandes",
+        "tauxConversion": "Taux de conversion",
+        "delaiMoyenAvis": "Délai moyen du deuxième avis",
+        "tauxDossiersComplets": "Dossiers complets",
+        "tauxReponseSpecialistes": "Réponse des spécialistes",
+        "satisfactionPatient": "Satisfaction patient",
+        "satisfactionMedecin": "Satisfaction médecin",
+        "coutMoyenParDossier": "Coût moyen par dossier",
+        "revenuMoyenParDossier": "Revenu moyen par dossier",
+        "specialistesActifs": "Spécialistes actifs",
+        "etablissementsPartenaires": "Établissements partenaires",
+        "paysCouverts": "Pays couverts"
+      }
     }
   },
   "shell": {
@@ -655,11 +797,11 @@
       "dashboard": "Tableau de bord",
       "specialistes": "Spécialistes",
       "coordinateurs": "Coordinateurs",
-      "journal": "Journal"
+      "journal": "Journal",
+      "statistiques": "Statistiques"
     },
     "patientNav": {
       "dossiers": "Dossiers",
-      "medecins": "Médecins",
       "messages": "Messages",
       "profil": "Profil"
     },
@@ -675,7 +817,9 @@
       "experts": "Experts",
       "identites": "Identités",
       "parametres": "Paramètres",
-      "habilitations": "Habilitations"
+      "habilitations": "Habilitations",
+      "messages": "Messages",
+      "temoignages": "Témoignages"
     },
     "userMenu": {
       "user": "Utilisateur",
@@ -683,7 +827,7 @@
       "logout": "Déconnexion"
     },
     "medecinNav": {
-      "dossiers": "Mes patients",
+      "dossiers": "Mes demandes",
       "profil": "Mon compte",
       "justificatifs": "Mes justificatifs"
     },
@@ -691,13 +835,23 @@
       "habilitations": "Habilitations"
     }
   },
+  "temoignage": {
+    "title": "Laisser un commentaire",
+    "help": "Votre avis peut être publié dans la section témoignages de la page d'accueil, après validation par notre équipe.",
+    "placeholder": "Partagez votre expérience avec IMSOP...",
+    "rating": "{{count}} étoile(s)",
+    "submit": "Envoyer",
+    "thanksTitle": "Merci pour votre retour",
+    "thanksText": "Votre commentaire a bien été envoyé. Il sera visible sur la page d'accueil après validation par notre équipe.",
+    "error": "Impossible d'envoyer votre commentaire. Réessayez."
+  },
   "notifications": {
     "title": "Notifications",
     "aria": "Notifications",
     "ariaUnread": "Notifications, {{count}} non lues",
     "markAllRead": "Tout marquer lu",
     "loading": "Chargement…",
-    "empty": "Aucune notification pour le moment.",
+    "empty": "Aucune notification non lue.",
     "time": {
       "now": "à l'instant",
       "minutes": "il y a {{count}} min",
@@ -749,11 +903,41 @@
       "fallback": {
         "title": "Notification",
         "preview": "Dossier {{reference}}"
+      },
+      "PIECE_JOINTE_RECUE": {
+        "title": "Document de {{sender}}",
+        "titleFallback": "Nouveau document",
+        "preview": "Une pièce a été déposée sur le dossier {{reference}}."
+      },
+      "MEDECIN_LOCAL_RATTACHE": {
+        "title": "Vous êtes désigné médecin traitant",
+        "preview": "Un patient vous a rattaché au dossier {{reference}}."
+      },
+      "COMPLEMENT_DEMANDE": {
+        "title": "Information complémentaire demandée",
+        "preview": "Le spécialiste attend des précisions sur le dossier {{reference}}."
+      },
+      "COMPLEMENT_FOURNI": {
+        "title": "Complément fourni",
+        "preview": "Le dossier {{reference}} repart en analyse."
+      },
+      "HABILITATION_STATUT": {
+        "title": "Votre habilitation a changé",
+        "preview": "Nouveau statut : {{statut}}."
+      },
+      "DEUX_FACTEURS": {
+        "title": "Code de connexion",
+        "preview": "Un code de vérification vous a été envoyé."
+      },
+      "INSCRIPTION_EXISTANTE": {
+        "title": "Compte déjà existant",
+        "preview": "Une inscription a été tentée avec votre adresse."
       }
     }
   },
   "chat": {
     "patientFile": "Dossier patient",
+    "coordinationTeam": "Coordination médicale IMSOP",
     "attachAria": "Joindre un document",
     "attachRemove": "Retirer le document",
     "attachCaptionPlaceholder": "Ajouter un message (facultatif)...",
@@ -766,7 +950,7 @@
     "searchNoResults": "Aucun message ne correspond à cette recherche.",
     "callAria": "Appel vidéo",
     "callDeclined": "L'appel a été refusé.",
-    "callUnavailable": "Cette personne n'est pas disponible actuellement.",
+    "callUnavailable": "Cette personne n'est pas connectée pour le moment. Elle doit avoir IMSOP ouvert pour recevoir un appel — laissez-lui plutôt un message.",
     "cameraError": "Impossible d'accéder à la caméra ou au micro.",
     "incomingCall": "{{name}} vous appelle...",
     "declineCall": "Refuser",
@@ -774,7 +958,10 @@
     "calling": "Appel en cours...",
     "connecting": "Connexion...",
     "inCall": "Appel en cours",
-    "hangUp": "Raccrocher"
+    "hangUp": "Raccrocher",
+    "callNoAnswer": "Pas de réponse. Réessayez plus tard ou laissez un message.",
+    "callNotAllowed": "Vous ne pouvez pas appeler cette personne : elle n'est pas rattachée à ce dossier.",
+    "callFailed": "L'appel n'a pas pu être établi."
   },
   "medecin": {
     "login": {
@@ -800,12 +987,11 @@
       "login": "Se connecter"
     },
     "dashboard": {
-      "title": "Mes patients suivis",
-      "subtitle": "Les dossiers pour lesquels un patient vous a désigné comme médecin traitant.",
-      "empty": "Aucun patient ne vous a encore désigné. Votre patient doit renseigner votre adresse e-mail depuis son espace, section « Mon médecin traitant ».",
+      "title": "Mes demandes de second avis",
+      "subtitle": "Les avis que vous avez sollicités auprès d'un spécialiste international.",
+      "empty": "Vous n'avez encore adressé aucune demande. Ouvrez-en une lorsqu'un cas vous laisse un doute.",
       "loading": "Chargement des dossiers...",
       "pendingVerification": "Votre numéro d'ordre est en cours de vérification par notre équipe de coordination.",
-      "openChat": "Messagerie",
       "openFile": "Voir le dossier",
       "reference": "Dossier",
       "specialist": "Spécialiste international",
@@ -826,7 +1012,13 @@
         "ORDONNANCE": "Ordonnance",
         "COMPTE_RENDU": "Compte rendu",
         "AUTRE": "Autre"
-      }
+      },
+      "questionTitle": "Question au spécialiste",
+      "questionHelp": "Transmettez les documents ci-dessus à l'équipe de coordination médicale accompagnés d'une question unique. C'est à cette question précise que le spécialiste répondra dans son rapport. Une fois envoyée, la question ne peut plus être modifiée.",
+      "questionPlaceholder": "Ex : Le traitement actuel doit-il être ajusté au vu de ces résultats ?",
+      "questionSubmit": "Envoyer la question",
+      "questionSentOn": "Question transmise le {{date}}",
+      "questionError": "Impossible d'envoyer la question. Réessayez."
     },
     "habilitation": {
       "EN_VERIFICATION": "Votre habilitation est en cours de vérification par notre équipe de coordination.",
@@ -874,6 +1066,38 @@
       "SUSPENDU": "Suspendu",
       "EXPIRE": "Expiré",
       "REVOQUE": "Révoqué"
+    },
+    "nouvelleDemande": {
+      "titre": "Nouvelle demande de second avis",
+      "sousTitre": "Décrivez le cas qui vous laisse un doute. Votre demande part à la coordination, qui l'adresse au spécialiste le plus adapté.",
+      "sectionPatient": "Le patient",
+      "noteAnonymat": "Aucune donnée identifiante n'est demandée : l'âge et le sexe suffisent au spécialiste pour interpréter le cas.",
+      "age": "Âge",
+      "sexe": "Sexe",
+      "specialite": "Spécialité requise",
+      "specialitePlaceholder": "Cardiologie, Neurologie, Oncologie...",
+      "sexes": {
+        "femme": "Femme",
+        "homme": "Homme",
+        "autre": "Autre"
+      },
+      "sectionCas": "Le cas",
+      "motif": "Motif de la demande",
+      "motifPlaceholder": "Décrivez le cas et ce qui motive votre doute.",
+      "symptomes": "Symptômes",
+      "antecedents": "Antécédents",
+      "traitement": "Traitement en cours",
+      "optionnel": "facultatif",
+      "sectionDocuments": "Pièces du dossier",
+      "ajouterDocuments": "Ajouter des documents",
+      "retirerDocument": "Retirer ce document",
+      "sectionQuestion": "Votre question au spécialiste",
+      "noteQuestionUnique": "Vous posez une seule question, définitive. Elle est transmise telle quelle au spécialiste avec le dossier.",
+      "questionPlaceholder": "Formulez précisément ce sur quoi vous attendez un avis.",
+      "envoyer": "Envoyer à la coordination",
+      "envoiEnCours": "Envoi en cours...",
+      "erreur": "L'envoi de la demande a échoué.",
+      "nouvelle": "Nouvelle demande"
     }
   },
   "patientMedecin": {

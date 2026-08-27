@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import PatientShell from '../../components/layout/PatientShell'
+import TemoignageForm from '../../components/ui/TemoignageForm'
 import { useAuthStore } from '../../store/useAuthStore'
 import { api } from '../../lib/api'
 import { Plus, ArrowRight, MoreVertical, RefreshCw, CheckCircle, AlertTriangle, MailWarning, Clock } from 'lucide-react'
@@ -192,6 +193,8 @@ export default function DashboardPatient() {
           })}
         </div>
       </section>
+
+      <TemoignageForm />
     </PatientShell>
   )
 }

@@ -1,4 +1,5 @@
 import { io } from 'socket.io-client'
+import { sessionActive } from './session'
 
 let socket = null
 
@@ -10,7 +11,7 @@ export function getCallSocket() {
   socket = io('/', {
     path: '/socket.io',
     autoConnect: false,
-    auth: (cb) => cb({ token: localStorage.getItem('imsop_access_token') }),
+    auth: (cb) => cb({ token: sessionActive()?.accessToken ?? null }),
   })
 
   return socket

@@ -44,6 +44,60 @@ function serializeUser(user) {
   }
 }
 
+// Le limiteur de debit ne compte que par IP : un attaquant reparti sur plusieurs
+// adresses garde autant d'essais qu'il veut sur un meme code a 6 chiffres. Le
+// compteur vit donc sur le challenge lui-meme.
+// Repondre « cet e-mail existe deja » transforme le formulaire d'inscription en
+// oracle : un bot teste une liste d'adresses et apprend lesquelles ont un compte
+// IMSOP — une information medicale en soi. La reponse est donc rigoureusement
+// identique dans les deux cas, et le titulaire d'un compte existant est prevenu
+// par e-mail. La session n'est plus delivree ici : le client se connecte ensuite
+// avec les identifiants qu'il vient de saisir, ce qui ne reussit que si le
+// compte vient reellement d'etre cree (ou si le mot de passe fourni est le bon).
+const REPONSE_INSCRIPTION = {
+  message: "Si cette adresse n'est pas déjà utilisée, votre compte a été créé. Consultez vos e-mails pour le code de vérification.",
+}
+
+async function repondreInscription(res, utilisateurExistant) {
+  if (utilisateurExistant) {
+    await notify(utilisateurExistant.id, utilisateurExistant.email, 'INSCRIPTION_EXISTANTE', {
+      name: utilisateurExistant.fullName,
+    })
+  }
+  return res.status(202).json(REPONSE_INSCRIPTION)
+}
+
+const MAX_TENTATIVES_CODE = 5
+
+// Retourne le challenge seulement si le code est bon. Sinon incremente le
+// compteur, et brule le challenge une fois le quota epuise : l'utilisateur doit
+// alors recommencer depuis le debut, ce qui reinitialise aussi l'envoi du code.
+async function consommerChallenge(challenge, code) {
+  if (!challenge) return { erreur: 'invalide' }
+
+  if (challenge.attempts >= MAX_TENTATIVES_CODE) {
+    await prisma.twoFactorChallenge.update({
+      where: { id: challenge.id },
+      data: { consumedAt: new Date() },
+    })
+    return { erreur: 'epuise' }
+  }
+
+  if (challenge.codeHash !== hashToken(code)) {
+    await prisma.twoFactorChallenge.update({
+      where: { id: challenge.id },
+      data: { attempts: { increment: 1 } },
+    })
+    return { erreur: 'invalide' }
+  }
+
+  await prisma.twoFactorChallenge.update({
+    where: { id: challenge.id },
+    data: { consumedAt: new Date() },
+  })
+  return { ok: true }
+}
+
 async function sendEmailVerificationCode(user) {
   const code = crypto.randomInt(100000, 999999).toString()
   const codeHash = hashToken(code)
@@ -72,7 +126,7 @@ async function issueTwoFactorChallenge(user) {
     data: { userId: user.id, codeHash, expiresAt: new Date(Date.now() + 10 * 60 * 1000) },
   })
 
-  await notify(user.id, user.email, 'MESSAGE_RECU', { name: user.fullName, reference: 'Code de vérification' })
+  await notify(user.id, user.email, 'DEUX_FACTEURS', { name: user.fullName, code })
   console.log(`[2FA] Code for ${user.email}: ${code}`)
 
   return jwt.sign({ sub: user.id, purpose: '2fa' }, env.jwt.accessSecret, { expiresIn: '10m' })
@@ -102,7 +156,7 @@ async function registerPatient(req, res) {
   } = req.body
 
   const existing = await prisma.user.findUnique({ where: { email } })
-  if (existing) return res.status(409).json({ message: 'Un compte existe déjà avec cet email' })
+  if (existing) return repondreInscription(res, existing)
 
   const passwordHash = await bcrypt.hash(password, 12)
   const patientRef = await genererPatientRef()
@@ -145,8 +199,7 @@ async function registerPatient(req, res) {
 
   await sendEmailVerificationCode(user)
 
-  const session = await issueSession(user)
-  res.status(201).json(session)
+  return repondreInscription(res, null)
 }
 
 // Self-service registration, deliberately mirroring the patient flow: the
@@ -176,8 +229,7 @@ async function registerMedecinLocal(req, res) {
 
   await sendEmailVerificationCode(user)
 
-  const session = await issueSession(user)
-  res.status(201).json(session)
+  return repondreInscription(res, null)
 }
 
 async function login(req, res) {
@@ -218,13 +270,20 @@ async function verifyTwoFactor(req, res) {
     orderBy: { createdAt: 'desc' },
   })
 
-  if (!challenge || challenge.codeHash !== hashToken(code)) {
+  const tentative = await consommerChallenge(challenge, code)
+  if (tentative.erreur === 'epuise') {
+    return res.status(429).json({ message: 'Trop de codes erronés. Reconnectez-vous pour recevoir un nouveau code.' })
+  }
+  if (tentative.erreur) {
     return res.status(401).json({ message: 'Code invalide ou expiré' })
   }
 
-  await prisma.twoFactorChallenge.update({ where: { id: challenge.id }, data: { consumedAt: new Date() } })
-
   const user = await prisma.user.findUnique({ where: { id: payload.sub }, include: { patient: true, specialiste: true, medecinLocal: true } })
+  // `login` a bien verifie `active`, mais le challenge reste valable 10 minutes :
+  // un compte desactive entre-temps ne doit pas obtenir de session complete.
+  if (!user || !user.active) {
+    return res.status(403).json({ message: 'Ce compte a été désactivé' })
+  }
   const session = await issueSession(user)
   res.json(session)
 }
@@ -237,11 +296,14 @@ async function verifyEmail(req, res) {
     orderBy: { createdAt: 'desc' },
   })
 
-  if (!challenge || challenge.codeHash !== hashToken(code)) {
+  const tentative = await consommerChallenge(challenge, code)
+  if (tentative.erreur === 'epuise') {
+    return res.status(429).json({ message: 'Trop de codes erronés. Demandez un nouveau code.' })
+  }
+  if (tentative.erreur) {
     return res.status(401).json({ message: 'Code invalide ou expiré' })
   }
 
-  await prisma.twoFactorChallenge.update({ where: { id: challenge.id }, data: { consumedAt: new Date() } })
   const user = await prisma.user.update({
     where: { id: req.userId },
     data: { emailVerified: true },
@@ -279,6 +341,9 @@ async function refresh(req, res) {
 
   const user = await prisma.user.findUnique({ where: { id: payload.sub }, include: { patient: true, specialiste: true, medecinLocal: true } })
   if (!user) return res.status(401).json({ message: 'Utilisateur introuvable' })
+  // La desactivation supprime deja les refresh tokens en base ; ce controle
+  // couvre les cas ou le compte a ete desactive autrement (script, SQL direct).
+  if (!user.active) return res.status(403).json({ message: 'Ce compte a été désactivé' })
 
   const session = await issueSession(user)
   res.json(session)

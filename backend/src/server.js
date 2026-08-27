@@ -4,6 +4,7 @@ const { prisma } = require('./lib/prisma')
 const { ensureBucket } = require('./lib/s3')
 const { startMessagingCloseCron } = require('./services/messagingCloseService')
 const { startBackupCron } = require('./services/backupService')
+const { startHabilitationExpiryCron } = require('./services/habilitationExpiryService')
 const { initCallSignaling } = require('./services/callSignalingService')
 
 // A single uncaught error must never take the whole server down for every
@@ -28,6 +29,7 @@ async function start() {
 
   startMessagingCloseCron()
   startBackupCron()
+  startHabilitationExpiryCron()
 
   const server = app.listen(env.port, () => {
     console.log(`IMSOP backend listening on port ${env.port} (${env.nodeEnv})`)

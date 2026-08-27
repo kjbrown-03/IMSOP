@@ -1,6 +1,7 @@
 const crypto = require('crypto')
 const bcrypt = require('bcrypt')
 const { prisma } = require('../lib/prisma')
+const { calculerStatistiques } = require('../services/statistiquesService')
 const { logAction } = require('../services/auditService')
 const { safeUserSelect } = require('../lib/selectors')
 
@@ -20,6 +21,33 @@ async function listAuditLogs(req, res) {
   })
 
   res.json(logs)
+}
+
+// CDC §62 (BI) et §63 (13 indicateurs). Les bornes de période sont optionnelles :
+// sans elles, l'indicateur porte sur toute la vie de la plateforme.
+// Les indicateurs financiers relèvent de l'administration (CDC §5.7/§5.8). La
+// table RBAC du §32 refuse explicitement l'accès aux paiements au coordinateur
+// médical : il garde l'activité, la performance et la qualité, dont il a besoin
+// pour son tableau de bord médical (§28), mais pas le chiffre d'affaires.
+const KPIS_FINANCIERS = new Set(['revenuMoyenParDossier', 'coutMoyenParDossier'])
+
+async function statistiques(req, res) {
+  const { depuis, jusquA } = req.query
+  const donnees = await calculerStatistiques({
+    depuis: depuis ? new Date(depuis) : null,
+    jusquA: jusquA ? new Date(jusquA) : null,
+  })
+
+  if (req.userRole !== 'ADMIN') {
+    delete donnees.finance
+    donnees.kpis = donnees.kpis.map((k) =>
+      KPIS_FINANCIERS.has(k.cle)
+        ? { numero: k.numero, cle: k.cle, disponible: false, raison: "Réservé à l'administration (CDC §32)." }
+        : k,
+    )
+  }
+
+  res.json(donnees)
 }
 
 async function dashboardStats(req, res) {
@@ -184,4 +212,5 @@ async function setUserActive(req, res) {
   res.json(safeUser)
 }
 
-module.exports = { listAuditLogs, dashboardStats, listUsers, createUser, updateUser, setUserActive }
+module.exports = {
+  statistiques, listAuditLogs, dashboardStats, listUsers, createUser, updateUser, setUserActive }

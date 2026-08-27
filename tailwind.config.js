@@ -17,7 +17,26 @@ export default {
         'tertiary-container': 'var(--color-tertiary-container, #983c00)',
         'surface-tint': 'var(--color-surface-tint, #115cb9)',
         'surface-bright': 'var(--color-surface-bright, #f9f9ff)',
-        primary: 'var(--color-primary, #003f87)',
+        // `primary` was a single flat colour, so every `primary-600`/`primary-400`
+        // utility compiled to nothing — 271 of them across 25 files, silently, since
+        // Tailwind just drops unknown classes. Components pair the themes by hand
+        // (`text-primary-600 dark:text-primary-400`), so this ramp is fixed rather than
+        // theme-switching, and stays in hex so the opacity modifiers already in use
+        // (`dark:bg-primary-900/30`) keep working — a bare var() would break them.
+        // DEFAULT keeps the original variable, so existing `bg-primary` is untouched.
+        primary: {
+          DEFAULT: 'var(--color-primary, #003f87)',
+          50: '#eff5fd',
+          100: '#dbe8fa',
+          200: '#bcd5f5',
+          300: '#8dbaee',
+          400: '#5b9bea',
+          500: '#2f79db',
+          600: '#0d55b3',
+          700: '#0a4795',
+          800: '#003f87',
+          900: '#002f66',
+        },
         'error-container': 'var(--color-error-container, #ffdad6)',
         'surface-container-lowest': 'var(--color-surface-container-lowest, #ffffff)',
         'inverse-on-surface': 'var(--color-inverse-on-surface, #f0f0f9)',

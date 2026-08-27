@@ -178,6 +178,15 @@ export default function RedactionRapportExpert() {
           </section>
         )}
 
+        {dossier.questionMedecinLocal && (
+          <section className="bg-secondary/10 border border-secondary/30 rounded-lg p-stack-md mb-stack-lg">
+            <p className="font-label-sm text-label-sm font-bold text-secondary uppercase tracking-wider mb-1">
+              {t('specialiste.report.doctorQuestionTitle')}
+            </p>
+            <p className="font-body-md text-on-surface">{dossier.questionMedecinLocal}</p>
+          </section>
+        )}
+
         {dossier.questionMedicale && (
           <section className="bg-primary/5 border border-primary/20 rounded-lg p-stack-md mb-stack-lg">
             <p className="font-label-sm text-label-sm font-bold text-primary uppercase tracking-wider mb-1">{t('specialiste.report.questionTitle')}</p>
@@ -196,22 +205,6 @@ export default function RedactionRapportExpert() {
         )}
 
         <form className="flex flex-col gap-stack-lg pb-stack-lg" onSubmit={submitReport}>
-          <fieldset className="border border-outline-variant rounded-lg bg-surface-container-lowest overflow-hidden">
-            <div className="bg-surface-container-low px-4 py-3 border-b border-outline-variant flex items-center gap-2">
-              <span className="material-symbols-outlined text-primary">summarize</span>
-              <legend className="text-label-md font-label-md text-on-surface font-bold uppercase tracking-wider">{t('specialiste.report.synthesisTitle')}</legend>
-            </div>
-            <div className="p-4">
-              <textarea
-                className="block w-full rounded-md border-0 py-3 text-on-surface shadow-sm ring-1 ring-inset ring-outline-variant placeholder:text-outline focus:ring-2 focus:ring-inset focus:ring-primary sm:text-body-md font-body-md bg-surface resize-y min-h-[150px] disabled:opacity-60"
-                placeholder={t('specialiste.report.synthesisPlaceholder')}
-                value={synthese}
-                onChange={(e) => setSynthese(e.target.value)}
-                disabled={readOnly}
-              />
-            </div>
-          </fieldset>
-
           <fieldset className="border border-outline-variant rounded-lg bg-surface-container-lowest overflow-hidden">
             <div className="bg-surface-container-low px-4 py-3 border-b border-outline-variant flex items-center gap-2">
               <span className="material-symbols-outlined text-primary">biotech</span>
@@ -239,6 +232,22 @@ export default function RedactionRapportExpert() {
                 placeholder={t('specialiste.report.therapeuticPlaceholder')}
                 value={therapeutique}
                 onChange={(e) => setTherapeutique(e.target.value)}
+                disabled={readOnly}
+              />
+            </div>
+          </fieldset>
+
+          <fieldset className="border border-outline-variant rounded-lg bg-surface-container-lowest overflow-hidden">
+            <div className="bg-surface-container-low px-4 py-3 border-b border-outline-variant flex items-center gap-2">
+              <span className="material-symbols-outlined text-primary">summarize</span>
+              <legend className="text-label-md font-label-md text-on-surface font-bold uppercase tracking-wider">{t('specialiste.report.synthesisTitle')}</legend>
+            </div>
+            <div className="p-4">
+              <textarea
+                className="block w-full rounded-md border-0 py-3 text-on-surface shadow-sm ring-1 ring-inset ring-outline-variant placeholder:text-outline focus:ring-2 focus:ring-inset focus:ring-primary sm:text-body-md font-body-md bg-surface resize-y min-h-[150px] disabled:opacity-60"
+                placeholder={t('specialiste.report.synthesisPlaceholder')}
+                value={synthese}
+                onChange={(e) => setSynthese(e.target.value)}
                 disabled={readOnly}
               />
             </div>

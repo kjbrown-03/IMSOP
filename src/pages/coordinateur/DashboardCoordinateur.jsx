@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import CoordinatorLayout from '../../components/layout/CoordinatorLayout'
 import { api } from '../../lib/api'
-import { Sparkles, AlertTriangle, UserPlus, Bell, ChevronRight, ShieldAlert, FileText, ArrowRight, CheckCircle2, ClipboardCheck } from 'lucide-react'
+import { Sparkles, AlertTriangle, UserPlus, Bell, ChevronRight, ShieldAlert, FileText, FileSearch, ArrowRight, CheckCircle2, ClipboardCheck } from 'lucide-react'
 
 export default function DashboardCoordinateur() {
   const { t, i18n } = useTranslation()
@@ -181,14 +181,22 @@ export default function DashboardCoordinateur() {
                 </div>
               </div>
             </div>
-            <button
-              onClick={() => validerRapport(rapport.id)}
-              disabled={validatingId !== null}
-              className="bg-emerald-600 text-white text-sm font-semibold px-5 py-2.5 rounded-xl hover:bg-emerald-700 transition-colors shadow-md flex items-center gap-2 disabled:opacity-60 shrink-0"
-            >
-              <CheckCircle2 className="w-4 h-4" />
-              {validatingId === rapport.id ? t('coordinateur.dashboard.validating') : t('coordinateur.dashboard.validateAndSend')}
-            </button>
+            <div className="flex items-center gap-2 shrink-0">
+              <Link
+                to={`/coordinateur/rapport/${d.id}`}
+                className="bg-white dark:bg-neutral-800 text-slate-700 dark:text-slate-300 text-sm font-semibold px-4 py-2.5 rounded-xl border border-slate-200 dark:border-neutral-700 hover:bg-slate-50 dark:hover:bg-neutral-700 transition-colors flex items-center gap-2"
+              >
+                <FileSearch className="w-4 h-4" /> {t('coordinateur.dashboard.consult')}
+              </Link>
+              <button
+                onClick={() => validerRapport(rapport.id)}
+                disabled={validatingId !== null}
+                className="bg-emerald-600 text-white text-sm font-semibold px-5 py-2.5 rounded-xl hover:bg-emerald-700 transition-colors shadow-md flex items-center gap-2 disabled:opacity-60"
+              >
+                <CheckCircle2 className="w-4 h-4" />
+                {validatingId === rapport.id ? t('coordinateur.dashboard.validating') : t('coordinateur.dashboard.validateAndSend')}
+              </button>
+            </div>
           </div>
         ))}
       </div>

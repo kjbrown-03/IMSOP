@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Stethoscope, ShieldCheck } from 'lucide-react'
 import AuthLayout from '../../components/layout/AuthLayout'
+import ChampMotDePasse from '../../components/ui/ChampMotDePasse'
 import { useAuthStore } from '../../store/useAuthStore'
 
 const FIELDS = [
@@ -38,8 +39,13 @@ export default function InscriptionMedecinLocal() {
       Object.entries(form).filter(([, v]) => v !== ''),
     )
     const result = await registerMedecinLocal(payload)
-    // 2FA is mandatory for this role, so the account lands on e-mail verification
-    // first and only then reaches the dossiers.
+    // 2FA is mandatory for this role: the session only exists once the code is
+    // validated, so the account passes through the code screen before e-mail
+    // verification, which needs to be authenticated.
+    if (result.twoFactorRequired) {
+      navigate('/verification-2fa', { state: { challengeToken: result.challengeToken, role: 'MEDECIN_LOCAL' } })
+      return
+    }
     if (result.ok) navigate('/verifier-email')
   }
 
@@ -79,15 +85,27 @@ export default function InscriptionMedecinLocal() {
               {t(`medecin.register.${field.name}`)}
               {field.required && <span className="text-error"> *</span>}
             </span>
-            <input
-              type={field.type}
-              required={field.required}
-              minLength={field.minLength}
-              autoComplete={field.autoComplete}
-              value={form[field.name]}
-              onChange={(e) => update(field.name, e.target.value)}
-              className="bg-surface-container-low border border-outline-variant rounded-xl px-4 py-3 font-body-md text-body-md text-on-surface outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
-            />
+            {/* Le composant impose lui-même type="password" et porte la bascule. */}
+            {field.type === 'password' ? (
+              <ChampMotDePasse
+                required={field.required}
+                minLength={field.minLength}
+                autoComplete={field.autoComplete}
+                value={form[field.name]}
+                onChange={(e) => update(field.name, e.target.value)}
+                className="w-full bg-surface-container-low border border-outline-variant rounded-xl px-4 py-3 font-body-md text-body-md text-on-surface outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+              />
+            ) : (
+              <input
+                type={field.type}
+                required={field.required}
+                minLength={field.minLength}
+                autoComplete={field.autoComplete}
+                value={form[field.name]}
+                onChange={(e) => update(field.name, e.target.value)}
+                className="bg-surface-container-low border border-outline-variant rounded-xl px-4 py-3 font-body-md text-body-md text-on-surface outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+              />
+            )}
           </label>
         ))}
 

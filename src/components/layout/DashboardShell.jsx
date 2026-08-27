@@ -134,7 +134,16 @@ export default function DashboardShell({
             </div>
           </header>
 
-          <main className="flex-1 overflow-y-auto md:rounded-b-2xl px-4 sm:px-6 md:px-8 py-6 md:py-8 pb-28 md:pb-8 animate-fade-in">
+          {/* The FAB is `fixed`, so it floats over this scroll area rather than
+              taking part in the layout. Without extra bottom padding the last
+              element on the page — usually a submit button — sits underneath it
+              and cannot be seen or clicked. The FAB occupies 152px of the bottom
+              edge (`bottom-24` = 96px, plus `h-14` = 56px), so pb-40 clears it. */}
+          <main
+            className={`flex-1 overflow-y-auto md:rounded-b-2xl px-4 sm:px-6 md:px-8 py-6 md:py-8 animate-fade-in ${
+              fab ? 'pb-40' : 'pb-28 md:pb-8'
+            }`}
+          >
             <div className="max-w-7xl mx-auto w-full flex flex-col gap-6">{children}</div>
           </main>
         </div>

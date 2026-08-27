@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import ChampMotDePasse from '../../components/ui/ChampMotDePasse'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '../../store/useAuthStore'
@@ -75,12 +76,11 @@ export default function ReinitialiserMotDePasse() {
               <label className="block font-label-md text-label-md text-on-surface mb-2" htmlFor="password">
                 {t('auth.resetPassword.newPassword')}
               </label>
-              <input
+              <ChampMotDePasse
                 className="block w-full px-3 py-3 border border-outline-variant rounded-lg bg-surface-container-lowest text-on-surface focus:ring-2 focus:ring-primary focus:border-primary transition-colors font-body-md h-12"
                 id="password"
                 minLength={8}
                 required
-                type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
@@ -89,12 +89,11 @@ export default function ReinitialiserMotDePasse() {
               <label className="block font-label-md text-label-md text-on-surface mb-2" htmlFor="confirmPassword">
                 {t('common.confirmPassword')}
               </label>
-              <input
+              <ChampMotDePasse
                 className="block w-full px-3 py-3 border border-outline-variant rounded-lg bg-surface-container-lowest text-on-surface focus:ring-2 focus:ring-primary focus:border-primary transition-colors font-body-md h-12"
                 id="confirmPassword"
                 minLength={8}
                 required
-                type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
               />

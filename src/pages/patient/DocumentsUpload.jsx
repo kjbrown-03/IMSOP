@@ -27,7 +27,7 @@ export default function DocumentsUpload() {
 
   const dossierId = location.state?.dossierId
   const [category, setCategory] = useState('ANALYSE_BIOLOGIQUE')
-  const [file, setFile] = useState(null)
+  const [files, setFiles] = useState([])
   const [documents, setDocuments] = useState([])
   const [uploading, setUploading] = useState(false)
   const [submitting, setSubmitting] = useState(false)
@@ -50,27 +50,34 @@ export default function DocumentsUpload() {
     }
   }, [dossierId, navigate])
 
+  function removeFile(index) {
+    setFiles((prev) => prev.filter((_, i) => i !== index))
+  }
+
   async function handleUpload(e) {
     e.preventDefault()
-    if (!file) {
+    if (files.length === 0) {
       setError(t('patient.documents.selectFileFirst'))
       return
     }
     setError(null)
     setUploading(true)
-    try {
-      const formData = new FormData()
-      formData.append('file', file)
-      formData.append('category', category)
-      const { data } = await api.post(`/dossiers/${dossierId}/documents`, formData)
-      setDocuments((prev) => [data, ...prev])
-      setFile(null)
-      if (fileInputRef.current) fileInputRef.current.value = ''
-    } catch (err) {
-      setError(err.response?.data?.message || t('errors.createCaseFailed'))
-    } finally {
-      setUploading(false)
+    let failedCount = 0
+    for (const file of files) {
+      try {
+        const formData = new FormData()
+        formData.append('file', file)
+        formData.append('category', category)
+        const { data } = await api.post(`/dossiers/${dossierId}/documents`, formData)
+        setDocuments((prev) => [data, ...prev])
+      } catch {
+        failedCount += 1
+      }
     }
+    setFiles([])
+    if (fileInputRef.current) fileInputRef.current.value = ''
+    if (failedCount > 0) setError(t('patient.documents.someFilesFailed', { count: failedCount }))
+    setUploading(false)
   }
 
   async function handleContinue() {
@@ -194,25 +201,46 @@ export default function DocumentsUpload() {
                     <input
                       ref={fileInputRef}
                       type="file"
+                      multiple
                       accept={ACCEPTED}
                       className="hidden"
-                      onChange={(e) => setFile(e.target.files?.[0] || null)}
+                      onChange={(e) => setFiles((prev) => [...prev, ...Array.from(e.target.files || [])])}
                     />
                   </label>
                   <span className="text-sm text-slate-500 dark:text-slate-400 truncate">
-                    {file ? file.name : t('patient.documents.noFileChosen')}
+                    {files.length > 0 ? t('patient.documents.filesSelected', { count: files.length }) : t('patient.documents.noFileChosen')}
                   </span>
                 </div>
+                {files.length > 0 && (
+                  <ul className="flex flex-col gap-2">
+                    {files.map((f, index) => (
+                      <li
+                        key={`${f.name}-${f.size}-${index}`}
+                        className="flex items-center justify-between gap-2 bg-slate-50 dark:bg-neutral-800 border border-slate-200/60 dark:border-neutral-700 rounded-lg px-3 py-2"
+                      >
+                        <span className="text-sm text-slate-700 dark:text-slate-300 truncate">{f.name}</span>
+                        <button
+                          type="button"
+                          onClick={() => removeFile(index)}
+                          aria-label={t('patient.documents.removeFile')}
+                          className="text-slate-400 dark:text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 transition-colors shrink-0"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
                 <p className="text-xs text-slate-400 dark:text-slate-500">{t('patient.documents.acceptedFormats')}</p>
               </div>
 
               <button
                 type="submit"
-                disabled={uploading || !file}
+                disabled={uploading || files.length === 0}
                 className="self-start mt-2 bg-primary-600 hover:bg-primary-700 text-white font-bold text-sm px-5 py-3 rounded-xl shadow-md shadow-primary-900/10 transition-all flex items-center gap-2 disabled:opacity-60"
               >
                 {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <UploadCloud className="w-4 h-4" />}
-                {uploading ? t('patient.documents.uploading') : t('patient.documents.uploadButton')}
+                {uploading ? t('patient.documents.uploading') : t('patient.documents.uploadButton', { count: files.length || 1 })}
               </button>
             </form>
           </div>

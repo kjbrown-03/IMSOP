@@ -85,6 +85,27 @@ export const useNotificationStore = create((set, get) => ({
     }
   },
 
+  // Opening a conversation reads whatever notified the user about it, even
+  // when they got there without clicking the bell (a nav link, a direct
+  // visit) - so those entries clear here too, not just on explicit clicks.
+  async markReadByDossier(dossierId) {
+    const now = new Date().toISOString()
+    const hadUnread = get().items.some((n) => n.dossierId === dossierId && !n.readAt)
+    if (!hadUnread) return
+
+    set((state) => ({
+      items: state.items.map((n) => (n.dossierId === dossierId && !n.readAt ? { ...n, readAt: now } : n)),
+      unreadCount: Math.max(0, state.unreadCount - state.items.filter((n) => n.dossierId === dossierId && !n.readAt).length),
+    }))
+
+    try {
+      const { data } = await api.post(`/notifications/dossier/${dossierId}/read`)
+      set({ unreadCount: data.unreadCount })
+    } catch {
+      get().fetchNotifications({ silent: true })
+    }
+  },
+
   reset() {
     set({ items: [], unreadCount: 0, loading: false, error: null })
   },

@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
+import ChampMotDePasse from '../../components/ui/ChampMotDePasse'
 import { useNavigate } from 'react-router-dom'
 import { Trans, useTranslation } from 'react-i18next'
 import RegistrationStepper from '../../components/auth/RegistrationStepper'
@@ -8,7 +9,6 @@ export default function InscriptionPatientSecurite() {
   const navigate = useNavigate()
   const { t } = useTranslation()
   const { password, confirmPassword, twoFactorLater, setField } = useRegistrationStore()
-  const [showPassword, setShowPassword] = useState(false)
 
   const checks = useMemo(
     () => ({
@@ -76,24 +76,14 @@ export default function InscriptionPatientSecurite() {
                 <label className="font-label-md text-label-md text-[var(--color-text-main)]" htmlFor="password">
                   {t('auth.registerSecurity.password')}
                 </label>
-                <div className="relative">
-                  <input
-                    className="w-full h-12 px-4 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg font-body-md text-body-md text-[var(--color-text-main)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent transition-colors placeholder:text-slate-400 dark:placeholder:text-slate-500"
-                    id="password"
-                    name="password"
-                    placeholder="••••••••"
-                    type={showPassword ? 'text' : 'password'}
-                    value={password}
-                    onChange={(e) => setField('password', e.target.value)}
-                  />
-                  <button
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors"
-                    type="button"
-                    onClick={() => setShowPassword((v) => !v)}
-                  >
-                    <span className="material-symbols-outlined">{showPassword ? 'visibility' : 'visibility_off'}</span>
-                  </button>
-                </div>
+                <ChampMotDePasse
+                  className="w-full h-12 px-4 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg font-body-md text-body-md text-[var(--color-text-main)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent transition-colors placeholder:text-slate-400 dark:placeholder:text-slate-500"
+                  id="password"
+                  name="password"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setField('password', e.target.value)}
+                />
                 <ul className="mt-2 space-y-1">
                   <li
                     className={`flex items-center gap-2 font-label-sm text-label-sm ${
@@ -141,12 +131,11 @@ export default function InscriptionPatientSecurite() {
                 <label className="font-label-md text-label-md text-[var(--color-text-main)]" htmlFor="confirm_password">
                   {t('auth.registerSecurity.confirmPassword')}
                 </label>
-                <input
+                <ChampMotDePasse
                   className="w-full h-12 px-4 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg font-body-md text-body-md text-[var(--color-text-main)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent transition-colors placeholder:text-slate-400 dark:placeholder:text-slate-500"
                   id="confirm_password"
                   name="confirm_password"
                   placeholder="••••••••"
-                  type="password"
                   value={confirmPassword}
                   onChange={(e) => setField('confirmPassword', e.target.value)}
                 />

@@ -9,6 +9,7 @@ router.use(authenticate)
 
 router.get('/', validate(schema.list), ctrl.listNotifications)
 router.post('/read-all', ctrl.markAllRead)
+router.post('/dossier/:dossierId/read', validate(schema.dossierIdParam), ctrl.markReadByDossier)
 router.post('/:id/read', validate(schema.idParam), ctrl.markRead)
 
 module.exports = router

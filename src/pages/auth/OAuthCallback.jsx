@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Loader2 } from 'lucide-react';
 import { api } from '../../lib/api';
 import { useAuthStore } from '../../store/useAuthStore';
@@ -10,6 +11,7 @@ import { ROLE_REDIRECTS } from '../../constants/roleRedirects';
 // the query string - hashes never leave the browser (no server logs, no
 // Referer header to a third party), which query params don't guarantee.
 export default function OAuthCallback() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [error, setError] = useState(null);
   const ran = useRef(false);
@@ -37,18 +39,19 @@ export default function OAuthCallback() {
     const refreshToken = params.get('refreshToken');
 
     if (!accessToken || !refreshToken) {
-      setError("La connexion a échoué : aucune session reçue.");
+      setError(t('auth.oauth.callbackNoSession'));
       return;
     }
 
     async function finish() {
       try {
-        localStorage.setItem('imsop_access_token', accessToken);
-        const { data: user } = await api.get('/auth/me');
+        const { data: user } = await api.get('/auth/me', {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        });
         useAuthStore.getState()._persistSession({ accessToken, refreshToken, user });
         navigate(ROLE_REDIRECTS[user.role] || '/', { replace: true });
       } catch {
-        setError('La connexion a échoué. Veuillez réessayer.');
+        setError(t('auth.oauth.callbackFailed'));
       }
     }
     finish();
@@ -63,13 +66,13 @@ export default function OAuthCallback() {
             onClick={() => navigate('/connexion/patient', { replace: true })}
             className="text-sm font-bold text-[var(--color-text-primary)] hover:underline"
           >
-            Retour à la connexion
+            {t('auth.oauth.backToLogin')}
           </button>
         </>
       ) : (
         <>
           <Loader2 className="w-8 h-8 text-[var(--color-primary)] animate-spin" />
-          <p className="text-sm text-[var(--color-text-secondary)]">Connexion en cours...</p>
+          <p className="text-sm text-[var(--color-text-secondary)]">{t('auth.oauth.connecting')}</p>
         </>
       )}
     </div>

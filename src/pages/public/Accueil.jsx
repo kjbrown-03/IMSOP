@@ -1,163 +1,454 @@
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { useTranslation } from 'react-i18next'
+import { Trans, useTranslation } from 'react-i18next'
+import Marquee from '../../components/ui/Marquee'
 import Navbar from '../../components/layout/Navbar'
+import Logo from '../../components/ui/Logo'
+import { api } from '../../lib/api'
+import {
+  FolderHeart,
+  HeartPulse,
+  Shield,
+  ShieldCheck,
+  Users,
+  Globe2,
+  Lock,
+  Stethoscope,
+  Brain,
+  Bone,
+  ScanLine,
+  Microscope,
+  Quote,
+  Clock,
+  ArrowRight,
+  ArrowUpRight,
+} from 'lucide-react'
 
-const heroImage = '/hero-illustration.png'
-
-const AVATARS = [
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuD-s6lR-Dp7PeH8eaqsm5oQ7DBornFlmYwW4hLPTHeYKvq0HPW0oWPyN-r7HaTBTQRsVtYVFwYSiar22AtxMV9rbzWk1oQfYx5rcR4qQ_O3R71i5ShTTC5srY5z8j3Jr0jix_yEVTgZEncEUZENMkVx3MwqQa0tU45zKI5T1BSyuiLnD__7PQhey3BSgBxoLYl3GuPGYMmWmKatL0ZIs3hs9bJFI9koJs50IqbOOaIfXiAnBFel4XjX',
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuAG2CEHJe1UWpT9r0yJIJ0f7clk7jU6FvPz61rSEI9xXCAJC2l1eskGcix_om1Km6Mn-oa3AHAupsEkrY136Ki61YQszvWnGb5EVQQQ53GvmWNe51kmg5p05bgEzxtjPPEMy7DNPbB90vSi3iJk8u9kOtzk5Mjo_8y4RBqALbJkYTgH73yc8FJ7u89pXvsCi_PAsB1CAmiH-cWnubV_w4Px28UBPdwM9hm4mtRGKjk7sDFsc1b2YeNZ',
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuC9wkkCxrEV1NOqXuTTANOCbnBr1irLt3NuieDxMj6fwraEqIbzS1cX9fCu-zZfh4FccwhMd2Bc9Yg4_MGJoLfR7C7X3VvIR2W3oxVDoEIDaSLynlsjDprAAJqM3Jtj77ochfN0KX2IhK__S1a8ZSMpZUVNE7gYz-RG5X38qdybPSFyDSjrrwGWVejRTk1hSnFFPBcCU_I1tG1Lnx18HTVhPwecLJAFM3F-LOBo3Yu0OrIO2-o77DnI',
+const SPECIALTIES = [
+  { icon: HeartPulse, nameKey: 'specOncology', subKey: 'specOncologySub' },
+  { icon: Stethoscope, nameKey: 'specCardiology', subKey: 'specCardiologySub' },
+  { icon: Brain, nameKey: 'specNeurology', subKey: 'specNeurologySub' },
+  { icon: Bone, nameKey: 'specOrthopedics', subKey: 'specOrthopedicsSub' },
+  { icon: ScanLine, nameKey: 'specRadiology', subKey: 'specRadiologySub' },
+  { icon: Microscope, nameKey: 'specPathology', subKey: 'specPathologySub' },
 ]
 
-function Badge({ icon, text }) {
+function TrustBadge({ icon: Icon, children }) {
   return (
-    <div className="flex items-center gap-2">
-      <div className="w-10 h-10 rounded-full border border-[var(--color-border)] flex items-center justify-center text-[var(--color-text-secondary)] bg-[var(--color-surface)]">
-        <span className="material-symbols-outlined text-[20px]">{icon}</span>
-      </div>
-      <span className="font-bold text-[var(--color-text-primary)] text-sm">{text}</span>
-    </div>
+    <span className="flex items-center gap-2.5 font-semibold text-[12.5px] tracking-wide text-[#DCE7EA]">
+      <Icon className="w-[18px] h-[18px] text-[#8FC4BA]" strokeWidth={2} />
+      {children}
+    </span>
   )
 }
 
-export default function Accueil() {
-  const { t } = useTranslation()
+// Les témoignages sont décrits ici plutôt qu'écrits en dur dans le rendu : le
+// jour où ils viendront de l'API (avis déposés par les patients après réception
+// de leur rapport), seule la source du tableau changera, pas le reste.
+// Nombre de témoignages réels, modérés et publiés, à partir duquel la section
+// bascule sur du contenu authentique. En dessous, on affiche des SITUATIONS
+// TYPES, signalées comme telles : une plateforme médicale ne peut pas présenter
+// des paroles inventées comme de vrais retours de patients (CDC §7 :
+// « Témoignages lorsque légalement autorisés »).
+export const SEUIL_TEMOIGNAGES_REELS = 5
 
-  const steps = [
-    { n: 1, title: t('public.home.step1Title'), text: t('public.home.step1Text') },
-    { n: 2, title: t('public.home.step2Title'), text: t('public.home.step2Text') },
-    { n: 3, title: t('public.home.step3Title'), text: t('public.home.step3Text') },
-  ]
+const EXEMPLES = [
+  { cle: 'ex1', citation: 'testimonial1Quote', meta: 'testimonial1Meta', auteur: 'testimonialExampleLabel', pastille: 'bg-[#E4DACE] dark:bg-[#22404C] group-hover:bg-white/20', variante: 'clair' },
+  { cle: 'ex2', citation: 'testimonial2Quote', meta: 'testimonial2Meta', auteur: 'testimonialExampleLabel', pastille: 'bg-[#D3DFDC] dark:bg-[#22404C] group-hover:bg-white/20', variante: 'clair' },
+  { cle: 'ex3', citation: 'testimonial3Quote', meta: 'testimonial3Meta', auteur: 'testimonialExampleLabel', pastille: 'bg-white/15 group-hover:bg-white/25', variante: 'sombre' },
+  { cle: 'ex4', citation: 'testimonial4Quote', meta: 'testimonial4Meta', auteur: 'testimonialExampleLabel', pastille: 'bg-[#E4DACE] dark:bg-[#22404C] group-hover:bg-white/20', variante: 'clair' },
+  { cle: 'ex5', citation: 'testimonial5Quote', meta: 'testimonial5Meta', auteur: 'testimonialExampleLabel', pastille: 'bg-white/15 group-hover:bg-white/25', variante: 'sombre' },
+]
 
-  const specialites = [
-    { icon: 'oncology', label: t('public.home.specOncology') },
-    { icon: 'cardiology', label: t('public.home.specCardiology') },
-    { icon: 'neurology', label: t('public.home.specNeurology') },
-    { icon: 'orthopedics', label: t('public.home.specOrthopedics') },
-    { icon: 'radiology', label: t('public.home.specRadiology') },
-    { icon: 'biotech', label: t('public.home.specPathology') },
-  ]
+// Deux habillages, une seule structure. Au survol, la carte claire bascule sur
+// le bleu profond de la charte et la carte sombre s'éclaircit vers le vert
+// d'eau : dans les deux cas le contraste du texte est recalculé avec elle.
+function TestimonialCard({ temoignage, t }) {
+  const sombre = temoignage.variante === 'sombre'
+  const citation = temoignage.raw ? temoignage.citation : t(`public.home.${temoignage.citation}`)
+  const auteur = temoignage.raw ? temoignage.auteur : t(`public.home.${temoignage.auteur}`)
+  const meta = temoignage.raw ? temoignage.meta : t(`public.home.${temoignage.meta}`)
 
   return (
-    <div className="bg-[var(--color-bg)] text-[var(--color-text-main)] antialiased font-sans overflow-x-hidden transition-colors duration-300">
+    <article
+      className={[
+        'group w-[300px] sm:w-[340px] md:w-[360px] rounded-[20px] p-7 flex flex-col gap-5 min-h-[260px]',
+        'transition-all duration-300 ease-out cursor-default',
+        'hover:-translate-y-1.5 hover:shadow-xl hover:shadow-[#12303F]/15',
+        sombre
+          ? 'bg-[#163A52] hover:bg-[#2C6E63]'
+          : 'bg-white dark:bg-[#132530] border border-[#EBE3D9] dark:border-[#22404C] hover:bg-[#163A52] hover:border-[#163A52]',
+      ].join(' ')}
+    >
+      <Quote
+        className={[
+          'w-7 h-7 transition-colors duration-300',
+          sombre ? 'text-[rgba(143,196,186,0.7)] group-hover:text-white/80' : 'text-[#C9BBA6] dark:text-[#3C4C55] group-hover:text-[#8FC4BA]',
+        ].join(' ')}
+      />
+      <p
+        className={[
+          'm-0 text-lg leading-relaxed transition-colors duration-300',
+          sombre ? 'text-[#EAF1F0]' : 'text-[#22333C] dark:text-[#E7EEF0] group-hover:text-[#EAF1F0]',
+        ].join(' ')}
+        style={{ fontFamily: 'Newsreader, Georgia, serif' }}
+      >
+        {citation}
+      </p>
+      <div className="mt-auto flex items-center gap-3">
+        <span className={`w-10 h-10 rounded-full shrink-0 transition-colors duration-300 ${temoignage.pastille}`} />
+        <span
+          className={[
+            'text-sm font-semibold transition-colors duration-300',
+            sombre ? 'text-white' : 'text-[#16262F] dark:text-white group-hover:text-white',
+          ].join(' ')}
+        >
+          {auteur}
+          <br />
+          <span
+            className={[
+              'font-normal transition-colors duration-300',
+              sombre ? 'text-[#9FB6BD]' : 'text-[#7A8890] dark:text-[#93A7AF] group-hover:text-[#9FB6BD]',
+            ].join(' ')}
+          >
+            {meta}
+          </span>
+        </span>
+      </div>
+    </article>
+  )
+}
+
+const PASTILLES = [
+  'bg-[#E4DACE] dark:bg-[#22404C] group-hover:bg-white/20',
+  'bg-[#D3DFDC] dark:bg-[#22404C] group-hover:bg-white/20',
+]
+
+export default function Accueil() {
+  const { t } = useTranslation()
+  const [temoignagesApi, setTemoignagesApi] = useState(null)
+
+  useEffect(() => {
+    let cancelled = false
+    api
+      .get('/temoignages/publics')
+      .then(({ data }) => {
+        if (!cancelled) setTemoignagesApi(data)
+      })
+      .catch(() => {
+        if (!cancelled) setTemoignagesApi([])
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  // Tant que le seuil n'est pas atteint, la section reste en mode « situations
+  // types » : mélanger deux ou trois vrais témoignages avec des exemples
+  // inventés rendrait les uns indiscernables des autres.
+  const assezDeTemoignagesReels = (temoignagesApi?.length ?? 0) >= SEUIL_TEMOIGNAGES_REELS
+
+  const temoignagesAffiches =
+    assezDeTemoignagesReels
+      ? temoignagesApi.map((tem, idx) => ({
+          cle: tem.id,
+          raw: true,
+          citation: tem.texte,
+          auteur: tem.user?.fullName || t('public.home.testimonialAnonymous'),
+          meta:
+            tem.roleAuteur === 'MEDECIN_LOCAL'
+              ? t('public.home.testimonialRoleDoctor')
+              : t('public.home.testimonialRolePatient'),
+          pastille: PASTILLES[idx % PASTILLES.length],
+          variante: idx % 3 === 2 ? 'sombre' : 'clair',
+        }))
+      : EXEMPLES
+
+  return (
+    <div
+      className="bg-[#FBF7F2] dark:bg-[#0F1D26] text-[#16262F] dark:text-[#E7EEF0] antialiased overflow-x-hidden transition-colors duration-300"
+      style={{ fontFamily: "Figtree, system-ui, sans-serif" }}
+    >
       <Navbar />
 
-      <main className="min-h-screen pb-28 md:pb-0">
-        <section className="relative w-full pt-28 pb-16 px-4 md:px-8 max-w-[1440px] mx-auto overflow-hidden min-h-[700px] flex flex-col justify-center">
-          {/* Background shapes */}
-          <div className="absolute top-0 left-0 w-full h-24 bg-[var(--color-surface-container-highest)] -z-10 transition-colors duration-300" />
-          <svg className="absolute top-12 left-0 w-full h-[800px] -z-10 object-cover opacity-100 transition-colors duration-300" preserveAspectRatio="none" viewBox="0 0 1440 800" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M0 0H1440V100C1440 100 1100 200 800 350C500 500 100 650 0 800V0Z" className="fill-[var(--color-surface-container-highest)]"/>
-          </svg>
+      <main className="pt-16">
+        {/* ---------- Hero ---------- */}
+        <section
+          className="relative px-4 md:px-10 pt-24 pb-16 md:pt-28 md:pb-20 overflow-hidden bg-cover bg-center"
+          style={{ backgroundImage: "url(/hero-imsop.jpg)" }}
+        >
+          <div
+            className="absolute inset-0 dark:hidden"
+            style={{
+              background:
+                'linear-gradient(100deg, rgba(251,247,242,.97) 0%, rgba(251,247,242,.93) 34%, rgba(251,247,242,.55) 56%, rgba(18,48,63,.18) 100%)',
+            }}
+          />
+          <div
+            className="absolute inset-0 hidden dark:block"
+            style={{
+              background:
+                'linear-gradient(100deg, rgba(15,29,38,.97) 0%, rgba(15,29,38,.93) 34%, rgba(15,29,38,.6) 56%, rgba(15,29,38,.25) 100%)',
+            }}
+          />
 
-          <div className="max-w-[1200px] mx-auto w-full flex flex-col-reverse md:flex-row items-center gap-12 relative z-10">
-            {/* Left side: Illustration */}
-            <div className="w-full md:w-1/2 relative flex justify-center mt-12 md:mt-0">
-               <img
-                 src={heroImage}
-                 alt="Patiente en téléconsultation avec un spécialiste"
-                 className="w-full max-w-[440px] drop-shadow-2xl rounded-3xl"
-                 style={{ imageRendering: 'auto' }}
-               />
+          <div className="relative max-w-[1200px] mx-auto">
+            <div className="max-w-[620px] flex flex-col items-start gap-6">
+              <h1
+                className="m-0 text-[42px] md:text-[62px] leading-[1.06] tracking-[-0.02em] text-[#12303F] dark:text-[#F4F8F8]"
+                style={{ fontFamily: "Newsreader, Georgia, serif" }}
+              >
+                {t('public.home.heroTitlePart1')}{' '}
+                <span className="italic text-[#3E8C81] dark:text-[#8FC4BA]">{t('public.home.heroTitlePart2')}</span>
+              </h1>
+
+              <Link
+                to="/inscription"
+                className="inline-flex items-center gap-2 bg-[#163A52] dark:bg-[#8FC4BA] text-white dark:text-[#0F2C38] rounded-full px-7 py-4 font-bold text-sm tracking-wide shadow-[0_10px_24px_-10px_rgba(22,58,82,0.6)] hover:opacity-90 transition-opacity"
+              >
+                {t('public.home.heroPrimaryCta')}
+                <ArrowRight className="w-[18px] h-[18px]" />
+              </Link>
+
+              <div className="flex items-center gap-3.5 mt-2">
+                <div className="flex">
+                  <span className="w-9 h-9 rounded-full bg-[#D8CFC2] dark:bg-[#2A4854] border-2 border-[#FBF7F2] dark:border-[#0F1D26]" />
+                  <span className="w-9 h-9 rounded-full bg-[#C4D5D1] dark:bg-[#22404C] border-2 border-[#FBF7F2] dark:border-[#0F1D26] -ml-3" />
+                  <span className="w-9 h-9 rounded-full bg-[#C7CFD8] dark:bg-[#1B3340] border-2 border-[#FBF7F2] dark:border-[#0F1D26] -ml-3" />
+                </div>
+                <span className="text-[13.5px] leading-snug text-[#6B7A82] dark:text-[#9FB6BD]">
+                  <Trans i18nKey="public.home.heroNetworkCaption" />
+                </span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ---------- Trust bar ---------- */}
+        <div className="bg-[#163A52] py-5">
+          <Marquee duree={38} espacement={56} className="px-6 md:px-10">
+            <TrustBadge icon={ShieldCheck}>{t('public.home.badgeIso')}</TrustBadge>
+            <TrustBadge icon={Shield}>{t('public.home.badgeGdpr')}</TrustBadge>
+            <TrustBadge icon={Users}>{t('public.home.badgeDoctors')}</TrustBadge>
+            <TrustBadge icon={Globe2}>{t('public.home.badgeTrust')}</TrustBadge>
+            <TrustBadge icon={Lock}>{t('public.home.badgeSecure')}</TrustBadge>
+          </Marquee>
+        </div>
+
+        {/* ---------- How it works ---------- */}
+        <section className="px-4 md:px-10 py-16 md:py-20" id="fonctionnement">
+          <div className="max-w-[1200px] mx-auto">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-10">
+              <div className="flex flex-col gap-3 max-w-[640px]">
+                <span className="font-semibold text-xs tracking-[0.16em] uppercase text-[#3E8C81] dark:text-[#8FC4BA]">
+                  {t('public.home.processEyebrow')}
+                </span>
+                <h2
+                  className="m-0 text-[32px] md:text-[42px] leading-[1.12] tracking-[-0.015em] text-[#12303F] dark:text-[#F4F8F8]"
+                  style={{ fontFamily: "Newsreader, Georgia, serif" }}
+                >
+                  {t('public.home.processTitle')}
+                </h2>
+                <p className="m-0 text-[16.5px] leading-relaxed text-[#5E6E76] dark:text-[#93A7AF]">
+                  {t('public.home.processSub')}
+                </p>
+              </div>
             </div>
 
-            {/* Right side: Text */}
-            <div className="w-full md:w-1/2 flex flex-col items-start gap-6 pt-12 md:pt-0">
-              <h1 className="font-display font-extrabold text-5xl md:text-6xl text-[var(--color-heading)] leading-[1.1] tracking-tight uppercase">
-                {t('public.home.heroTitle')}
-              </h1>
-              <p className="text-xl text-[var(--color-text-secondary)] max-w-[480px]">
-                {t('public.home.heroSub')}
-              </p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+              {/* Phase 1 */}
+              <div className="bg-white dark:bg-[#132530] border border-[#EBE3D9] dark:border-[#22404C] rounded-[20px] p-7 flex flex-col gap-5">
+                <div className="flex items-center gap-3">
+                  <span className="w-[38px] h-[38px] rounded-xl bg-[#EDE4D7] dark:bg-[rgba(143,196,186,0.14)] text-[#8A6E33] dark:text-[#8FC4BA] flex items-center justify-center shrink-0">
+                    <FolderHeart className="w-[21px] h-[21px]" />
+                  </span>
+                  <span className="font-semibold text-sm tracking-[0.03em] text-[#12303F] dark:text-[#F2F6F5]">
+                    {t('public.home.phase1Label')}
+                  </span>
+                </div>
+                <div className="flex flex-col gap-2">
+                  <b className="text-[15px] text-[#16262F] dark:text-white">{t('public.home.step1Title')}</b>
+                  <p className="m-0 text-[14.5px] leading-relaxed text-[#5E6E76] dark:text-[#B7C9CF]">
+                    {t('public.home.step1Text')}
+                  </p>
+                </div>
+              </div>
 
-              <div className="flex flex-col sm:flex-row items-center gap-6 mt-4 w-full sm:w-auto">
-                <Link to="/inscription" className="bg-[var(--color-primary)] text-[var(--color-on-primary)] px-8 py-4 rounded-full font-bold shadow-xl hover:opacity-90 transition-all w-full sm:w-auto text-center whitespace-nowrap">
-                  {t('public.home.heroPrimaryCta')}
-                </Link>
-                <div className="flex items-center gap-2">
-                  <span className="text-[var(--color-text-secondary)] font-medium">{t('nav.or')}</span>
-                  <Link to="/#specialites" className="text-[var(--color-secondary)] font-bold underline decoration-2 underline-offset-4 hover:opacity-80 transition-opacity whitespace-nowrap">
-                    {t('public.home.heroSecondaryCta')}
-                  </Link>
+              {/* Phase 2 — highlighted */}
+              <div className="bg-[#163A52] rounded-[20px] p-7 flex flex-col gap-5">
+                <div className="flex items-center gap-3">
+                  <span className="w-[38px] h-[38px] rounded-xl bg-[rgba(143,196,186,0.18)] text-[#8FC4BA] flex items-center justify-center shrink-0">
+                    <Stethoscope className="w-[21px] h-[21px]" />
+                  </span>
+                  <span className="font-semibold text-sm tracking-[0.03em] text-[#F2F6F5]">
+                    {t('public.home.phase2Label')}
+                  </span>
+                </div>
+                <div className="flex flex-col gap-2">
+                  <b className="text-[15px] text-white">{t('public.home.step2Title')}</b>
+                  <p className="m-0 text-[14.5px] leading-relaxed text-[#B7C9CF]">{t('public.home.step2Text')}</p>
+                </div>
+                <div
+                  className="mt-auto border-t border-white/10 pt-4 text-[14.5px] leading-relaxed italic text-[#C9DBD7]"
+                  style={{ fontFamily: "Newsreader, Georgia, serif" }}
+                >
+                  « {t('public.home.step2Quote')} »
+                </div>
+              </div>
+
+              {/* Phase 3 */}
+              <div className="bg-white dark:bg-[#132530] border border-[#EBE3D9] dark:border-[#22404C] rounded-[20px] p-7 flex flex-col gap-5">
+                <div className="flex items-center gap-3">
+                  <span className="w-[38px] h-[38px] rounded-xl bg-[#EAF1EE] dark:bg-[rgba(47,110,101,0.18)] text-[#2F6E65] dark:text-[#8FC4BA] flex items-center justify-center shrink-0">
+                    <ArrowUpRight className="w-[21px] h-[21px]" />
+                  </span>
+                  <span className="font-semibold text-sm tracking-[0.03em] text-[#12303F] dark:text-[#F2F6F5]">
+                    {t('public.home.phase3Label')}
+                  </span>
+                </div>
+                <div className="flex flex-col gap-2">
+                  <b className="text-[15px] text-[#16262F] dark:text-white">{t('public.home.step3Title')}</b>
+                  <p className="m-0 text-[14.5px] leading-relaxed text-[#5E6E76] dark:text-[#B7C9CF]">
+                    {t('public.home.step3Text')}
+                  </p>
+                </div>
+                <div className="mt-auto bg-[#F6F0E7] dark:bg-[rgba(138,110,51,0.14)] rounded-2xl p-4 flex items-center gap-3">
+                  <Clock className="w-[22px] h-[22px] text-[#8A6E33] dark:text-[#C9A85C] shrink-0" />
+                  <span className="text-[13.5px] leading-snug text-[#5E6E76] dark:text-[#B7C9CF]">
+                    <Trans i18nKey="public.home.delayNote" components={{ bold: <b className="text-[#16262F] dark:text-white" /> }} />
+                  </span>
                 </div>
               </div>
             </div>
           </div>
-
-          {/* Badges */}
-          <div className="max-w-[1200px] mx-auto w-full mt-24 flex flex-wrap justify-center md:justify-between gap-6 border-t border-[var(--color-border)] pt-10 px-4">
-            <Badge icon="verified" text={t('public.home.badgeIso')} />
-            <Badge icon="gpp_good" text={t('public.home.badgeGdpr')} />
-            <Badge icon="group" text={t('public.home.badgeDoctors')} />
-            <Badge icon="public" text={t('public.home.badgeTrust')} />
-            <Badge icon="lock" text={t('public.home.badgeSecure')} />
-          </div>
         </section>
 
-        <section
-          className="w-full py-stack-lg px-margin-mobile md:px-margin-desktop bg-[var(--color-muted-surface)] border-y border-[var(--color-border)] transition-colors duration-300"
-          id="fonctionnement"
-        >
+        {/* ---------- Specialties ---------- */}
+        <section className="px-4 md:px-10 py-16 md:py-20 bg-[#F3EDE4] dark:bg-[#132530] border-y border-[#EBE3D9] dark:border-[#22404C]" id="specialites">
           <div className="max-w-[1200px] mx-auto">
-            <div className="text-center mb-stack-lg">
-              <span className="font-label-sm text-label-sm text-[var(--color-primary)] uppercase tracking-wider">
-                {t('public.home.processEyebrow')}
-              </span>
-              <h2 className="font-headline-md text-headline-md-mobile md:text-headline-md text-[var(--color-heading)] mt-2">
-                {t('public.home.processTitle')}
-              </h2>
-            </div>
-            <div className="relative">
-              <div className="hidden md:block absolute top-1/2 left-0 w-full h-1 bg-[var(--color-border)] -translate-y-1/2 z-0" />
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-stack-lg md:gap-gutter relative z-10">
-                {steps.map((step) => (
-                  <div
-                    key={step.n}
-                    className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-xl p-6 flex flex-col items-center text-center shadow-sm relative transition-colors duration-300"
-                  >
-                    <div className="w-12 h-12 bg-[var(--color-primary)] text-[var(--color-on-primary)] rounded-full flex items-center justify-center font-headline-md text-headline-md mb-4 shadow-md">
-                      {step.n}
-                    </div>
-                    <h3 className="font-label-md text-label-md text-[var(--color-text-primary)] mb-2">
-                      {step.title}
-                    </h3>
-                    <p className="font-body-md text-body-md text-[var(--color-text-secondary)]">{step.text}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section className="w-full py-stack-lg px-margin-mobile md:px-margin-desktop bg-[var(--color-bg)] transition-colors duration-300" id="specialites">
-          <div className="max-w-[1200px] mx-auto">
-            <div className="text-center mb-stack-lg">
-              <span className="font-label-sm text-label-sm text-[var(--color-primary)] uppercase tracking-wider">
+            <div className="flex flex-col items-center gap-3 text-center mb-10">
+              <span className="font-semibold text-xs tracking-[0.16em] uppercase text-[#3E8C81] dark:text-[#8FC4BA]">
                 {t('public.home.specialtiesEyebrow')}
               </span>
-              <h2 className="font-headline-md text-headline-md-mobile md:text-headline-md text-[var(--color-heading)] mt-2">
+              <h2
+                className="m-0 text-[32px] md:text-[42px] leading-[1.12] tracking-[-0.015em] text-[#12303F] dark:text-[#F4F8F8]"
+                style={{ fontFamily: "Newsreader, Georgia, serif" }}
+              >
                 {t('public.home.specialtiesTitle')}
               </h2>
-              <p className="font-body-md text-body-md text-[var(--color-text-secondary)] mt-2 max-w-2xl mx-auto">
+              <p className="m-0 max-w-[620px] text-[16.5px] leading-relaxed text-[#5E6E76] dark:text-[#93A7AF]">
                 {t('public.home.specialtiesSub')}
               </p>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              {specialites.map((s) => (
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              {SPECIALTIES.map(({ icon: Icon, nameKey, subKey }) => (
                 <div
-                  key={s.label}
-                  className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-xl p-6 flex flex-col items-center text-center gap-3 hover:shadow-md transition-all cursor-pointer"
+                  key={nameKey}
+                  className="bg-[#FBF7F2] dark:bg-[#0F1D26] border border-[#E4DACE] dark:border-[#22404C] rounded-2xl p-6 flex items-center gap-4"
                 >
-                  <div className="w-12 h-12 rounded-full bg-[var(--color-primary-container)] text-[var(--color-on-primary-container)] flex items-center justify-center">
-                    <span className="material-symbols-outlined">{s.icon}</span>
-                  </div>
-                  <span className="font-label-md text-label-md text-[var(--color-text-primary)]">{s.label}</span>
+                  <span className="w-[46px] h-[46px] shrink-0 rounded-[13px] bg-[#EAF1EE] dark:bg-[rgba(47,110,101,0.18)] text-[#2F6E65] dark:text-[#8FC4BA] flex items-center justify-center">
+                    <Icon className="w-6 h-6" />
+                  </span>
+                  <span className="flex flex-col gap-0.5">
+                    <b className="text-[17px] text-[#16262F] dark:text-white">{t(`public.home.${nameKey}`)}</b>
+                    <span className="text-[13.5px] text-[#7A8890] dark:text-[#93A7AF]">{t(`public.home.${subKey}`)}</span>
+                  </span>
                 </div>
               ))}
             </div>
+            <p className="mt-7 text-center text-sm text-[#7A8890] dark:text-[#93A7AF]">
+              {t('public.home.specialtiesFooterNote')}
+            </p>
           </div>
         </section>
+
+        {/* ---------- Testimonials ---------- */}
+        <section className="px-4 md:px-10 py-16 md:py-20">
+          <div className="max-w-[1200px] mx-auto">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-10">
+              <div className="flex flex-col gap-3 max-w-[600px]">
+                <span className="font-semibold text-xs tracking-[0.16em] uppercase text-[#3E8C81] dark:text-[#8FC4BA]">
+                  {t('public.home.testimonialsEyebrow')}
+                </span>
+                <h2
+                  className="m-0 text-[32px] md:text-[42px] leading-[1.12] tracking-[-0.015em] text-[#12303F] dark:text-[#F4F8F8]"
+                  style={{ fontFamily: "Newsreader, Georgia, serif" }}
+                >
+                  {t(assezDeTemoignagesReels ? 'public.home.testimonialsTitle' : 'public.home.testimonialsExamplesTitle')}
+                </h2>
+                {/* Mention explicite tant qu'aucun témoignage réel n'est publié :
+                    le visiteur doit savoir qu'il lit des situations types. */}
+                {!assezDeTemoignagesReels && (
+                  <p className="m-0 text-[15px] leading-relaxed text-[#5E6E76] dark:text-[#93A7AF]">
+                    {t('public.home.testimonialsExamplesNotice')}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            <Marquee duree={46} espacement={20}>
+              {temoignagesAffiches.map((temoignage) => (
+                <TestimonialCard key={temoignage.cle} temoignage={temoignage} t={t} />
+              ))}
+            </Marquee>
+          </div>
+        </section>
+
+        {/* ---------- Final CTA ---------- */}
+        <section className="px-4 md:px-10 py-14 bg-[#EDE4D7] dark:bg-[#132530] flex flex-col md:flex-row items-center justify-between gap-8">
+          <div className="flex flex-col gap-2.5 max-w-[640px] text-center md:text-left">
+            <h2 className="m-0 text-[28px] md:text-[36px] leading-[1.15] text-[#12303F] dark:text-[#F4F8F8]" style={{ fontFamily: "Newsreader, Georgia, serif" }}>
+              {t('public.home.finalCtaTitle')}
+            </h2>
+            <p className="m-0 text-[16.5px] leading-relaxed text-[#5E6E76] dark:text-[#93A7AF]">
+              {t('public.home.finalCtaText')}
+            </p>
+          </div>
+          <Link
+            to="/inscription"
+            className="shrink-0 inline-flex items-center gap-2 bg-[#163A52] dark:bg-[#8FC4BA] text-white dark:text-[#0F2C38] rounded-full px-8 py-[18px] font-bold text-sm tracking-wide shadow-[0_12px_26px_-12px_rgba(22,58,82,0.6)] hover:opacity-90 transition-opacity"
+          >
+            {t('public.home.heroPrimaryCta')}
+            <ArrowRight className="w-[19px] h-[19px]" />
+          </Link>
+        </section>
+
+        {/* ---------- Footer ---------- */}
+        <footer className="bg-[#12303F] text-[#B7C9CF] px-4 md:px-10 pt-14 pb-8">
+          <div className="max-w-[1200px] mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-[1.4fr_1fr_1fr_1fr] gap-10 pb-9 border-b border-white/10">
+              <div className="flex flex-col gap-3.5">
+                <Logo light size={38} />
+                <p className="m-0 max-w-[320px] text-sm leading-relaxed text-[#9FB6BD]">{t('public.footer.tagline')}</p>
+              </div>
+              <div className="flex flex-col gap-2.5">
+                <b className="text-xs tracking-[0.14em] uppercase text-white">{t('public.footer.colPatients')}</b>
+                <a href="/#fonctionnement" className="text-[#9FB6BD] text-sm hover:text-white transition-colors">{t('nav.howItWorks')}</a>
+                <a href="/#specialites" className="text-[#9FB6BD] text-sm hover:text-white transition-colors">{t('nav.specialties')}</a>
+                <span className="text-[#9FB6BD] text-sm">{t('public.footer.linkPricing')}</span>
+                <span className="text-[#9FB6BD] text-sm">{t('public.footer.linkFaq')}</span>
+              </div>
+              <div className="flex flex-col gap-2.5">
+                <b className="text-xs tracking-[0.14em] uppercase text-white">{t('public.footer.colProfessionals')}</b>
+                <Link to="/pour-medecins" className="text-[#9FB6BD] text-sm hover:text-white transition-colors">{t('public.footer.linkLocalDoctors')}</Link>
+                <span className="text-[#9FB6BD] text-sm">{t('public.footer.linkInternationalSpecialists')}</span>
+                <span className="text-[#9FB6BD] text-sm">{t('public.footer.linkInstitutions')}</span>
+              </div>
+              <div className="flex flex-col gap-2.5">
+                <b className="text-xs tracking-[0.14em] uppercase text-white">{t('public.footer.colTrust')}</b>
+                <span className="text-[#9FB6BD] text-sm">{t('public.footer.linkDataProtection')}</span>
+                <span className="text-[#9FB6BD] text-sm">{t('public.footer.linkConsent')}</span>
+                <span className="text-[#9FB6BD] text-sm">{t('public.footer.linkLegal')}</span>
+                <span className="text-[#9FB6BD] text-sm">{t('public.footer.linkContact')}</span>
+              </div>
+            </div>
+            <div className="pt-5 flex flex-col sm:flex-row items-center justify-between gap-3 text-[12.5px] text-[#7E959C]">
+              <span>© {new Date().getFullYear()} {t('public.footer.copyright')}</span>
+              <span>{t('public.footer.disclaimer')}</span>
+            </div>
+          </div>
+        </footer>
       </main>
     </div>
   )

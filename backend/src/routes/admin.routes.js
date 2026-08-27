@@ -10,6 +10,7 @@ router.use(authenticate, requireRole('COORDINATEUR', 'ADMIN'))
 
 router.get('/audit-logs', validate(schema.listAuditLogs), ctrl.listAuditLogs)
 router.get('/stats', ctrl.dashboardStats)
+router.get('/statistiques', validate(schema.statistiques), ctrl.statistiques)
 
 // User management (specialistes/coordinateurs) is admin-only: a coordinator
 // can see the operational dashboard above, but creating/deactivating

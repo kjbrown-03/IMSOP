@@ -28,22 +28,22 @@ function getSocialIcons(role) {
   ];
 }
 
-const OAUTH_ERROR_MESSAGES = {
-  not_configured: 'Cette méthode de connexion n\'est pas encore activée.',
-  access_denied: 'Connexion annulée.',
-  invalid_state: 'La session de connexion a expiré, veuillez réessayer.',
-  exchange_failed: 'La connexion a échoué, veuillez réessayer.',
-  no_email: 'Ce compte ne fournit pas d\'adresse email accessible.',
-  account_disabled: 'Ce compte a été désactivé. Contactez un administrateur.',
-  not_registered_patient: 'Aucun compte patient n\'est associé à cette adresse Google. Créez un compte pour continuer.',
-  not_registered_medecin: 'Aucun compte médecin traitant n\'est associé à cette adresse Google. Créez un compte pour continuer.',
-  not_registered_professional: 'Aucun compte n\'est associé à cette adresse Google pour cet espace. Ces comptes sont créés par l\'administration IMSOP - contactez votre administrateur.',
+const OAUTH_ERROR_KEYS = {
+  not_configured: 'auth.oauth.notConfigured',
+  access_denied: 'auth.oauth.accessDenied',
+  invalid_state: 'auth.oauth.invalidState',
+  exchange_failed: 'auth.oauth.exchangeFailed',
+  no_email: 'auth.oauth.noEmail',
+  account_disabled: 'auth.oauth.accountDisabled',
+  not_registered_patient: 'auth.oauth.notRegisteredPatient',
+  not_registered_medecin: 'auth.oauth.notRegisteredMedecin',
+  not_registered_professional: 'auth.oauth.notRegisteredProfessional',
 };
 
 const ROLE_IMAGES = {
-  PATIENT: 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&q=80',
+  PATIENT: '/patient-login.jpg',
   SPECIALISTE: 'https://images.unsplash.com/photo-1551076805-e1869033e561?auto=format&fit=crop&q=80',
-  MEDECIN_LOCAL: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80',
+  MEDECIN_LOCAL: '/medecin-login.png',
   COORDINATEUR: 'https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&q=80',
   ADMIN: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80',
 };
@@ -73,7 +73,7 @@ const AnimatedLogin = ({ role = 'PATIENT' }) => {
 
   const oauthErrorCode = searchParams.get('oauthError');
   const oauthError = oauthErrorCode
-    ? OAUTH_ERROR_MESSAGES[oauthErrorCode] || 'La connexion a échoué, veuillez réessayer.'
+    ? t(OAUTH_ERROR_KEYS[oauthErrorCode] || 'auth.oauth.genericError')
     : null;
 
   const info = {

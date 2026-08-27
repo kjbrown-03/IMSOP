@@ -8,11 +8,11 @@ import { api } from '../../lib/api'
 const ETATS = ['EN_VERIFICATION', 'VALIDE', 'SUSPENDU', 'EXPIRE', 'REVOQUE']
 
 const COULEUR = {
-  EN_VERIFICATION: 'bg-amber-50 text-amber-700 border-amber-200',
-  VALIDE: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-  SUSPENDU: 'bg-rose-50 text-rose-700 border-rose-200',
-  EXPIRE: 'bg-rose-50 text-rose-700 border-rose-200',
-  REVOQUE: 'bg-rose-50 text-rose-700 border-rose-200',
+  EN_VERIFICATION: 'bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-900/40',
+  VALIDE: 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-900/40',
+  SUSPENDU: 'bg-rose-50 dark:bg-rose-950/30 text-rose-700 dark:text-rose-300 border-rose-200 dark:border-rose-900/40',
+  EXPIRE: 'bg-rose-50 dark:bg-rose-950/30 text-rose-700 dark:text-rose-300 border-rose-200 dark:border-rose-900/40',
+  REVOQUE: 'bg-rose-50 dark:bg-rose-950/30 text-rose-700 dark:text-rose-300 border-rose-200 dark:border-rose-900/40',
 }
 
 export default function RevueHabilitations() {
@@ -152,7 +152,7 @@ export default function RevueHabilitations() {
                   <p className="text-xs text-rose-600 dark:text-rose-400 mt-1">{p.verificationMotif}</p>
                 )}
               </div>
-              <ChevronRight className={`w-5 h-5 text-slate-400 shrink-0 transition-transform ${ouvert === p.userId ? 'rotate-90' : ''}`} />
+              <ChevronRight className={`w-5 h-5 text-slate-400 dark:text-slate-500 shrink-0 transition-transform ${ouvert === p.userId ? 'rotate-90' : ''}`} />
             </button>
 
             {ouvert === p.userId && (

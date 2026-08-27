@@ -12,11 +12,14 @@ async function loadDossierWithAccessCheck(req, dossierId) {
       patient: { include: { user: { select: safeUserSelect } } },
       specialiste: { include: { user: { select: safeUserSelect } } },
       medecinLocal: { include: { user: { select: safeUserSelect } } },
+      demandeurMedecin: { include: { user: { select: safeUserSelect } } },
     },
   })
   if (!dossier) return { error: 404, message: 'Dossier introuvable' }
 
-  if (req.userRole === 'PATIENT' && dossier.patient.userId !== req.userId) {
+  // `patient` peut être nul : une demande ouverte par un médecin décrit un
+  // patient anonymisé, sans compte associé.
+  if (req.userRole === 'PATIENT' && dossier.patient?.userId !== req.userId) {
     return { error: 403, message: 'Ce dossier ne vous appartient pas' }
   }
   if (req.userRole === 'SPECIALISTE') {
@@ -27,8 +30,12 @@ async function loadDossierWithAccessCheck(req, dossierId) {
   }
   if (req.userRole === 'MEDECIN_LOCAL') {
     const medecin = await prisma.medecinLocal.findUnique({ where: { userId: req.userId } })
-    if (!medecin || dossier.medecinLocalId !== medecin.id) {
-      return { error: 403, message: "Vous n'êtes pas le médecin traitant désigné sur ce dossier" }
+    // Deux titres d'accès distincts : avoir ouvert la demande, ou avoir été
+    // désigné médecin traitant par le patient.
+    const estDemandeur = medecin && dossier.demandeurMedecinId === medecin.id
+    const estMedecinTraitant = medecin && dossier.medecinLocalId === medecin.id
+    if (!estDemandeur && !estMedecinTraitant) {
+      return { error: 403, message: 'Ce dossier ne vous est pas rattaché' }
     }
   }
   // COORDINATEUR and ADMIN can access any dossier
@@ -63,6 +70,96 @@ async function createDossier(req, res) {
   res.status(201).json(dossier)
 }
 
+// Parcours medecin : un praticien qui doute de son propre avis ouvre lui-meme
+// une demande. Il decrit un patient anonymise, pose UNE question, joint ses
+// pieces, et la demande part directement en coordination — il n'y a ni compte
+// patient, ni paiement patient, ni messagerie libre dans ce parcours.
+async function creerDemandeMedecin(req, res) {
+  const medecin = await prisma.medecinLocal.findUnique({ where: { userId: req.userId } })
+  if (!medecin) return res.status(403).json({ message: 'Profil medecin introuvable' })
+
+  // Meme garde-fou que pour la disponibilite d'un specialiste : une habilitation
+  // non validee ne doit pas pouvoir engager la plateforme aupres d'un expert.
+  if (medecin.verificationStatus !== 'VALIDE') {
+    return res.status(403).json({
+      message: "Votre habilitation n'est pas encore validee : vous ne pouvez pas encore adresser de demande.",
+    })
+  }
+
+  const {
+    specialiteRequise, patientAge, patientSexe, motif, question,
+    symptomes, antecedents, traitementEnCours, urgence,
+  } = req.body
+
+  // La reference se derive du pays du patient dans le parcours patient ; ici
+  // c'est celui du medecin demandeur.
+  const reference = await genererReferenceDossier(medecin.pays)
+
+  const dossier = await prisma.dossier.create({
+    data: {
+      reference,
+      demandeurMedecinId: medecin.id,
+      patientAge,
+      patientSexe,
+      specialiteRequise,
+      motif,
+      symptomes,
+      antecedents,
+      traitementEnCours,
+      urgence: urgence || 'NORMAL',
+      // La question est posee des la creation : c'est l'objet de la demande, et
+      // elle est definitive (voir `poserQuestionMedecinLocal`).
+      questionMedecinLocal: question,
+      questionMedecinLocalPoseeLe: new Date(),
+      status: 'BROUILLON',
+    },
+  })
+
+  await logAction({
+    userId: req.userId,
+    action: 'DEMANDE_MEDECIN_CREEE',
+    entityType: 'Dossier',
+    entityId: dossier.id,
+    dossierId: dossier.id,
+    ipAddress: req.ip,
+  })
+
+  res.status(201).json(dossier)
+}
+
+// Transmission a la coordination. Separee de la creation pour que le medecin
+// puisse d'abord joindre ses pieces au brouillon.
+async function transmettreDemandeMedecin(req, res) {
+  const { dossier, error, message } = await loadDossierWithAccessCheck(req, req.params.id)
+  if (error) return res.status(error).json({ message })
+
+  const medecin = await prisma.medecinLocal.findUnique({ where: { userId: req.userId } })
+  if (!medecin || dossier.demandeurMedecinId !== medecin.id) {
+    return res.status(403).json({ message: "Cette demande n'est pas la votre" })
+  }
+  if (dossier.status !== 'BROUILLON') {
+    return res.status(400).json({ message: 'Cette demande a deja ete transmise' })
+  }
+
+  // Pas d'etape de paiement patient dans ce parcours : la demande arrive
+  // directement dans la file de la coordination.
+  const misAJour = await prisma.dossier.update({
+    where: { id: dossier.id },
+    data: { status: 'EN_ATTENTE_AFFECTATION' },
+  })
+
+  await logAction({
+    userId: req.userId,
+    action: 'DEMANDE_MEDECIN_TRANSMISE',
+    entityType: 'Dossier',
+    entityId: dossier.id,
+    dossierId: dossier.id,
+    ipAddress: req.ip,
+  })
+
+  res.json(misAJour)
+}
+
 async function listDossiers(req, res) {
   let where = {}
 
@@ -74,7 +171,8 @@ async function listDossiers(req, res) {
     where = { specialisteId: specialiste?.id }
   } else if (req.userRole === 'MEDECIN_LOCAL') {
     const medecin = await prisma.medecinLocal.findUnique({ where: { userId: req.userId } })
-    where = { medecinLocalId: medecin?.id ?? '__none__' }
+    const id = medecin?.id ?? '__none__'
+    where = { OR: [{ demandeurMedecinId: id }, { medecinLocalId: id }] }
   } else if (req.query.status) {
     where = { status: req.query.status }
   }
@@ -444,7 +542,42 @@ async function retirerMedecinLocal(req, res) {
   res.json(updated)
 }
 
+// The médecin local has no open-ended chat with the specialist: he hands the
+// dossier to the coordination with exactly one question, the one the
+// specialist's report will answer. Once asked it is locked - re-opening it
+// would turn a focused clinical question into the same back-and-forth this
+// was built to avoid.
+async function poserQuestionMedecinLocal(req, res) {
+  const { dossier, error, message } = await loadDossierWithAccessCheck(req, req.params.id)
+  if (error) return res.status(error).json({ message })
+  if (req.userRole !== 'MEDECIN_LOCAL') {
+    return res.status(403).json({ message: 'Seul le médecin traitant désigné peut poser cette question' })
+  }
+  if (dossier.questionMedecinLocal) {
+    return res.status(400).json({ message: 'Une question a déjà été transmise pour ce dossier' })
+  }
+
+  const { question } = req.body
+  const updated = await prisma.dossier.update({
+    where: { id: dossier.id },
+    data: { questionMedecinLocal: question, questionMedecinLocalPoseeLe: new Date() },
+  })
+
+  await logAction({
+    userId: req.userId,
+    action: 'QUESTION_MEDECIN_LOCAL_POSEE',
+    entityType: 'Dossier',
+    entityId: dossier.id,
+    dossierId: dossier.id,
+    ipAddress: req.ip,
+  })
+
+  res.json(updated)
+}
+
 module.exports = {
+  creerDemandeMedecin,
+  transmettreDemandeMedecin,
   createDossier,
   listDossiers,
   getDossier,
@@ -459,5 +592,6 @@ module.exports = {
   changerStatut,
   designerMedecinLocal,
   retirerMedecinLocal,
+  poserQuestionMedecinLocal,
   loadDossierWithAccessCheck,
 }

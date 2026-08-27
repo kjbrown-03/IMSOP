@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { LayoutDashboard, Stethoscope, ShieldCheck, ScrollText } from 'lucide-react'
+import { LayoutDashboard, Stethoscope, ShieldCheck, ScrollText, BarChart3 } from 'lucide-react'
 import DashboardShell from './DashboardShell'
 
 export default function AdminLayout({ children }) {
@@ -20,6 +20,11 @@ export default function AdminLayout({ children }) {
       to: '/admin/coordinateurs',
       label: t('shell.adminNav.coordinateurs'),
       icon: <ShieldCheck className="w-5 h-5" />,
+    },
+    {
+      to: '/admin/statistiques',
+      label: t('shell.adminNav.statistiques'),
+      icon: <BarChart3 className="w-5 h-5" />,
     },
     {
       to: '/admin/journal',

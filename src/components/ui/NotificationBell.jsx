@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import {
   Bell, MessageSquare, FileText, UserCheck, FileCheck, CreditCard,
   Mail, KeyRound, ShieldCheck, ShieldAlert, CheckCheck,
+  Paperclip, Stethoscope, HelpCircle, BadgeCheck,
 } from 'lucide-react'
 import { useNotificationStore } from '../../store/useNotificationStore'
 import { useAuthStore } from '../../store/useAuthStore'
@@ -19,18 +20,30 @@ const TYPE_META = {
   MOT_DE_PASSE_RESET: { icon: KeyRound, tone: 'bg-amber-50 text-amber-600' },
   IDENTITE_VALIDEE: { icon: ShieldCheck, tone: 'bg-emerald-50 text-emerald-600' },
   IDENTITE_REFUSEE: { icon: ShieldAlert, tone: 'bg-rose-50 text-rose-600' },
+  PIECE_JOINTE_RECUE: { icon: Paperclip, tone: 'bg-primary-50 text-primary-600' },
+  MEDECIN_LOCAL_RATTACHE: { icon: Stethoscope, tone: 'bg-primary-50 text-primary-600' },
+  COMPLEMENT_DEMANDE: { icon: HelpCircle, tone: 'bg-amber-50 text-amber-600' },
+  COMPLEMENT_FOURNI: { icon: FileCheck, tone: 'bg-emerald-50 text-emerald-600' },
+  HABILITATION_STATUT: { icon: BadgeCheck, tone: 'bg-amber-50 text-amber-600' },
+  DEUX_FACTEURS: { icon: KeyRound, tone: 'bg-amber-50 text-amber-600' },
+  INSCRIPTION_EXISTANTE: { icon: Mail, tone: 'bg-slate-100 text-slate-600' },
 }
 
 const FALLBACK_META = { icon: Bell, tone: 'bg-slate-100 text-slate-600' }
 
-// Where clicking the notification takes the user. Only the patient area has a
-// conversation view today, so other roles get an entry that is still readable
-// and dismissable but does not navigate.
+// Where clicking the notification takes the user. The secure messaging
+// thread only exists between the coordination team and the specialist now -
+// the patient and the médecin local get an entry that is still readable and
+// dismissable but does not navigate anywhere for a MESSAGE_RECU.
 function linkFor(notification, role) {
-  if (!notification.dossierId || role !== 'PATIENT') return null
-  return notification.type === 'MESSAGE_RECU'
-    ? `/patient/messages/${notification.dossierId}`
-    : `/patient/dossiers/${notification.dossierId}`
+  if (!notification.dossierId) return null
+  if (notification.type === 'MESSAGE_RECU') {
+    if (role === 'COORDINATEUR' || role === 'ADMIN') return `/coordinateur/messages/${notification.dossierId}`
+    if (role === 'SPECIALISTE') return `/specialiste/messagerie/${notification.dossierId}`
+    return null
+  }
+  if (role === 'PATIENT') return `/patient/dossiers/${notification.dossierId}`
+  return null
 }
 
 export default function NotificationBell() {
@@ -85,6 +98,31 @@ export default function NotificationBell() {
       }
     }
 
+    if (type === 'PIECE_JOINTE_RECUE') {
+      return {
+        title: payload?.senderName
+          ? t('notifications.types.PIECE_JOINTE_RECUE.title', { sender: payload.senderName })
+          : t('notifications.types.PIECE_JOINTE_RECUE.titleFallback'),
+        preview: payload?.filename || t('notifications.types.PIECE_JOINTE_RECUE.preview', { reference }),
+      }
+    }
+
+    if (type === 'COMPLEMENT_DEMANDE' && payload?.precisions) {
+      return {
+        title: t('notifications.types.COMPLEMENT_DEMANDE.title'),
+        preview: payload.precisions,
+      }
+    }
+
+    if (type === 'HABILITATION_STATUT') {
+      return {
+        title: t('notifications.types.HABILITATION_STATUT.title'),
+        preview:
+          payload?.motif ||
+          t('notifications.types.HABILITATION_STATUT.preview', { statut: payload?.statut || '' }),
+      }
+    }
+
     return {
       title: t(`notifications.types.${key}.title`),
       // IDENTITE_REFUSEE carries the coordinator's own wording, which is more
@@ -103,6 +141,11 @@ export default function NotificationBell() {
     if (days < 7) return t('notifications.time.days', { count: days })
     return new Date(iso).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' })
   }
+
+  // Read/answered notifications are cleared from the bell as soon as they're
+  // marked read (individually, "mark all read", or by reading the underlying
+  // conversation), so the dropdown only ever shows what still needs attention.
+  const unreadItems = items.filter((n) => !n.readAt)
 
   const onSelect = useCallback(
     (notification) => {
@@ -170,14 +213,13 @@ export default function NotificationBell() {
               <p className="px-4 py-8 text-center text-sm text-rose-600 dark:text-rose-400">{error}</p>
             )}
 
-            {!loading && !error && items.length === 0 && (
+            {!loading && !error && unreadItems.length === 0 && (
               <p className="px-4 py-10 text-center text-sm text-slate-500 dark:text-slate-400">{t('notifications.empty')}</p>
             )}
 
-            {items.map((notification) => {
+            {unreadItems.map((notification) => {
               const meta = TYPE_META[notification.type] || FALLBACK_META
               const { title, preview } = describe(notification)
-              const unread = !notification.readAt
               const clickable = !!linkFor(notification, role)
               const Icon = meta.icon
 
@@ -187,9 +229,9 @@ export default function NotificationBell() {
                   type="button"
                   role="menuitem"
                   onClick={() => onSelect(notification)}
-                  className={`w-full text-left flex gap-3 px-4 py-3 border-b border-slate-50 dark:border-neutral-800 last:border-b-0 transition-colors ${
-                    unread ? 'bg-primary-50/40 dark:bg-primary-900/20' : 'bg-white dark:bg-neutral-900'
-                  } ${clickable ? 'hover:bg-slate-50 dark:hover:bg-neutral-800 cursor-pointer' : 'cursor-default'}`}
+                  className={`w-full text-left flex gap-3 px-4 py-3 border-b border-slate-50 dark:border-neutral-800 last:border-b-0 transition-colors bg-primary-50/40 dark:bg-primary-900/20 ${
+                    clickable ? 'hover:bg-slate-50 dark:hover:bg-neutral-800 cursor-pointer' : 'cursor-default'
+                  }`}
                 >
                   <span className={`h-9 w-9 shrink-0 rounded-xl flex items-center justify-center ${meta.tone} dark:bg-opacity-20`}>
                     <Icon className="w-4 h-4" />
@@ -197,17 +239,13 @@ export default function NotificationBell() {
 
                   <span className="flex-1 min-w-0">
                     <span className="flex items-baseline justify-between gap-2">
-                      <span
-                        className={`text-sm truncate ${unread ? 'font-bold text-slate-900 dark:text-white' : 'font-medium text-slate-700 dark:text-slate-300'}`}
-                      >
-                        {title}
-                      </span>
+                      <span className="text-sm truncate font-bold text-slate-900 dark:text-white">{title}</span>
                       <span className="text-[11px] text-slate-400 shrink-0">{relativeTime(notification.sentAt)}</span>
                     </span>
                     <span className="block text-xs text-slate-500 dark:text-slate-400 line-clamp-2 mt-0.5">{preview}</span>
                   </span>
 
-                  {unread && <span className="h-2 w-2 rounded-full bg-primary-600 dark:bg-primary-500 shrink-0 mt-2" />}
+                  <span className="h-2 w-2 rounded-full bg-primary-600 dark:bg-primary-500 shrink-0 mt-2" />
                 </button>
               )
             })}

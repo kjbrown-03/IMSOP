@@ -3,6 +3,8 @@ import { Routes, Route } from 'react-router-dom'
 import ProtectedRoute from './components/ProtectedRoute'
 import Placeholder from './pages/Placeholder'
 import { useThemeStore } from './store/useThemeStore'
+import { useAuthStore } from './store/useAuthStore'
+import { getCallSocket } from './lib/socket'
 
 import Accueil from './pages/public/Accueil'
 import SelectionRole from './pages/auth/SelectionRole'
@@ -26,11 +28,9 @@ import DocumentsUpload from './pages/patient/DocumentsUpload'
 import MatchingEnCours from './pages/patient/MatchingEnCours'
 import ProfilPatient from './pages/patient/ProfilPatient'
 import MonProfil from './pages/MonProfil'
-import ChatSecurise from './pages/patient/ChatSecurise'
-import Messagerie from './pages/patient/Messagerie'
 import RapportExpertFinal from './pages/patient/RapportExpertFinal'
-import MonMedecinTraitant from './pages/patient/MonMedecinTraitant'
 import DashboardMedecinLocal from './pages/medecin/DashboardMedecinLocal'
+import NouvelleDemandeMedecin from './pages/medecin/NouvelleDemandeMedecin'
 import DossierMedecinLocal from './pages/medecin/DossierMedecinLocal'
 import MesJustificatifs from './pages/professionnel/MesJustificatifs'
 import RevueHabilitations from './pages/coordinateur/RevueHabilitations'
@@ -39,6 +39,7 @@ import AffectationExpert from './pages/coordinateur/AffectationExpert'
 import RechercheExpertCoordinateur from './pages/coordinateur/RechercheExpertCoordinateur'
 import GestionExceptions from './pages/coordinateur/GestionExceptions'
 import RevueIdentites from './pages/coordinateur/RevueIdentites'
+import ConsultationRapport from './pages/coordinateur/ConsultationRapport'
 import DashboardSpecialiste from './pages/specialiste/DashboardSpecialiste'
 import RedactionRapportExpert from './pages/specialiste/RedactionRapportExpert'
 import PaiementSecurise from './pages/patient/PaiementSecurise'
@@ -48,14 +49,35 @@ import AdminDashboard from './pages/admin/AdminDashboard'
 import AdminSpecialistes from './pages/admin/AdminSpecialistes'
 import AdminCoordinateurs from './pages/admin/AdminCoordinateurs'
 import AdminJournal from './pages/admin/AdminJournal'
+import AdminStatistiques from './pages/admin/AdminStatistiques'
 import MessagerieSpecialiste from './pages/specialiste/MessagerieSpecialiste'
+import MessagerieCoordinateur from './pages/coordinateur/MessagerieCoordinateur'
+import CoordinateurTemoignages from './pages/coordinateur/CoordinateurTemoignages'
 
 export default function App() {
   const initTheme = useThemeStore((state) => state.initTheme)
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
+  const userId = useAuthStore((s) => s.user?.id)
 
   useEffect(() => {
     initTheme()
   }, [initTheme])
+
+  // The call-signaling connection tracks whether this person is reachable
+  // for a video call, so it has to live for the whole session — not just
+  // while the Messagerie page happens to be mounted, or navigating to
+  // Dossiers/Profil would make a still-logged-in user look "unavailable" to
+  // a caller. `userId` is in the deps so switching accounts on the same tab
+  // (no full reload) drops the old connection and opens a fresh one under
+  // the new identity instead of keeping the previous user's socket alive.
+  useEffect(() => {
+    if (!isAuthenticated) return
+    const socket = getCallSocket()
+    socket.connect()
+    return () => {
+      socket.disconnect()
+    }
+  }, [isAuthenticated, userId])
 
   return (
     <Routes>
@@ -139,10 +161,10 @@ export default function App() {
         }
       />
       <Route
-        path="/patient/medecins"
+        path="/medecin/nouvelle-demande"
         element={
-          <ProtectedRoute role="PATIENT">
-            <MonMedecinTraitant />
+          <ProtectedRoute role="MEDECIN_LOCAL">
+            <NouvelleDemandeMedecin />
           </ProtectedRoute>
         }
       />
@@ -159,14 +181,6 @@ export default function App() {
         element={
           <ProtectedRoute role="MEDECIN_LOCAL">
             <DossierMedecinLocal />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/medecin/messages/:id"
-        element={
-          <ProtectedRoute role="MEDECIN_LOCAL">
-            <ChatSecurise />
           </ProtectedRoute>
         }
       />
@@ -191,22 +205,6 @@ export default function App() {
         element={
           <ProtectedRoute role="MEDECIN_LOCAL">
             <MonProfil />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/patient/messages"
-        element={
-          <ProtectedRoute role="PATIENT">
-            <Messagerie />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/patient/messages/:id"
-        element={
-          <ProtectedRoute role="PATIENT">
-            <Messagerie />
           </ProtectedRoute>
         }
       />
@@ -265,6 +263,38 @@ export default function App() {
         element={
           <ProtectedRoute role="COORDINATEUR">
             <RevueIdentites />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/coordinateur/rapport/:id"
+        element={
+          <ProtectedRoute role="COORDINATEUR">
+            <ConsultationRapport />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/coordinateur/messages"
+        element={
+          <ProtectedRoute role={['COORDINATEUR', 'ADMIN']}>
+            <MessagerieCoordinateur />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/coordinateur/messages/:id"
+        element={
+          <ProtectedRoute role={['COORDINATEUR', 'ADMIN']}>
+            <MessagerieCoordinateur />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/coordinateur/temoignages"
+        element={
+          <ProtectedRoute role="COORDINATEUR">
+            <CoordinateurTemoignages />
           </ProtectedRoute>
         }
       />
@@ -333,6 +363,14 @@ export default function App() {
         element={
           <ProtectedRoute role="ADMIN">
             <AdminCoordinateurs />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/statistiques"
+        element={
+          <ProtectedRoute role="ADMIN">
+            <AdminStatistiques />
           </ProtectedRoute>
         }
       />

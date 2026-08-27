@@ -26,6 +26,15 @@ const TEMPLATES = {
     subject: 'Nouveau message sécurisé',
     body: (ctx) => `Bonjour ${ctx.name},\n\nVous avez reçu un nouveau message concernant le dossier ${ctx.reference}.\n\nL'équipe IMSOP`,
   },
+  DEUX_FACTEURS: {
+    // Flux d'authentification : le destinataire n'est PAS connecté au moment de
+    // l'envoi, une entrée dans la cloche ne lui servirait à rien et polluerait
+    // son centre de notifications. Le contenu est en outre sensible (code,
+    // lien de réinitialisation) et n'a pas à être conservé en base.
+    courrielSeulement: true,
+    subject: 'Votre code de connexion IMSOP',
+    body: (ctx) => `Bonjour ${ctx.name},\n\nVotre code de vérification pour vous connecter est : ${ctx.code}\n\nCe code est valable 10 minutes.\n\nL'équipe IMSOP`,
+  },
   MEDECIN_LOCAL_RATTACHE: {
     subject: 'Un patient vous a désigné comme médecin traitant',
     body: (ctx) => `Bonjour Dr ${ctx.name},\n\n${ctx.patientName} vous a désigné comme son médecin traitant pour le dossier ${ctx.reference} sur IMSOP. Vous pouvez désormais consulter ce dossier, y déposer des pièces et échanger dans la messagerie sécurisée.\n\nL'équipe IMSOP`,
@@ -47,12 +56,34 @@ const TEMPLATES = {
     body: (ctx) => `Bonjour ${ctx.name},\n\nLe statut de votre habilitation professionnelle sur IMSOP est désormais : ${ctx.statut}.\n${ctx.motif ? `Motif : ${ctx.motif}` + '\n' : ''}\nL'équipe IMSOP`,
   },
   MOT_DE_PASSE_RESET: {
+    // Flux d'authentification : le destinataire n'est PAS connecté au moment de
+    // l'envoi, une entrée dans la cloche ne lui servirait à rien et polluerait
+    // son centre de notifications. Le contenu est en outre sensible (code,
+    // lien de réinitialisation) et n'a pas à être conservé en base.
+    courrielSeulement: true,
     subject: 'Réinitialisation de votre mot de passe IMSOP',
     body: (ctx) => `Bonjour ${ctx.name},\n\nVous avez demandé la réinitialisation de votre mot de passe. Ce lien est valable 1 heure :\n${ctx.resetUrl}\n\nSi vous n'êtes pas à l'origine de cette demande, ignorez cet e-mail.\n\nL'équipe IMSOP`,
   },
   VERIFICATION_EMAIL: {
     subject: 'Vérifiez votre adresse e-mail IMSOP',
     body: (ctx) => `Bonjour ${ctx.name},\n\nVotre code de vérification est : ${ctx.code}\n\nCe code est valable 15 minutes.\n\nL'équipe IMSOP`,
+  },
+  INSCRIPTION_EXISTANTE: {
+    // Flux d'authentification : le destinataire n'est PAS connecté au moment de
+    // l'envoi, une entrée dans la cloche ne lui servirait à rien et polluerait
+    // son centre de notifications. Le contenu est en outre sensible (code,
+    // lien de réinitialisation) et n'a pas à être conservé en base.
+    courrielSeulement: true,
+    subject: 'Tentative de création de compte avec votre adresse',
+    body: (ctx) => `Bonjour ${ctx.name},
+
+Quelqu'un vient de tenter de créer un compte IMSOP avec votre adresse e-mail. Aucun nouveau compte n'a été créé : le vôtre existe déjà.
+
+Si c'était vous, connectez-vous normalement. Si vous avez oublié votre mot de passe, utilisez « Mot de passe oublié ».
+
+Si ce n'était pas vous, vous pouvez ignorer ce message : personne n'a eu accès à votre compte.
+
+L'équipe IMSOP`,
   },
   IDENTITE_VALIDEE: {
     subject: 'Votre identité a été vérifiée',
@@ -69,6 +100,14 @@ const TEMPLATES = {
 async function notify(userId, email, type, context, options = {}) {
   const template = TEMPLATES[type]
   if (!template) throw new Error(`Unknown notification type: ${type}`)
+
+  // Envoi direct, sans trace en base : rien à afficher dans la cloche, et le
+  // code ou le lien ne survit pas à l'e-mail.
+  if (template.courrielSeulement) {
+    sendMail({ to: email, subject: template.subject, text: template.body(context) })
+      .catch((err) => console.error('notification send failed', err))
+    return null
+  }
 
   // The row is written before the SMTP round-trip, not after: the bell reads
   // these rows, and a real relay regularly takes >10s to answer. Delivery

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { ArrowLeft, Upload, MessageSquare, Loader2, FileText } from 'lucide-react'
+import { ArrowLeft, Upload, Send, Loader2, FileText, HelpCircle } from 'lucide-react'
 import MedecinShell from '../../components/layout/MedecinShell'
 import MessageAttachment from '../../components/ui/MessageAttachment'
 import { api } from '../../lib/api'
@@ -25,6 +25,9 @@ export default function DossierMedecinLocal() {
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState(null)
   const [uploadError, setUploadError] = useState(null)
+  const [question, setQuestion] = useState('')
+  const [questionSubmitting, setQuestionSubmitting] = useState(false)
+  const [questionError, setQuestionError] = useState(null)
 
   useEffect(() => {
     let cancelled = false
@@ -51,29 +54,51 @@ export default function DossierMedecinLocal() {
   }, [id, t])
 
   async function upload(e) {
-    const file = e.target.files?.[0]
+    const selected = Array.from(e.target.files || [])
     e.target.value = ''
-    if (!file) return
-    if (!ACCEPTED_MIME.includes(file.type)) {
+    if (selected.length === 0) return
+
+    const invalid = selected.find((f) => !ACCEPTED_MIME.includes(f.type))
+    if (invalid) {
       setUploadError(t('chat.attachTypeError'))
       return
     }
-    if (file.size > MAX_BYTES) {
+    const tooLarge = selected.find((f) => f.size > MAX_BYTES)
+    if (tooLarge) {
       setUploadError(t('chat.attachSizeError'))
       return
     }
+
     setUploading(true)
     setUploadError(null)
-    const form = new FormData()
-    form.append('file', file)
-    form.append('category', category)
+    let failedCount = 0
+    for (const file of selected) {
+      const form = new FormData()
+      form.append('file', file)
+      form.append('category', category)
+      try {
+        const { data } = await api.post(`/dossiers/${id}/documents`, form)
+        setDocuments((prev) => [data, ...prev])
+      } catch {
+        failedCount += 1
+      }
+    }
+    if (failedCount > 0) setUploadError(t('patient.documents.someFilesFailed', { count: failedCount }))
+    setUploading(false)
+  }
+
+  async function submitQuestion(e) {
+    e.preventDefault()
+    if (!question.trim()) return
+    setQuestionSubmitting(true)
+    setQuestionError(null)
     try {
-      const { data } = await api.post(`/dossiers/${id}/documents`, form)
-      setDocuments((prev) => [data, ...prev])
+      const { data } = await api.post(`/dossiers/${id}/question-medecin-local`, { question: question.trim() })
+      setDossier(data)
     } catch (err) {
-      setUploadError(err.response?.data?.message || t('chat.attachFailed'))
+      setQuestionError(err.response?.data?.message || t('medecin.file.questionError'))
     } finally {
-      setUploading(false)
+      setQuestionSubmitting(false)
     }
   }
 
@@ -111,13 +136,6 @@ export default function DossierMedecinLocal() {
                   {t('medecin.dashboard.reference')} #{dossier.reference} — {dossier.specialiteRequise}
                 </p>
               </div>
-              <Link
-                to={`/medecin/messages/${dossier.id}`}
-                className="flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium rounded-xl px-4 py-2.5 transition-colors shrink-0"
-              >
-                <MessageSquare className="w-4 h-4" />
-                {t('medecin.dashboard.openChat')}
-              </Link>
             </div>
 
             <dl className="grid sm:grid-cols-2 gap-4 mt-2">
@@ -158,6 +176,7 @@ export default function DossierMedecinLocal() {
                 <input
                   ref={fileInputRef}
                   type="file"
+                  multiple
                   accept={ACCEPTED_MIME.join(',')}
                   onChange={upload}
                   className="hidden"
@@ -193,6 +212,53 @@ export default function DossierMedecinLocal() {
                   </li>
                 ))}
               </ul>
+            )}
+          </section>
+
+          <section className="glass-card rounded-2xl p-5 sm:p-6 flex flex-col gap-4">
+            <div className="flex items-center gap-2">
+              <HelpCircle className="w-5 h-5 text-primary-600 shrink-0" />
+              <h2 className="font-semibold text-slate-900 dark:text-white">{t('medecin.file.questionTitle')}</h2>
+            </div>
+
+            {dossier.questionMedecinLocal ? (
+              <div className="bg-slate-50 dark:bg-neutral-800/60 rounded-xl p-4">
+                <p className="text-sm text-slate-700 dark:text-neutral-200 whitespace-pre-line">
+                  {dossier.questionMedecinLocal}
+                </p>
+                <p className="text-xs text-slate-400 dark:text-neutral-500 mt-2">
+                  {t('medecin.file.questionSentOn', {
+                    date: new Date(dossier.questionMedecinLocalPoseeLe).toLocaleDateString('fr-FR'),
+                  })}
+                </p>
+              </div>
+            ) : (
+              <form onSubmit={submitQuestion} className="flex flex-col gap-3">
+                <p className="text-sm text-slate-500 dark:text-neutral-400">
+                  {t('medecin.file.questionHelp')}
+                </p>
+                <textarea
+                  value={question}
+                  onChange={(e) => setQuestion(e.target.value)}
+                  rows={4}
+                  maxLength={2000}
+                  placeholder={t('medecin.file.questionPlaceholder')}
+                  className="bg-white dark:bg-neutral-800 border border-slate-200 dark:border-neutral-700 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white outline-none focus:border-primary-500 transition-all resize-none"
+                />
+                {questionError && (
+                  <div className="bg-rose-50 dark:bg-rose-950/30 text-rose-700 dark:text-rose-300 text-sm rounded-xl px-4 py-3">
+                    {questionError}
+                  </div>
+                )}
+                <button
+                  type="submit"
+                  disabled={questionSubmitting || !question.trim()}
+                  className="self-end flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium rounded-xl px-4 py-2.5 transition-colors disabled:opacity-60"
+                >
+                  {questionSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                  {t('medecin.file.questionSubmit')}
+                </button>
+              </form>
             )}
           </section>
         </>

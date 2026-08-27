@@ -7,12 +7,32 @@ const { v4: uuidv4 } = require('uuid')
 
 const senderSelect = { select: { id: true, fullName: true, role: true, avatarUrl: true } }
 
-// Everyone attached to the dossier sees the conversation, so everyone except the
-// author has to be told about a new message. Before the médecin local existed
-// this was a single recipient; it is now up to three.
-function otherParticipants(dossier, senderId) {
-  return [dossier.patient?.user, dossier.specialiste?.user, dossier.medecinLocal?.user]
-    .filter((u) => u && u.id !== senderId)
+// The secure messaging thread is a coordination ↔ specialist channel only.
+// The patient and the médecin local never see it: the médecin local hands
+// off his one question through poserQuestionMedecinLocal instead (see
+// dossiers.controller.js), and the patient has no direct line to the
+// specialist at all - everything runs through the coordination team.
+const ROLES_MESSAGERIE = new Set(['COORDINATEUR', 'ADMIN', 'SPECIALISTE'])
+
+function conversationInterdite(req, res) {
+  if (ROLES_MESSAGERIE.has(req.userRole)) return false
+  res.status(403).json({ message: 'La messagerie sécurisée est réservée à la coordination médicale et au spécialiste assigné' })
+  return true
+}
+
+// The specialist has no single named counterpart on a dossier - any
+// coordinateur/admin can be handling it - so a specialist's message notifies
+// the whole coordination team. A coordinateur's message, on the other hand,
+// has exactly one addressee: the specialist assigned to that dossier.
+async function otherParticipants(dossier, senderId, senderRole) {
+  if (senderRole === 'SPECIALISTE') {
+    const coordination = await prisma.user.findMany({
+      where: { role: { in: ['COORDINATEUR', 'ADMIN'] }, active: true },
+      select: { id: true, fullName: true, email: true },
+    })
+    return coordination.filter((u) => u.id !== senderId)
+  }
+  return [dossier.specialiste?.user].filter((u) => u && u.id !== senderId)
 }
 
 function conversationClosed(dossier) {
@@ -22,6 +42,7 @@ function conversationClosed(dossier) {
 async function listMessages(req, res) {
   const { dossier, error, message } = await loadDossierWithAccessCheck(req, req.params.dossierId)
   if (error) return res.status(error).json({ message })
+  if (conversationInterdite(req, res)) return
 
   const messages = await prisma.message.findMany({
     where: { dossierId: dossier.id },
@@ -40,6 +61,7 @@ async function listMessages(req, res) {
 async function sendMessage(req, res) {
   const { dossier, error, message: err } = await loadDossierWithAccessCheck(req, req.params.dossierId)
   if (error) return res.status(error).json({ message: err })
+  if (conversationInterdite(req, res)) return
 
   if (conversationClosed(dossier)) {
     return res.status(400).json({ message: 'Cette conversation est fermée (14 jours après affectation du dossier).' })
@@ -54,7 +76,7 @@ async function sendMessage(req, res) {
 
   await logAction({ userId: req.userId, action: 'MESSAGE_ENVOYE', entityType: 'Message', entityId: created.id, dossierId: dossier.id })
 
-  for (const recipient of otherParticipants(dossier, req.userId)) {
+  for (const recipient of await otherParticipants(dossier, req.userId, req.userRole)) {
     await notify(recipient.id, recipient.email, 'MESSAGE_RECU', {
       name: recipient.fullName,
       reference: dossier.reference,
@@ -72,6 +94,7 @@ async function sendMessage(req, res) {
 async function sendAttachment(req, res) {
   const { dossier, error, message: err } = await loadDossierWithAccessCheck(req, req.params.dossierId)
   if (error) return res.status(error).json({ message: err })
+  if (conversationInterdite(req, res)) return
 
   if (conversationClosed(dossier)) {
     return res.status(400).json({ message: 'Cette conversation est fermée (14 jours après affectation du dossier).' })
@@ -119,7 +142,7 @@ async function sendAttachment(req, res) {
     metadata: { filename: document.filename, via: 'MESSAGERIE', messageId: created.id },
   })
 
-  for (const recipient of otherParticipants(dossier, req.userId)) {
+  for (const recipient of await otherParticipants(dossier, req.userId, req.userRole)) {
     await notify(recipient.id, recipient.email, 'PIECE_JOINTE_RECUE', {
       name: recipient.fullName,
       reference: dossier.reference,

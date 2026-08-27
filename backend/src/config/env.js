@@ -6,14 +6,39 @@ function required(name) {
   return value
 }
 
+// Un secret HS256 court se casse hors ligne : quiconque le retrouve peut forger
+// un jeton pour n'importe quel compte, ADMIN compris, sans jamais toucher a la
+// base. On vise au moins 32 caracteres aleatoires (~192 bits).
+// En developpement on se contente d'avertir pour ne pas bloquer le travail ;
+// en production le demarrage echoue, car un secret faible y est indefendable.
+const LONGUEUR_MINIMALE_SECRET = 32
+
+function secretFort(name, nodeEnv) {
+  const value = required(name)
+  if (value.length < LONGUEUR_MINIMALE_SECRET) {
+    const probleme = `${name} fait ${value.length} caracteres, minimum recommande ${LONGUEUR_MINIMALE_SECRET}.`
+    if (nodeEnv === 'production') {
+      throw new Error(
+        `${probleme} Generez-en un avec : node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))"`,
+      )
+    }
+    console.warn(
+      `[securite] ${probleme} A remplacer avant toute mise en production.`,
+    )
+  }
+  return value
+}
+
+const nodeEnv = process.env.NODE_ENV || 'development'
+
 module.exports = {
   port: parseInt(process.env.PORT || '4000', 10),
-  nodeEnv: process.env.NODE_ENV || 'development',
+  nodeEnv,
   corsOrigin: process.env.CORS_ORIGIN || 'http://localhost:5173',
 
   jwt: {
-    accessSecret: required('JWT_ACCESS_SECRET'),
-    refreshSecret: required('JWT_REFRESH_SECRET'),
+    accessSecret: secretFort('JWT_ACCESS_SECRET', nodeEnv),
+    refreshSecret: secretFort('JWT_REFRESH_SECRET', nodeEnv),
     accessExpiresIn: process.env.JWT_ACCESS_EXPIRES_IN || '15m',
     refreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '30d',
   },
