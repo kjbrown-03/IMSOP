@@ -34,6 +34,16 @@ export default function SelectionRole() {
   return (
     <div className="bg-[var(--color-bg)] min-h-screen flex items-center justify-center font-body-md text-[var(--color-text-main)] p-margin-mobile transition-colors duration-300">
       <main className="w-full max-w-2xl">
+        {/* Meme raison que sur les pages de connexion : cet ecran est une
+            entree possible dans le site, il doit ramener a l'accueil. */}
+        <Link
+          to="/"
+          className="inline-flex items-center gap-1.5 mb-stack-lg text-body-md font-body-md text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors"
+        >
+          <span className="material-symbols-outlined text-lg">arrow_back</span>
+          {t('common.backHome')}
+        </Link>
+
         <div className="text-center mb-stack-lg flex flex-col items-center">
           <h1 className="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-[var(--color-heading)] tracking-tight mb-2">
             IMSOP

@@ -118,6 +118,92 @@ async function sendEmailVerificationCode(user) {
   await notify(user.id, user.email, 'VERIFICATION_EMAIL', { name: user.fullName, code })
 }
 
+// Signature du consentement : le nom tape dans le formulaire ne prouve rien
+// a lui seul, n'importe qui ayant acces a la session ouverte peut le saisir.
+// Un code envoye a l'adresse du compte rattache la signature au titulaire de
+// cette adresse, juste avant l'engagement financier.
+const PURPOSE_CONSENTEMENT = 'CONSENTEMENT_SIGNATURE'
+
+// Seuls les roles qui peuvent demander un second avis signent un consentement.
+const ROLES_DEMANDEURS = new Set(['PATIENT', 'MEDECIN_LOCAL'])
+
+async function envoyerCodeConsentement(req, res) {
+  if (!ROLES_DEMANDEURS.has(req.userRole)) {
+    return res.status(403).json({ message: 'Ce rôle ne signe pas de consentement de demande' })
+  }
+
+  const user = await prisma.user.findUnique({ where: { id: req.userId } })
+  if (!user || !user.active) return res.status(403).json({ message: 'Ce compte a été désactivé' })
+
+  // Un code encore valable est invalide d'office : sinon deux codes vivent en
+  // parallele et celui qui a fui reste utilisable jusqu'a son expiration.
+  await prisma.twoFactorChallenge.updateMany({
+    where: { userId: user.id, purpose: PURPOSE_CONSENTEMENT, consumedAt: null },
+    data: { consumedAt: new Date() },
+  })
+
+  const code = crypto.randomInt(100000, 999999).toString()
+  await prisma.twoFactorChallenge.create({
+    data: {
+      userId: user.id,
+      purpose: PURPOSE_CONSENTEMENT,
+      codeHash: hashToken(code),
+      expiresAt: new Date(Date.now() + 10 * 60 * 1000),
+    },
+  })
+
+  await notify(user.id, user.email, 'CONSENTEMENT_OTP', { name: user.fullName, code })
+  console.log(`[CONSENTEMENT] Code for ${user.email}: ${code}`)
+
+  // L'adresse n'est renvoyee que partiellement : l'ecran doit pouvoir dire ou
+  // le code est parti sans etaler l'adresse complete a l'ecran.
+  const [locale, domaine] = user.email.split('@')
+  const indice = `${locale.slice(0, 2)}${'*'.repeat(Math.max(1, locale.length - 2))}@${domaine}`
+
+  res.json({ message: 'Un code de confirmation vient de vous être envoyé par e-mail', email: indice })
+}
+
+async function verifierCodeConsentement(req, res) {
+  if (!ROLES_DEMANDEURS.has(req.userRole)) {
+    return res.status(403).json({ message: 'Ce rôle ne signe pas de consentement de demande' })
+  }
+
+  const challenge = await prisma.twoFactorChallenge.findFirst({
+    where: { userId: req.userId, purpose: PURPOSE_CONSENTEMENT, consumedAt: null, expiresAt: { gt: new Date() } },
+    orderBy: { createdAt: 'desc' },
+  })
+
+  const tentative = await consommerChallenge(challenge, req.body.code)
+  if (tentative.erreur === 'epuise') {
+    return res.status(429).json({ message: 'Trop de codes erronés. Demandez un nouveau code.' })
+  }
+  if (tentative.erreur) {
+    return res.status(401).json({ message: 'Code invalide ou expiré' })
+  }
+
+  // Le jeton prouve la verification au moment d'enregistrer le consentement.
+  // Court, car il ne sert qu'a franchir l'ecran suivant.
+  const consentToken = jwt.sign(
+    { sub: req.userId, purpose: 'consentement' },
+    env.jwt.accessSecret,
+    { expiresIn: '15m' },
+  )
+
+  res.json({ consentToken })
+}
+
+// Utilise par consentements.controller : le consentement signe n'est accepte
+// que si le titulaire du compte a valide le code envoye a son adresse.
+function verifierJetonConsentement(token, userId) {
+  if (!token) return false
+  try {
+    const payload = jwt.verify(token, env.jwt.accessSecret)
+    return payload.purpose === 'consentement' && payload.sub === userId
+  } catch {
+    return false
+  }
+}
+
 async function issueTwoFactorChallenge(user) {
   const code = crypto.randomInt(100000, 999999).toString()
   const codeHash = hashToken(code)
@@ -417,4 +503,5 @@ module.exports = {
   registerPatient, login, verifyTwoFactor, refresh, logout, me,
   forgotPassword, resetPassword, verifyEmail, resendEmailVerification,
   issueSession, issueTwoFactorChallenge, ROLES_REQUIRING_2FA,
+  envoyerCodeConsentement, verifierCodeConsentement, verifierJetonConsentement,
 }

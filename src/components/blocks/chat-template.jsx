@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { useIsMobile } from '@/components/hooks/use-mobile'
 
 import {
   SidebarInset,
@@ -29,6 +30,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 
 import {
+  ChevronLeft,
   ChevronUp,
   FolderOpen,
   LayoutDashboard,
@@ -112,10 +114,25 @@ export const Home = () => {
   const inviteTimeoutRef = useRef(null)
   const localVideoRef = useRef(null)
   const remoteVideoRef = useRef(null)
+  const remoteStreamRef = useRef(null)
+  // Candidats ICE arrives avant la description distante : les poser tout de
+  // suite leve InvalidStateError et le candidat est perdu, ce qui peut suffire
+  // a empecher la connexion de s'etablir.
+  const pendingCandidatesRef = useRef([])
+  // Les signaux arrivent en rafale et leur traitement est asynchrone : sans
+  // file, un candidat pouvait etre traite pendant qu'un setRemoteDescription
+  // etait encore en cours.
+  const signalQueueRef = useRef(Promise.resolve())
+  // Incremente a chaque changement de flux, pour rebrancher les <video>.
+  const [mediaVersion, setMediaVersion] = useState(0)
   const localStreamRef = useRef(null)
   const peerConnectionRef = useRef(null)
   const callPeerUserIdRef = useRef(null)
   const callDossierIdRef = useRef(null)
+
+  // Sous 768px les deux panneaux ne tiennent pas cote a cote : on montre la
+  // liste, ou la conversation, jamais les deux.
+  const estMobile = useIsMobile()
 
   const [draft, setDraft] = useState('')
   const [sending, setSending] = useState(false)
@@ -174,7 +191,11 @@ export const Home = () => {
         // Ouvrir d'office le premier dossier affichait un correspondant avec
         // qui rien n'a jamais ete echange. On n'ouvre que si une conversation
         // existe reellement.
-        setActiveDossierId((prev) => prev ?? withLastMessage.find((c) => c.last)?.dossier.id ?? null)
+        // Sur mobile, ouvrir d'office une conversation ferait arriver dans un
+        // fil sans jamais avoir vu la liste.
+        if (!estMobile) {
+          setActiveDossierId((prev) => prev ?? withLastMessage.find((c) => c.last)?.dossier.id ?? null)
+        }
       } catch (err) {
         if (!cancelled) setContactsError(err.response?.data?.message || t('errors.loadMessagesFailed'))
       } finally {
@@ -277,6 +298,13 @@ export const Home = () => {
   // Keeps the URL in sync with the open conversation so it stays a valid deep
   // link (NotificationBell points straight at /patient/messages/:id) and the
   // browser back/forward buttons behave.
+  // Sur mobile, quitter la conversation revient a la liste : sans ca, le fil
+  // occupe tout l'ecran et rien ne permet d'en changer.
+  function retourListe() {
+    setActiveDossierId(null)
+    navigate(basePath, { replace: true })
+  }
+
   function selectContact(dossierId) {
     setActiveDossierId(dossierId)
     navigate(`${basePath}/${dossierId}`, { replace: true })
@@ -340,11 +368,33 @@ export const Home = () => {
     navigate('/')
   }
 
+  // Les elements <video> n'existent pas encore au moment ou la camera s'ouvre :
+  // ensureLocalStream est appelee alors que la fenetre d'appel n'est pas montee
+  // - statut « idle » cote appelant, « ringing » cote appele. Attacher le flux a
+  // sa creation ne pouvait donc pas fonctionner, d'ou un apercu local noir des
+  // deux cotes. On (re)branche les deux flux des que les elements sont la, et a
+  // chaque changement de flux.
+  useEffect(() => {
+    if (localVideoRef.current && localVideoRef.current.srcObject !== localStreamRef.current) {
+      localVideoRef.current.srcObject = localStreamRef.current
+    }
+    if (remoteVideoRef.current && remoteVideoRef.current.srcObject !== remoteStreamRef.current) {
+      remoteVideoRef.current.srcObject = remoteStreamRef.current
+    }
+  }, [callStatus, mediaVersion, incomingCall])
+
   function cleanupCall() {
     peerConnectionRef.current?.close()
     peerConnectionRef.current = null
     localStreamRef.current?.getTracks().forEach((track) => track.stop())
     localStreamRef.current = null
+    remoteStreamRef.current = null
+    pendingCandidatesRef.current = []
+    signalQueueRef.current = Promise.resolve()
+    // Sans ca, la derniere image du correspondant reste figee dans l'element
+    // jusqu'a l'appel suivant.
+    if (localVideoRef.current) localVideoRef.current.srcObject = null
+    if (remoteVideoRef.current) remoteVideoRef.current.srcObject = null
     callPeerUserIdRef.current = null
     callDossierIdRef.current = null
     setIncomingCall(null)
@@ -354,7 +404,7 @@ export const Home = () => {
     if (localStreamRef.current) return localStreamRef.current
     const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true })
     localStreamRef.current = stream
-    if (localVideoRef.current) localVideoRef.current.srcObject = stream
+    setMediaVersion((n) => n + 1)
     return stream
   }
 
@@ -366,7 +416,8 @@ export const Home = () => {
       }
     }
     pc.ontrack = (event) => {
-      if (remoteVideoRef.current) remoteVideoRef.current.srcObject = event.streams[0]
+      remoteStreamRef.current = event.streams[0]
+      setMediaVersion((n) => n + 1)
     }
     peerConnectionRef.current = pc
     return pc
@@ -383,7 +434,7 @@ export const Home = () => {
     setCallStatus('in-call')
   }
 
-  async function handleSignal(fromUserId, data) {
+  async function traiterSignal(fromUserId, data) {
     let pc = peerConnectionRef.current
     if (!pc) {
       // Callee side: the first signal we ever receive is the caller's offer.
@@ -393,6 +444,19 @@ export const Home = () => {
     }
     if (data.sdp) {
       await pc.setRemoteDescription(new RTCSessionDescription(data.sdp))
+
+      // La description distante est posee : les candidats mis de cote peuvent
+      // enfin etre appliques, dans leur ordre d'arrivee.
+      const enAttente = pendingCandidatesRef.current
+      pendingCandidatesRef.current = []
+      for (const candidate of enAttente) {
+        try {
+          await pc.addIceCandidate(new RTCIceCandidate(candidate))
+        } catch (err) {
+          console.error('addIceCandidate (file) a echoue', err)
+        }
+      }
+
       if (data.sdp.type === 'offer') {
         const answer = await pc.createAnswer()
         await pc.setLocalDescription(answer)
@@ -400,12 +464,25 @@ export const Home = () => {
       }
       setCallStatus('in-call')
     } else if (data.candidate) {
+      if (!pc.remoteDescription) {
+        pendingCandidatesRef.current.push(data.candidate)
+        return
+      }
       try {
         await pc.addIceCandidate(new RTCIceCandidate(data.candidate))
       } catch (err) {
-        console.error('addIceCandidate failed', err)
+        console.error('addIceCandidate a echoue', err)
       }
     }
+  }
+
+  // Les signaux sont traites un par un : deux attentes concurrentes pouvaient
+  // sinon poser un candidat alors que la description distante n'etait pas
+  // encore appliquee, et le perdre.
+  function handleSignal(fromUserId, data) {
+    signalQueueRef.current = signalQueueRef.current
+      .then(() => traiterSignal(fromUserId, data))
+      .catch((err) => console.error('traitement du signal a echoue', err))
   }
 
   async function startCall() {
@@ -583,9 +660,15 @@ export const Home = () => {
       </Sidebar>
 
       <SidebarInset>
-        <ResizablePanelGroup direction="horizontal" className="h-screen">
-          <ResizablePanel defaultSize={25} minSize={20} className="flex-grow">
-            <div className="flex flex-col h-screen border ml-1">
+        <ResizablePanelGroup direction="horizontal" className="h-dvh">
+          {/* Les panneaux ont flex-basis:0, donc masquer l'un laisse l'autre
+              occuper toute la largeur sans reglage supplementaire. */}
+          <ResizablePanel
+            defaultSize={25}
+            minSize={20}
+            className={`flex-grow ${activeDossierId ? 'hidden md:block' : ''}`}
+          >
+            <div className="flex flex-col h-full border ml-1">
               <div className="h-10 px-2 py-4 flex items-center">
                 <p className="ml-1">{t('patient.messages.title')}</p>
               </div>
@@ -667,10 +750,10 @@ export const Home = () => {
             </div>
           </ResizablePanel>
 
-          <ResizableHandle />
+          <ResizableHandle className="hidden md:flex" />
 
-          <ResizablePanel defaultSize={75} minSize={40}>
-            <div className="flex flex-col justify-between h-screen ml-1 pb-2">
+          <ResizablePanel defaultSize={75} minSize={40} className={activeDossierId ? '' : 'hidden md:block'}>
+            <div className="flex flex-col justify-between h-full ml-1 pb-2">
               {!activeContact ? (
                 <div className="flex-1 flex items-center justify-center text-muted-foreground text-sm px-6 text-center">
                   {loadingContacts ? t('patient.messages.loading') : t('patient.messages.empty')}
@@ -678,7 +761,16 @@ export const Home = () => {
               ) : (
                 <>
                   <div className="h-16 border-b flex items-center px-3">
-                    <Avatar className="size-12">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={retourListe}
+                      aria-label={t('chat.backToList')}
+                      className="md:hidden shrink-0 -ml-1 mr-1"
+                    >
+                      <ChevronLeft />
+                    </Button>
+                    <Avatar className="size-12 shrink-0">
                       {activeCounterpart?.avatarUrl && <AvatarImage src={activeCounterpart.avatarUrl} />}
                       <AvatarFallback>{activeCounterpart?.fullName?.[0] || '?'}</AvatarFallback>
                     </Avatar>
@@ -876,7 +968,7 @@ export const Home = () => {
                   {callStatus === 'connecting' && t('chat.connecting')}
                   {callStatus === 'in-call' && t('chat.inCall')}
                 </p>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <video ref={localVideoRef} autoPlay muted playsInline className="w-full rounded-lg bg-black aspect-video" />
                   <video ref={remoteVideoRef} autoPlay playsInline className="w-full rounded-lg bg-black aspect-video" />
                 </div>

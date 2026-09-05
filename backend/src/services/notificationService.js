@@ -64,6 +64,19 @@ const TEMPLATES = {
     subject: 'Réinitialisation de votre mot de passe IMSOP',
     body: (ctx) => `Bonjour ${ctx.name},\n\nVous avez demandé la réinitialisation de votre mot de passe. Ce lien est valable 1 heure :\n${ctx.resetUrl}\n\nSi vous n'êtes pas à l'origine de cette demande, ignorez cet e-mail.\n\nL'équipe IMSOP`,
   },
+  CONSENTEMENT_OTP: {
+    // Meme raisonnement que DEUX_FACTEURS : un code n'a pas a etre conserve
+    // dans le centre de notifications.
+    courrielSeulement: true,
+    subject: 'Confirmez la signature de votre consentement IMSOP',
+    body: (ctx) => `Bonjour ${ctx.name},
+
+Votre code de confirmation pour signer le consentement de votre demande de second avis est : ${ctx.code}
+
+Ce code est valable 10 minutes. Si vous n'êtes pas à l'origine de cette demande, ignorez ce message et changez votre mot de passe.
+
+L'équipe IMSOP`,
+  },
   VERIFICATION_EMAIL: {
     subject: 'Vérifiez votre adresse e-mail IMSOP',
     body: (ctx) => `Bonjour ${ctx.name},\n\nVotre code de vérification est : ${ctx.code}\n\nCe code est valable 15 minutes.\n\nL'équipe IMSOP`,

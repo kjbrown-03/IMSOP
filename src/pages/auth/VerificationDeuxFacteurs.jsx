@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '../../store/useAuthStore'
 import { ROLE_REDIRECTS } from '../../constants/roleRedirects'
+import { useTransitionStore } from '../../store/useTransitionStore'
 
 export default function VerificationDeuxFacteurs() {
   const navigate = useNavigate()
@@ -12,6 +13,7 @@ export default function VerificationDeuxFacteurs() {
   const error = useAuthStore((s) => s.error)
   const loading = useAuthStore((s) => s.loading)
   const [code, setCode] = useState('')
+  const jouerTransition = useTransitionStore((s) => s.jouer)
 
   const { challengeToken, role } = location.state || {}
 
@@ -19,7 +21,10 @@ export default function VerificationDeuxFacteurs() {
     e.preventDefault()
     if (!challengeToken) return
     const result = await verifyTwoFactor(challengeToken, code)
-    if (result.ok) navigate(ROLE_REDIRECTS[role] || '/')
+    if (result.ok) {
+      jouerTransition()
+      navigate(ROLE_REDIRECTS[role] || '/')
+    }
   }
 
   if (!challengeToken) {

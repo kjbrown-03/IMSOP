@@ -3,13 +3,43 @@ const { prisma } = require('../lib/prisma')
 const { putObject } = require('../lib/s3')
 const { logAction } = require('../services/auditService')
 const { loadDossierWithAccessCheck } = require('./dossiers.controller')
+const { verifierJetonConsentement } = require('./auth.controller')
 const { buildConsentementPdf } = require('../lib/consentementPdf')
+const { correspondAuTitulaire } = require('../lib/nomSignataire')
 
 async function createConsentement(req, res) {
   const { dossier, error, message } = await loadDossierWithAccessCheck(req, req.params.dossierId)
   if (error) return res.status(error).json({ message })
 
-  const { type, accepted, nomSignataire } = req.body
+  const { type, accepted, nomSignataire, otpToken } = req.body
+
+  // Signer sous un autre nom que celui du compte produirait un document dont
+  // le signataire ne correspond a personne. Verifie avant le code : inutile de
+  // faire demander un code pour une signature de toute facon irrecevable.
+  if (type === 'TRANSMISSION_SPECIALISTE' && accepted) {
+    const titulaire = await prisma.user.findUnique({
+      where: { id: req.userId },
+      select: { fullName: true },
+    })
+    if (!correspondAuTitulaire(nomSignataire, titulaire?.fullName)) {
+      return res.status(400).json({
+        message: 'La signature doit reprendre le nom complet du titulaire du compte.',
+        errors: [{ field: 'nomSignataire', message: `Nom attendu : ${titulaire?.fullName ?? '—'}` }],
+      })
+    }
+  }
+
+  // Le nom tape dans le formulaire ne prouve pas qui signe : une session
+  // laissee ouverte suffirait. Le consentement qui engage la demande - et le
+  // paiement qui suit - exige donc que le titulaire ait valide le code envoye
+  // a l'adresse de son compte. La verification est refaite ici, cote serveur :
+  // l'appel a /auth/consentement/code/verify seul ne protegerait rien, rien
+  // n'empechant d'appeler cette route directement.
+  if (type === 'TRANSMISSION_SPECIALISTE' && accepted && !verifierJetonConsentement(otpToken, req.userId)) {
+    return res.status(403).json({
+      message: 'Confirmation par e-mail requise : demandez un code et saisissez-le avant de signer',
+    })
+  }
 
   // Le patient consent pour son propre dossier ; un médecin traitant ne peut
   // consentir que pour SA PROPRE demande (patient anonymisé, aucun compte

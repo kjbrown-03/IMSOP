@@ -38,7 +38,8 @@
     "showPassword": "Afficher le mot de passe",
     "hidePassword": "Masquer le mot de passe",
     "anonymousPatient": "Patient anonymisé",
-    "yearsOld": "{{age}} ans"
+    "yearsOld": "{{age}} ans",
+    "backHome": "Retour à l'accueil"
   },
   "public": {
     "home": {
@@ -851,7 +852,19 @@
     "checkboxLabel": "J'ai lu et j'accepte que mes données de santé soient transmises par la plateforme IMSOP au spécialiste assigné, à la coordination médicale et, si désigné, à mon médecin traitant.",
     "signatureLabel": "Nom complet (signature électronique)",
     "signaturePlaceholder": "Tapez votre nom complet pour signer",
-    "required": "Vous devez accepter les conditions et signer avant de pouvoir envoyer la demande."
+    "required": "Vous devez accepter les conditions et signer avant de pouvoir envoyer la demande.",
+    "otpIntro": "Dernière étape : nous devons confirmer que c'est bien vous qui signez. Recevez un code à l'adresse e-mail de votre compte.",
+    "otpSend": "Recevoir le code par e-mail",
+    "otpResend": "Renvoyer un code",
+    "otpSent": "Code envoyé à {{email}}. Il est valable 10 minutes.",
+    "otpPlaceholder": "000000",
+    "otpVerify": "Vérifier",
+    "otpConfirmed": "Signature confirmée par e-mail.",
+    "otpRequired": "Confirmez votre signature avec le code reçu par e-mail avant de continuer.",
+    "otpSendError": "Impossible d'envoyer le code. Réessayez dans un instant.",
+    "otpVerifyError": "Code invalide ou expiré.",
+    "signatureHint": "Saisissez votre nom complet tel qu'il figure sur votre compte : {{nom}}",
+    "signatureMismatch": "La signature doit reprendre le nom du titulaire du compte : {{nom}}"
   },
   "temoignage": {
     "title": "Laisser un commentaire",
@@ -979,7 +992,8 @@
     "hangUp": "Raccrocher",
     "callNoAnswer": "Pas de réponse. Réessayez plus tard ou laissez un message.",
     "callNotAllowed": "Vous ne pouvez pas appeler cette personne : elle n'est pas rattachée à ce dossier.",
-    "callFailed": "L'appel n'a pas pu être établi."
+    "callFailed": "L'appel n'a pas pu être établi.",
+    "backToList": "Revenir à la liste des conversations"
   },
   "medecin": {
     "login": {

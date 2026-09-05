@@ -65,6 +65,12 @@ const verifyEmail = {
   }).strict(),
 }
 
+const verifierCodeConsentement = {
+  body: z.object({
+    code: z.string().regex(/^\d{6}$/, 'Le code doit contenir 6 chiffres'),
+  }).strict(),
+}
+
 const registerMedecinLocal = {
   body: z.object({
     fullName: z.string().trim().min(2).max(200),
@@ -81,5 +87,5 @@ const registerMedecinLocal = {
 module.exports = {
   registerMedecinLocal,
   registerPatient, login, verifyTwoFactor, refresh, logout,
-  forgotPassword, resetPassword, verifyEmail,
+  forgotPassword, resetPassword, verifyEmail, verifierCodeConsentement,
 }

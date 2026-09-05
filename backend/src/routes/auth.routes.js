@@ -17,6 +17,10 @@ router.post('/forgot-password', authLimiter, validate(schema.forgotPassword), ct
 router.post('/reset-password', authLimiter, validate(schema.resetPassword), ctrl.resetPassword)
 router.post('/verify-email', authenticate, validate(schema.verifyEmail), ctrl.verifyEmail)
 router.post('/verify-email/resend', authenticate, authLimiter, ctrl.resendEmailVerification)
+// Confirmation par code de la signature du consentement, juste avant le
+// paiement. Sous authLimiter comme les autres envois de code.
+router.post('/consentement/code', authenticate, authLimiter, ctrl.envoyerCodeConsentement)
+router.post('/consentement/code/verify', authenticate, authLimiter, validate(schema.verifierCodeConsentement), ctrl.verifierCodeConsentement)
 router.get('/me', authenticate, ctrl.me)
 
 module.exports = router

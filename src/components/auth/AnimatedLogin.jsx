@@ -3,8 +3,9 @@ import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '../../store/useAuthStore';
 import { ROLE_REDIRECTS } from '../../constants/roleRedirects';
+import { useTransitionStore } from '../../store/useTransitionStore';
 import AppInput from '../ui/AppInput';
-import { Sun, Moon } from 'lucide-react';
+import { ArrowLeft, Sun, Moon } from 'lucide-react';
 
 // Full-page navigations (not XHR), so a plain relative href is enough: Vite's
 // dev proxy forwards /api/* to the backend the same way it does for fetch
@@ -61,6 +62,7 @@ const ROLE_LINKS = {
 const AnimatedLogin = ({ role = 'PATIENT' }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const jouerTransition = useTransitionStore((s) => s.jouer);
   const [searchParams] = useSearchParams();
   const login = useAuthStore((s) => s.login);
   const error = useAuthStore((s) => s.error);
@@ -101,6 +103,7 @@ const AnimatedLogin = ({ role = 'PATIENT' }) => {
     if (result?.twoFactorRequired) {
       navigate('/verification-2fa', { state: { challengeToken: result.challengeToken, role } });
     } else if (result?.ok) {
+      jouerTransition();
       navigate(ROLE_REDIRECTS[role] || '/');
     }
   }
@@ -128,6 +131,18 @@ const AnimatedLogin = ({ role = 'PATIENT' }) => {
           />
           
           <div className="relative z-10 w-full max-w-sm mx-auto">
+            {/* Une page de connexion est souvent la premiere page ouverte, via
+                un lien direct ou un signet. Sans ce retour, l'accueil n'etait
+                atteignable qu'avec le bouton du navigateur - et pas du tout
+                quand l'onglet venait d'etre ouvert sur cette adresse. */}
+            <Link
+              to="/"
+              className="inline-flex items-center gap-1.5 mb-6 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              {t('common.backHome')}
+            </Link>
+
             <div className="text-center mb-8">
               <h1 className='text-3xl md:text-4xl font-extrabold text-[var(--color-heading)] tracking-tight mb-2'>
                 {info.title}

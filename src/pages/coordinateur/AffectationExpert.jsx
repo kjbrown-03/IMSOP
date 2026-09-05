@@ -54,7 +54,7 @@ export default function AffectationExpert() {
   return (
     <div className="antialiased min-h-screen flex flex-col items-center bg-background text-on-background">
       <div className="w-full max-w-[1200px] flex-grow flex flex-col relative pb-20 md:pb-0">
-        <header className="flex justify-between items-center px-margin-mobile md:px-margin-desktop h-12 w-full z-50 bg-surface border-b border-outline-variant fixed top-0 max-w-[1200px] mx-auto">
+        <header className="flex justify-between items-center px-margin-mobile md:px-margin-desktop h-12 w-full z-50 bg-surface border-b border-outline-variant fixed top-0 left-0 right-0 max-w-[1200px] mx-auto">
           <button
             onClick={() => navigate('/coordinateur/tableau-de-bord')}
             className="text-primary hover:bg-surface-container-low transition-colors duration-200 p-2 rounded-full flex items-center justify-center"

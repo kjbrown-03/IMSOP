@@ -34,6 +34,8 @@ export default function DocumentsUpload() {
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState(null)
   const [consentementAccepte, setConsentementAccepte] = useState(false)
+  // Preuve que le code envoye par e-mail a bien ete verifie.
+  const [otpToken, setOtpToken] = useState(null)
   const [nomSignataire, setNomSignataire] = useState('')
 
   useEffect(() => {
@@ -88,6 +90,10 @@ export default function DocumentsUpload() {
       setError(t('consentement.required'))
       return
     }
+    if (!otpToken) {
+      setError(t('consentement.otpRequired'))
+      return
+    }
     setSubmitting(true)
     setError(null)
     try {
@@ -98,6 +104,7 @@ export default function DocumentsUpload() {
         type: 'TRANSMISSION_SPECIALISTE',
         accepted: true,
         nomSignataire: nomSignataire.trim(),
+        otpToken,
       })
       await api.post(`/dossiers/${dossierId}/soumettre`)
       navigate('/patient/paiement', { state: { dossierId } })
@@ -305,6 +312,8 @@ export default function DocumentsUpload() {
             onAcceptedChange={setConsentementAccepte}
             nomSignataire={nomSignataire}
             onNomChange={setNomSignataire}
+            otpToken={otpToken}
+            onOtpTokenChange={setOtpToken}
             disabled={submitting}
           />
         </div>
@@ -321,7 +330,7 @@ export default function DocumentsUpload() {
             className="flex-[2] md:flex-1 bg-slate-900 dark:bg-white hover:bg-primary-600 dark:hover:bg-primary-500 text-white dark:text-slate-900 dark:hover:text-white font-bold py-3.5 px-6 rounded-xl transition-all flex items-center justify-center gap-2 shadow-md shadow-slate-900/10 group disabled:opacity-60"
             type="button"
             onClick={handleContinue}
-            disabled={submitting || !consentementAccepte || nomSignataire.trim().length < 2}
+            disabled={submitting || !consentementAccepte || nomSignataire.trim().length < 2 || !otpToken}
           >
             {submitting ? t('patient.documents.submitting') : t('patient.documents.finish')}
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />

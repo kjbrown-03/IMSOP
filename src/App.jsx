@@ -1,7 +1,9 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import ProtectedRoute from './components/ProtectedRoute'
 import Placeholder from './pages/Placeholder'
+import SplashScreen from './components/Splashscreen'
+import TransitionDamier from './components/ui/TransitionDamier'
 import { useThemeStore } from './store/useThemeStore'
 import { useAuthStore } from './store/useAuthStore'
 import { getCallSocket } from './lib/socket'
@@ -55,12 +57,21 @@ import MessagerieCoordinateur from './pages/coordinateur/MessagerieCoordinateur'
 import CoordinateurTemoignages from './pages/coordinateur/CoordinateurTemoignages'
 
 export default function App() {
+  // Passe à true une fois les vérifications initiales faites. Aujourd'hui
+  // rien de vraiment asynchrone à attendre : useAuthStore lit la session
+  // depuis le localStorage de façon synchrone (voir useAuthStore.js), donc
+  // ça bascule quasi immédiatement. Le SplashScreen reste affiché son délai
+  // minimum quoi qu'il arrive (voir sa propre logique interne) - mais le
+  // jour où un vrai contrôle serveur (ex. validation du token via
+  // /api/auth/me) s'ajoutera ici, il suffira de retarder ce `setIsAppReady`.
+  const [isAppReady, setIsAppReady] = useState(false)
   const initTheme = useThemeStore((state) => state.initTheme)
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
   const userId = useAuthStore((s) => s.user?.id)
 
   useEffect(() => {
     initTheme()
+    setIsAppReady(true)
   }, [initTheme])
 
   // The call-signaling connection tracks whether this person is reachable
@@ -80,7 +91,17 @@ export default function App() {
   }, [isAuthenticated, userId])
 
   return (
-    <Routes>
+    <>
+      {/* Toujours monté au-dessus des routes : il gère lui-même son délai
+          minimum d'affichage et son fondu de sortie, puis se démonte. Les
+          routes restent montées en dessous pendant ce temps, pas de
+          re-montage brutal une fois le splash retiré. */}
+      <SplashScreen isLoading={!isAppReady} />
+
+      {/* Monté une seule fois pour toute l'application : l'écran d'arrivée n'a
+          rien à déclencher, le damier se retire par-dessus lui. */}
+      <TransitionDamier />
+      <Routes>
       {/* Public */}
       <Route path="/" element={<Accueil />} />
       <Route path="/accueil-v2" element={<AccueilV2 />} />
@@ -384,6 +405,7 @@ export default function App() {
       />
 
       <Route path="*" element={<Placeholder title="Page introuvable" />} />
-    </Routes>
+      </Routes>
+    </>
   )
 }

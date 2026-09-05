@@ -96,7 +96,10 @@ export default function DashboardShell({
   return (
     <div
       className={cn(
-        'flex flex-col md:flex-row w-full h-screen overflow-hidden font-sans antialiased',
+        // h-dvh et non h-screen : sur mobile 100vh inclut la zone masquee par la
+        // barre d'URL, donc le bas du contenu tombait hors de l'ecran sans moyen
+        // de l'atteindre, le conteneur etant en overflow-hidden.
+        'flex flex-col md:flex-row w-full h-dvh overflow-hidden font-sans antialiased',
         'bg-slate-100 dark:bg-neutral-800 text-slate-900 dark:text-neutral-100 selection:bg-primary-500/30',
       )}
     >

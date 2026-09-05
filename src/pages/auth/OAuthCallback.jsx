@@ -5,6 +5,7 @@ import { Loader2 } from 'lucide-react';
 import { api } from '../../lib/api';
 import { useAuthStore } from '../../store/useAuthStore';
 import { ROLE_REDIRECTS } from '../../constants/roleRedirects';
+import { useTransitionStore } from '../../store/useTransitionStore';
 
 // The backend redirects here as a full page navigation after Google/LinkedIn
 // hand back an authenticated user, with tokens in the URL *hash* rather than
@@ -49,6 +50,7 @@ export default function OAuthCallback() {
           headers: { Authorization: `Bearer ${accessToken}` },
         });
         useAuthStore.getState()._persistSession({ accessToken, refreshToken, user });
+        useTransitionStore.getState().jouer();
         navigate(ROLE_REDIRECTS[user.role] || '/', { replace: true });
       } catch {
         setError(t('auth.oauth.callbackFailed'));

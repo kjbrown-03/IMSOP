@@ -56,6 +56,49 @@
   scrollbar-width: none;
 }
 
+/* SplashScreen — concept "carte + pin" : le trait en pointillés reliant
+   l'Afrique à l'international défile en boucle, pour donner le sens du
+   trajet même quand le point voyageur est entre deux positions.
+   `stroke-dashoffset` est animé plutôt que le tracé lui-même : le trait
+   reste immobile, seuls les tirets glissent le long de la courbe. La valeur
+   de fin doit être un multiple du motif `dasharray` (3 + 4 = 7) pour que la
+   boucle soit invisible - 70 = 10 motifs entiers. */
+@keyframes imsop-splash-pointilles {
+  from { stroke-dashoffset: 0; }
+  to { stroke-dashoffset: -70; }
+}
+
+.splash-route {
+  animation: imsop-splash-pointilles 4s linear infinite;
+}
+
+/* Lettres du mot IMSOP et sous-titre : invisibles au départ, chacune se
+   révèle à son propre délai (posé en style inline par le composant) au fur
+   et à mesure que le dossier voyage - jamais toutes d'un coup. `forwards`
+   garde la lettre visible une fois apparue, même quand le point relance sa
+   boucle ensuite. */
+@keyframes imsop-splash-fade-up {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.splash-fade-up {
+  opacity: 0;
+  animation: imsop-splash-fade-up 0.45s ease-out forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .splash-route {
+    animation: none;
+  }
+
+  .splash-fade-up {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
 :root {
   /* Shadcn custom vars */
   --color-bg: #f8fafc;
@@ -181,4 +224,37 @@
   
   --color-status-error: #f28b82;
   --color-status-warning: #fdd663;
+}
+
+/* Transition de damier à l'entrée d'un espace connecté (voir
+   TransitionDamier.jsx). Chaque case recouvre l'écran puis se retire à son
+   propre délai : le décalage d'une case sur deux fait lire le damier, là où un
+   délai posé uniquement par colonne ne donnerait qu'un rideau. La case rétrécit
+   en même temps qu'elle s'efface, ce qui ouvre les jours entre les cases
+   voisines au lieu d'un simple fondu. */
+@keyframes imsop-damier-sortie {
+  from { opacity: 1; transform: scale(1); }
+  to { opacity: 0; transform: scale(0.62); }
+}
+
+.damier-case {
+  /* Durée et délai sont posés en style inline par le composant : ils découlent
+     tous deux du même réglage de rythme, les réécrire ici en ferait une
+     seconde source de vérité à tenir à jour en parallèle.
+
+     `both` et non `forwards` : la partie "backwards" garde la case opaque
+     pendant son délai d'attente - sans elle, la case laisserait voir l'écran
+     avant même d'avoir commencé à se retirer. Attention, `forwards backwards`
+     n'existe pas : deux valeurs de fill-mode dans un raccourci `animation`
+     rendent toute la déclaration invalide et rien ne se joue. */
+  animation-name: imsop-damier-sortie;
+  animation-timing-function: ease-in;
+  animation-fill-mode: both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .damier-case {
+    animation: none;
+    opacity: 0;
+  }
 }

@@ -68,6 +68,8 @@ export default function NouvelleDemandeMedecin() {
   const [envoi, setEnvoi] = useState(false)
   const [erreur, setErreur] = useState(null)
   const [consentementAccepte, setConsentementAccepte] = useState(false)
+  // Preuve que le code envoye par e-mail a bien ete verifie.
+  const [otpToken, setOtpToken] = useState(null)
   const [nomSignataire, setNomSignataire] = useState('')
 
   const modifier = (nom) => (e) => setChamps((c) => ({ ...c, [nom]: e.target.value }))
@@ -84,7 +86,8 @@ export default function NouvelleDemandeMedecin() {
     champs.motif.trim() &&
     champs.question.trim() &&
     consentementAccepte &&
-    nomSignataire.trim().length >= 2
+    nomSignataire.trim().length >= 2 &&
+    otpToken
 
   async function envoyer(e) {
     e.preventDefault()
@@ -112,6 +115,7 @@ export default function NouvelleDemandeMedecin() {
         type: 'TRANSMISSION_SPECIALISTE',
         accepted: true,
         nomSignataire: nomSignataire.trim(),
+        otpToken,
       })
 
       for (const fichier of fichiers) {
@@ -283,6 +287,8 @@ export default function NouvelleDemandeMedecin() {
           onAcceptedChange={setConsentementAccepte}
           nomSignataire={nomSignataire}
           onNomChange={setNomSignataire}
+          otpToken={otpToken}
+          onOtpTokenChange={setOtpToken}
           disabled={envoi}
         />
 

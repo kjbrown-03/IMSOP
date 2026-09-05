@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Navigate, useNavigate } from 'react-router-dom'
 import { useTranslation, Trans } from 'react-i18next'
 import { useAuthStore } from '../../store/useAuthStore'
+import { useTransitionStore } from '../../store/useTransitionStore'
 
 export default function VerificationEmail() {
   const navigate = useNavigate()
@@ -13,6 +14,7 @@ export default function VerificationEmail() {
   const loading = useAuthStore((s) => s.loading)
   const [code, setCode] = useState('')
   const [resent, setResent] = useState(false)
+  const jouerTransition = useTransitionStore((s) => s.jouer)
 
   if (!user) {
     return (
@@ -29,7 +31,10 @@ export default function VerificationEmail() {
   async function onSubmit(e) {
     e.preventDefault()
     const result = await verifyEmailCode(code)
-    if (result.ok) navigate('/patient/dossiers')
+    if (result.ok) {
+      jouerTransition()
+      navigate('/patient/dossiers')
+    }
   }
 
   async function onResend() {

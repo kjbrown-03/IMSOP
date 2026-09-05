@@ -38,7 +38,8 @@
     "showPassword": "Show password",
     "hidePassword": "Hide password",
     "anonymousPatient": "Anonymised patient",
-    "yearsOld": "{{age}} years old"
+    "yearsOld": "{{age}} years old",
+    "backHome": "Back to home"
   },
   "public": {
     "home": {
@@ -851,7 +852,19 @@
     "checkboxLabel": "I have read and I accept that my health data will be transmitted by the IMSOP platform to the assigned specialist, the medical coordination team and, if designated, my treating doctor.",
     "signatureLabel": "Full name (electronic signature)",
     "signaturePlaceholder": "Type your full name to sign",
-    "required": "You must accept the conditions and sign before you can send the request."
+    "required": "You must accept the conditions and sign before you can send the request.",
+    "otpIntro": "One last step: we need to confirm it is really you signing. Get a code at your account email address.",
+    "otpSend": "Send me the code by email",
+    "otpResend": "Send a new code",
+    "otpSent": "Code sent to {{email}}. It is valid for 10 minutes.",
+    "otpPlaceholder": "000000",
+    "otpVerify": "Verify",
+    "otpConfirmed": "Signature confirmed by email.",
+    "otpRequired": "Confirm your signature with the code sent to your email before continuing.",
+    "otpSendError": "Could not send the code. Try again in a moment.",
+    "otpVerifyError": "Invalid or expired code.",
+    "signatureHint": "Type your full name as it appears on your account: {{nom}}",
+    "signatureMismatch": "The signature must match the account holder's name: {{nom}}"
   },
   "temoignage": {
     "title": "Leave a comment",
@@ -979,7 +992,8 @@
     "hangUp": "Hang up",
     "callNoAnswer": "No answer. Try again later or leave a message.",
     "callNotAllowed": "You cannot call this person: they are not attached to this case.",
-    "callFailed": "The call could not be established."
+    "callFailed": "The call could not be established.",
+    "backToList": "Back to the conversation list"
   },
   "medecin": {
     "login": {
