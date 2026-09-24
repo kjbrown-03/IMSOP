@@ -1,7 +1,8 @@
 # Déployer IMSOP sur un VPS
 
-Écrit pour un VPS Hostinger KVM 2 sous Ubuntu 24.04 LTS, mais rien n'y est
-propre à Hostinger : n'importe quel serveur Ubuntu avec un accès root convient.
+Écrit pour un VPS Hostinger KVM 2 sous Ubuntu 26.04 LTS, mais rien n'y est
+propre à Hostinger : n'importe quel serveur Ubuntu récent avec un accès root
+convient.
 
 La pile tourne en conteneurs (backend, PostgreSQL, MinIO), sauf **nginx** qui
 reste sur l'hôte : c'est lui qui porte le certificat TLS et qui est le seul
@@ -20,13 +21,13 @@ Internet ──443──> nginx (hôte) ──┬── /          → dist/ (bu
 ## 1. Créer le serveur
 
 Sur l'écran « Choose what to install » de Hostinger : onglet **Plain OS →
-Ubuntu** (24.04 LTS).
+Ubuntu** (la dernière LTS proposée).
 
 **Ne prends pas de panneau de contrôle** (CyberPanel, Plesk, CloudPanel). Ils
 installent leur propre nginx et s'approprient les ports 80 et 443, ce qui entre
 en conflit avec la configuration ci-dessous. L'onglet « Applications » propose
-aussi une image Docker préinstallée : elle fait gagner l'étape 3, mais rien de
-plus.
+aussi une image Docker préinstallée ; l'option « Docker manager » de l'écran
+suivant fait la même chose et évite l'étape 3.
 
 Choisis un centre de données proche de tes utilisateurs. Pour le Cameroun, une
 localisation européenne donne la meilleure latence disponible aujourd'hui.
@@ -47,19 +48,34 @@ usermod -aG sudo imsop
 rsync --archive --chown=imsop:imsop ~/.ssh /home/imsop/
 ```
 
-Puis, dans `/etc/ssh/sshd_config` :
+> **Ouvre une deuxième fenêtre de terminal et connecte-toi en `imsop@` avant
+> d'aller plus loin.** La suite coupe l'accès root : si quelque chose cloche, la
+> session déjà ouverte est ce qui te permettra de réparer.
 
-```
-PermitRootLogin no
-PasswordAuthentication no
-```
+Le durcissement passe par un fichier déposé dans `sshd_config.d/`, pas par une
+modification de `sshd_config`. OpenSSH retient la **première** valeur lue pour
+chaque réglage, et l'inclusion de ce dossier est en tête du fichier principal :
+un fichier nommé `00-` l'emporte donc sur tout le reste, y compris sur ce que
+l'hébergeur a pu y déposer.
 
 ```bash
-systemctl restart ssh
+sudo tee /etc/ssh/sshd_config.d/00-imsop.conf > /dev/null <<'EOF'
+PermitRootLogin no
+PasswordAuthentication no
+KbdInteractiveAuthentication no
+EOF
+
+sudo sshd -t && sudo systemctl restart ssh
 ```
 
-> Avant de fermer cette session, ouvre-en une seconde en `imsop@` pour vérifier
-> que tu entres bien. Si tu te trompes, tu gardes la première pour réparer.
+Vérifie ce que le serveur applique réellement — c'est la seule source qui fasse
+foi :
+
+```bash
+sudo sshd -T | grep -E '^(permitrootlogin|passwordauthentication)'
+```
+
+Les deux doivent répondre `no`.
 
 Le pare-feu ne laisse passer que SSH et le web :
 
@@ -74,8 +90,22 @@ ufw enable
 
 ## 3. Docker
 
+L'option « Docker manager » de Hostinger l'installe à la création du VPS.
+Vérifie :
+
+```bash
+docker --version
+```
+
+S'il manque :
+
 ```bash
 curl -fsSL https://get.docker.com | sh
+```
+
+Dans tous les cas, autorise l'utilisateur non privilégié à s'en servir :
+
+```bash
 sudo usermod -aG docker imsop
 newgrp docker            # ou se reconnecter
 ```
@@ -136,8 +166,8 @@ npm ci
 NODE_OPTIONS=--max-old-space-size=4096 npm run build     # produit dist/
 ```
 
-> Sur un VPS à 4 Go, ce `NODE_OPTIONS` évite un `Fatal process out of memory`
-> pendant le build.
+> Le build Vite a déjà épuisé la mémoire par défaut de Node sur cette base de
+> code : ce `NODE_OPTIONS` évite un `Fatal process out of memory`.
 
 Puis la pile applicative :
 
