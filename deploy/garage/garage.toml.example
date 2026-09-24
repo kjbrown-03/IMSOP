@@ -1,0 +1,43 @@
+# =============================================================================
+# Garage — stockage objet compatible S3, à la place de MinIO.
+#
+# MinIO a fermé l'accès public à ses images Docker : elles ne sont plus
+# téléchargeables, ni sur Docker Hub ni sur Quay. Garage est libre, maintenu,
+# et parle le même dialecte S3 que l'application attend — elle n'utilise que
+# cinq opérations (Put, Get, Delete, HeadBucket, CreateBucket) et les URL
+# signées, toutes couvertes.
+#
+# À faire avant usage : copier en `garage.toml` et remplacer les deux secrets.
+#   cp garage.toml.example garage.toml
+#   sed -i "s|REMPLACER_RPC_SECRET|$(openssl rand -hex 32)|"   garage.toml
+#   sed -i "s|REMPLACER_ADMIN_TOKEN|$(openssl rand -hex 32)|" garage.toml
+#   chmod 600 garage.toml
+# =============================================================================
+
+metadata_dir = "/var/lib/garage/meta"
+data_dir = "/var/lib/garage/data"
+
+# LMDB plutôt que SQLite : c'est le moteur recommandé pour les métadonnées, et
+# il tient sans peine le volume d'un service de second avis médical.
+db_engine = "lmdb"
+
+# Un seul nœud, donc une seule copie de chaque objet. C'est le point faible de
+# cette installation : le disque du VPS est le seul endroit où vivent les
+# documents. La sauvegarde régulière n'est pas une précaution, c'est la
+# condition pour que ce choix soit tenable.
+replication_factor = 1
+
+rpc_bind_addr = "[::]:3901"
+rpc_public_addr = "127.0.0.1:3901"
+# Partagé entre les nœuds d'une grappe. Ici il n'y en a qu'un, mais Garage
+# l'exige quand même — 32 octets en hexadécimal.
+rpc_secret = "REMPLACER_RPC_SECRET"
+
+[s3_api]
+# Le nom de région que l'application devra déclarer dans S3_REGION.
+s3_region = "garage"
+api_bind_addr = "[::]:3900"
+
+[admin]
+api_bind_addr = "[::]:3903"
+admin_token = "REMPLACER_ADMIN_TOKEN"

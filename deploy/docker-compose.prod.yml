@@ -7,13 +7,12 @@
 #
 #     Internet ──443──> nginx (hôte) ──> 127.0.0.1:4000 ──> backend (conteneur)
 #                                                              │
-#                                                              ├── postgres (réseau interne)
-#                                                              └── stockage S3 managé (externe)
+#                                                    postgres ─┴─ garage
+#                                                    (réseau interne seulement)
 #
-# Les documents médicaux ne vivent pas sur ce serveur : ils sont confiés à un
-# stockage objet compatible S3, chez un fournisseur. La perte du VPS n'emporte
-# donc pas les dossiers des patients, et la copie hors-site est acquise par
-# construction.
+# Garage remplace MinIO, dont les images ne sont plus publiques. Il stocke les
+# documents sur le disque du VPS : leur sauvegarde régulière hors de cette
+# machine est donc indispensable, pas optionnelle.
 #
 # Lancement :   docker compose -f deploy/docker-compose.prod.yml --env-file deploy/.env.production up -d
 # Migrations :  docker compose -f deploy/docker-compose.prod.yml --env-file deploy/.env.production run --rm migrate
@@ -41,6 +40,17 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
+
+  # Stockage objet compatible S3. Aucun port publié : seul le backend lui parle,
+  # par le réseau Docker. L'exposer serait offrir les documents médicaux à qui
+  # devinerait une clé.
+  garage:
+    image: dxflrs/garage:v2.1.0
+    restart: unless-stopped
+    volumes:
+      - ./garage/garage.toml:/etc/garage.toml:ro
+      - garage_meta:/var/lib/garage/meta
+      - garage_data:/var/lib/garage/data
 
   # Applique les migrations puis se retire. Séparé du backend pour que deux
   # instances ne migrent jamais en même temps, et pour que l'échec d'une
@@ -75,6 +85,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      garage:
+        condition: service_started
     ports:
       - '127.0.0.1:4000:4000'
     volumes:
@@ -83,3 +95,5 @@ services:
 
 volumes:
   pg_data:
+  garage_meta:
+  garage_data:

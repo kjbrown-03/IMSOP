@@ -157,6 +157,58 @@ production si l'un fait moins de 32 caractères.
 
 ---
 
+## 5 bis. Le stockage des documents
+
+Garage remplace MinIO, dont les images Docker ne sont plus publiques. Il faut
+lui donner ses deux secrets, puis lui créer une clé et un bucket.
+
+```bash
+cd /opt/imsop/deploy/garage
+cp garage.toml.example garage.toml
+sed -i "s|REMPLACER_RPC_SECRET|$(openssl rand -hex 32)|"   garage.toml
+sed -i "s|REMPLACER_ADMIN_TOKEN|$(openssl rand -hex 32)|" garage.toml
+chmod 600 garage.toml
+cd /opt/imsop
+```
+
+Démarre-le seul, le temps de le provisionner :
+
+```bash
+docker compose -f deploy/docker-compose.prod.yml --env-file deploy/.env.production up -d garage
+```
+
+Un nœud neuf n'a pas encore de rôle : il faut lui en assigner un, sans quoi il
+refuse de stocker quoi que ce soit.
+
+```bash
+alias g='docker compose -f deploy/docker-compose.prod.yml --env-file deploy/.env.production exec garage /garage'
+
+g status                                   # relève l'identifiant du nœud
+g layout assign -z dc1 -c 40G <ID-DU-NOEUD>
+g layout apply --version 1
+```
+
+Puis la clé d'accès et le bucket :
+
+```bash
+g key create imsop-key                     # note les deux valeurs affichées
+g bucket create imsop
+g bucket allow --read --write --owner imsop --key imsop-key
+```
+
+`key create` affiche une **Key ID** et une **Secret key**. Reporte-les :
+
+```bash
+nano deploy/.env.production
+#   S3_ACCESS_KEY_ID=GK...
+#   S3_SECRET_ACCESS_KEY=...
+```
+
+La clé secrète n'est affichée qu'une fois. Si tu la perds, `g key info imsop-key
+--show-secret` la redonne.
+
+---
+
 ## 6. Construire et lancer
 
 Le front est un build statique, servi par nginx :
@@ -256,7 +308,11 @@ Ces points ne bloquent pas le démarrage, mais aucun ne doit être oublié :
   participants derrière des NAT symétriques (réseaux mobiles, wifi
   d'entreprise) ne se connecteront pas. Installer `coturn`, puis déclarer ses
   identifiants dans la configuration ICE de `src/components/blocks/chat-template.jsx`.
-- **Sauvegardes hors-site** — voir l'étape 9.
+- **Sauvegardes hors-site.** Elle devient critique avec Garage : les documents
+  médicaux vivent sur le seul disque du VPS, en une seule copie
+  (`replication_factor = 1`). Sa perte les emporte, et les sauvegardes locales
+  avec. Une copie vers une autre machine n'est pas une précaution, c'est la
+  condition pour que ce choix soit tenable.
 - **Analyse antivirus** des documents déposés, avant stockage.
 - **Console Google Cloud** : les URI de redirection OAuth doivent pointer sur le
   domaine de production, sans quoi la connexion Google échouera.
