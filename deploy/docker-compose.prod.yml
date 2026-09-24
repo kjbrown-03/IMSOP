@@ -7,8 +7,13 @@
 #
 #     Internet ──443──> nginx (hôte) ──> 127.0.0.1:4000 ──> backend (conteneur)
 #                                                              │
-#                                                    postgres ─┴─ minio
-#                                                    (réseau interne seulement)
+#                                                              ├── postgres (réseau interne)
+#                                                              └── stockage S3 managé (externe)
+#
+# Les documents médicaux ne vivent pas sur ce serveur : ils sont confiés à un
+# stockage objet compatible S3, chez un fournisseur. La perte du VPS n'emporte
+# donc pas les dossiers des patients, et la copie hors-site est acquise par
+# construction.
 #
 # Lancement :   docker compose -f deploy/docker-compose.prod.yml --env-file deploy/.env.production up -d
 # Migrations :  docker compose -f deploy/docker-compose.prod.yml --env-file deploy/.env.production run --rm migrate
@@ -37,43 +42,6 @@ services:
       timeout: 5s
       retries: 10
 
-  minio:
-    image: minio/minio:latest
-    restart: unless-stopped
-    command: server /data --console-address ":9001"
-    environment:
-      MINIO_ROOT_USER: ${S3_ACCESS_KEY_ID}
-      MINIO_ROOT_PASSWORD: ${S3_SECRET_ACCESS_KEY}
-    volumes:
-      - minio_data:/data
-    # La console d'administration n'est publiée que sur la boucle locale : on y
-    # accède par un tunnel SSH (ssh -L 9001:127.0.0.1:9001), pas depuis le web.
-    ports:
-      - '127.0.0.1:9001:9001'
-    healthcheck:
-      # Le point de santé HTTP de MinIO, plutôt que `mc ready local` : celui-ci
-      # suppose un alias déjà configuré dans le conteneur, ce qui n'est pas
-      # garanti. Une sonde qui échoue bloquerait le démarrage du backend.
-      test: ['CMD', 'curl', '-f', 'http://localhost:9000/minio/health/live']
-      interval: 10s
-      timeout: 5s
-      retries: 10
-
-  # Crée le bucket au premier démarrage, puis s'arrête. Sans lui, le premier
-  # dépôt de document échouerait sur un bucket inexistant.
-  minio-init:
-    image: minio/mc:latest
-    depends_on:
-      minio:
-        condition: service_healthy
-    entrypoint: >
-      sh -c "
-      mc alias set imsop http://minio:9000 ${S3_ACCESS_KEY_ID} ${S3_SECRET_ACCESS_KEY} &&
-      mc mb --ignore-existing imsop/${S3_BUCKET} &&
-      mc anonymous set none imsop/${S3_BUCKET}
-      "
-    restart: 'no'
-
   # Applique les migrations puis se retire. Séparé du backend pour que deux
   # instances ne migrent jamais en même temps, et pour que l'échec d'une
   # migration se voie tout de suite au lieu de boucler dans un redémarrage.
@@ -95,18 +63,17 @@ services:
     restart: unless-stopped
     env_file: .env.production
     environment:
-      # Ces trois-là dépendent de la topologie Docker, pas du déploiement :
+      # Ces valeurs dépendent de la topologie Docker, pas du déploiement :
       # elles sont donc écrites ici plutôt que dans le fichier d'environnement.
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
-      S3_ENDPOINT: http://minio:9000
+      # S3_ENDPOINT vient du fichier d'environnement : il pointe sur le
+      # fournisseur, pas sur un conteneur voisin.
       # Dans un conteneur, écouter sur 127.0.0.1 rendrait le service injoignable
       # même par nginx : l'isolation vient du `ports:` ci-dessous, qui ne publie
       # que sur la boucle locale de l'hôte.
       HOST: 0.0.0.0
     depends_on:
       postgres:
-        condition: service_healthy
-      minio:
         condition: service_healthy
     ports:
       - '127.0.0.1:4000:4000'
@@ -116,4 +83,3 @@ services:
 
 volumes:
   pg_data:
-  minio_data:
