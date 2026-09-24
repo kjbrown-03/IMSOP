@@ -51,7 +51,10 @@ services:
     ports:
       - '127.0.0.1:9001:9001'
     healthcheck:
-      test: ['CMD', 'mc', 'ready', 'local']
+      # Le point de santé HTTP de MinIO, plutôt que `mc ready local` : celui-ci
+      # suppose un alias déjà configuré dans le conteneur, ce qui n'est pas
+      # garanti. Une sonde qui échoue bloquerait le démarrage du backend.
+      test: ['CMD', 'curl', '-f', 'http://localhost:9000/minio/health/live']
       interval: 10s
       timeout: 5s
       retries: 10
