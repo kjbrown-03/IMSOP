@@ -66,6 +66,10 @@ services:
         condition: service_healthy
     command: ['npx', 'prisma', 'migrate', 'deploy']
     restart: 'no'
+    # Un profil met ce service à l'écart de `up -d` : il ne démarre que sur un
+    # `run --rm migrate` explicite. Sans ça, chaque démarrage de la pile
+    # relancerait une migration, et le conteneur traînerait dans la liste.
+    profiles: ['outils']
 
   backend:
     build:
