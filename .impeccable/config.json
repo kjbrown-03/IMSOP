@@ -1,0 +1,17 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "broken-image",
+        "value": "*",
+        "files": [
+          "src/pages/coordinateur/CoordinateurCandidatures.jsx"
+        ],
+        "createdAt": "2026-09-20T18:33:14.584Z",
+        "reason": "Claude: faux positif - src est une URL blob creee a l'execution (URL.createObjectURL) apres chargement authentifie ; la balise img n'est rendue que lorsque src est non nul, un avatar initiale s'affiche sinon"
+      }
+    ]
+  }
+}

@@ -17,4 +17,12 @@ const webhook = {
   }),
 }
 
-module.exports = { dossierScoped, webhook }
+// Même logique que pour CinetPay : on n'exige que l'identifiant, le reste est
+// conservé tel quel et la confiance vient de la relecture auprès de Fapshi.
+const webhookFapshi = {
+  body: z.object({
+    transId: z.string().min(1),
+  }).passthrough(),
+}
+
+module.exports = { dossierScoped, webhook, webhookFapshi }

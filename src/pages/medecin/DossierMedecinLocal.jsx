@@ -144,6 +144,7 @@ export default function DossierMedecinLocal() {
                 ['medecin.file.question', dossier.questionMedicale],
                 ['medecin.file.symptomes', dossier.symptomes],
                 ['medecin.file.antecedents', dossier.antecedents],
+                ['medecin.file.allergies', dossier.allergies],
                 ['medecin.file.traitement', dossier.traitementEnCours],
               ]
                 .filter(([, value]) => value)

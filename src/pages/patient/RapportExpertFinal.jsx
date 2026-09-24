@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import PatientShell from '../../components/layout/PatientShell'
 import { api } from '../../lib/api'
+import ConsentementsCourants from '../../components/ui/ConsentementsCourants'
 import { ArrowLeft, CheckCircle, Download, Stethoscope, Activity, FileText, ClipboardList, Clock } from 'lucide-react'
 
 export default function RapportExpertFinal() {
@@ -193,6 +194,8 @@ export default function RapportExpertFinal() {
           )}
         </div>
       )}
+
+      <ConsentementsCourants dossierId={id} />
     </PatientShell>
   )
 }

@@ -37,6 +37,33 @@ const avatarUpload = multer({
   },
 })
 
+// Candidature : deux fichiers de natures différentes dans le même envoi. La
+// photo s'affiche dans une balise <img> (donc les formats du navigateur), le CV
+// se lit et s'imprime (donc PDF). Le contrôle porte sur le champ, pas sur une
+// liste commune qui laisserait passer un PDF en guise de portrait.
+const CANDIDATURE_MIME = {
+  photo: new Set(['image/jpeg', 'image/png', 'image/webp']),
+  cv: new Set(['application/pdf']),
+}
+
+const candidatureUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 10 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    const autorises = CANDIDATURE_MIME[file.fieldname]
+    if (!autorises || !autorises.has(file.mimetype)) {
+      const err = new Error(
+        file.fieldname === 'cv'
+          ? 'Le CV doit être un fichier PDF'
+          : "Format d'image non autorisé (JPEG, PNG ou WebP uniquement)",
+      )
+      err.status = 400
+      return cb(err)
+    }
+    cb(null, true)
+  },
+})
+
 // multer's own limit errors (LIMIT_FILE_SIZE, etc.) are MulterError instances
 // without a .status, so they'd otherwise fall through to the generic 500.
 function handleUploadErrors(err, req, res, next) {
@@ -50,4 +77,4 @@ function handleUploadErrors(err, req, res, next) {
   next(err)
 }
 
-module.exports = { upload, avatarUpload, handleUploadErrors }
+module.exports = { upload, avatarUpload, candidatureUpload, handleUploadErrors }

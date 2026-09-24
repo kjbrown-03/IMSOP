@@ -8,7 +8,7 @@ const listAuditLogs = {
   }).strict(),
 }
 
-const MANAGEABLE_ROLE = z.enum(['SPECIALISTE', 'COORDINATEUR'])
+const MANAGEABLE_ROLE = z.enum(['SPECIALISTE', 'MEDECIN_LOCAL', 'COORDINATEUR'])
 
 const listUsers = {
   query: z.object({
@@ -30,6 +30,10 @@ const createUser = {
     etablissement: z.string().trim().max(200).optional(),
     langues: z.string().trim().max(200).optional(),
     bio: z.string().trim().max(2000).optional(),
+    // Propres au médecin traitant : sa ville sert la recherche de proximité,
+    // son numéro d'ordre fonde son habilitation.
+    ville: z.string().trim().max(100).optional(),
+    numeroOrdre: z.string().trim().max(100).optional(),
   }).strict(),
 }
 
@@ -47,6 +51,8 @@ const updateUser = {
     langues: z.string().trim().max(200).optional(),
     bio: z.string().trim().max(2000).optional(),
     disponible: z.boolean().optional(),
+    ville: z.string().trim().max(100).optional(),
+    numeroOrdre: z.string().trim().max(100).optional(),
   }).strict(),
 }
 

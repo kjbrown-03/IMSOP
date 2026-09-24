@@ -76,6 +76,82 @@ async function appelAutorise(dossierId, userIdA, userIdB) {
   return true
 }
 
+// Duree de vie d'une invitation restee sans reponse. Le client abandonne au
+// bout de 30 s ; on garde de la marge pour qu'un « accepter » un peu tardif ne
+// soit pas refuse a tort.
+const TTL_INVITATION_MS = 60_000
+
+/**
+ * Registre des appels autorises.
+ *
+ * `appelAutorise` ne protegeait que l'invitation. Tous les autres evenements
+ * - acceptation, refus, SDP/ICE, raccrochage - relayaient vers n'importe quel
+ * `toUserId` fourni par le client : n'importe quel compte connecte pouvait
+ * donc pousser une offre WebRTC a n'importe quel utilisateur de la plateforme,
+ * sans dossier commun et sans que personne ait appele.
+ *
+ * Une invitation autorisee ouvre desormais une session entre les deux comptes,
+ * et c'est l'existence de cette session que verifient les evenements suivants.
+ * La cle est la paire triee : les deux sens designent la meme entree.
+ */
+function creerRegistreAppels() {
+  const sessions = new Map()
+  const cle = (a, b) => [a, b].sort().join('|')
+
+  function trouver(a, b) {
+    const k = cle(a, b)
+    const session = sessions.get(k)
+    if (!session) return null
+    // Une invitation jamais acceptee finit par etre oubliee, sinon le registre
+    // grossirait a chaque appel sans reponse.
+    if (!session.acceptee && Date.now() - session.ouverteA > TTL_INVITATION_MS) {
+      sessions.delete(k)
+      return null
+    }
+    return session
+  }
+
+  return {
+    trouver,
+
+    ouvrir(initiateur, invite, dossierId) {
+      sessions.set(cle(initiateur, invite), {
+        dossierId,
+        initiateur,
+        invite,
+        acceptee: false,
+        ouverteA: Date.now(),
+      })
+    },
+
+    // Seul le destinataire de l'invitation peut l'accepter ou la refuser :
+    // sans cette verification, l'appelant pourrait « accepter » son propre
+    // appel et declencher la negociation sans que l'autre ait rien fait.
+    marquerAcceptee(session) {
+      session.acceptee = true
+    },
+
+    fermer(a, b) {
+      sessions.delete(cle(a, b))
+    },
+
+    // Deconnexion : on rend la liste des correspondants pour pouvoir les
+    // prevenir, sinon leur ecran reste bloque sur « appel en cours ».
+    fermerTout(userId) {
+      const correspondants = []
+      for (const [k, session] of sessions) {
+        if (session.initiateur !== userId && session.invite !== userId) continue
+        correspondants.push({
+          userId: session.initiateur === userId ? session.invite : session.initiateur,
+          dossierId: session.dossierId,
+        })
+        sessions.delete(k)
+      }
+      return correspondants
+    },
+  }
+}
+
 function initCallSignaling(server) {
   const io = new Server(server, {
     path: '/socket.io',
@@ -87,8 +163,10 @@ function initCallSignaling(server) {
       const token = socket.handshake.auth?.token
       if (!token) throw new Error('no token')
       const payload = jwt.verify(token, env.jwt.accessSecret)
-      const user = await prisma.user.findUnique({ where: { id: payload.sub }, select: { id: true, fullName: true } })
-      if (!user) throw new Error('unknown user')
+      const user = await prisma.user.findUnique({ where: { id: payload.sub }, select: { id: true, fullName: true, active: true } })
+      // Même règle que le middleware HTTP : un compte désactivé ne doit pas
+      // garder un canal d'appel ouvert.
+      if (!user || !user.active) throw new Error('unknown or inactive user')
       socket.userId = user.id
       socket.userName = user.fullName
       next()
@@ -96,6 +174,8 @@ function initCallSignaling(server) {
       next(new Error('Authentification requise'))
     }
   })
+
+  const registre = creerRegistreAppels()
 
   function emitToUser(userId, event, payload) {
     const set = userSockets.get(userId)
@@ -120,33 +200,56 @@ function initCallSignaling(server) {
         fromUserId: socket.userId,
         fromName: socket.userName,
       })
-      if (!delivered) socket.emit('call:unavailable', { dossierId, toUserId })
+      if (!delivered) return socket.emit('call:unavailable', { dossierId, toUserId })
+
+      // C'est cette session qui autorisera les evenements suivants : sans
+      // invitation acceptee par le controle d'acces, rien ne passe.
+      registre.ouvrir(socket.userId, toUserId, dossierId)
     })
 
     socket.on('call:accept', ({ dossierId, toUserId }) => {
       if (!dossierId || !toUserId) return
+      const session = registre.trouver(socket.userId, toUserId)
+      // Seul le destinataire de l'invitation accepte.
+      if (!session || session.invite !== socket.userId) return
+      registre.marquerAcceptee(session)
       emitToUser(toUserId, 'call:accept', { dossierId, fromUserId: socket.userId })
     })
 
     socket.on('call:decline', ({ dossierId, toUserId }) => {
       if (!dossierId || !toUserId) return
+      const session = registre.trouver(socket.userId, toUserId)
+      if (!session || session.invite !== socket.userId) return
+      registre.fermer(socket.userId, toUserId)
       emitToUser(toUserId, 'call:decline', { dossierId, fromUserId: socket.userId })
     })
 
     // SDP offers/answers and ICE candidates all flow through this one relay —
     // `data` is opaque to the server, it only routes it to the right peer.
+    // Le relais n'est ouvert qu'entre deux comptes ayant un appel en cours :
+    // c'est ce qui empeche d'en faire un « pousser du WebRTC a n'importe qui ».
     socket.on('call:signal', ({ toUserId, data }) => {
       if (!toUserId) return
+      if (!registre.trouver(socket.userId, toUserId)) return
       emitToUser(toUserId, 'call:signal', { fromUserId: socket.userId, data })
     })
 
     socket.on('call:end', ({ dossierId, toUserId }) => {
       if (!toUserId) return
+      if (!registre.trouver(socket.userId, toUserId)) return
+      registre.fermer(socket.userId, toUserId)
       emitToUser(toUserId, 'call:end', { dossierId, fromUserId: socket.userId })
     })
 
     socket.on('disconnect', () => {
       removeSocket(socket.userId, socket.id)
+
+      // Un onglet ferme en pleine conversation laissait l'autre bloque sur
+      // « appel en cours » jusqu'a ce qu'il raccroche lui-meme.
+      if (userSockets.has(socket.userId)) return
+      for (const { userId, dossierId } of registre.fermerTout(socket.userId)) {
+        emitToUser(userId, 'call:end', { dossierId, fromUserId: socket.userId })
+      }
     })
   })
 
@@ -155,4 +258,4 @@ function initCallSignaling(server) {
 
 // appelAutorise est exporte pour etre verifiable seul : c'est la regle
 // d'autorisation des appels, elle merite un test sans ouvrir de socket.
-module.exports = { initCallSignaling, appelAutorise }
+module.exports = { initCallSignaling, appelAutorise, creerRegistreAppels }

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '../../store/useAuthStore'
@@ -6,12 +6,8 @@ import { ArrowLeft, CreditCard, Smartphone, ShieldCheck, Lock, Loader2, External
 import CartePaiement from '../../components/ui/CartePaiement'
 import { api } from '../../lib/api'
 
-// Montants affichés aujourd'hui par l'écran. Le CDC §40 prévoit une grille
-// tarifaire paramétrable (spécialité, urgence, type de prestation) : quand elle
-// existera, ces trois constantes seront remplacées par la réponse de l'API.
-const LIGNE_AVIS = 150
-const LIGNE_FRAIS = 25
-const DEVISE = '€'
+// Le prix vient du serveur, jamais de constantes locales : l'écran affichait
+// 175 € pendant que le serveur facturait 175 XAF. Une seule source de vérité.
 
 export default function PaiementSecurise() {
   const navigate = useNavigate()
@@ -26,7 +22,20 @@ export default function PaiementSecurise() {
   const [paiementEnCours, setPaiementEnCours] = useState(false)
   const [error, setError] = useState(null)
 
-  const total = LIGNE_AVIS + LIGNE_FRAIS
+  const [tarif, setTarif] = useState(null)
+
+  useEffect(() => {
+    if (!dossierId) return undefined
+    let annule = false
+    api
+      .get(`/dossiers/${dossierId}/paiement/tarif`)
+      .then(({ data }) => { if (!annule) setTarif(data) })
+      .catch((err) => { if (!annule) setError(err.response?.data?.message || t('patient.payment.tarifIndisponible')) })
+    return () => { annule = true }
+  }, [dossierId, t])
+
+  const total = tarif?.amount ?? 0
+  const devise = tarif?.currency ?? ''
 
   const METHODES = [
     { id: 'carte', label: t('patient.payment.methodCard'), icon: CreditCard, note: t('patient.payment.cardRedirectNote') },
@@ -55,6 +64,23 @@ export default function PaiementSecurise() {
 
       // Développement : CinetPay n'est pas configuré, on simule la confirmation
       // du webhook pour pouvoir dérouler le parcours de bout en bout.
+      await api.post(`/dossiers/${dossierId}/paiement/simulate`)
+      navigate('/patient/matching', { state: { dossierId } })
+    } catch (err) {
+      setError(err.response?.data?.message || t('errors.paymentFailed'))
+      setPaiementEnCours(false)
+    }
+  }
+
+  // Développement uniquement : confirme le paiement sans passer par le
+  // fournisseur ni attendre son webhook. Le bouton n'existe pas en production
+  // et l'API refuse l'appel hors développement - double verrou.
+  async function simulerDev() {
+    if (!dossierId) return
+    setError(null)
+    setPaiementEnCours(true)
+    try {
+      await api.post(`/dossiers/${dossierId}/paiement/init`)
       await api.post(`/dossiers/${dossierId}/paiement/simulate`)
       navigate('/patient/matching', { state: { dossierId } })
     } catch (err) {
@@ -98,14 +124,15 @@ export default function PaiementSecurise() {
           <div className="lg:sticky lg:top-24">
             <CartePaiement
               montantTotal={total}
-              devise={DEVISE}
+              devise={devise}
               reference={reference}
               titulaire={user?.fullName}
               methode={methodeActive?.label}
-              lignes={[
-                { libelle: t('patient.payment.standardOpinion'), montant: LIGNE_AVIS },
-                { libelle: t('patient.payment.caseFee'), montant: LIGNE_FRAIS },
-              ]}
+              lignes={
+                tarif
+                  ? [{ libelle: t(`patient.payment.avis.${tarif.urgence}`), montant: tarif.amount }]
+                  : []
+              }
             />
           </div>
 
@@ -185,6 +212,17 @@ export default function PaiementSecurise() {
                 </>
               )}
             </button>
+
+            {import.meta.env.DEV && (
+              <button
+                type="button"
+                onClick={simulerDev}
+                disabled={paiementEnCours}
+                className="w-full min-h-[44px] rounded-full border border-dashed border-amber-500 text-amber-700 dark:text-amber-400 font-label-sm text-label-sm hover:bg-amber-50 dark:hover:bg-amber-950/30 transition-colors disabled:opacity-60"
+              >
+                {t('common.simulerPaiementDev')}
+              </button>
+            )}
           </div>
         </div>
       </main>

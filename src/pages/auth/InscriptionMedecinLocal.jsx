@@ -5,6 +5,7 @@ import { Stethoscope, ShieldCheck } from 'lucide-react'
 import AuthLayout from '../../components/layout/AuthLayout'
 import ChampMotDePasse from '../../components/ui/ChampMotDePasse'
 import { useAuthStore } from '../../store/useAuthStore'
+import { VILLES_CAMEROUN } from '../../lib/villesCameroun'
 
 const FIELDS = [
   { name: 'fullName', type: 'text', required: true, autoComplete: 'name' },
@@ -14,6 +15,7 @@ const FIELDS = [
   { name: 'specialite', type: 'text' },
   { name: 'etablissement', type: 'text' },
   { name: 'pays', type: 'text' },
+  { name: 'ville', type: 'select', options: VILLES_CAMEROUN },
   { name: 'numeroOrdre', type: 'text' },
 ]
 
@@ -86,7 +88,23 @@ export default function InscriptionMedecinLocal() {
               {field.required && <span className="text-error"> *</span>}
             </span>
             {/* Le composant impose lui-même type="password" et porte la bascule. */}
-            {field.type === 'password' ? (
+            {field.type === 'select' ? (
+              /* Liste fermée : un champ libre ferait compter « Douala » et
+                 « douala » pour deux villes dans le classement. Le choix vide
+                 reste permis, la ville n'étant pas obligatoire ici. */
+              <select
+                value={form[field.name]}
+                onChange={(e) => update(field.name, e.target.value)}
+                className="bg-surface-container-low border border-outline-variant rounded-xl px-4 py-3 font-body-md text-body-md text-on-surface outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+              >
+                <option value="">{t('medecin.register.villeSelect')}</option>
+                {field.options.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            ) : field.type === 'password' ? (
               <ChampMotDePasse
                 required={field.required}
                 minLength={field.minLength}

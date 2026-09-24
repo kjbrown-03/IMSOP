@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken')
 const { prisma } = require('../lib/prisma')
 const { signAccessToken, signRefreshToken } = require('../middleware/auth')
 const { notify } = require('../services/notificationService')
+const { logAction } = require('../services/auditService')
 const { genererPatientRef } = require('../services/referenceService')
 const env = require('../config/env')
 
@@ -34,6 +35,7 @@ function serializeUser(user) {
     specialite: user.specialiste?.specialite ?? user.medecinLocal?.specialite,
     disponible: user.specialiste?.disponible,
     etablissement: user.medecinLocal?.etablissement ?? user.specialiste?.etablissement,
+    ville: user.medecinLocal?.ville ?? user.patient?.city,
     numeroOrdre: user.medecinLocal?.numeroOrdre,
     // CDC §16 : EN_VERIFICATION | VALIDE | SUSPENDU | EXPIRE | REVOQUE.
     // Le front s'en sert pour afficher l'état de l'habilitation et, le cas
@@ -293,7 +295,7 @@ async function registerPatient(req, res) {
 // checks the numéro d'ordre. A patient can designate it either way - the
 // consent that grants record access is the patient's, not the platform's.
 async function registerMedecinLocal(req, res) {
-  const { fullName, email, password, phone, specialite, etablissement, pays, numeroOrdre } = req.body
+  const { fullName, email, password, phone, specialite, etablissement, pays, ville, numeroOrdre } = req.body
 
   const existing = await prisma.user.findUnique({ where: { email } })
   if (existing) return res.status(409).json({ message: 'Un compte existe déjà avec cet email' })
@@ -308,7 +310,7 @@ async function registerMedecinLocal(req, res) {
       phone,
       role: 'MEDECIN_LOCAL',
       twoFactorEnabled: true,
-      medecinLocal: { create: { specialite, etablissement, pays, numeroOrdre } },
+      medecinLocal: { create: { specialite, etablissement, pays, ville, numeroOrdre } },
     },
     include: { medecinLocal: true },
   })
@@ -498,10 +500,64 @@ async function me(req, res) {
   res.json(serializeUser(user))
 }
 
+/**
+ * Changement de mot de passe par son propriétaire.
+ *
+ * Le mot de passe initial d'un praticien recruté est généré par la plateforme
+ * et circule par courriel : il doit pouvoir être remplacé par quelque chose que
+ * lui seul connaît. L'oubli de mot de passe (lien par courriel) existait déjà,
+ * mais il ne sert à rien quand on connaît son mot de passe et qu'on veut juste
+ * en changer.
+ *
+ * L'ancien mot de passe est exigé même si la session est valide : un poste
+ * laissé ouvert ne doit pas suffire à verrouiller le compte de son titulaire.
+ */
+async function changerMotDePasse(req, res) {
+  const { motDePasseActuel, nouveauMotDePasse } = req.body
+
+  const user = await prisma.user.findUnique({
+    where: { id: req.userId },
+    select: { id: true, passwordHash: true },
+  })
+  if (!user) return res.status(404).json({ message: 'Compte introuvable' })
+
+  const correct = await bcrypt.compare(motDePasseActuel, user.passwordHash)
+  if (!correct) {
+    return res.status(400).json({ message: 'Le mot de passe actuel est incorrect' })
+  }
+
+  if (await bcrypt.compare(nouveauMotDePasse, user.passwordHash)) {
+    return res.status(400).json({ message: "Le nouveau mot de passe doit être différent de l'actuel" })
+  }
+
+  const passwordHash = await bcrypt.hash(nouveauMotDePasse, 12)
+  await prisma.$transaction([
+    prisma.user.update({ where: { id: user.id }, data: { passwordHash } }),
+    // Toutes les sessions tombent, y compris celle en cours : c'est le
+    // comportement attendu quand on change un mot de passe qu'on soupçonne
+    // connu d'un tiers, et l'écran redemande une connexion.
+    prisma.refreshToken.updateMany({
+      where: { userId: user.id, revokedAt: null },
+      data: { revokedAt: new Date() },
+    }),
+  ])
+
+  await logAction({
+    userId: user.id,
+    action: 'MOT_DE_PASSE_CHANGE',
+    entityType: 'User',
+    entityId: user.id,
+    ipAddress: req.ip,
+  })
+
+  res.json({ message: 'Mot de passe modifié. Reconnectez-vous avec le nouveau.' })
+}
+
 module.exports = {
   registerMedecinLocal,
   registerPatient, login, verifyTwoFactor, refresh, logout, me,
   forgotPassword, resetPassword, verifyEmail, resendEmailVerification,
   issueSession, issueTwoFactorChallenge, ROLES_REQUIRING_2FA,
   envoyerCodeConsentement, verifierCodeConsentement, verifierJetonConsentement,
+  changerMotDePasse,
 }

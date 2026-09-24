@@ -39,7 +39,8 @@
     "hidePassword": "Hide password",
     "anonymousPatient": "Anonymised patient",
     "yearsOld": "{{age}} years old",
-    "backHome": "Back to home"
+    "backHome": "Back to home",
+    "simulerPaiementDev": "Simulate payment (dev)"
   },
   "public": {
     "home": {
@@ -103,7 +104,8 @@
       "testimonial4Quote": "The report recommended further tests before any decision. We gained clarity without losing time.",
       "testimonial4Meta": "Bafoussam · Neurology",
       "testimonial5Quote": "An external, documented opinion let me explain the options to my patient with more confidence.",
-      "testimonial5Meta": "Treating doctor · Yaoundé"
+      "testimonial5Meta": "Treating doctor · Yaoundé",
+      "heroSecondaryCta": "Find a doctor near me"
     },
     "footer": {
       "tagline": "International Medical Second Opinion Platform. An African program for second medical opinions and international tele-expertise. Pilot country: Cameroon.",
@@ -290,7 +292,7 @@
       "countrySelect": "Select a country",
       "nationality": "Nationality",
       "nationalitySelect": "Select a nationality",
-      "city": "City of Residence",
+      "city": "City of residence",
       "cityPlaceholder": "E.g. Douala",
       "preferredLanguage": "Preferred Language",
       "emergencyTitle": "Emergency contact",
@@ -309,7 +311,10 @@
       "languages": {
         "fr": "French",
         "en": "English"
-      }
+      },
+      "citySelect": "Select your city",
+      "cityOther": "Other city…",
+      "cityBackToList": "Back to the city list"
     },
     "registerSecurity": {
       "sideTagline": "Join our international health network. Your medical data, secured, accessible to the best specialists.",
@@ -356,7 +361,9 @@
     "createCaseFailed": "The case could not be created. Please try again.",
     "paymentFailed": "The payment could not be processed.",
     "caseNotFoundRestart": "Case not found. Please start your request again.",
-    "downloadFailed": "Download failed"
+    "downloadFailed": "Download failed",
+    "notFoundTitle": "Lost in space",
+    "notFoundText": "We couldn’t find the page you’re looking for. It might have been moved or deleted."
   },
   "patient": {
     "dossierStatus": {
@@ -412,6 +419,8 @@
       "antecedentsQuestion": "Do you have relevant medical history?",
       "antecedentsOui": "yes",
       "antecedentsNon": "no",
+      "allergiesLabel": "Known allergies",
+      "allergiesPlaceholder": "Medication, food, latex... Leave empty if you have none.",
       "traitementLabel": "Current treatments",
       "optional": "(Optional)",
       "traitementPlaceholder": "E.g. Paracetamol 1g, 3 times a day...",
@@ -469,7 +478,13 @@
       "showBreakdown": "View breakdown",
       "showTotal": "View total",
       "cardRedirectNote": "You will be redirected to CinetPay’s secure page to enter your card. IMSOP never sees your card details.",
-      "mobileRedirectNote": "Orange Money, MTN MoMo. Confirmation happens on your phone."
+      "mobileRedirectNote": "Orange Money, MTN MoMo. Confirmation happens on your phone.",
+      "tarifIndisponible": "Could not load the price for this case.",
+      "avis": {
+        "NORMAL": "Medical second opinion",
+        "PRIORITAIRE": "Medical second opinion — priority",
+        "URGENT": "Medical second opinion — urgent"
+      }
     },
     "matching": {
       "confirmedTitle": "Payment confirmed, case sent to medical coordination",
@@ -640,6 +655,75 @@
         "PATIENT": "Patient",
         "MEDECIN_LOCAL": "Treating doctor"
       }
+    },
+    "delai": {
+      "titre": "Awaiting response",
+      "compte": "{{count}} case in progress",
+      "compte_other": "{{count}} cases in progress",
+      "aucun": "No case awaiting a response. Everything is up to date.",
+      "restant": "{{duree}} left",
+      "retard": "{{duree}} overdue",
+      "echeance": "Due: {{date}}",
+      "ouvrir": "Open",
+      "chargementEchoue": "Could not load the tracked cases."
+    },
+    "stats": {
+      "titre": "Monthly indicators",
+      "sousTitre": "The nine MVP indicators, month by month ({{fuseau}} time).",
+      "derniersMois": "{{count}} months",
+      "jours": "{{valeur}} d",
+      "chargementEchoue": "Could not load the indicators.",
+      "kpis": {
+        "demandes": "Number of requests",
+        "dossiersComplets": "Complete cases",
+        "tauxConversion": "Conversion rate",
+        "delaiMoyen": "Average delay",
+        "revenuMoyen": "Average revenue",
+        "satisfactionPatient": "Patient satisfaction",
+        "satisfactionMedecin": "Doctor satisfaction",
+        "tauxAcceptationSpecialistes": "Specialist acceptance",
+        "tauxComplementsDemandes": "Additional information requested"
+      },
+      "moisEnCours": "Current month: {{mois}}. Each card compares with the previous month.",
+      "vsMoisPrecedent": "vs previous month",
+      "pasDeReference": "No reference month",
+      "pasDeReferenceDetail": "No data for the previous month: no comparison possible.",
+      "enCours": "current month (partial)",
+      "moisPrecedent": "previous month (complete)",
+      "avis": "{{count}} review",
+      "avis_other": "{{count}} reviews",
+      "historique": "History over {{count}} months",
+      "recusations": "{{count}} recusal(s) for conflict of interest, counted separately.",
+      "avertissementCartes": "The current month is partial: comparing its first days with a complete month mechanically understates the change. Each indicator uses its own reference date — a request counts in the month it was created, revenue in the month it was collected, delay in the month the report was validated.",
+      "tousLesIndicateurs": "All indicators",
+      "comparaison": "This month vs the previous one"
+    },
+    "reversements": {
+      "titre": "Specialist fees",
+      "sousTitre": "What the platform owes each specialist, after commission, in their currency.",
+      "syntheseTitre": "To pay out, per specialist",
+      "rienADevoir": "No fees pending. Everything has been paid out.",
+      "detailTitre": "Detail per opinion",
+      "aucuneLigne": "No line in this state.",
+      "dossiers": "{{count}} opinion",
+      "dossiers_other": "{{count}} opinions",
+      "ventilation": "Paid {{brut}} · commission {{taux}} % = {{commission}}",
+      "net": "net for the specialist",
+      "reverseLe": "paid on",
+      "reverserFapshi": "Pay out via Mobile Money",
+      "enregistrerVirement": "Record the bank transfer",
+      "referencePlaceholder": "Bank transfer reference",
+      "canalFapshi": "Mobile Money (Fapshi)",
+      "canalVirement": "Bank transfer",
+      "fait": "Paid out.",
+      "echec": "The payout failed.",
+      "chargementEchoue": "Could not load the fees.",
+      "statuts": {
+        "A_REVERSER": "To pay",
+        "EN_COURS": "In progress",
+        "REVERSE": "Paid",
+        "ECHOUE": "Failed"
+      }
     }
   },
   "specialiste": {
@@ -668,7 +752,10 @@
       "askComplement": "Request more information",
       "complementPlaceholder": "Specify the missing documents or information...",
       "awaitingComplement": "Waiting for the information requested from the patient.",
-      "openReport": "Report"
+      "openReport": "Report",
+      "declareConflict": "Declare a conflict of interest",
+      "conflictHelp": "The case will go back for reassignment and will no longer be offered to you.",
+      "conflictPlaceholder": "State the reason (known patient, link with the colleague, institution involved...)"
     },
     "report": {
       "loadingCase": "Loading case...",
@@ -799,6 +886,16 @@
         "etablissementsPartenaires": "Partner institutions",
         "paysCouverts": "Countries covered"
       }
+    },
+    "medecins": {
+      "title": "Treating doctors",
+      "subtitle": "Create, edit or suspend the accounts of local treating doctors.",
+      "newButton": "New treating doctor",
+      "createTitle": "New treating doctor",
+      "villePlaceholder": "City of practice",
+      "numeroOrdrePlaceholder": "Medical council registration number",
+      "numeroOrdre": "Council {{numero}}",
+      "verified": "Cleared"
     }
   },
   "shell": {
@@ -828,7 +925,13 @@
       "parametres": "Settings",
       "habilitations": "Credentials",
       "messages": "Messages",
-      "temoignages": "Testimonials"
+      "temoignages": "Testimonials",
+      "gestionExperts": "Expert management",
+      "statistiques": "Statistics",
+      "reversements": "Payouts",
+      "candidatures": "Applications",
+      "specialites": "Specialties",
+      "gestionMedecins": "Treating doctors"
     },
     "userMenu": {
       "user": "User",
@@ -838,7 +941,8 @@
     "medecinNav": {
       "dossiers": "My requests",
       "profil": "My account",
-      "justificatifs": "My credentials"
+      "justificatifs": "My credentials",
+      "annuaire": "Directory"
     },
     "coordinateurNav": {
       "habilitations": "Credentials"
@@ -864,7 +968,20 @@
     "otpSendError": "Could not send the code. Try again in a moment.",
     "otpVerifyError": "Invalid or expired code.",
     "signatureHint": "Type your full name as it appears on your account: {{nom}}",
-    "signatureMismatch": "The signature must match the account holder's name: {{nom}}"
+    "signatureMismatch": "The signature must match the account holder's name: {{nom}}",
+    "etatTitre": "Your permissions",
+    "etatSousTitre": "What you have authorised for this case.",
+    "etatAccorde": "Granted on {{date}}",
+    "etatRetire": "Withdrawn on {{date}}",
+    "etatNonDemande": "Not requested",
+    "etatErreur": "Could not load the state of your permissions.",
+    "types": {
+      "TRAITEMENT_DONNEES": "Processing of my health data",
+      "TRANSMISSION_SPECIALISTE": "Sharing the case with the specialist",
+      "COMMUNICATION_MEDECIN": "Sharing with my treating doctor",
+      "TELECONSULTATION": "Teleconsultation",
+      "UTILISATION_ANONYMISEE_RECHERCHE": "Anonymised use for research purposes"
+    }
   },
   "temoignage": {
     "title": "Leave a comment",
@@ -993,7 +1110,9 @@
     "callNoAnswer": "No answer. Try again later or leave a message.",
     "callNotAllowed": "You cannot call this person: they are not attached to this case.",
     "callFailed": "The call could not be established.",
-    "backToList": "Back to the conversation list"
+    "backToList": "Back to the conversation list",
+    "discussionDirecte": "Direct discussion",
+    "demarrerDiscussion": "Start a discussion"
   },
   "medecin": {
     "login": {
@@ -1016,7 +1135,9 @@
       "numeroOrdre": "Medical council number",
       "submit": "Create my account",
       "hasAccount": "Already have an account?",
-      "login": "Sign in"
+      "login": "Sign in",
+      "ville": "City of residence",
+      "villeSelect": "Select a city"
     },
     "dashboard": {
       "title": "My second opinion requests",
@@ -1034,6 +1155,7 @@
       "question": "Medical question",
       "symptomes": "Symptoms",
       "antecedents": "History",
+      "allergies": "Known allergies",
       "traitement": "Current treatment",
       "documents": "Case documents",
       "upload": "Upload",
@@ -1129,7 +1251,13 @@
       "envoyer": "Send to coordination",
       "envoiEnCours": "Sending...",
       "erreur": "Sending the request failed.",
-      "nouvelle": "New request"
+      "nouvelle": "New request",
+      "allergies": "Known allergies",
+      "allergiesPlaceholder": "Medication, food, latex... Write \"none\" if the patient has none.",
+      "manquantsTitre": "Still needed before sending:",
+      "manquantConsentement": "Tick the consent acceptance box",
+      "manquantSignature": "Type your full name as signature, exactly as it appears on your account",
+      "manquantCode": "Confirm the signature with the code sent by email"
     }
   },
   "patientMedecin": {
@@ -1191,6 +1319,241 @@
       "MEDECIN_LOCAL": "Local doctor",
       "COORDINATEUR": "Coordinator",
       "ADMIN": "Administrator"
+    },
+    "password": {
+      "titre": "Password",
+      "aide": "Replace the password you received by email with one only you know.",
+      "actuel": "Current password",
+      "nouveau": "New password",
+      "confirmer": "Confirm new password",
+      "longueur": "{{n}} characters minimum.",
+      "discordance": "The two entries do not match.",
+      "valider": "Change my password",
+      "succes": "Password changed. You will be redirected to sign in again with the new one.",
+      "echec": "The change failed. Please try again."
     }
+  },
+  "annuaire": {
+    "pays": {
+      "cm": "Cameroon",
+      "cf": "Central African Republic",
+      "cg": "Congo",
+      "ga": "Gabon",
+      "gq": "Equatorial Guinea",
+      "td": "Chad"
+    },
+    "specialites": {
+      "medecine_generale": "General practice",
+      "pediatrie": "Pediatrics",
+      "gynecologie": "Gynecology",
+      "cardiologie": "Cardiology",
+      "dermatologie": "Dermatology",
+      "orl": "ENT",
+      "ophtalmologie": "Ophthalmology",
+      "dentaire": "Dental",
+      "psychiatrie": "Psychiatry",
+      "orthopedie": "Orthopedics",
+      "gastroenterologie": "Gastroenterology",
+      "pneumologie": "Pulmonology",
+      "nephrologie": "Nephrology",
+      "urologie": "Urology",
+      "neurologie": "Neurology",
+      "oncologie": "Oncology",
+      "rhumatologie": "Rheumatology",
+      "endocrinologie": "Endocrinology / Diabetes",
+      "infectiologie": "Infectious diseases"
+    },
+    "recherche": {
+      "eyebrow": "Find a doctor",
+      "titre": "A doctor near you",
+      "intro": "Describe how you feel: we connect you with the registered, verified doctors in your area who can see you.",
+      "symptomes": "Your symptoms",
+      "symptomesPlaceholder": "E.g.: itchy spots on my arms for a week, no fever",
+      "symptomesAide": "A few sentences, in your own words. Say since when.",
+      "pays": "Country",
+      "ville": "City",
+      "optionnel": "optional",
+      "villeToutes": "All cities",
+      "noteUrgence": "This is not an emergency service. For chest pain, difficulty breathing, loss of consciousness or heavy bleeding, call emergency services immediately.",
+      "lancer": "Find a doctor",
+      "tarifNote": "Searching is free. Being connected with the doctors found costs {{montant}} {{devise}}.",
+      "erreur": "The search failed. Please try again.",
+      "tropCourt": "Describe your symptoms a little more (at least {{min}} characters)."
+    },
+    "resultats": {
+      "nouvelleRecherche": "New search",
+      "chargement": "Loading your search…",
+      "introuvable": "Search not found.",
+      "eyebrow": "Results",
+      "titre_one": "{{count}} doctor can take care of you",
+      "titre_other": "{{count}} doctors can take care of you",
+      "aucun": "No doctor available for this search",
+      "aucunAide": "No registered doctor in this area covers these symptoms yet. Try without a city, or come back later — new doctors join regularly. You are not charged.",
+      "villeInconnue": "City not provided",
+      "verrouille": "Contact details locked",
+      "deblocageTitre": "Get connected with these doctors",
+      "deblocageTexte": "We connect you with every doctor in this search: you receive their name, phone, email, practice and neighbourhood.",
+      "comptePatientRequis": "Getting connected requires a patient account.",
+      "debloquer": "Connect me — {{montant}} {{devise}}",
+      "attenteConfirmation": "Confirming payment…",
+      "attenteAide": "We are waiting for your payment to be confirmed. Did not pay or gave up?",
+      "attenteAnnuler": "Try the payment again",
+      "erreurPaiement": "The payment could not be started. Please try again.",
+      "rappelDebloque": "You are now connected with these doctors: contact them directly. IMSOP does not book appointments and does not replace a consultation.",
+      "emailLabel": "Your email address",
+      "emailPlaceholder": "you@example.com",
+      "emailAide": "No account needed. This email is used for your payment and to find your connection again.",
+      "emailRequis": "Enter a valid email address to get connected."
+    },
+    "urgence": {
+      "titre": "What you describe may be an emergency",
+      "texte": "Do not look for a doctor online: call emergency services immediately or go to the nearest emergency room.",
+      "rappel": "No payment is requested. This page is not medical advice: if in doubt, treat it as an emergency."
+    },
+    "medecin": {
+      "titre": "“Find a doctor” directory",
+      "sousTitre": "Choose whether to be connected with CEMAC patients looking for a doctor near them.",
+      "erreurChargement": "Could not load your settings.",
+      "erreurEnregistrement": "Could not save. Please try again.",
+      "nonHabilite": "Your credentials are not verified yet: you can prepare your listing, but you will only appear once coordination has validated you.",
+      "visibleLabel": "Be connected with patients",
+      "visibleAide": "Patients the platform connects you with receive your name, phone, email, practice and neighbourhood to reach you. You can opt out at any time.",
+      "specialitesTitre": "What you treat",
+      "specialitesAide": "Tick one or more specialties. Patients will find you through them.",
+      "localisationTitre": "Where you practise",
+      "choisir": "Choose…",
+      "quartier": "Neighbourhood",
+      "quartierPlaceholder": "E.g.: Logpom",
+      "presentationTitre": "Presentation (optional)",
+      "presentationPlaceholder": "Opening hours, languages, access… Shown once your details are unlocked.",
+      "enregistre": "Settings saved"
+    }
+  },
+  "candidature": {
+    "titreSpecialiste": "Application — international specialist",
+    "titreMedecin": "Application — treating doctor",
+    "accroche": "Join the IMSOP second-opinion network.",
+    "consigne": "This form was sent to you by the scientific committee. Fill it in and attach a professional photo: the committee will review your application and reply by email.",
+    "photo": "Professional photo",
+    "photoAide": "Any photo from your phone works: it is resized automatically.",
+    "photoObligatoire": "The photo is required.",
+    "photoFormat": "Format not accepted: JPEG, PNG or WebP only.",
+    "photoTaille": "File too large (25 MB max).",
+    "fullName": "Full name",
+    "email": "Email address",
+    "phone": "Phone",
+    "specialite": "Specialty",
+    "specialiteChoisir": "Choose your specialty",
+    "etablissement": "Institution",
+    "pays": "Country",
+    "ville": "City of residence",
+    "villeChoisir": "Select a city",
+    "numeroOrdre": "Medical council registration number",
+    "langues": "Languages spoken",
+    "presentation": "Background and motivation",
+    "presentationAide": "Degrees, experience, areas of expertise, motivation. 50 characters minimum.",
+    "envoyer": "Send my application",
+    "erreur": "Sending failed. Check the fields and try again.",
+    "merciTitre": "Application sent",
+    "merciTexte": "Thank you. An acknowledgement has been emailed to you. The scientific committee will review your application and let you know its decision.",
+    "cv": "Résumé (CV)",
+    "cvAide": "PDF, 10 MB max. Optional, but strongly recommended.",
+    "cvChoisir": "Attach my CV (PDF)",
+    "cvRetirer": "Remove CV",
+    "cvFormat": "The CV must be a PDF file.",
+    "cvTaille": "CV too large (10 MB max).",
+    "paysChoisir": "Choose your country of practice",
+    "villePaysDabord": "Choose a country first",
+    "specialiteAutre": "Other — enter my specialty",
+    "specialiteAutrePlaceholder": "Enter your specialty",
+    "retourListe": "Back to the list",
+    "aucunResultat": "No match",
+    "champsManquants": "Required fields missing: {{champs}}.",
+    "lieuExercice": "Place of practice",
+    "lieuExerciceAide": "Where do you currently practise? The scientific committee contacts the facility to confirm your practice.",
+    "structure": {
+      "CLINIQUE": "Clinic",
+      "HOPITAL": "Hospital",
+      "LES_DEUX": "Both"
+    },
+    "blocClinique": "Clinic",
+    "blocHopital": "Hospital",
+    "nomClinique": "Clinic name",
+    "nomHopital": "Hospital name",
+    "telStructure": "Facility phone",
+    "emailStructure": "Facility email",
+    "photoIllisible": "This file cannot be read as an image. If it comes from an iPhone, open it and save it as JPEG, or pick another photo."
+  },
+  "candidatures": {
+    "titre": "Applications",
+    "sousTitre": "The scientific committee receives each form by email and decides outside the platform. Here you create the account for the candidates it forwards to you.",
+    "statuts": {
+      "A_CREER": "Accounts to create",
+      "COMPTE_CREE": "Accounts created",
+      "REFUSEE": "Set aside"
+    },
+    "types": {
+      "SPECIALISTE": "Specialist",
+      "MEDECIN_LOCAL": "Treating doctor"
+    },
+    "vide": {
+      "A_CREER": "No application waiting for an account.",
+      "COMPTE_CREE": "No account created from an application.",
+      "REFUSEE": "No application set aside."
+    },
+    "deposeeLe": "Submitted on {{date}}",
+    "lirePresentation": "Read background and motivation",
+    "masquerPresentation": "Hide",
+    "motifRefus": "Note",
+    "creerCompte": "Create the account",
+    "compteCreeInfo": "Account created. Login credentials have been sent to {{email}}.",
+    "chargementEchoue": "Could not load the applications.",
+    "actionEchouee": "The action failed.",
+    "cvVoir": "Open CV",
+    "cvAucun": "No CV provided",
+    "lieuExercice": "Place of practice",
+    "structure": {
+      "CLINIQUE": "Clinic",
+      "HOPITAL": "Hospital",
+      "LES_DEUX": "Clinic and hospital"
+    },
+    "telStructure": "Phone",
+    "emailStructure": "Email",
+    "aucunLieu": "Not provided",
+    "compteCreeSansMail": "Account created, but sending the credentials to {{email}} failed. Use \"Resend credentials\" to try again.",
+    "renvoyerIdentifiants": "Resend credentials",
+    "renvoyerAide": "The practitioner received nothing? A new password will be generated and emailed to them. The old one stops working.",
+    "identifiantsRenvoyes": "New credentials sent to {{email}}.",
+    "creerAide": "Creating the account generates a password and emails the credentials to the practitioner.",
+    "ecarter": "Set aside"
+  },
+  "specialites": {
+    "titre": "Specialties",
+    "sousTitre": "The specialties offered in the application forms. Specialists pick from this list; treating doctors can also type their own.",
+    "ajouter": "Add a specialty",
+    "nom": "Specialty name",
+    "nomPlaceholder": "e.g. Haematology",
+    "cibles": "Offered in the form for",
+    "pourSpecialiste": "Specialist",
+    "pourMedecin": "Treating doctor",
+    "cibleObligatoire": "Pick at least one form.",
+    "valider": "Add",
+    "annuler": "Cancel",
+    "rechercher": "Search a specialty",
+    "filtre": {
+      "toutes": "All",
+      "SPECIALISTE": "Specialist",
+      "MEDECIN_LOCAL": "Treating doctor"
+    },
+    "active": "Offered",
+    "retiree": "Withdrawn",
+    "retirer": "Remove from the list",
+    "reactiver": "Offer again",
+    "retireeAide": "Removed from the forms. Practitioners already holding it keep their label.",
+    "aucune": "No specialty matches.",
+    "ajoutee": "\"{{nom}}\" has been added.",
+    "existe": "This specialty already exists.",
+    "chargementEchoue": "Could not load the specialties.",
+    "actionEchouee": "The action failed."
   }
 }

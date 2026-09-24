@@ -7,6 +7,7 @@ import SpecialistShell from '../components/layout/SpecialistShell'
 import MedecinShell from '../components/layout/MedecinShell'
 import PatientShell from '../components/layout/PatientShell'
 import AvatarUploader from '../components/ui/AvatarUploader'
+import ChangementMotDePasse from '../components/ui/ChangementMotDePasse'
 import { useAuthStore } from '../store/useAuthStore'
 
 // Chaque rôle a déjà sa propre coque (barre latérale, navigation, en-tête) :
@@ -79,6 +80,8 @@ export default function MonProfil() {
           muted={!user?.phone}
         />
       </section>
+
+      <ChangementMotDePasse />
     </div>
   )
 

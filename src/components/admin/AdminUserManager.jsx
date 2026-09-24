@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { api } from '../../lib/api'
 import {
@@ -6,20 +6,41 @@ import {
   ShieldCheck, MapPin, Building2, Languages, BadgeCheck, CalendarClock,
 } from 'lucide-react'
 
+// Recherche à la frappe : sans ce délai, chaque caractère déclencherait une
+// requête, et taper « cardiologie » en enverrait onze pour un seul résultat
+// utile. 300 ms est assez court pour que la liste suive la frappe, assez long
+// pour ne pas partir entre deux touches.
+const DELAI_FRAPPE = 300
+
 const EMPTY_FORM = {
   fullName: '', email: '', phone: '',
   specialite: '', pays: '', etablissement: '', langues: '', bio: '',
+  // Propres au médecin traitant.
+  ville: '', numeroOrdre: '',
 }
 
 export default function AdminUserManager({ role }) {
   const { t } = useTranslation()
   const isSpecialiste = role === 'SPECIALISTE'
-  const ns = isSpecialiste ? 'specialistes' : 'coordinateurs'
+  const isMedecin = role === 'MEDECIN_LOCAL'
+  // Le praticien — spécialiste ou médecin traitant — porte une fiche
+  // professionnelle ; le coordinateur, non.
+  const estPraticien = isSpecialiste || isMedecin
+  const ns = isSpecialiste ? 'specialistes' : isMedecin ? 'medecins' : 'coordinateurs'
 
   const [users, setUsers] = useState([])
   const [loading, setLoading] = useState(true)
   const [query, setQuery] = useState('')
   const [error, setError] = useState(null)
+
+  // Numéro de la dernière requête émise. En tapant vite, les réponses ne
+  // reviennent pas dans l'ordre où elles sont parties : sans ce compteur, une
+  // réponse lente sur « card » pouvait recouvrir celle, déjà affichée, de
+  // « cardiologie ».
+  const requeteRef = useRef(0)
+  // Le tout premier chargement ne passe pas par le délai : attendre 300 ms pour
+  // afficher une liste que personne n'a demandée n'aurait aucun sens.
+  const premierChargement = useRef(true)
 
   const [formOpen, setFormOpen] = useState(false)
   const [editingId, setEditingId] = useState(null)
@@ -30,26 +51,38 @@ export default function AdminUserManager({ role }) {
   const [busyId, setBusyId] = useState(null)
 
   async function load() {
+    const numero = ++requeteRef.current
     setLoading(true)
     setError(null)
     try {
       const { data } = await api.get('/admin/users', { params: { role, q: query || undefined } })
+      if (numero !== requeteRef.current) return
       setUsers(data)
     } catch (err) {
+      if (numero !== requeteRef.current) return
       setError(err.response?.data?.message || t('admin.users.loadError'))
     } finally {
-      setLoading(false)
+      // Une requête dépassée ne doit pas éteindre l'indicateur de la suivante.
+      if (numero === requeteRef.current) setLoading(false)
     }
   }
 
   useEffect(() => {
-    load()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [role])
+    if (premierChargement.current) {
+      premierChargement.current = false
+      load()
+      return undefined
+    }
 
+    const minuteur = setTimeout(load, DELAI_FRAPPE)
+    return () => clearTimeout(minuteur)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [role, query])
+
+  // La touche Entrée n'a plus rien à déclencher, la frappe suffit. On absorbe
+  // quand même la soumission : sans ça le navigateur rechargerait la page.
   function onSearchSubmit(e) {
     e.preventDefault()
-    load()
   }
 
   function openCreate() {
@@ -66,11 +99,13 @@ export default function AdminUserManager({ role }) {
       fullName: user.fullName || '',
       email: user.email || '',
       phone: user.phone || '',
-      specialite: user.specialiste?.specialite || '',
-      pays: user.specialiste?.pays || '',
-      etablissement: user.specialiste?.etablissement || '',
+      specialite: user.specialiste?.specialite || user.medecinLocal?.specialite || '',
+      pays: user.specialiste?.pays || user.medecinLocal?.pays || '',
+      etablissement: user.specialiste?.etablissement || user.medecinLocal?.etablissement || '',
       langues: user.specialiste?.langues || '',
       bio: user.specialiste?.bio || '',
+      ville: user.medecinLocal?.ville || '',
+      numeroOrdre: user.medecinLocal?.numeroOrdre || '',
     })
     setFormError(null)
     setNewCredential(null)
@@ -137,8 +172,14 @@ export default function AdminUserManager({ role }) {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder={t('admin.users.searchPlaceholder')}
-          className="w-full h-11 pl-11 pr-4 rounded-xl border border-slate-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+          aria-label={t('admin.users.searchPlaceholder')}
+          className="w-full h-11 pl-11 pr-10 rounded-xl border border-slate-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
         />
+        {/* L'attente se signale dans le champ : remplacer la liste par un
+            écran de chargement la ferait clignoter à chaque frappe. */}
+        {loading && !premierChargement.current && (
+          <Loader2 className="w-4 h-4 absolute right-4 top-1/2 -translate-y-1/2 animate-spin text-slate-400 dark:text-slate-500" />
+        )}
       </form>
 
       {formOpen && (
@@ -199,7 +240,7 @@ export default function AdminUserManager({ role }) {
                   placeholder={t('admin.users.phonePlaceholder')}
                   className="h-11 px-4 rounded-xl border border-slate-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
                 />
-                {isSpecialiste && (
+                {estPraticien && (
                   <input
                     value={form.specialite}
                     onChange={(e) => setForm((f) => ({ ...f, specialite: e.target.value }))}
@@ -207,7 +248,7 @@ export default function AdminUserManager({ role }) {
                     className="h-11 px-4 rounded-xl border border-slate-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
                   />
                 )}
-                {isSpecialiste && (
+                {estPraticien && (
                   <>
                     <input
                       value={form.pays}
@@ -221,19 +262,39 @@ export default function AdminUserManager({ role }) {
                       placeholder={t('admin.specialistes.etablissementPlaceholder')}
                       className="h-11 px-4 rounded-xl border border-slate-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
                     />
-                    <input
-                      value={form.langues}
-                      onChange={(e) => setForm((f) => ({ ...f, langues: e.target.value }))}
-                      placeholder={t('admin.specialistes.languesPlaceholder')}
-                      className="h-11 px-4 rounded-xl border border-slate-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors md:col-span-2"
-                    />
-                    <textarea
-                      value={form.bio}
-                      onChange={(e) => setForm((f) => ({ ...f, bio: e.target.value }))}
-                      placeholder={t('admin.specialistes.bioPlaceholder')}
-                      rows={2}
-                      className="px-4 py-3 rounded-xl border border-slate-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors md:col-span-2"
-                    />
+                    {isMedecin && (
+                      <>
+                        <input
+                          value={form.ville}
+                          onChange={(e) => setForm((f) => ({ ...f, ville: e.target.value }))}
+                          placeholder={t('admin.medecins.villePlaceholder')}
+                          className="h-11 px-4 rounded-xl border border-slate-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                        />
+                        <input
+                          value={form.numeroOrdre}
+                          onChange={(e) => setForm((f) => ({ ...f, numeroOrdre: e.target.value }))}
+                          placeholder={t('admin.medecins.numeroOrdrePlaceholder')}
+                          className="h-11 px-4 rounded-xl border border-slate-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                        />
+                      </>
+                    )}
+                    {isSpecialiste && (
+                      <>
+                        <input
+                          value={form.langues}
+                          onChange={(e) => setForm((f) => ({ ...f, langues: e.target.value }))}
+                          placeholder={t('admin.specialistes.languesPlaceholder')}
+                          className="h-11 px-4 rounded-xl border border-slate-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors md:col-span-2"
+                        />
+                        <textarea
+                          value={form.bio}
+                          onChange={(e) => setForm((f) => ({ ...f, bio: e.target.value }))}
+                          placeholder={t('admin.specialistes.bioPlaceholder')}
+                          rows={2}
+                          className="px-4 py-3 rounded-xl border border-slate-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors md:col-span-2"
+                        />
+                      </>
+                    )}
                   </>
                 )}
               </div>
@@ -260,7 +321,7 @@ export default function AdminUserManager({ role }) {
 
       {error && <div className="bg-rose-50 dark:bg-rose-900/30 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-400 text-sm font-medium rounded-2xl px-5 py-4 mb-4">{error}</div>}
 
-      {loading && (
+      {loading && users.length === 0 && (
         <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400 py-12 justify-center">
           <Loader2 className="w-5 h-5 animate-spin" /> {t('common.loading')}
         </div>
@@ -291,20 +352,15 @@ export default function AdminUserManager({ role }) {
                 >
                   {u.active ? t('admin.users.active') : t('admin.users.inactive')}
                 </span>
-                {isSpecialiste && u.specialiste?.verificationStatus === 'VALIDE' && (
+                {estPraticien && (u.specialiste ?? u.medecinLocal)?.verificationStatus === 'VALIDE' && (
                   <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800 flex items-center gap-1">
                     <BadgeCheck className="w-3 h-3" /> {t('admin.specialistes.verified')}
                   </span>
                 )}
               </div>
               <div className="text-sm text-slate-500 dark:text-slate-400">{u.email}{u.phone ? ` • ${u.phone}` : ''}</div>
-              {isSpecialiste && u.specialiste && (
-                <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-slate-600 dark:text-slate-300 mt-1">
-                  {u.specialiste.specialite && <span className="flex items-center gap-1"><BadgeCheck className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500" /> {u.specialiste.specialite}</span>}
-                  {u.specialiste.pays && <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500" /> {u.specialiste.pays}</span>}
-                  {u.specialiste.etablissement && <span className="flex items-center gap-1"><Building2 className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500" /> {u.specialiste.etablissement}</span>}
-                  {u.specialiste.langues && <span className="flex items-center gap-1"><Languages className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500" /> {u.specialiste.langues}</span>}
-                </div>
+              {estPraticien && (u.specialiste || u.medecinLocal) && (
+                <FichePraticien fiche={u.specialiste || u.medecinLocal} t={t} />
               )}
               <div className="text-xs text-slate-400 dark:text-slate-500 flex items-center gap-1 mt-1">
                 <CalendarClock className="w-3.5 h-3.5" /> {t('admin.users.createdOn')} {new Date(u.createdAt).toLocaleDateString()}
@@ -334,6 +390,36 @@ export default function AdminUserManager({ role }) {
           </div>
         ))}
       </div>
+    </div>
+  )
+}
+
+/**
+ * La ligne de détail d'une fiche professionnelle.
+ *
+ * Spécialiste et médecin traitant portent les mêmes champs de base ; seuls
+ * diffèrent les langues (utiles pour un avis international) et la ville avec le
+ * numéro d'ordre (qui situent et habilitent un praticien de proximité). Rendre
+ * ce qui est absent ne coûte rien : le champ ne s'affiche simplement pas.
+ */
+function FichePraticien({ fiche, t }) {
+  const lignes = [
+    [BadgeCheck, fiche.specialite],
+    [MapPin, [fiche.ville, fiche.pays].filter(Boolean).join(', ')],
+    [Building2, fiche.etablissement],
+    [Languages, fiche.langues],
+    [ShieldCheck, fiche.numeroOrdre && t('admin.medecins.numeroOrdre', { numero: fiche.numeroOrdre })],
+  ].filter(([, valeur]) => valeur)
+
+  if (!lignes.length) return null
+
+  return (
+    <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-slate-600 dark:text-slate-300 mt-1">
+      {lignes.map(([Icone, valeur], i) => (
+        <span key={i} className="flex items-center gap-1">
+          <Icone className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500" /> {valeur}
+        </span>
+      ))}
     </div>
   )
 }

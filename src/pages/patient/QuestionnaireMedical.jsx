@@ -33,6 +33,7 @@ export default function QuestionnaireMedical() {
   const [motif, setMotif] = useState('')
   const [symptomes, setSymptomes] = useState('')
   const [antecedents, setAntecedents] = useState('non')
+  const [allergies, setAllergies] = useState('')
   const [traitement, setTraitement] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState(null)
@@ -47,6 +48,7 @@ export default function QuestionnaireMedical() {
         motif: MOTIF_FR[motif] || motif,
         symptomes,
         antecedents: antecedents === 'oui' ? 'Antécédents médicaux déclarés par le patient' : 'Aucun antécédent déclaré',
+        allergies: allergies.trim() || undefined,
         traitementEnCours: traitement || undefined,
       })
       navigate('/patient/nouvelle-demande/documents', { state: { dossierId: dossier.id } })
@@ -224,6 +226,21 @@ export default function QuestionnaireMedical() {
                     </button>
                   ))}
                 </div>
+              </div>
+
+              <div className="flex flex-col gap-2.5">
+                <label className="font-bold text-sm text-slate-900 dark:text-white" htmlFor="allergies">
+                  {t('patient.questionnaire.allergiesLabel')}{' '}
+                  <span className="text-slate-400 dark:text-slate-500 font-medium">{t('patient.questionnaire.optional')}</span>
+                </label>
+                <input
+                  className="w-full bg-slate-50 dark:bg-neutral-800 border border-slate-200/60 dark:border-neutral-700 rounded-xl px-4 py-3.5 text-sm font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all placeholder:text-slate-400 dark:placeholder:text-slate-500 hover:bg-white dark:hover:bg-neutral-700"
+                  id="allergies"
+                  placeholder={t('patient.questionnaire.allergiesPlaceholder')}
+                  type="text"
+                  value={allergies}
+                  onChange={(e) => setAllergies(e.target.value)}
+                />
               </div>
 
               <div className="flex flex-col gap-2.5">

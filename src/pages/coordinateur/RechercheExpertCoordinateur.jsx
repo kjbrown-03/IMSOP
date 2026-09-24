@@ -1,11 +1,13 @@
-import { useCallback, useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { api } from '../../lib/api'
 import { useLiveRefresh } from '../../components/hooks/useLiveRefresh'
+import CoordinatorLayout from '../../components/layout/CoordinatorLayout'
 
-const COORDINATOR_AVATAR =
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuC244iS5VLN_Ewwm4MnaUp2E4a7Qp16djsX_DfUYcZPJxZqQAMeIuBKC8T-TWhjBMl-DqLrYEAEf5TMtkB3WUbH8eAKSK6dV6l5Hn-qQSSPnUTJZtEXuo__7agmG224P6yvl9XluXoutvvnlRnCqLizjuVvF38AR8_2F5cEh43UhTTgfaADrXmyvI2keWrrrEqjPk_Io7PgrhmRN2yk6lSuo_9ABDsOzZ2aFcm1gTxmfnxQOqLF-ieP'
+// Le champ « pays » est libre : sans délai, chaque caractère partait en requête.
+// Les listes déroulantes et la case à cocher changent d'un coup et n'ont rien à
+// attendre — seule la saisie est différée.
+const DELAI_FRAPPE = 300
 
 const SPECIALITE_KEYS = [
   'oncologie', 'cardiologie', 'neurologie', 'orthopedie', 'radiologie', 'anatomopathologie',
@@ -23,40 +25,55 @@ const SPECIALITE_FR = {
 }
 
 export default function RechercheExpertCoordinateur() {
-  const navigate = useNavigate()
   const { t } = useTranslation()
   const [specialiteKey, setSpecialiteKey] = useState('')
   const [pays, setPays] = useState('')
   const [disponibleOnly, setDisponibleOnly] = useState(false)
+  // Valeur réellement envoyée au serveur, en retard d'un délai sur la frappe.
+  const [paysRecherche, setPaysRecherche] = useState('')
   const [specialistes, setSpecialistes] = useState([])
   const [total, setTotal] = useState(0)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
+  useEffect(() => {
+    const minuteur = setTimeout(() => setPaysRecherche(pays), DELAI_FRAPPE)
+    return () => clearTimeout(minuteur)
+  }, [pays])
+
+  // En tapant vite, les réponses ne reviennent pas dans l'ordre où elles sont
+  // parties : ce compteur empêche une réponse lente de recouvrir une plus
+  // récente déjà affichée.
+  const requeteRef = useRef(0)
+
   // `silencieux` : un rafraichissement de fond ne doit pas faire clignoter la
   // liste en repassant par l'ecran de chargement.
   const load = useCallback(
     async ({ silencieux = false } = {}) => {
+      const numero = ++requeteRef.current
       if (!silencieux) setLoading(true)
       try {
         const { data } = await api.get('/specialistes', {
           params: {
             specialite: SPECIALITE_FR[specialiteKey] || undefined,
-            pays: pays || undefined,
+            pays: paysRecherche || undefined,
             disponible: disponibleOnly ? 'true' : undefined,
             pageSize: 20,
           },
         })
+        if (numero !== requeteRef.current) return
         setSpecialistes(data.items)
         setTotal(data.total)
         setError(null)
       } catch (err) {
+        if (numero !== requeteRef.current) return
         if (!silencieux) setError(err.response?.data?.message || t('coordinateur.search.loadFailed'))
       } finally {
-        if (!silencieux) setLoading(false)
+        // Une requête dépassée ne doit pas éteindre l'indicateur de la suivante.
+        if (!silencieux && numero === requeteRef.current) setLoading(false)
       }
     },
-    [specialiteKey, pays, disponibleOnly, t],
+    [specialiteKey, paysRecherche, disponibleOnly, t],
   )
 
   useEffect(() => {
@@ -67,31 +84,13 @@ export default function RechercheExpertCoordinateur() {
   // relecture, le coordinateur gardait une liste perimee jusqu'au rechargement.
   useLiveRefresh(() => load({ silencieux: true }))
 
+  // Cette page portait sa propre coque : un en-tete fixe, une barre laterale de
+  // bureau et une barre du bas, toutes limitees a trois destinations sur les
+  // huit du coordinateur — et sans bouton de menu sur telephone, ce qui y
+  // enfermait l'utilisateur. Elle passe donc sous la coque commune.
   return (
-    <div className="bg-background text-text-main font-body-md min-h-screen relative">
-      <header className="fixed top-0 w-full z-50 bg-surface border-b border-outline-variant flex justify-between items-center px-margin-mobile h-12">
-        <button onClick={() => navigate('/coordinateur/tableau-de-bord')}>
-          <img className="w-8 h-8 rounded-full object-cover shadow-sm border border-surface-variant cursor-pointer" src={COORDINATOR_AVATAR} alt="Coordinateur" />
-        </button>
-        <div className="font-headline-md text-headline-md-mobile font-bold text-primary tracking-tight">IMSOP</div>
-        <div className="w-8" />
-      </header>
-
-      <aside className="hidden md:flex flex-col fixed top-[48px] left-0 w-64 h-[calc(100vh-48px)] bg-surface border-r border-outline-variant p-4 overflow-y-auto">
-        <nav className="flex flex-col gap-2 mt-4">
-          <button onClick={() => navigate('/coordinateur/tableau-de-bord')} className="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors font-label-md text-left">
-            <span className="material-symbols-outlined">folder_shared</span> {t('shell.coordinatorNav.dossiers')}
-          </button>
-          <button className="flex items-center gap-3 px-4 py-3 rounded-lg bg-primary-container text-on-primary-container font-label-md text-left">
-            <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>medical_services</span> {t('shell.coordinatorNav.experts')}
-          </button>
-          <button onClick={() => navigate('/coordinateur/identites')} className="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors font-label-md text-left">
-            <span className="material-symbols-outlined">shield_person</span> {t('shell.coordinatorNav.identites')}
-          </button>
-        </nav>
-      </aside>
-
-      <main className="pt-[48px] pb-[80px] md:pb-8 md:pl-[256px] px-margin-mobile md:px-margin-desktop max-w-[1400px] mx-auto w-full flex flex-col md:flex-row gap-gutter mt-stack-md">
+    <CoordinatorLayout>
+      <div className="w-full flex flex-col md:flex-row gap-gutter">
         <section className="w-full md:w-1/3 lg:w-1/4 flex-shrink-0 flex flex-col gap-stack-sm">
           <div className="mb-2">
             <h1 className="font-headline-lg text-headline-lg-mobile text-on-surface">{t('coordinateur.search.title')}</h1>
@@ -187,22 +186,7 @@ export default function RechercheExpertCoordinateur() {
             ))}
           </div>
         </section>
-      </main>
-
-      <nav className="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-2 py-3 bg-surface shadow-[0_-1px_3px_rgba(0,0,0,0.05)] rounded-t-xl">
-        <button onClick={() => navigate('/coordinateur/tableau-de-bord')} className="flex flex-col items-center justify-center text-on-surface-variant opacity-70 hover:text-primary transition-colors active:scale-95 duration-200">
-          <span className="material-symbols-outlined">folder_shared</span>
-          <span className="font-label-sm text-label-sm mt-1">{t('shell.coordinatorNav.dossiers')}</span>
-        </button>
-        <button className="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-4 py-1 active:scale-95 transition-transform duration-200">
-          <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>medical_services</span>
-          <span className="font-label-sm text-label-sm mt-1">{t('shell.coordinatorNav.experts')}</span>
-        </button>
-        <button onClick={() => navigate('/coordinateur/identites')} className="flex flex-col items-center justify-center text-on-surface-variant opacity-70 hover:text-primary transition-colors active:scale-95 duration-200">
-          <span className="material-symbols-outlined">shield_person</span>
-          <span className="font-label-sm text-label-sm mt-1">{t('shell.coordinatorNav.identites')}</span>
-        </button>
-      </nav>
-    </div>
+      </div>
+    </CoordinatorLayout>
   )
 }

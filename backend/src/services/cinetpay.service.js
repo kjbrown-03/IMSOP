@@ -1,6 +1,8 @@
 const env = require('../config/env')
 
-async function initTransaction({ transactionId, amount, currency, description, customerName }) {
+// `returnUrl` optionnel : par défaut la page de suivi d'un dossier, mais un
+// paiement d'annuaire doit ramener sur sa recherche, pas sur un dossier.
+async function initTransaction({ transactionId, amount, currency, description, customerName, returnUrl }) {
   const payload = {
     apikey: env.cinetpay.apiKey,
     site_id: env.cinetpay.siteId,
@@ -9,7 +11,7 @@ async function initTransaction({ transactionId, amount, currency, description, c
     currency,
     description,
     notify_url: env.cinetpay.notifyUrl,
-    return_url: env.cinetpay.returnUrl,
+    return_url: returnUrl || env.cinetpay.returnUrl,
     customer_name: customerName,
     channels: 'ALL',
   }

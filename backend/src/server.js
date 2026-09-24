@@ -5,6 +5,7 @@ const { ensureBucket } = require('./lib/s3')
 const { startMessagingCloseCron } = require('./services/messagingCloseService')
 const { startBackupCron } = require('./services/backupService')
 const { startHabilitationExpiryCron } = require('./services/habilitationExpiryService')
+const { startDelaiReponseCron } = require('./services/delaiReponseService')
 const { initCallSignaling } = require('./services/callSignalingService')
 
 // A single uncaught error must never take the whole server down for every
@@ -30,9 +31,10 @@ async function start() {
   startMessagingCloseCron()
   startBackupCron()
   startHabilitationExpiryCron()
+  startDelaiReponseCron()
 
-  const server = app.listen(env.port, () => {
-    console.log(`IMSOP backend listening on port ${env.port} (${env.nodeEnv})`)
+  const server = app.listen(env.port, env.host, () => {
+    console.log(`IMSOP backend listening on ${env.host}:${env.port} (${env.nodeEnv})`)
   })
 
   initCallSignaling(server)

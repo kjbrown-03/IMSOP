@@ -44,4 +44,17 @@ const webhookLimiter = rateLimit({
   skip: enTest,
 })
 
-module.exports = { apiLimiter, authLimiter, webhookLimiter }
+// La recherche d'annuaire est publique et écrit en base (une ligne par
+// recherche, plus ses résultats figés) : sans plafond dédié, un script
+// pourrait la remplir de recherches vides. Un vrai patient n'en lance pas dix
+// par minute.
+const rechercheAnnuaireLimiter = rateLimit({
+  windowMs: 10 * 60 * 1000,
+  limit: 15,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: 'Trop de recherches, réessayez dans quelques minutes' },
+  skip: enTest,
+})
+
+module.exports = { apiLimiter, authLimiter, webhookLimiter, rechercheAnnuaireLimiter }

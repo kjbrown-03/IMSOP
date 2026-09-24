@@ -5,6 +5,7 @@ import CoordinatorLayout from '../../components/layout/CoordinatorLayout'
 import { useLiveRefresh } from '../../components/hooks/useLiveRefresh'
 import { api } from '../../lib/api'
 import { nomPatient } from '../../lib/dossier'
+import SuiviDelais from '../../components/coordinateur/SuiviDelais'
 import { Sparkles, AlertTriangle, UserPlus, Bell, ChevronRight, ShieldAlert, FileText, FileSearch, ArrowRight, CheckCircle2, ClipboardCheck } from 'lucide-react'
 
 export default function DashboardCoordinateur() {
@@ -106,11 +107,14 @@ export default function DashboardCoordinateur() {
         ))}
       </div>
 
-      <div className="flex justify-between items-center mb-6 animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
-        <h3 className="text-xl font-display font-bold text-slate-900 dark:text-white flex items-center gap-2">
-          <ShieldAlert className="w-5 h-5 text-rose-500" /> {t('coordinateur.dashboard.pendingTitle')}
+      {/* Sur téléphone le titre et le lien ne tiennent pas sur une ligne : sans
+          `flex-wrap`, le lien se cassait en deux au milieu des mots. Il passe
+          donc sous le titre plutôt que de se replier sur lui-même. */}
+      <div className="flex flex-wrap justify-between items-center gap-x-4 gap-y-2 mb-6 animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
+        <h3 className="min-w-0 text-lg sm:text-xl font-display font-bold text-slate-900 dark:text-white flex items-center gap-2">
+          <ShieldAlert className="w-5 h-5 shrink-0 text-rose-500" /> {t('coordinateur.dashboard.pendingTitle')}
         </h3>
-        <Link to="/coordinateur/recherche-expert" className="text-sm font-semibold text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 flex items-center gap-1 group">
+        <Link to="/coordinateur/recherche-expert" className="shrink-0 whitespace-nowrap text-sm font-semibold text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 flex items-center gap-1 group">
           {t('coordinateur.dashboard.viewExperts')} <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
         </Link>
       </div>
@@ -161,6 +165,8 @@ export default function DashboardCoordinateur() {
           </div>
         ))}
       </div>
+
+      <SuiviDelais />
 
       <div className="flex justify-between items-center mb-6 mt-12 animate-fade-in-up">
         <h3 className="text-xl font-display font-bold text-slate-900 dark:text-white flex items-center gap-2">

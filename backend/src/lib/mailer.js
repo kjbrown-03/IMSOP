@@ -16,7 +16,7 @@ const transporter = nodemailer.createTransport({
 // stay reliably readable during local testing.
 const DEV_MAILBOX_PATH = path.join(__dirname, '..', '..', '.dev-mailbox.log')
 
-async function sendMail({ to, subject, html, text }) {
+async function sendMail({ to, subject, html, text, attachments }) {
   // No SMTP credentials outside production means there is no relay to talk to:
   // attempting the round-trip would hang the caller on a connection timeout.
   // Production is deliberately excluded from this branch - there, a missing
@@ -28,7 +28,8 @@ async function sendMail({ to, subject, html, text }) {
     // log file on every run, so tests get the no-op without the paperwork.
     if (env.nodeEnv === 'test') return { skipped: true }
 
-    const entry = `[${new Date().toISOString()}] To: ${to} | Subject: ${subject}\n${text || html}\n---\n`
+    const pj = attachments?.length ? ` | PJ: ${attachments.map((a) => a.filename).join(', ')}` : ''
+    const entry = `[${new Date().toISOString()}] To: ${to} | Subject: ${subject}${pj}\n${text || html}\n---\n`
     console.log(`[mailer:dev] To: ${to} | Subject: ${subject}\n${text || html}`)
     try {
       fs.appendFileSync(DEV_MAILBOX_PATH, entry)
@@ -37,7 +38,7 @@ async function sendMail({ to, subject, html, text }) {
     }
     return { skipped: true }
   }
-  return transporter.sendMail({ from: env.smtp.from, to, subject, html, text })
+  return transporter.sendMail({ from: env.smtp.from, to, subject, html, text, attachments })
 }
 
 module.exports = { sendMail }

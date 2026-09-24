@@ -1,4 +1,5 @@
 import React, { useState, createContext, useContext } from 'react'
+import { createPortal } from 'react-dom'
 import { NavLink } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
@@ -62,47 +63,67 @@ export const DesktopSidebar = ({ className, children, ...props }) => {
 
 export const MobileSidebar = ({ className, children, topBar, ...props }) => {
   const { open, setOpen } = useSidebar()
-  return (
-    <div
-      className="h-16 px-4 flex flex-row md:hidden items-center justify-between bg-white/90 dark:bg-neutral-900/90 backdrop-blur-xl border-b border-slate-200/70 dark:border-neutral-800 w-full shrink-0"
-      {...props}
-    >
-      <button
-        type="button"
-        aria-label="Ouvrir le menu"
-        onClick={() => setOpen(!open)}
-        className="p-2 -ml-2 rounded-xl text-slate-700 dark:text-neutral-200 hover:bg-slate-100 dark:hover:bg-neutral-800 transition-colors"
-      >
-        <Menu className="w-5 h-5" />
-      </button>
 
-      {topBar}
-
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            initial={{ x: '-100%', opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            exit={{ x: '-100%', opacity: 0 }}
-            transition={{ duration: 0.3, ease: 'easeInOut' }}
-            className={cn(
-              'fixed h-full w-full inset-0 bg-white dark:bg-neutral-900 p-8 z-[100] flex flex-col justify-between',
-              className,
-            )}
+  // Le tiroir est monté sur <body>, pas dans la barre du haut. Celle-ci porte
+  // `backdrop-blur-xl`, et un `backdrop-filter` fait de l'élément le bloc
+  // conteneur de ses descendants `position: fixed` — au même titre qu'un
+  // `transform`. Le tiroir héritait donc des 64 px de la barre : il s'ouvrait
+  // réduit à un bandeau, le reste du dashboard peignant par-dessus, et la
+  // moitié des onglets devenait inatteignable sur téléphone.
+  //
+  // `md:hidden` sur le tiroir lui-même remplace celui de la barre : hors du
+  // portail, il ne bénéficie plus du `display: none` du parent, et le survol du
+  // rail de bureau (qui partage le drapeau `open`) l'aurait déployé en plein
+  // écran sur ordinateur.
+  const tiroir = (
+    <AnimatePresence>
+      {open && (
+        <motion.div
+          initial={{ x: '-100%', opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          exit={{ x: '-100%', opacity: 0 }}
+          transition={{ duration: 0.3, ease: 'easeInOut' }}
+          // h-dvh et non h-full : sur mobile, 100vh compte la zone cachée par la
+          // barre d'URL, ce qui repoussait le compte et la déconnexion hors écran.
+          className={cn(
+            'fixed inset-0 h-dvh w-full md:hidden bg-white dark:bg-neutral-900 px-6 py-8 z-[100] flex flex-col justify-between',
+            className,
+          )}
+        >
+          <button
+            type="button"
+            aria-label="Fermer le menu"
+            className="absolute right-5 top-8 z-50 p-1 text-slate-700 dark:text-neutral-200"
+            onClick={() => setOpen(false)}
           >
-            <button
-              type="button"
-              aria-label="Fermer le menu"
-              className="absolute right-8 top-8 z-50 text-slate-700 dark:text-neutral-200"
-              onClick={() => setOpen(!open)}
-            >
-              <X className="w-6 h-6" />
-            </button>
-            {children}
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
+            <X className="w-6 h-6" />
+          </button>
+          {children}
+        </motion.div>
+      )}
+    </AnimatePresence>
+  )
+
+  return (
+    <>
+      <div
+        className="h-16 px-4 flex flex-row md:hidden items-center justify-between gap-2 bg-white/90 dark:bg-neutral-900/90 backdrop-blur-xl border-b border-slate-200/70 dark:border-neutral-800 w-full shrink-0"
+        {...props}
+      >
+        <button
+          type="button"
+          aria-label="Ouvrir le menu"
+          onClick={() => setOpen(!open)}
+          className="p-2 -ml-2 rounded-xl text-slate-700 dark:text-neutral-200 hover:bg-slate-100 dark:hover:bg-neutral-800 transition-colors shrink-0"
+        >
+          <Menu className="w-5 h-5" />
+        </button>
+
+        {topBar}
+      </div>
+
+      {typeof document !== 'undefined' && createPortal(tiroir, document.body)}
+    </>
   )
 }
 

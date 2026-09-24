@@ -39,7 +39,8 @@
     "hidePassword": "Masquer le mot de passe",
     "anonymousPatient": "Patient anonymisé",
     "yearsOld": "{{age}} ans",
-    "backHome": "Retour à l'accueil"
+    "backHome": "Retour à l'accueil",
+    "simulerPaiementDev": "Simuler le paiement (dev)"
   },
   "public": {
     "home": {
@@ -103,7 +104,8 @@
       "testimonial4Quote": "Le rapport a recommandé des examens complémentaires avant toute décision. Nous avons gagné en clarté sans perdre de temps.",
       "testimonial4Meta": "Bafoussam · Neurologie",
       "testimonial5Quote": "Recevoir un avis extérieur documenté m'a permis d'expliquer plus sereinement les options à ma patiente.",
-      "testimonial5Meta": "Médecin traitant · Yaoundé"
+      "testimonial5Meta": "Médecin traitant · Yaoundé",
+      "heroSecondaryCta": "Trouver un médecin près de moi"
     },
     "footer": {
       "tagline": "International Medical Second Opinion Platform. Programme africain de deuxième avis médical et de télé-expertise médicale internationale. Pays pilote : Cameroun.",
@@ -290,7 +292,7 @@
       "countrySelect": "Sélectionnez un pays",
       "nationality": "Nationalité",
       "nationalitySelect": "Sélectionnez une nationalité",
-      "city": "Ville de Résidence",
+      "city": "Ville de résidence",
       "cityPlaceholder": "Ex: Douala",
       "preferredLanguage": "Langue Préférée",
       "emergencyTitle": "Personne à contacter en cas de besoin",
@@ -309,7 +311,10 @@
       "languages": {
         "fr": "Français",
         "en": "English"
-      }
+      },
+      "citySelect": "Sélectionnez votre ville",
+      "cityOther": "Autre ville…",
+      "cityBackToList": "Revenir à la liste des villes"
     },
     "registerSecurity": {
       "sideTagline": "Rejoignez notre réseau de santé international. Vos données médicales sécurisées, accessibles aux meilleurs spécialistes.",
@@ -356,7 +361,9 @@
     "createCaseFailed": "La création du dossier a échoué. Veuillez réessayer.",
     "paymentFailed": "Le paiement n'a pas pu être traité.",
     "caseNotFoundRestart": "Dossier introuvable. Veuillez recommencer votre demande.",
-    "downloadFailed": "Téléchargement impossible"
+    "downloadFailed": "Téléchargement impossible",
+    "notFoundTitle": "Perdu dans l’espace",
+    "notFoundText": "Nous n’avons pas trouvé la page que vous cherchez. Elle a peut-être été déplacée ou supprimée."
   },
   "patient": {
     "dossierStatus": {
@@ -412,6 +419,8 @@
       "antecedentsQuestion": "Avez-vous des antécédents médicaux pertinents ?",
       "antecedentsOui": "oui",
       "antecedentsNon": "non",
+      "allergiesLabel": "Allergies connues",
+      "allergiesPlaceholder": "Médicaments, aliments, latex... Laissez vide si vous n'en avez pas.",
       "traitementLabel": "Traitements en cours",
       "optional": "(Optionnel)",
       "traitementPlaceholder": "Ex: Paracétamol 1g, 3 fois par jour...",
@@ -469,7 +478,13 @@
       "showBreakdown": "Voir le détail",
       "showTotal": "Voir le total",
       "cardRedirectNote": "Vous serez redirigé vers la page sécurisée de CinetPay pour saisir votre carte. IMSOP ne voit jamais vos coordonnées bancaires.",
-      "mobileRedirectNote": "Orange Money, MTN MoMo. La confirmation se fait sur votre téléphone."
+      "mobileRedirectNote": "Orange Money, MTN MoMo. La confirmation se fait sur votre téléphone.",
+      "tarifIndisponible": "Impossible de charger le tarif de ce dossier.",
+      "avis": {
+        "NORMAL": "Second avis médical",
+        "PRIORITAIRE": "Second avis médical — prioritaire",
+        "URGENT": "Second avis médical — urgent"
+      }
     },
     "matching": {
       "confirmedTitle": "Paiement confirmé, dossier transmis à la coordination médicale",
@@ -640,6 +655,75 @@
         "PATIENT": "Patient",
         "MEDECIN_LOCAL": "Médecin traitant"
       }
+    },
+    "delai": {
+      "titre": "Réponses attendues",
+      "compte": "{{count}} dossier en cours",
+      "compte_other": "{{count}} dossiers en cours",
+      "aucun": "Aucun dossier en attente de réponse. Tout est à jour.",
+      "restant": "Reste {{duree}}",
+      "retard": "En retard de {{duree}}",
+      "echeance": "Échéance : {{date}}",
+      "ouvrir": "Ouvrir",
+      "chargementEchoue": "Impossible de charger les dossiers suivis."
+    },
+    "stats": {
+      "titre": "Indicateurs mensuels",
+      "sousTitre": "Les neuf indicateurs du MVP, mois par mois (fuseau {{fuseau}}).",
+      "derniersMois": "{{count}} mois",
+      "jours": "{{valeur}} j",
+      "chargementEchoue": "Impossible de charger les indicateurs.",
+      "kpis": {
+        "demandes": "Nombre de demandes",
+        "dossiersComplets": "Dossiers complets",
+        "tauxConversion": "Taux de conversion",
+        "delaiMoyen": "Délai moyen",
+        "revenuMoyen": "Revenu moyen",
+        "satisfactionPatient": "Satisfaction patient",
+        "satisfactionMedecin": "Satisfaction médecin",
+        "tauxAcceptationSpecialistes": "Acceptation des spécialistes",
+        "tauxComplementsDemandes": "Compléments demandés"
+      },
+      "moisEnCours": "Mois en cours : {{mois}}. Chaque carte compare au mois précédent.",
+      "vsMoisPrecedent": "vs mois précédent",
+      "pasDeReference": "Pas de mois de référence",
+      "pasDeReferenceDetail": "Aucune donnée sur le mois précédent : la comparaison n'est pas possible.",
+      "enCours": "mois en cours (partiel)",
+      "moisPrecedent": "mois précédent (complet)",
+      "avis": "{{count}} avis",
+      "avis_other": "{{count}} avis",
+      "historique": "Historique sur {{count}} mois",
+      "recusations": "{{count}} récusation(s) pour conflit d'intérêts, comptée(s) à part.",
+      "avertissementCartes": "Le mois en cours est partiel : comparer ses 14 premiers jours à un mois complet sous-estime mécaniquement la variation. Chaque indicateur est rattaché à sa propre date — la demande au mois de sa création, le revenu au mois de l'encaissement, le délai au mois de validation du rapport.",
+      "tousLesIndicateurs": "Tous les indicateurs",
+      "comparaison": "Ce mois vs le précédent"
+    },
+    "reversements": {
+      "titre": "Honoraires des spécialistes",
+      "sousTitre": "Ce que la plateforme doit à chaque spécialiste, après commission, dans sa devise.",
+      "syntheseTitre": "À reverser, par spécialiste",
+      "rienADevoir": "Aucun honoraire en attente. Tout est reversé.",
+      "detailTitre": "Détail par avis",
+      "aucuneLigne": "Aucune ligne dans cet état.",
+      "dossiers": "{{count}} avis",
+      "dossiers_other": "{{count}} avis",
+      "ventilation": "Payé {{brut}} · commission {{taux}} % = {{commission}}",
+      "net": "net pour le spécialiste",
+      "reverseLe": "reversé le",
+      "reverserFapshi": "Reverser par Mobile Money",
+      "enregistrerVirement": "Enregistrer le virement",
+      "referencePlaceholder": "Référence du virement bancaire",
+      "canalFapshi": "Mobile Money (Fapshi)",
+      "canalVirement": "Virement bancaire",
+      "fait": "Reversé.",
+      "echec": "Le reversement a échoué.",
+      "chargementEchoue": "Impossible de charger les honoraires.",
+      "statuts": {
+        "A_REVERSER": "À reverser",
+        "EN_COURS": "En cours",
+        "REVERSE": "Reversé",
+        "ECHOUE": "Échec"
+      }
     }
   },
   "specialiste": {
@@ -668,7 +752,10 @@
       "askComplement": "Demander un complément",
       "complementPlaceholder": "Précisez les pièces ou informations manquantes...",
       "awaitingComplement": "En attente du complément demandé au patient.",
-      "openReport": "Rapport"
+      "openReport": "Rapport",
+      "declareConflict": "Déclarer un conflit d'intérêts",
+      "conflictHelp": "Le dossier repartira en affectation et ne vous sera plus proposé.",
+      "conflictPlaceholder": "Précisez la raison (patient connu, lien avec le confrère, établissement concerné...)"
     },
     "report": {
       "loadingCase": "Chargement du dossier...",
@@ -799,6 +886,16 @@
         "etablissementsPartenaires": "Établissements partenaires",
         "paysCouverts": "Pays couverts"
       }
+    },
+    "medecins": {
+      "title": "Gestion des médecins traitants",
+      "subtitle": "Créez, modifiez ou suspendez les comptes des médecins traitants de proximité.",
+      "newButton": "Nouveau médecin traitant",
+      "createTitle": "Nouveau médecin traitant",
+      "villePlaceholder": "Ville d'exercice",
+      "numeroOrdrePlaceholder": "Numéro d'inscription à l'ordre",
+      "numeroOrdre": "Ordre {{numero}}",
+      "verified": "Habilité"
     }
   },
   "shell": {
@@ -828,7 +925,13 @@
       "parametres": "Paramètres",
       "habilitations": "Habilitations",
       "messages": "Messages",
-      "temoignages": "Témoignages"
+      "temoignages": "Témoignages",
+      "gestionExperts": "Gestion des experts",
+      "statistiques": "Statistiques",
+      "reversements": "Reversements",
+      "candidatures": "Candidatures",
+      "specialites": "Spécialités",
+      "gestionMedecins": "Médecins traitants"
     },
     "userMenu": {
       "user": "Utilisateur",
@@ -838,7 +941,8 @@
     "medecinNav": {
       "dossiers": "Mes demandes",
       "profil": "Mon compte",
-      "justificatifs": "Mes justificatifs"
+      "justificatifs": "Mes justificatifs",
+      "annuaire": "Annuaire"
     },
     "coordinateurNav": {
       "habilitations": "Habilitations"
@@ -864,7 +968,20 @@
     "otpSendError": "Impossible d'envoyer le code. Réessayez dans un instant.",
     "otpVerifyError": "Code invalide ou expiré.",
     "signatureHint": "Saisissez votre nom complet tel qu'il figure sur votre compte : {{nom}}",
-    "signatureMismatch": "La signature doit reprendre le nom du titulaire du compte : {{nom}}"
+    "signatureMismatch": "La signature doit reprendre le nom du titulaire du compte : {{nom}}",
+    "etatTitre": "Vos autorisations",
+    "etatSousTitre": "Ce que vous avez autorisé pour ce dossier.",
+    "etatAccorde": "Accordée le {{date}}",
+    "etatRetire": "Retirée le {{date}}",
+    "etatNonDemande": "Non demandée",
+    "etatErreur": "Impossible de lire l'état de vos autorisations.",
+    "types": {
+      "TRAITEMENT_DONNEES": "Traitement de mes données de santé",
+      "TRANSMISSION_SPECIALISTE": "Transmission du dossier au spécialiste",
+      "COMMUNICATION_MEDECIN": "Communication à mon médecin traitant",
+      "TELECONSULTATION": "Téléconsultation",
+      "UTILISATION_ANONYMISEE_RECHERCHE": "Utilisation anonymisée à des fins de recherche"
+    }
   },
   "temoignage": {
     "title": "Laisser un commentaire",
@@ -993,7 +1110,9 @@
     "callNoAnswer": "Pas de réponse. Réessayez plus tard ou laissez un message.",
     "callNotAllowed": "Vous ne pouvez pas appeler cette personne : elle n'est pas rattachée à ce dossier.",
     "callFailed": "L'appel n'a pas pu être établi.",
-    "backToList": "Revenir à la liste des conversations"
+    "backToList": "Revenir à la liste des conversations",
+    "discussionDirecte": "Discussion directe",
+    "demarrerDiscussion": "Démarrer une discussion"
   },
   "medecin": {
     "login": {
@@ -1016,7 +1135,9 @@
       "numeroOrdre": "Numéro d'ordre des médecins",
       "submit": "Créer mon compte",
       "hasAccount": "Vous avez déjà un compte ?",
-      "login": "Se connecter"
+      "login": "Se connecter",
+      "ville": "Ville de résidence",
+      "villeSelect": "Sélectionnez une ville"
     },
     "dashboard": {
       "title": "Mes demandes de second avis",
@@ -1034,6 +1155,7 @@
       "question": "Question médicale",
       "symptomes": "Symptômes",
       "antecedents": "Antécédents",
+      "allergies": "Allergies connues",
       "traitement": "Traitement en cours",
       "documents": "Documents du dossier",
       "upload": "Téléverser",
@@ -1129,7 +1251,13 @@
       "envoyer": "Envoyer à la coordination",
       "envoiEnCours": "Envoi en cours...",
       "erreur": "L'envoi de la demande a échoué.",
-      "nouvelle": "Nouvelle demande"
+      "nouvelle": "Nouvelle demande",
+      "allergies": "Allergies connues",
+      "allergiesPlaceholder": "Médicaments, aliments, latex... Indiquez « aucune » si le patient n'en a pas.",
+      "manquantsTitre": "Pour envoyer la demande, il reste à compléter :",
+      "manquantConsentement": "Cocher l'acceptation du consentement",
+      "manquantSignature": "Saisir votre nom complet en signature, tel qu'il figure sur votre compte",
+      "manquantCode": "Confirmer la signature avec le code reçu par e-mail"
     }
   },
   "patientMedecin": {
@@ -1191,6 +1319,241 @@
       "MEDECIN_LOCAL": "Médecin traitant",
       "COORDINATEUR": "Coordinateur",
       "ADMIN": "Administrateur"
+    },
+    "password": {
+      "titre": "Mot de passe",
+      "aide": "Remplacez le mot de passe reçu par courriel par un mot de passe que vous êtes seul à connaître.",
+      "actuel": "Mot de passe actuel",
+      "nouveau": "Nouveau mot de passe",
+      "confirmer": "Confirmer le nouveau mot de passe",
+      "longueur": "{{n}} caractères minimum.",
+      "discordance": "Les deux saisies ne correspondent pas.",
+      "valider": "Changer mon mot de passe",
+      "succes": "Mot de passe modifié. Vous allez être redirigé vers la connexion pour vous reconnecter avec le nouveau.",
+      "echec": "Le changement a échoué. Réessayez."
     }
+  },
+  "annuaire": {
+    "pays": {
+      "cm": "Cameroun",
+      "cf": "République centrafricaine",
+      "cg": "Congo",
+      "ga": "Gabon",
+      "gq": "Guinée équatoriale",
+      "td": "Tchad"
+    },
+    "specialites": {
+      "medecine_generale": "Médecine générale",
+      "pediatrie": "Pédiatrie",
+      "gynecologie": "Gynécologie",
+      "cardiologie": "Cardiologie",
+      "dermatologie": "Dermatologie",
+      "orl": "ORL",
+      "ophtalmologie": "Ophtalmologie",
+      "dentaire": "Dentaire",
+      "psychiatrie": "Psychiatrie",
+      "orthopedie": "Orthopédie",
+      "gastroenterologie": "Gastro-entérologie",
+      "pneumologie": "Pneumologie",
+      "nephrologie": "Néphrologie",
+      "urologie": "Urologie",
+      "neurologie": "Neurologie",
+      "oncologie": "Oncologie",
+      "rhumatologie": "Rhumatologie",
+      "endocrinologie": "Endocrinologie / Diabète",
+      "infectiologie": "Infectiologie"
+    },
+    "recherche": {
+      "eyebrow": "Trouver un médecin",
+      "titre": "Un médecin près de chez vous",
+      "intro": "Décrivez ce que vous ressentez : nous vous mettons en relation avec les médecins inscrits et vérifiés de votre zone qui peuvent vous recevoir.",
+      "symptomes": "Vos symptômes",
+      "symptomesPlaceholder": "Ex. : des boutons qui grattent sur les bras depuis une semaine, sans fièvre",
+      "symptomesAide": "En quelques phrases, avec vos mots. Précisez depuis quand.",
+      "pays": "Pays",
+      "ville": "Ville",
+      "optionnel": "facultatif",
+      "villeToutes": "Toutes les villes",
+      "noteUrgence": "Ce service n'est pas un service d'urgence. En cas de douleur thoracique, de difficulté à respirer, de perte de connaissance ou de saignement important, appelez immédiatement les secours.",
+      "lancer": "Chercher un médecin",
+      "tarifNote": "La recherche est gratuite. La mise en relation avec les médecins trouvés coûte {{montant}} {{devise}}.",
+      "erreur": "La recherche a échoué. Réessayez.",
+      "tropCourt": "Décrivez un peu plus vos symptômes (au moins {{min}} caractères)."
+    },
+    "resultats": {
+      "nouvelleRecherche": "Nouvelle recherche",
+      "chargement": "Chargement de votre recherche…",
+      "introuvable": "Recherche introuvable.",
+      "eyebrow": "Résultats",
+      "titre_one": "{{count}} médecin peut vous prendre en charge",
+      "titre_other": "{{count}} médecins peuvent vous prendre en charge",
+      "aucun": "Aucun médecin disponible pour cette recherche",
+      "aucunAide": "Aucun médecin inscrit dans cette zone ne couvre ces symptômes pour le moment. Essayez sans préciser de ville, ou revenez plus tard : de nouveaux médecins rejoignent l'annuaire régulièrement. Rien ne vous est facturé.",
+      "villeInconnue": "Ville non renseignée",
+      "verrouille": "Coordonnées verrouillées",
+      "deblocageTitre": "Être mis en relation avec ces médecins",
+      "deblocageTexte": "Nous vous relions à tous les médecins de cette recherche : vous recevez leur nom, leur téléphone, leur e-mail, leur établissement et leur quartier.",
+      "comptePatientRequis": "La mise en relation se fait depuis un compte patient.",
+      "debloquer": "Me mettre en relation — {{montant}} {{devise}}",
+      "attenteConfirmation": "Confirmation du paiement…",
+      "attenteAide": "Nous attendons la confirmation de votre paiement. Vous n'avez pas payé ou avez abandonné ?",
+      "attenteAnnuler": "Réessayer le paiement",
+      "erreurPaiement": "Le paiement n'a pas pu être lancé. Réessayez.",
+      "rappelDebloque": "Vous êtes mis en relation avec ces médecins : contactez-les directement. IMSOP ne fixe pas de rendez-vous et ne remplace pas la consultation.",
+      "emailLabel": "Votre adresse e-mail",
+      "emailPlaceholder": "vous@exemple.com",
+      "emailAide": "Aucun compte nécessaire. Cet e-mail sert à votre paiement et à retrouver votre mise en relation.",
+      "emailRequis": "Indiquez une adresse e-mail valide pour être mis en relation."
+    },
+    "urgence": {
+      "titre": "Ce que vous décrivez peut être une urgence",
+      "texte": "Ne cherchez pas de médecin en ligne : appelez immédiatement les services d'urgence ou rendez-vous aux urgences les plus proches.",
+      "rappel": "Aucun paiement ne vous est demandé. Cette page n'est pas un avis médical : en cas de doute, considérez qu'il s'agit d'une urgence."
+    },
+    "medecin": {
+      "titre": "Annuaire « Trouver un médecin »",
+      "sousTitre": "Choisissez d'être mis en relation, ou non, avec les patients de la zone CEMAC qui cherchent un médecin près de chez eux.",
+      "erreurChargement": "Impossible de charger vos réglages.",
+      "erreurEnregistrement": "Impossible d'enregistrer. Réessayez.",
+      "nonHabilite": "Votre habilitation n'est pas encore validée : vous pouvez préparer votre fiche, mais vous n'apparaîtrez dans l'annuaire qu'une fois validé par la coordination.",
+      "visibleLabel": "Être mis en relation avec des patients",
+      "visibleAide": "Les patients que la plateforme vous relie recevront votre nom, votre téléphone, votre e-mail, votre établissement et votre quartier pour vous contacter. Vous pouvez vous retirer à tout moment.",
+      "specialitesTitre": "Ce que vous prenez en charge",
+      "specialitesAide": "Cochez une ou plusieurs spécialités. C'est sur elles que les patients vous trouveront.",
+      "localisationTitre": "Où vous recevez",
+      "choisir": "Choisir…",
+      "quartier": "Quartier",
+      "quartierPlaceholder": "Ex. : Logpom",
+      "presentationTitre": "Présentation (facultatif)",
+      "presentationPlaceholder": "Horaires, langues parlées, accès… Visible une fois vos coordonnées débloquées.",
+      "enregistre": "Réglages enregistrés"
+    }
+  },
+  "candidature": {
+    "titreSpecialiste": "Candidature — spécialiste international",
+    "titreMedecin": "Candidature — médecin traitant",
+    "accroche": "Rejoignez le réseau IMSOP de second avis médical.",
+    "consigne": "Ce formulaire vous a été adressé par le comité scientifique. Renseignez-le et joignez une photo professionnelle : le comité examinera votre candidature et vous répondra par e-mail.",
+    "photo": "Photo professionnelle",
+    "photoAide": "Toute photo de votre téléphone convient : elle est redimensionnée automatiquement.",
+    "photoObligatoire": "La photo est obligatoire.",
+    "photoFormat": "Format non accepté : JPEG, PNG ou WebP uniquement.",
+    "photoTaille": "Fichier trop lourd (25 Mo maximum).",
+    "fullName": "Nom complet",
+    "email": "Adresse e-mail",
+    "phone": "Téléphone",
+    "specialite": "Spécialité",
+    "specialiteChoisir": "Choisissez votre spécialité",
+    "etablissement": "Établissement d'exercice",
+    "pays": "Pays",
+    "ville": "Ville de résidence",
+    "villeChoisir": "Sélectionnez une ville",
+    "numeroOrdre": "Numéro d'inscription à l'ordre",
+    "langues": "Langues parlées",
+    "presentation": "Parcours et motivations",
+    "presentationAide": "Diplômes, expérience, domaines d'expertise, motivations. 50 caractères minimum.",
+    "envoyer": "Envoyer ma candidature",
+    "erreur": "L'envoi a échoué. Vérifiez les champs et réessayez.",
+    "merciTitre": "Candidature envoyée",
+    "merciTexte": "Merci. Un accusé de réception vous a été envoyé par e-mail. Le comité scientifique examinera votre candidature et vous tiendra informé(e) de sa décision.",
+    "cv": "Curriculum vitae",
+    "cvAide": "PDF, 10 Mo maximum. Facultatif, mais fortement recommandé.",
+    "cvChoisir": "Joindre mon CV (PDF)",
+    "cvRetirer": "Retirer le CV",
+    "cvFormat": "Le CV doit être un fichier PDF.",
+    "cvTaille": "CV trop lourd (10 Mo maximum).",
+    "paysChoisir": "Choisissez votre pays d'exercice",
+    "villePaysDabord": "Choisissez d'abord un pays",
+    "specialiteAutre": "Autre — préciser ma spécialité",
+    "specialiteAutrePlaceholder": "Saisissez votre spécialité",
+    "retourListe": "Revenir à la liste",
+    "aucunResultat": "Aucun résultat",
+    "champsManquants": "Champs obligatoires à renseigner : {{champs}}.",
+    "lieuExercice": "Lieu d'exercice",
+    "lieuExerciceAide": "Où exercez-vous aujourd'hui ? Le comité scientifique contacte la structure pour vérifier votre exercice.",
+    "structure": {
+      "CLINIQUE": "Clinique",
+      "HOPITAL": "Hôpital",
+      "LES_DEUX": "Les deux"
+    },
+    "blocClinique": "Clinique",
+    "blocHopital": "Hôpital",
+    "nomClinique": "Nom de la clinique",
+    "nomHopital": "Nom de l'hôpital",
+    "telStructure": "Téléphone de la structure",
+    "emailStructure": "E-mail de la structure",
+    "photoIllisible": "Ce fichier ne peut pas être lu comme une image. Si elle vient d'un iPhone, ouvrez-la puis enregistrez-la en JPEG, ou choisissez une autre photo."
+  },
+  "candidatures": {
+    "titre": "Candidatures",
+    "sousTitre": "Le comité scientifique reçoit chaque formulaire par e-mail et décide hors de la plateforme. Vous créez ici le compte des candidats qu'il vous transmet.",
+    "statuts": {
+      "A_CREER": "Comptes à créer",
+      "COMPTE_CREE": "Comptes créés",
+      "REFUSEE": "Écartées"
+    },
+    "types": {
+      "SPECIALISTE": "Spécialiste",
+      "MEDECIN_LOCAL": "Médecin traitant"
+    },
+    "vide": {
+      "A_CREER": "Aucune candidature en attente de compte.",
+      "COMPTE_CREE": "Aucun compte créé depuis une candidature.",
+      "REFUSEE": "Aucune candidature écartée."
+    },
+    "deposeeLe": "Déposée le {{date}}",
+    "lirePresentation": "Lire le parcours et les motivations",
+    "masquerPresentation": "Masquer",
+    "motifRefus": "Note",
+    "creerCompte": "Créer le compte",
+    "compteCreeInfo": "Compte créé. Les identifiants de connexion ont été envoyés à {{email}}.",
+    "chargementEchoue": "Impossible de charger les candidatures.",
+    "actionEchouee": "L'action a échoué.",
+    "cvVoir": "Ouvrir le CV",
+    "cvAucun": "Aucun CV fourni",
+    "lieuExercice": "Lieu d'exercice",
+    "structure": {
+      "CLINIQUE": "Clinique",
+      "HOPITAL": "Hôpital",
+      "LES_DEUX": "Clinique et hôpital"
+    },
+    "telStructure": "Téléphone",
+    "emailStructure": "E-mail",
+    "aucunLieu": "Non renseigné",
+    "compteCreeSansMail": "Compte créé, mais l'envoi des identifiants à {{email}} a échoué. Utilisez « Renvoyer les identifiants » pour réessayer.",
+    "renvoyerIdentifiants": "Renvoyer les identifiants",
+    "renvoyerAide": "Le praticien n'a rien reçu ? Un nouveau mot de passe sera généré et envoyé à son adresse. L'ancien cessera de fonctionner.",
+    "identifiantsRenvoyes": "Nouveaux identifiants envoyés à {{email}}.",
+    "creerAide": "Créer le compte génère un mot de passe et envoie les identifiants au praticien par e-mail.",
+    "ecarter": "Écarter"
+  },
+  "specialites": {
+    "titre": "Spécialités",
+    "sousTitre": "Les spécialités proposées dans les formulaires de candidature. Le spécialiste choisit dans cette liste, le médecin traitant peut aussi saisir la sienne.",
+    "ajouter": "Ajouter une spécialité",
+    "nom": "Nom de la spécialité",
+    "nomPlaceholder": "Ex. : Hématologie",
+    "cibles": "Proposée dans le formulaire",
+    "pourSpecialiste": "Spécialiste",
+    "pourMedecin": "Médecin traitant",
+    "cibleObligatoire": "Choisissez au moins un formulaire.",
+    "valider": "Ajouter",
+    "annuler": "Annuler",
+    "rechercher": "Rechercher une spécialité",
+    "filtre": {
+      "toutes": "Toutes",
+      "SPECIALISTE": "Spécialiste",
+      "MEDECIN_LOCAL": "Médecin traitant"
+    },
+    "active": "Proposée",
+    "retiree": "Retirée",
+    "retirer": "Retirer de la liste",
+    "reactiver": "Proposer à nouveau",
+    "retireeAide": "Retirée des formulaires. Les praticiens qui la portent gardent leur libellé.",
+    "aucune": "Aucune spécialité ne correspond.",
+    "ajoutee": "« {{nom}} » a été ajoutée.",
+    "existe": "Cette spécialité existe déjà.",
+    "chargementEchoue": "Impossible de charger les spécialités.",
+    "actionEchouee": "L'action a échoué."
   }
 }

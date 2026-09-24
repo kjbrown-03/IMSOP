@@ -14,12 +14,16 @@ router.post('/', requireRole('PATIENT'), validate(schema.createDossier), ctrl.cr
 router.post('/demande-medecin', requireRole('MEDECIN_LOCAL'), validate(schema.creerDemandeMedecin), ctrl.creerDemandeMedecin)
 router.post('/:id/transmettre', requireRole('MEDECIN_LOCAL'), validate(schema.idParam), ctrl.transmettreDemandeMedecin)
 router.get('/', validate(schema.listDossiers), ctrl.listDossiers)
+// Avant les routes `/:id` : « en-cours » serait sinon interprété comme un
+// identifiant de dossier.
+router.get('/en-cours', requireRole('COORDINATEUR', 'ADMIN'), ctrl.listDossiersEnCours)
 router.get('/:id', validate(schema.idParam), ctrl.getDossier)
 router.patch('/:id', validate(schema.updateDossier), ctrl.updateDossier)
 router.post('/:id/soumettre', requireRole('PATIENT'), validate(schema.idParam), ctrl.soumettreDossier)
 router.post('/:id/assigner', requireRole('COORDINATEUR', 'ADMIN'), validate(schema.assignerSpecialiste), ctrl.assignerSpecialiste)
 router.post('/:id/accepter', requireRole('SPECIALISTE'), validate(schema.idParam), ctrl.accepterDossier)
 router.post('/:id/refuser', requireRole('SPECIALISTE'), validate(schema.refuserDossier), ctrl.refuserDossier)
+router.post('/:id/conflit-interets', requireRole('SPECIALISTE'), validate(schema.declarerConflitInterets), ctrl.declarerConflitInterets)
 router.post('/:id/analyser', requireRole('SPECIALISTE'), validate(schema.idParam), ctrl.demarrerAnalyse)
 router.post('/:id/demander-complement', requireRole('SPECIALISTE'), validate(schema.demanderComplement), ctrl.demanderComplement)
 router.post('/:id/complement-fourni', requireRole('PATIENT', 'MEDECIN_LOCAL', 'COORDINATEUR', 'ADMIN'), validate(schema.idParam), ctrl.complementFourni)

@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { nomPatient } from '../../lib/dossier'
 import { api } from '../../lib/api'
+import CoordinatorLayout from '../../components/layout/CoordinatorLayout'
 
 export default function AffectationExpert() {
   const navigate = useNavigate()
@@ -51,21 +52,23 @@ export default function AffectationExpert() {
     }
   }
 
+  // Meme raison que RechercheExpertCoordinateur : l'en-tete maison ne proposait
+  // qu'un retour au tableau de bord, sans acces au reste de la navigation.
   return (
-    <div className="antialiased min-h-screen flex flex-col items-center bg-background text-on-background">
-      <div className="w-full max-w-[1200px] flex-grow flex flex-col relative pb-20 md:pb-0">
-        <header className="flex justify-between items-center px-margin-mobile md:px-margin-desktop h-12 w-full z-50 bg-surface border-b border-outline-variant fixed top-0 left-0 right-0 max-w-[1200px] mx-auto">
+    <CoordinatorLayout>
+      <div className="w-full flex flex-col gap-stack-lg max-w-3xl mx-auto">
+        <div className="flex items-center gap-3">
           <button
             onClick={() => navigate('/coordinateur/tableau-de-bord')}
-            className="text-primary hover:bg-surface-container-low transition-colors duration-200 p-2 rounded-full flex items-center justify-center"
+            aria-label={t('common.back')}
+            className="shrink-0 text-primary hover:bg-surface-container-low transition-colors duration-200 p-2 rounded-full flex items-center justify-center"
           >
             <span className="material-symbols-outlined">arrow_back</span>
           </button>
           <h1 className="text-headline-md font-headline-md text-on-surface">{t('coordinateur.assign.title')}</h1>
-          <div className="w-10" />
-        </header>
+        </div>
 
-        <main className="flex-grow pt-[calc(3rem+1rem)] px-margin-mobile md:px-margin-desktop flex flex-col gap-stack-lg w-full max-w-3xl mx-auto">
+        <div className="flex flex-col gap-stack-lg w-full">
           {loading && (
             <div className="bg-surface-container-lowest rounded-xl border border-outline-variant p-8 text-center text-on-surface-variant">
               {t('coordinateur.assign.loadingCase')}
@@ -177,8 +180,8 @@ export default function AffectationExpert() {
               </section>
             </>
           )}
-        </main>
+        </div>
       </div>
-    </div>
+    </CoordinatorLayout>
   )
 }

@@ -12,6 +12,10 @@ export function getCallSocket() {
     path: '/socket.io',
     autoConnect: false,
     auth: (cb) => cb({ token: sessionActive()?.accessToken ?? null }),
+    // Le repli en polling est une requête HTTP ordinaire : derrière un tunnel
+    // ngrok gratuit, elle recevrait la page d'avertissement au lieu de la
+    // réponse du serveur. Voir l'explication dans api.js.
+    extraHeaders: { 'ngrok-skip-browser-warning': 'true' },
   })
 
   return socket

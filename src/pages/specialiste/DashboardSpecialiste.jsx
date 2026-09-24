@@ -20,6 +20,19 @@ function specialiteVisual(specialite) {
   return match ? { Icon: match[1], color: match[2], bg: match[3] } : { Icon: Stethoscope, color: 'text-primary-600', bg: 'bg-primary-50' }
 }
 
+// Un conflit d'interets se declare tant que le dossier est entre les mains du
+// specialiste. Une fois le rapport rendu, se recuser n'aurait plus de sens : le
+// mal serait fait, et c'est une reprise du dossier qu'il faudrait.
+const STATUTS_RECUSABLES = new Set([
+  'AFFECTE',
+  'ACCEPTE_PAR_SPECIALISTE',
+  'EN_ANALYSE',
+  'INFORMATION_COMPLEMENTAIRE_DEMANDEE',
+  'RAPPORT_EN_PREPARATION',
+])
+
+const peutSeRecuser = (dossier) => STATUTS_RECUSABLES.has(dossier.status)
+
 const GROUP_OF_STATUS = {
   AFFECTE: 'nouveau',
   ACCEPTE_PAR_SPECIALISTE: 'en-cours',
@@ -56,6 +69,8 @@ export default function DashboardSpecialiste({ showAvailabilityToggle = false })
   const [precisions, setPrecisions] = useState('')
   const [refusingId, setRefusingId] = useState(null)
   const [motif, setMotif] = useState('')
+  const [conflitId, setConflitId] = useState(null)
+  const [motifConflit, setMotifConflit] = useState('')
 
   async function load() {
     setLoading(true)
@@ -110,6 +125,19 @@ export default function DashboardSpecialiste({ showAvailabilityToggle = false })
       await api.post(`/dossiers/${id}/demander-complement`, { precisions: precisions.trim() })
       setComplementId(null)
       setPrecisions('')
+      await load()
+    } finally {
+      setDecidingId(null)
+    }
+  }
+
+  async function declarerConflit(id) {
+    if (motifConflit.trim().length < 10) return
+    setDecidingId(id)
+    try {
+      await api.post(`/dossiers/${id}/conflit-interets`, { motif: motifConflit.trim() })
+      setConflitId(null)
+      setMotifConflit('')
       await load()
     } finally {
       setDecidingId(null)
@@ -356,6 +384,52 @@ export default function DashboardSpecialiste({ showAvailabilityToggle = false })
                     <ChevronRight className="w-5 h-5 text-slate-400 group-hover:text-primary-600 dark:group-hover:text-primary-400" />
                   </div>
                 </Link>
+              )}
+
+              {/* Un conflit d'intérêts se découvre le plus souvent en ouvrant le
+                  dossier, donc après l'avoir accepté : l'action reste offerte
+                  tant que le dossier n'est pas terminé, et pas seulement à
+                  l'étape « nouveau ». Elle est volontairement discrète — c'est
+                  une sortie de secours, pas une action courante. */}
+              {peutSeRecuser(d) && (
+                <div className="pt-3">
+                  {conflitId === d.id ? (
+                    <div className="flex flex-col gap-2">
+                      <p className="text-xs text-slate-500 dark:text-slate-400">
+                        {t('specialiste.dashboard.conflictHelp')}
+                      </p>
+                      <textarea
+                        value={motifConflit}
+                        onChange={(e) => setMotifConflit(e.target.value)}
+                        placeholder={t('specialiste.dashboard.conflictPlaceholder')}
+                        className="w-full rounded-xl border border-slate-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-2.5 text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                        rows={2}
+                      />
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => { setConflitId(null); setMotifConflit('') }}
+                          className="flex-1 text-sm font-semibold text-slate-500 dark:text-slate-400 px-4 py-2 rounded-xl hover:bg-slate-50 dark:hover:bg-neutral-800"
+                        >
+                          {t('specialiste.dashboard.cancel')}
+                        </button>
+                        <button
+                          onClick={() => declarerConflit(d.id)}
+                          disabled={decidingId === d.id || motifConflit.trim().length < 10}
+                          className="flex-1 bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-sm font-semibold px-4 py-2 rounded-xl hover:bg-slate-800 dark:hover:bg-slate-100 transition-colors disabled:opacity-60"
+                        >
+                          {t('specialiste.dashboard.confirm')}
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => { setConflitId(d.id); setMotifConflit('') }}
+                      className="text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 transition-colors flex items-center gap-1.5"
+                    >
+                      <ShieldAlert className="w-3.5 h-3.5" /> {t('specialiste.dashboard.declareConflict')}
+                    </button>
+                  )}
+                </div>
               )}
             </div>
           )

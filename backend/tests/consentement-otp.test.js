@@ -108,7 +108,7 @@ test('Consentement — le serveur exige la confirmation', async (t) => {
     const res = await api()
       .post(`/api/dossiers/${dossier.id}/consentements`)
       .set('Authorization', entete(user))
-      .send({ type: 'TRANSMISSION_SPECIALISTE', accepted: true, nomSignataire: 'Jean Dupont' })
+      .send({ type: 'TRANSMISSION_SPECIALISTE', accepted: true, nomSignataire: user.fullName })
       .expect(403)
 
     assert.match(res.body.message, /Confirmation par e-mail/)
@@ -128,7 +128,7 @@ test('Consentement — le serveur exige la confirmation', async (t) => {
     const res = await api()
       .post(`/api/dossiers/${dossier.id}/consentements`)
       .set('Authorization', entete(user))
-      .send({ type: 'TRANSMISSION_SPECIALISTE', accepted: true, nomSignataire: 'Jean Dupont', otpToken })
+      .send({ type: 'TRANSMISSION_SPECIALISTE', accepted: true, nomSignataire: user.fullName, otpToken })
 
     assert.notEqual(res.status, 403)
     assert.equal(await prisma.consentement.count(), 1)
@@ -146,7 +146,7 @@ test('Consentement — le serveur exige la confirmation', async (t) => {
       .send({
         type: 'TRANSMISSION_SPECIALISTE',
         accepted: true,
-        nomSignataire: 'Jean Dupont',
+        nomSignataire: user.fullName,
         otpToken: jetonDeLAutre,
       })
       .expect(403)
@@ -160,7 +160,7 @@ test('Consentement — le serveur exige la confirmation', async (t) => {
     const res = await api()
       .post(`/api/dossiers/${dossier.id}/consentements`)
       .set('Authorization', entete(user))
-      .send({ type: 'TRANSMISSION_SPECIALISTE', accepted: true, nomSignataire: 'Dr. Awa Ngo', otpToken })
+      .send({ type: 'TRANSMISSION_SPECIALISTE', accepted: true, nomSignataire: user.fullName, otpToken })
 
     assert.notEqual(res.status, 403)
     assert.equal(await prisma.consentement.count(), 1)

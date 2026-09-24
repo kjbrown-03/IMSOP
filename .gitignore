@@ -14,3 +14,17 @@ backend/dist/
 
 # Claude Code (local runtime state)
 .claude/scheduled_tasks.lock
+
+# Configuration de production : clés de paiement, mot de passe SMTP, secrets de
+# session. L'exemple versionné (deploy/.env.production.example) suffit à savoir
+# quoi remplir.
+deploy/.env.production
+deploy/backups/
+
+# Clés SSH et certificats. Une clé privée generee par megarde dans le dossier
+# du projet partirait au premier `git add .` — et une cle publiee est une cle
+# perdue.
+id_ed25519*
+id_rsa*
+*.pem
+*.key

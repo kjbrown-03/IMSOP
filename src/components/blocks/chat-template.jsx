@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useIsMobile } from '@/components/hooks/use-mobile'
+import { LIENS_COORDINATEUR } from '@/lib/navigationCoordinateur'
 
 import {
   SidebarInset,
@@ -65,7 +66,11 @@ const MAX_BYTES = 25 * 1024 * 1024
 // restrictive corporate NATs. Adding TURN is a later, infra-level upgrade.
 const ICE_SERVERS = [{ urls: 'stun:stun.l.google.com:19302' }]
 
-export const Home = () => {
+// `avecBarreLaterale` : la page rend sa propre barre latérale quand elle est
+// affichée seule. Insérée dans la coquille d'un rôle, celle-ci fournit déjà la
+// navigation — en rendre une seconde donnait un écran différent des autres
+// onglets (autre style, autres effets au survol, autre position).
+export const Home = ({ avecBarreLaterale = true }) => {
   const { toggleSidebar } = useSidebar()
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()
@@ -80,14 +85,17 @@ export const Home = () => {
   const isCoordinateur = user?.role === 'COORDINATEUR' || user?.role === 'ADMIN'
   const basePath = isCoordinateur ? '/coordinateur/messages' : '/specialiste/messagerie'
 
-  // Same nav destinations as CoordinatorLayout / SpecialistShell — this page
-  // is standalone (its own Sidebar, not wrapped in either shell), so it
-  // needs its own way back to the rest of each role's app.
+  // Cette page a sa propre barre latérale, hors des coquilles habituelles.
+  // Côté coordinateur elle rend la liste partagée : une copie locale de deux
+  // entrées faisait disparaître tous les autres onglets dès qu'on ouvrait la
+  // messagerie.
   const navItems = isCoordinateur
-    ? [
-        { to: '/coordinateur/tableau-de-bord', label: t('shell.coordinatorNav.dashboard'), icon: LayoutDashboard },
-        { to: basePath, label: t('shell.coordinatorNav.messages'), icon: MessageCircle, active: true },
-      ]
+    ? LIENS_COORDINATEUR.map(({ to, cle, icone }) => ({
+        to,
+        label: t(`shell.coordinatorNav.${cle}`),
+        icon: icone,
+        active: to === basePath,
+      }))
     : [
         { to: '/specialiste/tableau-de-bord', label: t('shell.specialistNav.dossiers'), icon: LayoutDashboard },
         { to: basePath, label: t('shell.specialistNav.messages'), icon: MessageCircle, active: true },
@@ -99,6 +107,16 @@ export const Home = () => {
   const [contactsError, setContactsError] = useState(null)
   const [search, setSearch] = useState('')
   const [activeDossierId, setActiveDossierId] = useState(urlDossierId || null)
+
+  // Discussions directes, sans dossier. La liste des contacts se deduisait
+  // uniquement de GET /dossiers : un praticien fraichement recrute, a qui rien
+  // n'est encore affecte, n'apparaissait donc nulle part.
+  const [discussions, setDiscussions] = useState([])
+  const [activeDiscussionId, setActiveDiscussionId] = useState(null)
+  // Resultats de la recherche de praticiens a qui la coordination peut ecrire,
+  // pour demarrer un fil qui n'existe pas encore.
+  const [destinataires, setDestinataires] = useState([])
+  const [ouvertureEnCours, setOuvertureEnCours] = useState(null)
 
   const [messages, setMessages] = useState([])
   const [messagingClosesAt, setMessagingClosesAt] = useState(null)
@@ -209,10 +227,59 @@ export const Home = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isCoordinateur, t])
 
+  // Les discussions directes vivent a cote des dossiers dans la meme liste.
+  const [rechargerDiscussions, setRechargerDiscussions] = useState(0)
+  useEffect(() => {
+    let annule = false
+    api.get('/conversations')
+      .then(({ data }) => { if (!annule) setDiscussions(data.conversations) })
+      .catch(() => { /* la liste des dossiers reste utilisable sans elles */ })
+    return () => { annule = true }
+  }, [rechargerDiscussions])
+
+  // La recherche interroge aussi les praticiens joignables : c'est le seul
+  // moyen d'atteindre quelqu'un avec qui aucun fil n'existe encore.
+  useEffect(() => {
+    if (!isCoordinateur || search.trim().length < 2) {
+      setDestinataires([])
+      return
+    }
+    let annule = false
+    const minuteur = setTimeout(() => {
+      api.get('/conversations/destinataires', { params: { q: search.trim() } })
+        .then(({ data }) => { if (!annule) setDestinataires(data.utilisateurs) })
+        .catch(() => { if (!annule) setDestinataires([]) })
+    }, 250)
+    return () => { annule = true; clearTimeout(minuteur) }
+  }, [isCoordinateur, search])
+
   useEffect(() => {
     setThreadSearchOpen(false)
     setThreadSearchQuery('')
-  }, [activeDossierId])
+  }, [activeDossierId, activeDiscussionId])
+
+  // Messages d'une discussion directe. Volontairement separe du chargement des
+  // fils de dossiers : les deux n'ont ni la meme route ni la meme fermeture.
+  useEffect(() => {
+    if (!activeDiscussionId) return
+    let annule = false
+    async function charger() {
+      setLoadingThread(true)
+      setThreadError(null)
+      try {
+        const { data } = await api.get(`/conversations/${activeDiscussionId}/messages`)
+        if (annule) return
+        setMessages(data.messages)
+        setMessagingClosesAt(null)
+      } catch (err) {
+        if (!annule) setThreadError(err.response?.data?.message || t('errors.conversationNotFound'))
+      } finally {
+        if (!annule) setLoadingThread(false)
+      }
+    }
+    charger()
+    return () => { annule = true }
+  }, [activeDiscussionId, t])
 
   useEffect(() => {
     if (!activeDossierId) return
@@ -243,12 +310,23 @@ export const Home = () => {
   }, [messages])
 
   const activeContact = contacts.find((c) => c.dossier.id === activeDossierId)
-  const activeCounterpart = activeContact ? counterpartOf(activeContact.dossier) : null
-  const activeSubtitle = activeContact
-    ? isCoordinateur
-      ? activeContact.dossier.specialiste?.specialite
-      : t('chat.patientFile')
-    : ''
+  const activeDiscussion = discussions.find((d) => d.id === activeDiscussionId)
+  // Une discussion directe n'a pas de dossier : ni piece jointe (elle irait
+  // dans le dossier de qui ?), ni appel video (l'autorisation d'appel se lit
+  // sur un dossier partage).
+  const filEstDiscussion = Boolean(activeDiscussionId)
+  const activeCounterpart = filEstDiscussion
+    ? activeDiscussion?.correspondant || null
+    : activeContact
+      ? counterpartOf(activeContact.dossier)
+      : null
+  const activeSubtitle = filEstDiscussion
+    ? t('chat.discussionDirecte')
+    : activeContact
+      ? isCoordinateur
+        ? activeContact.dossier.specialiste?.specialite
+        : t('chat.patientFile')
+      : ''
   const closed = messagingClosesAt && new Date(messagingClosesAt) < new Date()
 
   const rechercheActive = search.trim().length > 0
@@ -271,6 +349,19 @@ export const Home = () => {
       dossier.motif,
     ].some((champ) => champ?.toLowerCase().includes(q))
   })
+
+  // Une discussion ouverte reste visible meme sans message, sinon on tomberait
+  // dans un fil qui n'apparait plus dans la liste d'a cote.
+  const discussionsFiltrees = discussions.filter((d) => {
+    const q = search.trim().toLowerCase()
+    if (!q) return Boolean(d.dernierMessage) || d.id === activeDiscussionId
+    return d.correspondant?.fullName?.toLowerCase().includes(q)
+  })
+
+  // Les praticiens deja joignables par un fil existant n'ont pas a reapparaitre
+  // sous « demarrer une discussion ».
+  const dejaEnDiscussion = new Set(discussions.map((d) => d.correspondant?.id))
+  const destinatairesNouveaux = destinataires.filter((u) => !dejaEnDiscussion.has(u.id))
 
   const visibleMessages = threadSearchQuery.trim()
     ? messages.filter((m) => m.body?.toLowerCase().includes(threadSearchQuery.trim().toLowerCase()))
@@ -295,6 +386,10 @@ export const Home = () => {
     setContacts((prev) => prev.map((c) => (c.dossier.id === dossierId ? { ...c, last: message } : c)))
   }
 
+  function patchDiscussionPreview(id, message) {
+    setDiscussions((prev) => prev.map((d) => (d.id === id ? { ...d, dernierMessage: message } : d)))
+  }
+
   // Keeps the URL in sync with the open conversation so it stays a valid deep
   // link (NotificationBell points straight at /patient/messages/:id) and the
   // browser back/forward buttons behave.
@@ -302,12 +397,38 @@ export const Home = () => {
   // occupe tout l'ecran et rien ne permet d'en changer.
   function retourListe() {
     setActiveDossierId(null)
+    setActiveDiscussionId(null)
     navigate(basePath, { replace: true })
   }
 
   function selectContact(dossierId) {
+    setActiveDiscussionId(null)
     setActiveDossierId(dossierId)
     navigate(`${basePath}/${dossierId}`, { replace: true })
+  }
+
+  function ouvrirDiscussion(id) {
+    setActiveDossierId(null)
+    setActiveDiscussionId(id)
+    setMessages([])
+    navigate(basePath, { replace: true })
+  }
+
+  // Demarrer un fil depuis un resultat de recherche. Le serveur est idempotent :
+  // rechercher deux fois le meme nom ne cree pas deux discussions.
+  async function demarrerDiscussion(utilisateur) {
+    setOuvertureEnCours(utilisateur.id)
+    try {
+      const { data } = await api.post('/conversations', { destinataireId: utilisateur.id })
+      setSearch('')
+      setDestinataires([])
+      setRechargerDiscussions((n) => n + 1)
+      ouvrirDiscussion(data.id)
+    } catch (err) {
+      setContactsError(err.response?.data?.message || t('errors.loadMessagesFailed'))
+    } finally {
+      setOuvertureEnCours(null)
+    }
   }
 
   function pickFile(e) {
@@ -349,12 +470,20 @@ export const Home = () => {
   async function sendMessage(e) {
     e.preventDefault()
     if (pendingFile) return sendAttachment()
-    if (!draft.trim() || sending || !activeDossierId) return
+    if (!draft.trim() || sending) return
+    if (!activeDossierId && !activeDiscussionId) return
+
     setSending(true)
     try {
-      const { data } = await api.post(`/dossiers/${activeDossierId}/messages`, { body: draft.trim() })
+      // Deux routes pour deux natures de fil : un message de discussion
+      // directe n'appartient a aucun dossier.
+      const url = filEstDiscussion
+        ? `/conversations/${activeDiscussionId}/messages`
+        : `/dossiers/${activeDossierId}/messages`
+      const { data } = await api.post(url, { body: draft.trim() })
       setMessages((prev) => [...prev, data])
-      patchContactPreview(activeDossierId, data)
+      if (filEstDiscussion) patchDiscussionPreview(activeDiscussionId, data)
+      else patchContactPreview(activeDossierId, data)
       setDraft('')
     } catch (err) {
       setThreadError(err.response?.data?.message || t('errors.sendMessageFailed'))
@@ -607,8 +736,14 @@ export const Home = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  // Seule, la page occupe l'écran entier ; dans la coquille, elle remplit
+  // l'espace que celle-ci lui laisse.
+  const hauteur = avecBarreLaterale ? 'h-dvh' : 'h-full'
+  const Conteneur = avecBarreLaterale ? SidebarInset : 'div'
+
   return (
     <>
+      {avecBarreLaterale && (
       <Sidebar variant="floating" collapsible="icon">
         <SidebarContent>
           <SidebarGroup>
@@ -658,15 +793,16 @@ export const Home = () => {
           </SidebarMenu>
         </SidebarFooter>
       </Sidebar>
+      )}
 
-      <SidebarInset>
-        <ResizablePanelGroup direction="horizontal" className="h-dvh">
+      <Conteneur className={avecBarreLaterale ? undefined : 'flex flex-1 min-h-0 min-w-0'}>
+        <ResizablePanelGroup direction="horizontal" className={hauteur}>
           {/* Les panneaux ont flex-basis:0, donc masquer l'un laisse l'autre
               occuper toute la largeur sans reglage supplementaire. */}
           <ResizablePanel
             defaultSize={25}
             minSize={20}
-            className={`flex-grow ${activeDossierId ? 'hidden md:block' : ''}`}
+            className={`flex-grow ${activeDossierId || activeDiscussionId ? 'hidden md:block' : ''}`}
           >
             <div className="flex flex-col h-full border ml-1">
               <div className="h-10 px-2 py-4 flex items-center">
@@ -691,7 +827,7 @@ export const Home = () => {
               {contactsError && !loadingContacts && (
                 <div className="mx-2 rounded-lg bg-destructive/10 text-destructive text-sm px-3 py-2">{contactsError}</div>
               )}
-              {!loadingContacts && !contactsError && filteredContacts.length === 0 && (
+              {!loadingContacts && !contactsError && filteredContacts.length === 0 && discussionsFiltrees.length === 0 && destinatairesNouveaux.length === 0 && (
                 <p className="px-4 py-2 text-sm text-muted-foreground">
                   {contacts.length === 0
                     ? t('patient.messages.empty')
@@ -702,6 +838,72 @@ export const Home = () => {
               )}
 
               <ScrollArea className="flex-grow">
+                {/* Discussions directes en tete : elles ne portent pas de
+                    reference de dossier, c'est le nom qui les identifie. */}
+                {discussionsFiltrees.map((d) => (
+                  <button
+                    key={d.id}
+                    onClick={() => ouvrirDiscussion(d.id)}
+                    className={`px-4 w-full py-2 hover:bg-accent cursor-pointer text-left border-l-2 ${
+                      activeDiscussionId === d.id ? 'bg-primary/10 border-l-primary' : 'border-l-transparent'
+                    }`}
+                  >
+                    <div className="flex flex-row gap-2">
+                      <Avatar className="size-12">
+                        {d.correspondant?.avatarUrl && <AvatarImage src={d.correspondant.avatarUrl} />}
+                        <AvatarFallback>{d.correspondant?.fullName?.[0] || '?'}</AvatarFallback>
+                      </Avatar>
+                      <div className="space-y-1 min-w-0 flex-1">
+                        <div className="flex justify-between items-baseline gap-2">
+                          <p className="font-semibold truncate">{d.correspondant?.fullName}</p>
+                          {d.dernierMessage && (
+                            <span className="shrink-0 text-xs text-muted-foreground">
+                              {formatListTime(d.dernierMessage.createdAt)}
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-xs text-muted-foreground">{t('chat.discussionDirecte')}</p>
+                        <p className="text-sm text-muted-foreground truncate">
+                          {d.dernierMessage ? d.dernierMessage.body : t('patient.messages.noMessageYet')}
+                        </p>
+                      </div>
+                    </div>
+                  </button>
+                ))}
+
+                {/* Praticiens joignables avec qui aucun fil n'existe encore :
+                    c'est le point d'entree pour ecrire a quelqu'un qui vient
+                    d'etre recrute. */}
+                {destinatairesNouveaux.length > 0 && (
+                  <>
+                    <p className="px-4 pt-3 pb-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                      {t('chat.demarrerDiscussion')}
+                    </p>
+                    {destinatairesNouveaux.map((u) => (
+                      <button
+                        key={u.id}
+                        onClick={() => demarrerDiscussion(u)}
+                        disabled={ouvertureEnCours === u.id}
+                        className="px-4 w-full py-2 hover:bg-accent cursor-pointer text-left border-l-2 border-l-transparent disabled:opacity-60"
+                      >
+                        <div className="flex flex-row gap-2 items-center">
+                          <Avatar className="size-10">
+                            {u.avatarUrl && <AvatarImage src={u.avatarUrl} />}
+                            <AvatarFallback>{u.fullName?.[0] || '?'}</AvatarFallback>
+                          </Avatar>
+                          <div className="min-w-0 flex-1">
+                            <p className="font-medium truncate">{u.fullName}</p>
+                            <p className="text-xs text-muted-foreground truncate">
+                              {[u.specialite, u.ville].filter(Boolean).join(' · ') || t(`candidatures.types.${u.role}`)}
+                            </p>
+                          </div>
+                          {ouvertureEnCours === u.id && <Loader2 className="w-4 h-4 animate-spin shrink-0" />}
+                        </div>
+                      </button>
+                    ))}
+                  </>
+                )}
+
                 {filteredContacts.map(({ dossier, last }) => {
                   const counterpart = counterpartOf(dossier)
                   const specialite = isCoordinateur ? dossier.specialiste?.specialite : dossier.specialiteRequise
@@ -752,9 +954,9 @@ export const Home = () => {
 
           <ResizableHandle className="hidden md:flex" />
 
-          <ResizablePanel defaultSize={75} minSize={40} className={activeDossierId ? '' : 'hidden md:block'}>
+          <ResizablePanel defaultSize={75} minSize={40} className={activeDossierId || activeDiscussionId ? '' : 'hidden md:block'}>
             <div className="flex flex-col justify-between h-full ml-1 pb-2">
-              {!activeContact ? (
+              {!activeContact && !activeDiscussion ? (
                 <div className="flex-1 flex items-center justify-center text-muted-foreground text-sm px-6 text-center">
                   {loadingContacts ? t('patient.messages.loading') : t('patient.messages.empty')}
                 </div>
@@ -777,11 +979,13 @@ export const Home = () => {
                     <div className="space-y-1 ml-2 min-w-0">
                       <p className="font-semibold truncate">{activeCounterpart?.fullName}</p>
                       <p className="text-sm text-muted-foreground truncate">
-                        {activeSubtitle} · #{activeContact.dossier.reference}
+                        {/* Une discussion directe n'a pas de reference : la
+                            coller ferait apparaitre « · #undefined ». */}
+                        {filEstDiscussion ? activeSubtitle : `${activeSubtitle} · #${activeContact.dossier.reference}`}
                       </p>
                     </div>
                     <div className="flex-grow flex justify-end gap-2">
-                      {activeCounterpart?.id && (
+                      {activeCounterpart?.id && !filEstDiscussion && (
                         <Button
                           variant="ghost"
                           size="icon"
@@ -910,17 +1114,21 @@ export const Home = () => {
                           onChange={pickFile}
                           className="hidden"
                         />
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon"
-                          aria-label={t('chat.attachAria')}
-                          title={t('chat.attachAria')}
-                          onClick={() => fileInputRef.current?.click()}
-                          disabled={sending}
-                        >
-                          <Paperclip />
-                        </Button>
+                        {/* Une piece jointe devient un document du dossier :
+                            sans dossier, elle n'aurait ou etre rangee. */}
+                        {!filEstDiscussion && (
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            aria-label={t('chat.attachAria')}
+                            title={t('chat.attachAria')}
+                            onClick={() => fileInputRef.current?.click()}
+                            disabled={sending}
+                          >
+                            <Paperclip />
+                          </Button>
+                        )}
                         <Input
                           className="flex-grow border-0"
                           placeholder={pendingFile ? t('chat.attachCaptionPlaceholder') : t('patient.chat.placeholder')}
@@ -944,7 +1152,7 @@ export const Home = () => {
             </div>
           </ResizablePanel>
         </ResizablePanelGroup>
-      </SidebarInset>
+      </Conteneur>
 
       {(callStatus !== 'idle' || callError) && (
         <div className="fixed inset-0 z-[100] bg-black/80 flex items-center justify-center p-4">

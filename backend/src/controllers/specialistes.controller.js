@@ -86,8 +86,23 @@ async function getRecommandations(req, res) {
   const { dossier, error, message } = await loadDossierWithAccessCheck(req, req.params.dossierId)
   if (error) return res.status(error).json({ message })
 
+  // Un expert qui s'est récusé coche toujours les mêmes critères : sans cette
+  // exclusion, le score le replacerait en tête et le coordinateur se verrait
+  // reproposer celui qui vient de se retirer.
+  const recusations = await prisma.recusationSpecialiste.findMany({
+    where: { dossierId: dossier.id },
+    select: { specialisteId: true },
+  })
+  const recuses = recusations.map((r) => r.specialisteId)
+
   const specialistes = await prisma.specialiste.findMany({
-    where: { verificationStatus: 'VALIDE', disponible: true },
+    where: {
+      verificationStatus: 'VALIDE',
+      disponible: true,
+      // `notIn: []` n'a pas de sens en SQL : on n'ajoute la clause que s'il y a
+      // effectivement quelqu'un à écarter.
+      ...(recuses.length ? { id: { notIn: recuses } } : {}),
+    },
     include: {
       user: { select: { id: true, fullName: true, email: true, avatarUrl: true } },
       // Seuls les dossiers reellement en cours comptent dans la charge.

@@ -19,6 +19,32 @@
     @apply bg-white/80 dark:bg-neutral-900/70 backdrop-blur-md
            border border-slate-200/70 dark:border-neutral-700/60;
   }
+
+  /* Bouton « contour » dont le fond se remplit au survol : un calque coloré
+     glisse de gauche à droite derrière le contenu. La couleur vient de
+     `--remplissage` pour que l'appelant la choisisse (et la change en sombre).
+     `isolate` confine le z-index négatif au bouton ; `inset: 0` couvre la
+     zone intérieure à la bordure, qui reste donc visible pendant l'animation. */
+  .btn-remplissage {
+    @apply relative isolate overflow-hidden;
+  }
+  .btn-remplissage::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--remplissage, #163A52);
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .btn-remplissage:hover::before,
+  .btn-remplissage:focus-visible::before {
+    transform: scaleX(1);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .btn-remplissage::before { transition: none; }
+  }
 }
 
 /* Défilement horizontal continu (témoignages, bandeau de confiance).

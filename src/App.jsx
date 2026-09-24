@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import ProtectedRoute from './components/ProtectedRoute'
 import Placeholder from './pages/Placeholder'
+import NotFound from './pages/NotFound'
 import SplashScreen from './components/Splashscreen'
 import TransitionDamier from './components/ui/TransitionDamier'
 import { useThemeStore } from './store/useThemeStore'
@@ -36,6 +37,13 @@ import NouvelleDemandeMedecin from './pages/medecin/NouvelleDemandeMedecin'
 import DossierMedecinLocal from './pages/medecin/DossierMedecinLocal'
 import MesJustificatifs from './pages/professionnel/MesJustificatifs'
 import RevueHabilitations from './pages/coordinateur/RevueHabilitations'
+import CoordinateurSpecialistes from './pages/coordinateur/CoordinateurSpecialistes'
+import CoordinateurStatistiques from './pages/coordinateur/CoordinateurStatistiques'
+import CoordinateurCandidatures from './pages/coordinateur/CoordinateurCandidatures'
+import CoordinateurSpecialites from './pages/coordinateur/CoordinateurSpecialites'
+import CoordinateurMedecins from './pages/coordinateur/CoordinateurMedecins'
+import Candidature from './pages/public/Candidature'
+import CoordinateurReversements from './pages/coordinateur/CoordinateurReversements'
 import DashboardCoordinateur from './pages/coordinateur/DashboardCoordinateur'
 import AffectationExpert from './pages/coordinateur/AffectationExpert'
 import RechercheExpertCoordinateur from './pages/coordinateur/RechercheExpertCoordinateur'
@@ -47,6 +55,9 @@ import RedactionRapportExpert from './pages/specialiste/RedactionRapportExpert'
 import PaiementSecurise from './pages/patient/PaiementSecurise'
 import AccueilV2 from './pages/public/AccueilV2'
 import PourMedecins from './pages/public/PourMedecins'
+import AnnuaireRecherche from './pages/public/AnnuaireRecherche'
+import AnnuaireResultats from './pages/public/AnnuaireResultats'
+import AnnuaireMedecin from './pages/medecin/AnnuaireMedecin'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import AdminSpecialistes from './pages/admin/AdminSpecialistes'
 import AdminCoordinateurs from './pages/admin/AdminCoordinateurs'
@@ -106,6 +117,13 @@ export default function App() {
       <Route path="/" element={<Accueil />} />
       <Route path="/accueil-v2" element={<AccueilV2 />} />
       <Route path="/pour-medecins" element={<PourMedecins />} />
+      {/* Formulaire de candidature envoyé par le comité scientifique : public,
+          aucun compte n'existe encore. Deux variantes : specialiste | medecin. */}
+      <Route path="/candidature/:type" element={<Candidature />} />
+      {/* Annuaire « Trouver un médecin » : recherche et résultats sont
+          publics (les résultats restent floutés tant que rien n'est payé). */}
+      <Route path="/annuaire" element={<AnnuaireRecherche />} />
+      <Route path="/annuaire/:id" element={<AnnuaireResultats />} />
 
       {/* Auth */}
       <Route path="/connexion" element={<SelectionRole />} />
@@ -214,10 +232,74 @@ export default function App() {
         }
       />
       <Route
+        path="/coordinateur/candidatures"
+        element={
+          <ProtectedRoute role={['COORDINATEUR', 'ADMIN']}>
+            <CoordinateurCandidatures />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/coordinateur/specialites"
+        element={
+          <ProtectedRoute role={['COORDINATEUR', 'ADMIN']}>
+            <CoordinateurSpecialites />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/coordinateur/statistiques"
+        element={
+          <ProtectedRoute role={['COORDINATEUR', 'ADMIN']}>
+            <CoordinateurStatistiques />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/coordinateur/statistiques/:cle"
+        element={
+          <ProtectedRoute role={['COORDINATEUR', 'ADMIN']}>
+            <CoordinateurStatistiques />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/coordinateur/reversements"
+        element={
+          <ProtectedRoute role={['COORDINATEUR', 'ADMIN']}>
+            <CoordinateurReversements />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/coordinateur/medecins"
+        element={
+          <ProtectedRoute role={['COORDINATEUR', 'ADMIN']}>
+            <CoordinateurMedecins />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/coordinateur/specialistes"
+        element={
+          <ProtectedRoute role={['COORDINATEUR', 'ADMIN']}>
+            <CoordinateurSpecialistes />
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path="/coordinateur/habilitations"
         element={
           <ProtectedRoute role={['COORDINATEUR', 'ADMIN']}>
             <RevueHabilitations />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/medecin/annuaire"
+        element={
+          <ProtectedRoute role="MEDECIN_LOCAL">
+            <AnnuaireMedecin />
           </ProtectedRoute>
         }
       />
@@ -404,7 +486,7 @@ export default function App() {
         }
       />
 
-      <Route path="*" element={<Placeholder title="Page introuvable" />} />
+      <Route path="*" element={<NotFound />} />
       </Routes>
     </>
   )

@@ -55,6 +55,9 @@ export default function DashboardShell({
   bottomNav = null,
   headerLeft = null,
   headerRight = null,
+  // Écran qui gère lui-même sa mise en page (messagerie) : pas de marges ni
+  // de largeur maximale, et l'enfant occupe toute la hauteur disponible.
+  pleinEcran = false,
 }) {
   const { t } = useTranslation()
   const navigate = useNavigate()
@@ -119,8 +122,13 @@ export default function DashboardShell({
         </SidebarBody>
       </Sidebar>
 
-      <div className="flex flex-1 min-w-0 md:p-2">
-        <div className="flex flex-col flex-1 min-w-0 bg-white dark:bg-neutral-900 md:rounded-2xl md:border border-slate-200 dark:border-neutral-700 shadow-sm">
+      {/* min-h-0 sur toute la chaine flex, sinon rien ne defile sur telephone :
+          en colonne, un enfant flex garde `min-height: auto` et refuse de
+          descendre sous la hauteur de son contenu. La zone de contenu depassait
+          donc le h-dvh, et l'overflow-hidden de la racine coupait le bas de la
+          page sans laisser aucun moyen d'y acceder. */}
+      <div className="flex flex-1 min-w-0 min-h-0 md:p-2">
+        <div className="flex flex-col flex-1 min-w-0 min-h-0 bg-white dark:bg-neutral-900 md:rounded-2xl md:border border-slate-200 dark:border-neutral-700 shadow-sm">
           {/* Desktop header: the mobile equivalent lives in the sidebar top bar. */}
           <header className="hidden md:flex items-center justify-between gap-4 px-8 h-16 shrink-0 border-b border-slate-100 dark:border-neutral-800">
             <div className="flex items-center gap-3 min-w-0">
@@ -142,13 +150,19 @@ export default function DashboardShell({
               element on the page — usually a submit button — sits underneath it
               and cannot be seen or clicked. The FAB occupies 152px of the bottom
               edge (`bottom-24` = 96px, plus `h-14` = 56px), so pb-40 clears it. */}
-          <main
-            className={`flex-1 overflow-y-auto md:rounded-b-2xl px-4 sm:px-6 md:px-8 py-6 md:py-8 animate-fade-in ${
-              fab ? 'pb-40' : 'pb-28 md:pb-8'
-            }`}
-          >
-            <div className="max-w-7xl mx-auto w-full flex flex-col gap-6">{children}</div>
-          </main>
+          {pleinEcran ? (
+            <main className="flex-1 min-h-0 flex flex-col md:rounded-b-2xl overflow-hidden animate-fade-in">
+              {children}
+            </main>
+          ) : (
+            <main
+              className={`flex-1 overflow-y-auto md:rounded-b-2xl px-4 sm:px-6 md:px-8 py-6 md:py-8 animate-fade-in ${
+                fab ? 'pb-40' : 'pb-28 md:pb-8'
+              }`}
+            >
+              <div className="max-w-7xl mx-auto w-full flex flex-col gap-6">{children}</div>
+            </main>
+          )}
         </div>
       </div>
 

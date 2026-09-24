@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams, Link } from 'react-router-dom';
+import { useNavigate, useSearchParams, useLocation, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '../../store/useAuthStore';
 import { ROLE_REDIRECTS } from '../../constants/roleRedirects';
@@ -64,6 +64,11 @@ const AnimatedLogin = ({ role = 'PATIENT' }) => {
   const navigate = useNavigate();
   const jouerTransition = useTransitionStore((s) => s.jouer);
   const [searchParams] = useSearchParams();
+  const location = useLocation();
+  // Page à rejoindre après connexion (ex. une recherche d'annuaire à payer).
+  // Seulement un chemin interne : on ne renvoie jamais vers une URL externe
+  // qu'on nous aurait glissée dans l'état de navigation.
+  const from = typeof location.state?.from === 'string' && location.state.from.startsWith('/') ? location.state.from : null;
   const login = useAuthStore((s) => s.login);
   const error = useAuthStore((s) => s.error);
   const loading = useAuthStore((s) => s.loading);
@@ -101,10 +106,10 @@ const AnimatedLogin = ({ role = 'PATIENT' }) => {
     e.preventDefault();
     const result = await login(email, password, role);
     if (result?.twoFactorRequired) {
-      navigate('/verification-2fa', { state: { challengeToken: result.challengeToken, role } });
+      navigate('/verification-2fa', { state: { challengeToken: result.challengeToken, role, from } });
     } else if (result?.ok) {
       jouerTransition();
-      navigate(ROLE_REDIRECTS[role] || '/');
+      navigate(from || ROLE_REDIRECTS[role] || '/');
     }
   }
 

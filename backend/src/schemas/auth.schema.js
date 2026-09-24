@@ -80,7 +80,17 @@ const registerMedecinLocal = {
     specialite: z.string().trim().max(200).optional(),
     etablissement: z.string().trim().max(200).optional(),
     pays: z.string().trim().max(100).optional(),
+    ville: z.string().trim().max(100).optional(),
     numeroOrdre: z.string().trim().max(100).optional(),
+  }).strict(),
+}
+
+// Changement de mot de passe par son propriétaire, déjà connecté. L'ancien est
+// exigé : sans lui, un poste laissé ouvert suffirait à voler le compte.
+const changerMotDePasse = {
+  body: z.object({
+    motDePasseActuel: z.string().min(1).max(128),
+    nouveauMotDePasse: z.string().min(8).max(128),
   }).strict(),
 }
 
@@ -88,4 +98,5 @@ module.exports = {
   registerMedecinLocal,
   registerPatient, login, verifyTwoFactor, refresh, logout,
   forgotPassword, resetPassword, verifyEmail, verifierCodeConsentement,
+  changerMotDePasse,
 }

@@ -11,7 +11,7 @@ const {
   creerAdmin,
   creerDossier,
 } = require('./helpers/factories')
-const { appelAutorise } = require('../src/services/callSignalingService')
+const { appelAutorise, creerRegistreAppels } = require('../src/services/callSignalingService')
 
 test.beforeEach(viderBase)
 test.after(fermerBase)
@@ -102,5 +102,85 @@ test("Appel vidéo — qui peut appeler qui", async (t) => {
       await appelAutorise('00000000-0000-0000-0000-000000000000', coordinateur.id, specialisteUser.id),
       false,
     )
+  })
+})
+
+// Le contrôle d'accès ne portait que sur l'invitation : acceptation, refus,
+// SDP/ICE et raccrochage relayaient vers n'importe quel `toUserId` fourni par
+// le client. Le registre est ce qui referme ce relais — d'où ces tests, qui
+// n'ont besoin d'aucune base.
+test('Appel vidéo — registre des sessions autorisées', async (t) => {
+  const A = 'utilisateur-a'
+  const B = 'utilisateur-b'
+  const C = 'utilisateur-c'
+
+  await t.test('sans invitation, aucune session', () => {
+    const registre = creerRegistreAppels()
+    assert.equal(registre.trouver(A, B), null)
+  })
+
+  await t.test('une invitation ouvre une session lisible dans les deux sens', () => {
+    const registre = creerRegistreAppels()
+    registre.ouvrir(A, B, 'dossier-1')
+
+    const vueAppelant = registre.trouver(A, B)
+    const vueAppele = registre.trouver(B, A)
+
+    assert.ok(vueAppelant)
+    assert.equal(vueAppelant, vueAppele)
+    assert.equal(vueAppelant.dossierId, 'dossier-1')
+    assert.equal(vueAppelant.initiateur, A)
+    assert.equal(vueAppelant.invite, B)
+    assert.equal(vueAppelant.acceptee, false)
+  })
+
+  await t.test("un tiers n'atteint aucune des deux parties", () => {
+    const registre = creerRegistreAppels()
+    registre.ouvrir(A, B, 'dossier-1')
+
+    assert.equal(registre.trouver(C, A), null)
+    assert.equal(registre.trouver(C, B), null)
+  })
+
+  await t.test('accepter marque la session, sans en ouvrir une autre', () => {
+    const registre = creerRegistreAppels()
+    registre.ouvrir(A, B, 'dossier-1')
+    registre.marquerAcceptee(registre.trouver(A, B))
+
+    assert.equal(registre.trouver(B, A).acceptee, true)
+    assert.equal(registre.trouver(A, C), null)
+  })
+
+  await t.test('fermer coupe le relais dans les deux sens', () => {
+    const registre = creerRegistreAppels()
+    registre.ouvrir(A, B, 'dossier-1')
+    registre.fermer(B, A)
+
+    assert.equal(registre.trouver(A, B), null)
+    assert.equal(registre.trouver(B, A), null)
+  })
+
+  await t.test('une déconnexion rend les correspondants à prévenir', () => {
+    const registre = creerRegistreAppels()
+    registre.ouvrir(A, B, 'dossier-1')
+    registre.ouvrir(C, A, 'dossier-2')
+
+    const correspondants = registre.fermerTout(A)
+
+    assert.equal(correspondants.length, 2)
+    assert.deepEqual(
+      correspondants.map((c) => c.userId).sort(),
+      [B, C].sort(),
+    )
+    assert.equal(registre.trouver(A, B), null)
+    assert.equal(registre.trouver(A, C), null)
+  })
+
+  await t.test("la déconnexion d'un tiers ne ferme pas la session des autres", () => {
+    const registre = creerRegistreAppels()
+    registre.ouvrir(A, B, 'dossier-1')
+
+    assert.deepEqual(registre.fermerTout(C), [])
+    assert.ok(registre.trouver(A, B))
   })
 })

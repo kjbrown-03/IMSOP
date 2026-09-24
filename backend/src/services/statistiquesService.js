@@ -62,6 +62,12 @@ function filtrePeriode(depuis, jusquA) {
   }
 }
 
+/** Moyenne d'une note sur 5, à une décimale. */
+function moyenneNote(notes) {
+  if (!notes || notes.length === 0) return null
+  return Math.round((notes.reduce((s, n) => s + n, 0) / notes.length) * 10) / 10
+}
+
 function compter(liste, cle) {
   const parCle = new Map()
   for (const item of liste) {
@@ -84,6 +90,7 @@ async function calculerStatistiques({ depuis = null, jusquA = null } = {}) {
     paiementsConfirmes,
     specialistes,
     patients,
+    temoignages,
   ] = await Promise.all([
     prisma.patient.count({ where: periode }),
     prisma.dossier.findMany({
@@ -122,7 +129,19 @@ async function calculerStatistiques({ depuis = null, jusquA = null } = {}) {
       select: { id: true, pays: true, etablissement: true, disponible: true, verificationStatus: true },
     }),
     prisma.patient.findMany({ where: periode, select: { country: true } }),
+    // Les témoignages rejetés à la modération comptent : un texte écarté pour
+    // sa forme reste un ressenti réel, il n'est simplement pas publié.
+    prisma.temoignage.findMany({
+      where: { ...periode, note: { not: null } },
+      select: { roleAuteur: true, note: true },
+    }),
   ])
+
+  const notesParRole = new Map()
+  for (const t of temoignages) {
+    if (!notesParRole.has(t.roleAuteur)) notesParRole.set(t.roleAuteur, [])
+    notesParRole.get(t.roleAuteur).push(t.note)
+  }
 
   const totalDossiers = dossiers.length
   const parStatut = (statuts) => dossiers.filter((d) => statuts.includes(d.status)).length
@@ -251,8 +270,26 @@ async function calculerStatistiques({ depuis = null, jusquA = null } = {}) {
         disponible: true,
         echantillon: affectes,
       },
-      indisponible(7, 'satisfactionPatient', 'Module de notation non implémenté (CDC §43, hors MVP).'),
-      indisponible(8, 'satisfactionMedecin', 'Module de notation non implémenté (CDC §43, hors MVP).'),
+      // La mention « module de notation non implémenté » était périmée : les
+      // témoignages collectent une note de 1 à 5 et retiennent le rôle de leur
+      // auteur. L'effectif accompagne la moyenne — la note reste facultative,
+      // et une moyenne sur trois avis n'est pas une satisfaction.
+      {
+        numero: 7,
+        cle: 'satisfactionPatient',
+        valeur: moyenneNote(notesParRole.get('PATIENT')),
+        unite: 'note5',
+        disponible: true,
+        echantillon: (notesParRole.get('PATIENT') || []).length,
+      },
+      {
+        numero: 8,
+        cle: 'satisfactionMedecin',
+        valeur: moyenneNote(notesParRole.get('MEDECIN_LOCAL')),
+        unite: 'note5',
+        disponible: true,
+        echantillon: (notesParRole.get('MEDECIN_LOCAL') || []).length,
+      },
       indisponible(9, 'coutMoyenParDossier', "Aucune donnée de coût : la rémunération des spécialistes et les commissions (CDC §39) ne sont pas modélisées."),
       { numero: 10, cle: 'revenuMoyenParDossier', valeur: revenuMoyenParDossier, unite: 'montantParDevise', disponible: true, echantillon: dossiersPayes },
       { numero: 11, cle: 'specialistesActifs', valeur: specialistesActifs, unite: 'nombre', disponible: true, note: 'Habilitation VALIDE et déclarés disponibles.' },

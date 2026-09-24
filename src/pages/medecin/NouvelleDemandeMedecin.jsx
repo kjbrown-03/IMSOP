@@ -5,6 +5,8 @@ import { FileUp, Loader2, Send, Trash2 } from 'lucide-react'
 import MedecinShell from '../../components/layout/MedecinShell'
 import ConsentementGate from '../../components/ui/ConsentementGate'
 import { api } from '../../lib/api'
+import { correspondAuTitulaire } from '../../lib/nomSignataire'
+import { useAuthStore } from '../../store/useAuthStore'
 
 const SEXES = ['femme', 'homme', 'autre']
 const TYPES_ACCEPTES = 'application/pdf,image/jpeg,image/png,application/dicom'
@@ -35,6 +37,7 @@ const CHAMPS_INITIAUX = {
   question: '',
   symptomes: '',
   antecedents: '',
+  allergies: '',
   traitementEnCours: '',
 }
 
@@ -60,6 +63,7 @@ function Champ({ label, optionnel, children }) {
  */
 export default function NouvelleDemandeMedecin() {
   const { t } = useTranslation()
+  const titulaire = useAuthStore((s) => s.user?.fullName)
   const navigate = useNavigate()
   const inputFichier = useRef(null)
 
@@ -80,14 +84,24 @@ export default function NouvelleDemandeMedecin() {
     setFichiers((precedents) => [...precedents, ...choisis])
   }
 
-  const complet =
-    champs.specialiteRequise.trim() &&
-    champs.patientAge !== '' &&
-    champs.motif.trim() &&
-    champs.question.trim() &&
-    consentementAccepte &&
-    nomSignataire.trim().length >= 2 &&
-    otpToken
+  // ConsentementGate n'affiche le bloc code que si la signature reprend le nom
+  // du titulaire : se contenter d'une longueur minimale ici reclamerait un code
+  // que l'ecran ne propose jamais.
+  const signatureValide = correspondAuTitulaire(nomSignataire.trim(), titulaire)
+
+  // Un bouton grisé sans explication laissait le médecin chercher lui-même ce
+  // qui bloquait : on nomme les éléments manquants, dans l'ordre du formulaire.
+  const manquants = [
+    !champs.specialiteRequise.trim() && t('medecin.nouvelleDemande.specialite'),
+    champs.patientAge === '' && t('medecin.nouvelleDemande.age'),
+    !champs.motif.trim() && t('medecin.nouvelleDemande.motif'),
+    !champs.question.trim() && t('medecin.nouvelleDemande.sectionQuestion'),
+    !consentementAccepte && t('medecin.nouvelleDemande.manquantConsentement'),
+    (consentementAccepte && !signatureValide) && t('medecin.nouvelleDemande.manquantSignature'),
+    (consentementAccepte && signatureValide && !otpToken) && t('medecin.nouvelleDemande.manquantCode'),
+  ].filter(Boolean)
+
+  const complet = manquants.length === 0
 
   async function envoyer(e) {
     e.preventDefault()
@@ -108,6 +122,7 @@ export default function NouvelleDemandeMedecin() {
         question: champs.question.trim(),
         symptomes: champs.symptomes.trim() || undefined,
         antecedents: champs.antecedents.trim() || undefined,
+        allergies: champs.allergies.trim() || undefined,
         traitementEnCours: champs.traitementEnCours.trim() || undefined,
       })
 
@@ -213,6 +228,15 @@ export default function NouvelleDemandeMedecin() {
           <Champ label={t('medecin.nouvelleDemande.antecedents')} optionnel={t('medecin.nouvelleDemande.optionnel')}>
             <textarea rows={2} value={champs.antecedents} onChange={modifier('antecedents')} className={CHAMP + ' resize-y'} />
           </Champ>
+          <Champ label={t('medecin.nouvelleDemande.allergies')} optionnel={t('medecin.nouvelleDemande.optionnel')}>
+            <textarea
+              rows={2}
+              value={champs.allergies}
+              onChange={modifier('allergies')}
+              placeholder={t('medecin.nouvelleDemande.allergiesPlaceholder')}
+              className={CHAMP + ' resize-y'}
+            />
+          </Champ>
           <Champ label={t('medecin.nouvelleDemande.traitement')} optionnel={t('medecin.nouvelleDemande.optionnel')}>
             <textarea
               rows={2}
@@ -293,6 +317,19 @@ export default function NouvelleDemandeMedecin() {
         />
 
         {erreur && <p className="text-sm font-semibold text-rose-600">{erreur}</p>}
+
+        {manquants.length > 0 && (
+          <div className="rounded-xl border border-amber-200 dark:border-amber-900/50 bg-amber-50 dark:bg-amber-950/30 px-4 py-3">
+            <p className="text-sm font-semibold text-amber-900 dark:text-amber-200">
+              {t('medecin.nouvelleDemande.manquantsTitre')}
+            </p>
+            <ul className="mt-1.5 list-disc list-inside text-sm text-amber-800 dark:text-amber-300">
+              {manquants.map((m) => (
+                <li key={m}>{m}</li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         <div className="flex items-center gap-3">
           <button

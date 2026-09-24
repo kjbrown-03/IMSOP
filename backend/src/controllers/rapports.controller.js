@@ -5,6 +5,7 @@ const { putObject, getSignedDownloadUrl } = require('../lib/s3')
 const { buildRapportPdf } = require('../lib/pdf')
 const { loadDossierWithAccessCheck } = require('./dossiers.controller')
 const { safeUserSelect } = require('../lib/selectors')
+const { creerHonorairePourDossier } = require('../services/honorairesService')
 
 const DESTINATAIRES_RAPPORT_FINAL = new Set(['PATIENT', 'MEDECIN_LOCAL'])
 
@@ -61,17 +62,34 @@ async function validerRapport(req, res) {
   const rapport = await prisma.rapport.findUnique({
     where: { id: req.params.id },
     include: {
-      dossier: { include: { patient: { include: { user: { select: safeUserSelect } } } } },
+      dossier: {
+        include: {
+          patient: { include: { user: { select: safeUserSelect } } },
+          // Une demande ouverte par un médecin décrit un patient anonymisé :
+          // il n'y a pas de compte patient, et c'est le médecin demandeur qui
+          // reçoit le rapport. Sans cette jointure, la validation d'un tel
+          // dossier plantait, et le rapport n'était jamais transmis.
+          demandeurMedecin: { include: { user: { select: safeUserSelect } } },
+        },
+      },
       specialiste: { include: { user: { select: safeUserSelect } } },
     },
   })
   if (!rapport) return res.status(404).json({ message: 'Rapport introuvable' })
   if (rapport.status !== 'SOUMIS') return res.status(400).json({ message: 'Ce rapport doit être soumis avant validation' })
 
+  const destinataire = rapport.dossier.patient?.user ?? rapport.dossier.demandeurMedecin?.user ?? null
+
   const pdfBuffer = await buildRapportPdf({
     dossier: rapport.dossier,
     rapport,
-    patientName: rapport.dossier.patient.user.fullName,
+    // Le parcours médecin ne nomme jamais le patient : on reprend la
+    // description anonymisée plutôt qu'un nom qui n'existe pas.
+    patientName:
+      rapport.dossier.patient?.user.fullName ??
+      (rapport.dossier.patientAge != null
+        ? `Patient anonymisé, ${rapport.dossier.patientAge} ans`
+        : 'Patient anonymisé'),
     specialisteName: rapport.specialiste.user.fullName,
   })
   const key = `rapports/${rapport.dossierId}/rapport-${rapport.id}.pdf`
@@ -84,10 +102,24 @@ async function validerRapport(req, res) {
   await prisma.dossier.update({ where: { id: rapport.dossierId }, data: { status: 'RAPPORT_TRANSMIS' } })
 
   await logAction({ userId: req.userId, action: 'RAPPORT_VALIDE', entityType: 'Rapport', entityId: rapport.id, dossierId: rapport.dossierId })
-  await notify(rapport.dossier.patient.userId, rapport.dossier.patient.user.email, 'RAPPORT_DISPONIBLE', {
-    name: rapport.dossier.patient.user.fullName,
-    reference: rapport.dossier.reference,
-  })
+
+  // L'avis est rendu : c'est maintenant que le spécialiste l'a gagné. Un échec
+  // ici ne doit pas bloquer la transmission au patient — le relevé se rattrape,
+  // un rapport transmis ne se retransmet pas.
+  try {
+    await creerHonorairePourDossier(rapport.dossierId)
+  } catch (err) {
+    console.error("Création de l'honoraire échouée", err)
+  }
+
+  // C'est cet instant que le compte à rebours de la coordination attend : le
+  // rapport devient lisible ici, pas à sa remise par le spécialiste.
+  if (destinataire) {
+    await notify(destinataire.id, destinataire.email, 'RAPPORT_DISPONIBLE', {
+      name: destinataire.fullName,
+      reference: rapport.dossier.reference,
+    })
+  }
 
   res.json(updated)
 }

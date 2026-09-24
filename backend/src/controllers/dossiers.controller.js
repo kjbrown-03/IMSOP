@@ -3,6 +3,7 @@ const { logAction } = require('../services/auditService')
 const { notify } = require('../services/notificationService')
 const { safeUserSelect } = require('../lib/selectors')
 const { genererReferenceDossier } = require('../services/referenceService')
+const { dossiersEnCours } = require('../services/delaiReponseService')
 const env = require('../config/env')
 
 async function loadDossierWithAccessCheck(req, dossierId) {
@@ -47,7 +48,7 @@ async function createDossier(req, res) {
   const patient = await prisma.patient.findUnique({ where: { userId: req.userId } })
   if (!patient) return res.status(403).json({ message: 'Seuls les patients peuvent créer un dossier' })
 
-  const { specialiteRequise, motif, questionMedicale, symptomes, antecedents, traitementEnCours, urgence } = req.body
+  const { specialiteRequise, motif, questionMedicale, symptomes, antecedents, allergies, traitementEnCours, urgence } = req.body
 
   const reference = await genererReferenceDossier(patient.country)
 
@@ -60,6 +61,7 @@ async function createDossier(req, res) {
       questionMedicale,
       symptomes,
       antecedents,
+      allergies,
       traitementEnCours,
       urgence: urgence || 'NORMAL',
       status: 'BROUILLON',
@@ -88,7 +90,7 @@ async function creerDemandeMedecin(req, res) {
 
   const {
     specialiteRequise, patientAge, patientSexe, motif, question,
-    symptomes, antecedents, traitementEnCours, urgence,
+    symptomes, antecedents, allergies, traitementEnCours, urgence,
   } = req.body
 
   // La reference se derive du pays du patient dans le parcours patient ; ici
@@ -105,6 +107,7 @@ async function creerDemandeMedecin(req, res) {
       motif,
       symptomes,
       antecedents,
+      allergies,
       traitementEnCours,
       urgence: urgence || 'NORMAL',
       // La question est posee des la creation : c'est l'objet de la demande, et
@@ -216,6 +219,14 @@ async function listDossiers(req, res) {
   res.json({ items: dossiers, total, page, pageSize })
 }
 
+// File suivie par la coordination : les dossiers confiés à un spécialiste dont
+// le rapport n'est pas encore parvenu au demandeur, avec leur échéance. Route
+// distincte de `listDossiers` parce qu'elle porte sur plusieurs statuts à la fois,
+// et qu'elle calcule le niveau d'alerte côté serveur.
+async function listDossiersEnCours(req, res) {
+  res.json(await dossiersEnCours())
+}
+
 async function getDossier(req, res) {
   const { dossier, error, message } = await loadDossierWithAccessCheck(req, req.params.id)
   if (error) return res.status(error).json({ message })
@@ -291,6 +302,19 @@ async function assignerSpecialiste(req, res) {
     include: { user: { select: safeUserSelect } },
   })
   if (!specialiste) return res.status(404).json({ message: 'Spécialiste introuvable' })
+
+  // Sans ce contrôle, la récusation ne protégerait que les propositions
+  // automatiques : le coordinateur pourrait réassigner à la main l'expert qui
+  // vient de se déclarer en conflit d'intérêts.
+  const recusation = await prisma.recusationSpecialiste.findUnique({
+    where: { dossierId_specialisteId: { dossierId: dossier.id, specialisteId } },
+  })
+  if (recusation) {
+    return res.status(409).json({
+      message: "Ce spécialiste s'est récusé sur ce dossier pour conflit d'intérêts",
+      motif: recusation.motif,
+    })
+  }
 
   const messagingClosesAt = new Date(Date.now() + env.messaging.autoCloseDays * 24 * 60 * 60 * 1000)
 
@@ -475,6 +499,64 @@ async function refuserDossier(req, res) {
   res.json(updated)
 }
 
+// CDC §18 : « Déclarer un conflit d'intérêts -> le dossier doit alors être
+// réaffecté ». À distinguer du refus ordinaire : refuser par manque de temps
+// n'empêche pas de reproposer l'expert plus tard, une récusation déontologique
+// si. C'est pourquoi elle laisse une trace, là où le refus n'en laisse pas.
+async function declarerConflitInterets(req, res) {
+  const { dossier, error, message } = await loadDossierWithAccessCheck(req, req.params.id)
+  if (error) return res.status(error).json({ message })
+  if (req.userRole !== 'SPECIALISTE') return res.status(403).json({ message: 'Réservé au spécialiste assigné' })
+
+  const specialiste = await prisma.specialiste.findUnique({ where: { userId: req.userId } })
+  if (!specialiste || dossier.specialisteId !== specialiste.id) {
+    return res.status(403).json({ message: 'Réservé au spécialiste assigné à ce dossier' })
+  }
+
+  const { motif } = req.body
+
+  const [, updated] = await prisma.$transaction([
+    // upsert plutôt que create : redéclarer sur le même dossier ne doit pas
+    // échouer sur la contrainte d'unicité.
+    prisma.recusationSpecialiste.upsert({
+      where: { dossierId_specialisteId: { dossierId: dossier.id, specialisteId: specialiste.id } },
+      update: { motif },
+      create: { dossierId: dossier.id, specialisteId: specialiste.id, motif },
+    }),
+    prisma.dossier.update({
+      where: { id: dossier.id },
+      data: { status: 'EN_ATTENTE_AFFECTATION', specialisteId: null },
+    }),
+  ])
+
+  await logAction({
+    userId: req.userId,
+    action: 'DOSSIER_CONFLIT_INTERETS',
+    entityType: 'Dossier',
+    entityId: dossier.id,
+    dossierId: dossier.id,
+    metadata: { motif, specialisteId: specialiste.id },
+  })
+
+  // Le dossier retombe dans la file d'affectation : la coordination doit le
+  // savoir, sinon il y dort jusqu'à ce que quelqu'un regarde le tableau de bord.
+  const coordination = await prisma.user.findMany({
+    where: { role: { in: ['COORDINATEUR', 'ADMIN'] }, active: true },
+    select: { id: true, email: true, fullName: true },
+  })
+  for (const membre of coordination) {
+    await notify(
+      membre.id,
+      membre.email,
+      'CONFLIT_INTERETS',
+      { name: membre.fullName, reference: dossier.reference, motif },
+      { dossierId: dossier.id },
+    )
+  }
+
+  res.json(updated)
+}
+
 // The patient designates his own treating doctor - the coordinator never does it
 // for him. Access to a medical record is therefore granted by the patient, and
 // the COMMUNICATION_MEDECIN consent is recorded in the same transaction as proof.
@@ -611,12 +693,14 @@ module.exports = {
   transmettreDemandeMedecin,
   createDossier,
   listDossiers,
+  listDossiersEnCours,
   getDossier,
   updateDossier,
   soumettreDossier,
   assignerSpecialiste,
   accepterDossier,
   refuserDossier,
+  declarerConflitInterets,
   demarrerAnalyse,
   demanderComplement,
   complementFourni,

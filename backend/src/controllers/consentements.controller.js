@@ -123,6 +123,67 @@ async function createConsentement(req, res) {
   res.status(201).json(consentement)
 }
 
+// Les cinq types du §30, dans l'ordre où ils sont demandés au patient. La liste
+// est figée ici plutôt que lue depuis l'enum Prisma : l'ordre d'affichage est une
+// decision produit, pas un detail de schema.
+const TYPES_CONSENTEMENT = [
+  'TRAITEMENT_DONNEES',
+  'TRANSMISSION_SPECIALISTE',
+  'COMMUNICATION_MEDECIN',
+  'TELECONSULTATION',
+  'UTILISATION_ANONYMISEE_RECHERCHE',
+]
+
+/**
+ * État courant des consentements d'un dossier.
+ *
+ * La table est volontairement append-only : révoquer, c'est écrire une nouvelle
+ * ligne `accepted: false`, jamais effacer la précédente (§30 exige la
+ * révocabilité, et un dossier médical exige de pouvoir prouver qui a consenti à
+ * quoi et quand). L'état réel d'un consentement est donc la ligne la plus
+ * récente de son type - ce que ne dit pas `listConsentements`, qui rend tout
+ * l'historique en vrac.
+ *
+ * Limite connue : deux lignes d'un même type écrites dans une seule transaction
+ * partageraient `acceptedAt` (Postgres y renvoie l'heure de début de
+ * transaction) et leur ordre serait alors indéterminé. Aucun code n'en écrit
+ * deux à la fois aujourd'hui.
+ */
+async function etatCourantDesConsentements(dossierId) {
+  const lignes = await prisma.consentement.findMany({
+    where: { dossierId },
+    orderBy: { acceptedAt: 'desc' },
+  })
+
+  // La liste étant triée du plus récent au plus ancien, la première ligne
+  // rencontrée pour un type est celle qui fait foi.
+  const dernierParType = new Map()
+  for (const ligne of lignes) {
+    if (!dernierParType.has(ligne.type)) dernierParType.set(ligne.type, ligne)
+  }
+
+  return TYPES_CONSENTEMENT.map((type) => {
+    const ligne = dernierParType.get(type)
+    return {
+      type,
+      // « Jamais demandé » et « refusé ou révoqué » valent tous deux false, mais
+      // n'appellent pas la même action côté écran : `renseigne` les distingue.
+      renseigne: Boolean(ligne),
+      accepted: ligne?.accepted ?? false,
+      version: ligne?.version ?? null,
+      nomSignataire: ligne?.nomSignataire ?? null,
+      decideLe: ligne?.acceptedAt ?? null,
+    }
+  })
+}
+
+async function listConsentementsCourants(req, res) {
+  const { dossier, error, message } = await loadDossierWithAccessCheck(req, req.params.dossierId)
+  if (error) return res.status(error).json({ message })
+
+  res.json(await etatCourantDesConsentements(dossier.id))
+}
+
 async function listConsentements(req, res) {
   const { dossier, error, message } = await loadDossierWithAccessCheck(req, req.params.dossierId)
   if (error) return res.status(error).json({ message })
@@ -140,4 +201,13 @@ async function downloadBlankConsentementPdf(req, res) {
   res.send(pdfBuffer)
 }
 
-module.exports = { createConsentement, listConsentements, downloadBlankConsentementPdf }
+module.exports = {
+  createConsentement,
+  listConsentements,
+  listConsentementsCourants,
+  downloadBlankConsentementPdf,
+  // Exporté pour que le reste du code puisse lire l'état effectif au lieu de
+  // refaire ce calcul - c'est tout l'intérêt d'un consentement révocable.
+  etatCourantDesConsentements,
+  TYPES_CONSENTEMENT,
+}

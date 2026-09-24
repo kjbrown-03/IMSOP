@@ -21,6 +21,9 @@ router.post('/verify-email/resend', authenticate, authLimiter, ctrl.resendEmailV
 // paiement. Sous authLimiter comme les autres envois de code.
 router.post('/consentement/code', authenticate, authLimiter, ctrl.envoyerCodeConsentement)
 router.post('/consentement/code/verify', authenticate, authLimiter, validate(schema.verifierCodeConsentement), ctrl.verifierCodeConsentement)
+// Sous authLimiter : une tentative répétée sur « mot de passe actuel » est une
+// attaque par force brute comme une autre.
+router.post('/mot-de-passe', authenticate, authLimiter, validate(schema.changerMotDePasse), ctrl.changerMotDePasse)
 router.get('/me', authenticate, ctrl.me)
 
 module.exports = router

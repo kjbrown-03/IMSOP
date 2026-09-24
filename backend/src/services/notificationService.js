@@ -1,5 +1,6 @@
 const { prisma } = require('../lib/prisma')
 const { sendMail } = require('../lib/mailer')
+const { sendSms } = require('../lib/sms')
 
 const TEMPLATES = {
   DOSSIER_SOUMIS: {
@@ -7,10 +8,18 @@ const TEMPLATES = {
     body: (ctx) => `Bonjour ${ctx.name},\n\nVotre dossier ${ctx.reference} a bien été soumis et est en cours de vérification.\n\nL'équipe IMSOP`,
   },
   DOSSIER_AFFECTE: {
+    sms: (ctx) => `IMSOP : un specialiste a ete affecte a votre dossier ${ctx.reference}.`,
     subject: 'Un spécialiste a été affecté à votre dossier',
     body: (ctx) => `Bonjour ${ctx.name},\n\nUn spécialiste a été affecté à votre dossier ${ctx.reference}. Vous serez notifié dès que l'analyse sera terminée.\n\nL'équipe IMSOP`,
   },
+  // `sms` n'est défini que sur les types qui le méritent. Un SMS coûte, et
+  // interrompt : le mettre partout ferait désactiver le canal par les
+  // destinataires, y compris pour ce qui compte.
+  //
+  // Le contexte le justifie : dans la zone d'exploitation, l'e-mail est
+  // consulté irrégulièrement là où le SMS arrive toujours.
   RAPPORT_DISPONIBLE: {
+    sms: (ctx) => `IMSOP : le rapport de second avis pour le dossier ${ctx.reference} est disponible. Connectez-vous pour le consulter.`,
     subject: 'Votre rapport de deuxième avis est disponible',
     body: (ctx) => `Bonjour ${ctx.name},\n\nLe rapport du spécialiste pour votre dossier ${ctx.reference} est maintenant disponible dans votre espace patient.\n\nL'équipe IMSOP`,
   },
@@ -27,6 +36,7 @@ const TEMPLATES = {
     body: (ctx) => `Bonjour ${ctx.name},\n\nVous avez reçu un nouveau message concernant le dossier ${ctx.reference}.\n\nL'équipe IMSOP`,
   },
   DEUX_FACTEURS: {
+    sms: (ctx) => `IMSOP : votre code de connexion est ${ctx.code}. Valable 10 minutes.`,
     // Flux d'authentification : le destinataire n'est PAS connecté au moment de
     // l'envoi, une entrée dans la cloche ne lui servirait à rien et polluerait
     // son centre de notifications. Le contenu est en outre sensible (code,
@@ -44,6 +54,7 @@ const TEMPLATES = {
     body: (ctx) => `Bonjour ${ctx.name},\n\n${ctx.senderName} a déposé un document (${ctx.filename}) dans la conversation du dossier ${ctx.reference}.\n\nL'équipe IMSOP`,
   },
   COMPLEMENT_DEMANDE: {
+    sms: (ctx) => `IMSOP : le specialiste demande une information complementaire sur le dossier ${ctx.reference}. Connectez-vous pour repondre.`,
     subject: 'Information complémentaire demandée sur votre dossier',
     body: (ctx) => `Bonjour ${ctx.name},\n\nLe spécialiste a besoin d'un complément pour poursuivre l'analyse du dossier ${ctx.reference} :\n\n${ctx.precisions}\n\nVous pouvez répondre et déposer les pièces demandées depuis la messagerie sécurisée.\n\nL'équipe IMSOP`,
   },
@@ -98,6 +109,32 @@ Si ce n'était pas vous, vous pouvez ignorer ce message : personne n'a eu accès
 
 L'équipe IMSOP`,
   },
+  DELAI_REPONSE_ALERTE: {
+    subject: "Dossier à relancer — la moitié du délai est écoulée",
+    body: (ctx) =>
+      `Bonjour ${ctx.name},\n\nLa moitié du délai de réponse est écoulée sur le dossier ${ctx.reference}, confié à ${ctx.specialiste}. Il reste environ ${ctx.heuresRestantes} h avant l'échéance.\n\nRelancez le spécialiste, ou réaffectez le dossier si vous le jugez nécessaire.\n\nL'équipe IMSOP`,
+  },
+  CANDIDATURE_RECUE: {
+    subject: 'Nouvelle candidature à examiner',
+    body: (ctx) => `Bonjour ${ctx.name},
+
+${ctx.candidat} vient de déposer une candidature de ${ctx.type} (${ctx.specialite}). Elle attend l'examen du comité scientifique.
+
+L'équipe IMSOP`,
+  },
+  CANDIDATURE_A_CREER: {
+    subject: 'Candidature acceptée — compte à créer',
+    body: (ctx) => `Bonjour ${ctx.name},
+
+Le comité scientifique a accepté la candidature de ${ctx.candidat} (${ctx.specialite}). Vous pouvez créer son compte depuis l'écran Candidatures : ses identifiants lui seront envoyés automatiquement.
+
+L'équipe IMSOP`,
+  },
+  CONFLIT_INTERETS: {
+    subject: "Conflit d'intérêts déclaré — dossier à réaffecter",
+    body: (ctx) =>
+      `Bonjour ${ctx.name},\n\nLe spécialiste affecté au dossier ${ctx.reference} a déclaré un conflit d'intérêts. Le dossier est revenu en attente d'affectation.\n\nMotif indiqué : ${ctx.motif}\n\nCe spécialiste ne sera plus proposé sur ce dossier.\n\nL'équipe IMSOP`,
+  },
   IDENTITE_VALIDEE: {
     subject: 'Votre identité a été vérifiée',
     body: (ctx) => `Bonjour ${ctx.name},\n\nVotre pièce d'identité a été vérifiée par notre équipe de coordination. Votre compte est maintenant pleinement vérifié.\n\nL'équipe IMSOP`,
@@ -110,9 +147,29 @@ L'équipe IMSOP`,
 
 // `options.dossierId` attaches the notification to a dossier so the in-app bell
 // can link straight to the matching conversation or file.
+// Le SMS double l'e-mail, il ne le remplace pas : une passerelle indisponible ne
+// doit jamais faire disparaître une notification. L'échec est donc journalisé et
+// n'interrompt rien - exactement le traitement réservé à l'e-mail.
+async function envoyerSmsSiPertinent(userId, template, context) {
+  if (!template.sms) return
+
+  const utilisateur = await prisma.user.findUnique({ where: { id: userId }, select: { phone: true } })
+  if (!utilisateur?.phone) return
+
+  sendSms({ to: utilisateur.phone, body: template.sms(context) }).catch((err) =>
+    console.error('envoi SMS echoue', err),
+  )
+}
+
 async function notify(userId, email, type, context, options = {}) {
   const template = TEMPLATES[type]
   if (!template) throw new Error(`Unknown notification type: ${type}`)
+
+  // Volontairement non attendu : le canal secondaire ne doit pas retarder la
+  // requête qui a déclenché la notification.
+  envoyerSmsSiPertinent(userId, template, context).catch((err) =>
+    console.error('canal SMS indisponible', err),
+  )
 
   // Envoi direct, sans trace en base : rien à afficher dans la cloche, et le
   // code ou le lien ne survit pas à l'e-mail.

@@ -37,10 +37,14 @@ function Anneaux() {
 }
 
 /** Chiffres qui glissent vers le haut à mesure que le montant se précise. */
+// Les montants en XAF se comptent en centaines de milliers : sans separateur,
+// « 115000 » se lit mal, et se confond avec « 11500 » d'un coup d'oeil.
+const formater = (n) => Number(n).toLocaleString('fr-FR')
+
 function MontantAnime({ valeur }) {
-  const caracteres = String(valeur).split('')
+  const caracteres = formater(valeur).split('')
   return (
-    <span className="flex h-[38px] overflow-hidden" aria-label={String(valeur)}>
+    <span className="flex h-[38px] overflow-hidden" aria-label={formater(valeur)}>
       {caracteres.map((c, i) => (
         <span key={`${c}-${i}`} className="flex flex-col leading-[38px] h-[38px] transition-transform duration-300">
           <span className="h-[38px] block" aria-hidden>
@@ -115,7 +119,7 @@ export default function CartePaiement({ montantTotal, devise, reference, titulai
                 <li key={l.libelle} className="flex justify-between gap-4">
                   <span className="text-white/75">{l.libelle}</span>
                   <span className="tabular-nums shrink-0">
-                    {l.montant} {devise}
+                    {formater(l.montant)} {devise}
                   </span>
                 </li>
               ))}
@@ -123,7 +127,7 @@ export default function CartePaiement({ montantTotal, devise, reference, titulai
             <div className="flex items-center justify-between border-t border-white/15 pt-3 text-sm font-semibold">
               <span>{t('patient.payment.totalDue')}</span>
               <span className="tabular-nums">
-                {montantTotal} {devise}
+                {formater(montantTotal)} {devise}
               </span>
             </div>
             <p className="flex items-center gap-1.5 text-[11px] text-white/55">

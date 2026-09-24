@@ -15,7 +15,8 @@ export default function VerificationDeuxFacteurs() {
   const [code, setCode] = useState('')
   const jouerTransition = useTransitionStore((s) => s.jouer)
 
-  const { challengeToken, role } = location.state || {}
+  const { challengeToken, role, from: fromBrut } = location.state || {}
+  const from = typeof fromBrut === 'string' && fromBrut.startsWith('/') ? fromBrut : null
 
   async function onSubmit(e) {
     e.preventDefault()
@@ -23,7 +24,7 @@ export default function VerificationDeuxFacteurs() {
     const result = await verifyTwoFactor(challengeToken, code)
     if (result.ok) {
       jouerTransition()
-      navigate(ROLE_REDIRECTS[role] || '/')
+      navigate(from || ROLE_REDIRECTS[role] || '/')
     }
   }
 

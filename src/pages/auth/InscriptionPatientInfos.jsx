@@ -1,8 +1,10 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import RegistrationHeader from '../../components/auth/RegistrationHeader'
 import RegistrationStepper from '../../components/auth/RegistrationStepper'
 import { useRegistrationStore } from '../../store/useRegistrationStore'
+import { PAYS_DE_LA_LISTE, VILLES_CAMEROUN, VILLE_AUTRE } from '../../lib/villesCameroun'
 
 const COUNTRY_CODES = ['sn', 'ci', 'cm', 'fr', 'be', 'ch']
 const LANGUAGE_CODES = ['fr', 'en']
@@ -14,6 +16,22 @@ export default function InscriptionPatientInfos() {
     fullName, dob, gender, phone, nationality, country, city, preferredLanguage,
     emergencyContactName, emergencyContactPhone, email, setField,
   } = useRegistrationStore()
+
+  // La liste ne vaut que pour le Cameroun ; ailleurs, le champ reste libre.
+  // Proposer Douala à quelqu'un qui habite Lyon n'aurait pas de sens.
+  const listeApplicable = country === PAYS_DE_LA_LISTE
+  // Une ville déjà saisie et absente de la liste (compte repris, autre pays)
+  // doit rouvrir le champ libre plutôt que d'être silencieusement effacée.
+  const [villeLibre, setVilleLibre] = useState(Boolean(city) && !VILLES_CAMEROUN.includes(city))
+
+  function choisirVille(valeur) {
+    if (valeur === VILLE_AUTRE) {
+      setVilleLibre(true)
+      setField('city', '')
+      return
+    }
+    setField('city', valeur)
+  }
 
   function onNext(e) {
     e.preventDefault()
@@ -185,16 +203,53 @@ export default function InscriptionPatientInfos() {
               <label className="font-label-md text-label-md text-[var(--color-text-main)]" htmlFor="city">
                 {t('auth.registerInfos.city')}
               </label>
-              <input
-                className="h-12 px-4 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] font-body-md text-body-md text-[var(--color-text-main)] placeholder:text-slate-400 dark:placeholder:text-slate-500 transition-colors"
-                id="city"
-                name="city"
-                placeholder={t('auth.registerInfos.cityPlaceholder')}
-                required
-                type="text"
-                value={city}
-                onChange={(e) => setField('city', e.target.value)}
-              />
+              {listeApplicable && !villeLibre ? (
+                <div className="relative">
+                  <select
+                    className="h-12 w-full px-4 pr-10 appearance-none rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] font-body-md text-body-md text-[var(--color-text-main)] transition-colors cursor-pointer"
+                    id="city"
+                    name="city"
+                    required
+                    value={city}
+                    onChange={(e) => choisirVille(e.target.value)}
+                  >
+                    <option disabled value="">
+                      {t('auth.registerInfos.citySelect')}
+                    </option>
+                    {VILLES_CAMEROUN.map((ville) => (
+                      <option key={ville} value={ville}>
+                        {ville}
+                      </option>
+                    ))}
+                    <option value={VILLE_AUTRE}>{t('auth.registerInfos.cityOther')}</option>
+                  </select>
+                  <span className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[var(--color-text-secondary)] material-symbols-outlined">
+                    expand_more
+                  </span>
+                </div>
+              ) : (
+                <>
+                  <input
+                    className="h-12 px-4 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] font-body-md text-body-md text-[var(--color-text-main)] placeholder:text-slate-400 dark:placeholder:text-slate-500 transition-colors"
+                    id="city"
+                    name="city"
+                    placeholder={t('auth.registerInfos.cityPlaceholder')}
+                    required
+                    type="text"
+                    value={city}
+                    onChange={(e) => setField('city', e.target.value)}
+                  />
+                  {listeApplicable && (
+                    <button
+                      type="button"
+                      onClick={() => { setVilleLibre(false); setField('city', '') }}
+                      className="self-start text-label-sm font-label-sm text-[var(--color-primary)] hover:underline"
+                    >
+                      {t('auth.registerInfos.cityBackToList')}
+                    </button>
+                  )}
+                </>
+              )}
             </div>
 
             <div className="flex flex-col gap-1">

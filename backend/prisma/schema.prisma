@@ -101,10 +101,44 @@ enum PaiementStatus {
   REMBOURSE
 }
 
+enum HonoraireStatut {
+  A_REVERSER
+  EN_COURS
+  REVERSE
+  ECHOUE
+}
+
 enum RapportStatus {
   BROUILLON
   SOUMIS
   VALIDE
+}
+
+enum CandidatureType {
+  SPECIALISTE
+  MEDECIN_LOCAL
+}
+
+// Nature du lieu d'exercice d'un medecin traitant. Beaucoup exercent des deux
+// cotes a la fois : une garde a l'hopital public et des consultations en
+// clinique privee. LES_DEUX evite de les forcer a en taire un.
+enum TypeStructure {
+  CLINIQUE
+  HOPITAL
+  LES_DEUX
+}
+
+// Parcours de recrutement (comité scientifique) :
+//   EN_ATTENTE -> ACCEPTEE -> COMPTE_CREE
+//              -> REFUSEE
+// ACCEPTEE et COMPTE_CREE sont distincts : le comité accepte, la coordination
+// crée le compte ensuite. Entre les deux, la candidature attend dans la file
+// de la coordination.
+enum CandidatureStatut {
+  EN_ATTENTE
+  ACCEPTEE
+  REFUSEE
+  COMPTE_CREE
 }
 
 model User {
@@ -131,10 +165,13 @@ model User {
   documentsUploaded     Document[]             @relation("DocumentUploadedBy")
   professionalDocuments ProfessionalDocument[]
   messagesSent          Message[]              @relation("MessageSender")
+  conversationsA        Conversation[]         @relation("ConversationA")
+  conversationsB        Conversation[]         @relation("ConversationB")
   auditLogs             AuditLog[]
   notifications         Notification[]
   temoignages           Temoignage[]           @relation("TemoignageAuteur")
   temoignagesModeres    Temoignage[]           @relation("TemoignageModerateur")
+  recherchesAnnuaire    RechercheAnnuaire[]
 
   @@index([role])
 }
@@ -224,8 +261,10 @@ model Specialiste {
   // Une licence d'exercice a une date de fin : au-dela, le compte passe EXPIRE.
   habilitationExpireLe DateTime?
 
-  dossiers Dossier[]
-  rapports Rapport[]
+  dossiers    Dossier[]
+  rapports    Rapport[]
+  recusations RecusationSpecialiste[]
+  honoraires  Honoraire[]
 }
 
 model MedecinLocal {
@@ -235,6 +274,11 @@ model MedecinLocal {
   specialite    String?
   etablissement String?
   pays          String?
+  // Ville de résidence, saisie depuis une liste fermée à l'inscription (voir
+  // villesCameroun.js) :
+  // un champ libre ferait compter « Douala », « douala » et « Douala 3e » pour
+  // trois villes distinctes, et rendrait faux tout classement par ville.
+  ville         String?
   // Numéro d'inscription à l'ordre des médecins du pays d'exercice. Vérifié
   // manuellement par un coordinateur avant que le compte puisse être rattaché
   // à un dossier.
@@ -249,10 +293,83 @@ model MedecinLocal {
   // Une licence d'exercice a une date de fin : au-dela, le compte passe EXPIRE.
   habilitationExpireLe DateTime?
 
+  // --- Annuaire « Trouver un médecin » (zone CEMAC) ---------------------------
+  // Un médecin traitant s'inscrit d'abord pour suivre SES patients. Apparaître
+  // dans un service de mise en relation payant, où des patients lui seront
+  // reliés, est un autre engagement :
+  // il doit le demander explicitement. Désactivé par défaut, toujours.
+  annuaireVisible      Boolean  @default(false)
+  // Spécialités déclarées pour l'annuaire, depuis une liste fermée (voir
+  // specialitesLocales.js) - un médecin en couvre souvent plusieurs (médecine
+  // générale + pédiatrie). Distinct du champ libre `specialite` ci-dessus, qui
+  // reste ce qu'il est.
+  annuaireSpecialites  String[] @default([])
+  // Quartier, après pays et ville : « Cameroun · Douala · Logpom ». C'est le
+  // niveau où un patient décide s'il peut s'y rendre.
+  quartier             String?
+  // Quelques lignes de présentation, visibles sur la fiche une fois débloquée.
+  annuairePresentation String?
+
   // Dossiers ou ce medecin a ete designe medecin traitant par le patient.
-  dossiers Dossier[] @relation("DossierMedecinTraitant")
+  dossiers          Dossier[]                   @relation("DossierMedecinTraitant")
   // Dossiers qu'il a lui-meme ouverts pour obtenir un second avis.
-  demandes Dossier[] @relation("DossierDemandeur")
+  demandes          Dossier[]                   @relation("DossierDemandeur")
+  // Apparitions dans des recherches d'annuaire.
+  resultatsAnnuaire RechercheAnnuaireResultat[]
+}
+
+enum RechercheAnnuaireStatut {
+  // Résultats comptés et affichés floutés ; contacts masqués.
+  FLOUTEE
+  // Paiement confirmé : contacts visibles pour cette recherche uniquement.
+  DEBLOQUEE
+}
+
+// Une recherche « Trouver un médecin ». Les médecins trouvés sont FIGÉS dans
+// RechercheAnnuaireResultat au moment de la recherche : le paiement débloque
+// exactement ce qui a été montré flouté - pas une nouvelle requête qui
+// pourrait rendre plus, moins, ou d'autres médecins.
+model RechercheAnnuaire {
+  id           String                  @id @default(uuid())
+  // Aucun compte n'est requis pour être mis en relation : la recherche est
+  // accessible par son identifiant (non devinable). Si la personne est
+  // connectée, la recherche lui est rattachée et devient privée ; sinon elle
+  // reste ouverte à qui en a le lien - c'est le prix de l'absence de compte.
+  userId       String?
+  user         User?                   @relation(fields: [userId], references: [id], onDelete: SetNull)
+  // E-mail donné au moment de payer : exigé par les fournisseurs de paiement
+  // pour créer la transaction, et seul moyen de savoir qui a été mis en
+  // relation quand il n'y a pas de compte.
+  emailContact String?
+  symptomes    String
+  // Spécialités déduites des symptômes (clés de specialitesLocales.js).
+  specialites  String[]                @default([])
+  pays         String
+  ville        String?
+  // Drapeau rouge détecté dans les symptômes : la recherche est enregistrée
+  // mais aucune vente n'est proposée, on oriente vers les urgences (§29).
+  urgence      Boolean                 @default(false)
+  statut       RechercheAnnuaireStatut @default(FLOUTEE)
+  debloqueeLe  DateTime?
+  createdAt    DateTime                @default(now())
+
+  resultats RechercheAnnuaireResultat[]
+  paiements Paiement[]
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model RechercheAnnuaireResultat {
+  id          String            @id @default(uuid())
+  rechercheId String
+  recherche   RechercheAnnuaire @relation(fields: [rechercheId], references: [id], onDelete: Cascade)
+  medecinId   String
+  medecin     MedecinLocal      @relation(fields: [medecinId], references: [id], onDelete: Cascade)
+  // Pertinence au moment de la recherche, pour l'ordre d'affichage.
+  score       Int               @default(0)
+
+  @@unique([rechercheId, medecinId])
 }
 
 model Dossier {
@@ -273,8 +390,8 @@ model Dossier {
 
   // Renseignes uniquement dans le parcours medecin. Volontairement non
   // nominatifs : aucune donnee identifiante sans consentement du patient.
-  patientAge  Int?
-  patientSexe String?
+  patientAge    Int?
+  patientSexe   String?
   specialisteId String?
   specialiste   Specialiste? @relation(fields: [specialisteId], references: [id])
 
@@ -288,12 +405,17 @@ model Dossier {
   questionMedicale  String?
   symptomes         String?
   antecedents       String?
+  allergies         String?
   traitementEnCours String?
   urgence           Urgence       @default(NORMAL)
   status            DossierStatus @default(BROUILLON)
 
-  assignedAt        DateTime?
-  messagingClosesAt DateTime?
+  assignedAt           DateTime?
+  // Horodatage de l'alerte de mi-parcours (24 h). Sans lui, la tâche horaire
+  // renverrait la même alerte à chaque passage tant que le dossier reste
+  // ouvert - la coordination cesserait de les lire en deux jours.
+  alerteDelaiEnvoyeeLe DateTime?
+  messagingClosesAt    DateTime?
 
   // Le médecin traitant n'a pas de messagerie libre avec le spécialiste : il
   // pose une seule question au moment où il transmet le dossier à la
@@ -307,7 +429,9 @@ model Dossier {
 
   documents     Document[]
   consentements Consentement[]
+  recusations   RecusationSpecialiste[]
   paiements     Paiement[]
+  honoraires    Honoraire[]
   messages      Message[]
   rapport       Rapport?
   auditLogs     AuditLog[]
@@ -339,9 +463,9 @@ model Document {
 }
 
 model Consentement {
-  id         String           @id @default(uuid())
-  dossierId  String?
-  dossier    Dossier?         @relation(fields: [dossierId], references: [id], onDelete: Cascade)
+  id            String           @id @default(uuid())
+  dossierId     String?
+  dossier       Dossier?         @relation(fields: [dossierId], references: [id], onDelete: Cascade)
   // Nullable : une demande ouverte par un médecin traitant décrit un patient
   // anonymisé, sans compte - donc sans patientId. Le consentement y est alors
   // donné par le médecin traitant demandeur lui-même (voir nomSignataire).
@@ -362,37 +486,83 @@ model Consentement {
 }
 
 model Paiement {
-  id                    String         @id @default(uuid())
-  dossierId             String
-  dossier               Dossier        @relation(fields: [dossierId], references: [id])
-  provider              String         @default("CINETPAY")
-  amount                Decimal        @db.Decimal(10, 2)
-  currency              String         @default("XAF")
-  status                PaiementStatus @default(EN_ATTENTE)
-  cinetpayTransactionId String?        @unique
+  id                    String             @id @default(uuid())
+  // Un paiement règle SOIT un dossier de second avis, SOIT le déblocage d'une
+  // recherche d'annuaire - jamais les deux, jamais aucun. Les deux clés sont
+  // optionnelles ; c'est le contrôleur qui garantit qu'exactement une est
+  // renseignée (voir paiements.controller.js).
+  dossierId             String?
+  dossier               Dossier?           @relation(fields: [dossierId], references: [id])
+  rechercheAnnuaireId   String?
+  rechercheAnnuaire     RechercheAnnuaire? @relation(fields: [rechercheAnnuaireId], references: [id])
+  provider              String             @default("CINETPAY")
+  amount                Decimal            @db.Decimal(10, 2)
+  currency              String             @default("XAF")
+  status                PaiementStatus     @default(EN_ATTENTE)
+  cinetpayTransactionId String?            @unique
+  // Fapshi génère lui-même son identifiant à la création du lien, là où
+  // CinetPay reçoit le nôtre : d'où deux colonnes, chacune unique.
+  fapshiTransId         String?            @unique
   rawWebhookPayload     Json?
-  createdAt             DateTime       @default(now())
+  createdAt             DateTime           @default(now())
   confirmedAt           DateTime?
 
   @@index([dossierId])
+  @@index([rechercheAnnuaireId])
   @@index([status])
 }
 
+// Discussion directe, sans dossier.
+//
+// La messagerie etait entierement accrochee a un dossier : un praticien tout
+// juste recrute, a qui rien n'est encore affecte, n'apparaissait donc nulle
+// part et personne ne pouvait lui ecrire. La coordination est le pivot : elle
+// ouvre une discussion avec un specialiste ou un medecin traitant, qui peut
+// repondre. Les praticiens ne s'ecrivent pas entre eux.
+//
+// Exactement deux participants, ranges par identifiant croissant : c'est ce qui
+// rend la paire unique et empeche deux fils paralleles entre les deux memes
+// comptes.
+model Conversation {
+  id String @id @default(uuid())
+
+  participantAId String
+  participantA   User   @relation("ConversationA", fields: [participantAId], references: [id], onDelete: Cascade)
+  participantBId String
+  participantB   User   @relation("ConversationB", fields: [participantBId], references: [id], onDelete: Cascade)
+
+  messages Message[]
+
+  creeParId String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([participantAId, participantBId])
+  @@index([participantAId])
+  @@index([participantBId])
+}
+
 model Message {
-  id        String    @id @default(uuid())
-  dossierId String
-  dossier   Dossier   @relation(fields: [dossierId], references: [id], onDelete: Cascade)
-  senderId  String
-  sender    User      @relation("MessageSender", fields: [senderId], references: [id])
+  id        String   @id @default(uuid())
+  // Un message appartient soit a un dossier, soit a une discussion directe.
+  // Jamais aux deux, jamais a aucun des deux.
+  dossierId String?
+  dossier   Dossier? @relation(fields: [dossierId], references: [id], onDelete: Cascade)
+
+  conversationId String?
+  conversation   Conversation? @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  senderId       String
+  sender         User          @relation("MessageSender", fields: [senderId], references: [id])
   // Vide quand le message ne porte qu'une pièce jointe.
-  body      String
-  readAt    DateTime?
-  createdAt DateTime  @default(now())
+  body           String
+  readAt         DateTime?
+  createdAt      DateTime      @default(now())
 
   documentId String?
   document   Document? @relation(fields: [documentId], references: [id], onDelete: SetNull)
 
   @@index([dossierId])
+  @@index([conversationId])
 }
 
 model Rapport {
@@ -482,9 +652,9 @@ model Notification {
 // une fois modéré. Jamais publié automatiquement (CDC §43 : « être prudent
 // avec la notation publique ») - un admin doit approuver ou rejeter.
 model Temoignage {
-  id         String           @id @default(uuid())
+  id         String @id @default(uuid())
   userId     String
-  user       User             @relation("TemoignageAuteur", fields: [userId], references: [id], onDelete: Cascade)
+  user       User   @relation("TemoignageAuteur", fields: [userId], references: [id], onDelete: Cascade)
   // Capturé au moment de l'écriture : si le rôle du compte change plus tard,
   // le témoignage publié reste correctement attribué ("Patient" / "Médecin
   // traitant") sans avoir à rejouer une jointure incertaine.
@@ -492,14 +662,165 @@ model Temoignage {
   texte      String
   note       Int?
 
-  statut       TemoignageStatut @default(EN_ATTENTE)
-  motifRejet   String?
-  moderePar    String?
-  moderateur   User?            @relation("TemoignageModerateur", fields: [moderePar], references: [id])
-  modereLe     DateTime?
+  statut     TemoignageStatut @default(EN_ATTENTE)
+  motifRejet String?
+  moderePar  String?
+  moderateur User?            @relation("TemoignageModerateur", fields: [moderePar], references: [id])
+  modereLe   DateTime?
 
   createdAt DateTime @default(now())
 
   @@index([userId])
   @@index([statut])
+}
+
+// Un specialiste qui declare un conflit d'interets ne doit plus etre propose sur
+// CE dossier. Sans cette trace, le moteur d'affectation le reclasserait en tete
+// au tour suivant - il coche toujours les memes criteres - et le coordinateur se
+// verrait reproposer l'expert qui vient de se recuser.
+//
+// La recusation vaut pour un dossier, pas pour l'expert en general : le meme
+// specialiste reste parfaitement affectable ailleurs.
+model RecusationSpecialiste {
+  id            String      @id @default(uuid())
+  dossierId     String
+  dossier       Dossier     @relation(fields: [dossierId], references: [id], onDelete: Cascade)
+  specialisteId String
+  specialiste   Specialiste @relation(fields: [specialisteId], references: [id], onDelete: Cascade)
+  // Motif libre saisi par le specialiste. Conserve : c'est ce qui distingue une
+  // recusation deontologique d'un simple refus pour charge de travail, et le
+  // coordinateur doit pouvoir en rendre compte.
+  motif         String
+  createdAt     DateTime    @default(now())
+
+  @@unique([dossierId, specialisteId])
+  @@index([dossierId])
+}
+
+// Ce que la plateforme doit au spécialiste pour un avis rendu.
+//
+// Créé à la transmission du rapport - c'est là que l'avis est gagné - à partir
+// de ce que le demandeur a réellement payé. Le montant brut est en XAF (devise
+// d'encaissement), la commission de la plateforme en est retirée, et le net est
+// converti dans la devise du spécialiste au taux du jour.
+//
+// Tout est figé sur la ligne : taux de commission, taux de change, devise. Un
+// relevé qui recalculerait ces valeurs à la volée changerait de montant chaque
+// fois qu'un réglage bouge, et un spécialiste payé en janvier ne doit pas voir
+// son relevé de janvier changer en mars.
+model Honoraire {
+  id            String      @id @default(uuid())
+  dossierId     String
+  dossier       Dossier     @relation(fields: [dossierId], references: [id], onDelete: Cascade)
+  specialisteId String
+  specialiste   Specialiste @relation(fields: [specialisteId], references: [id])
+
+  // Ce que le demandeur a payé, dans la devise d'encaissement.
+  montantBrut      Decimal @db.Decimal(12, 2)
+  deviseBrut       String  @default("XAF")
+  // Part de la plateforme, figée au moment du calcul.
+  tauxCommission   Decimal @db.Decimal(5, 2)
+  commission       Decimal @db.Decimal(12, 2)
+  // Ce qui revient au spécialiste, avant puis après conversion.
+  montantNet       Decimal @db.Decimal(12, 2)
+  deviseNet        String
+  tauxChange       Decimal @db.Decimal(12, 6)
+  montantNetDevise Decimal @db.Decimal(12, 2)
+
+  statut               HonoraireStatut @default(A_REVERSER)
+  // FAPSHI (Mobile Money, Cameroun) ou VIREMENT (SEPA, manuel) selon la devise.
+  canal                String
+  // Identifiant du décaissement Fapshi, ou référence du virement saisie à la main.
+  referenceReversement String?
+  reverseLe            DateTime?
+  reversePar           String?
+  motifEchec           String?
+
+  createdAt DateTime @default(now())
+
+  // Un seul honoraire par dossier : un avis n'est payé qu'une fois.
+  @@unique([dossierId])
+  @@index([specialisteId])
+  @@index([statut])
+}
+
+// Candidature d'un praticien, remplie en ligne sur un formulaire public à
+// l'invitation du comité scientifique. Aucun compte n'existe à ce stade : c'est
+// la coordination qui en crée un, à partir de ces données, une fois la
+// candidature acceptée par le comité.
+model Candidature {
+  id     String            @id @default(uuid())
+  type   CandidatureType
+  statut CandidatureStatut @default(EN_ATTENTE)
+
+  // Identité et contact
+  fullName String
+  email    String
+  phone    String?
+  // Photo d'identité professionnelle, déposée avec le formulaire. Stockée
+  // comme les avatars, servie par un point d'entrée dédié.
+  photoKey String
+  // CV au format PDF. Facultatif : le comité peut juger sur la présentation
+  // seule, et exiger un fichier ferait abandonner des candidatures en route.
+  cvKey    String?
+
+  // Profil professionnel — les mêmes champs que Specialiste / MedecinLocal,
+  // pour que la création du compte soit une recopie et non une ressaisie.
+  specialite    String
+  etablissement String?
+  pays          String?
+  ville         String?
+  langues       String?
+  numeroOrdre   String?
+
+  // Structure d'exercice du medecin traitant, avec de quoi la joindre : le
+  // comite verifie l'exercice reel en appelant l'etablissement, et un nom seul
+  // ne permet pas de le faire. Nul pour un specialiste international.
+  typeStructure TypeStructure?
+  nomClinique   String?
+  telClinique   String?
+  emailClinique String?
+  nomHopital    String?
+  telHopital    String?
+  emailHopital  String?
+  // Diplômes, parcours, motivations : ce que le comité lit pour décider.
+  presentation  String
+
+  // Décision du comité
+  motifRefus  String?
+  decideParId String?
+  decideLe    DateTime?
+
+  // Compte créé par la coordination à partir de cette candidature.
+  compteUserId String?   @unique
+  compteCreeLe DateTime?
+
+  createdAt DateTime @default(now())
+
+  @@index([statut])
+  @@index([email])
+}
+
+// Spécialités proposées dans les listes déroulantes.
+//
+// En base plutôt qu'en dur dans le code : la coordination doit pouvoir en
+// ajouter sans redéploiement. Deux drapeaux plutôt qu'une catégorie unique —
+// « Cardiologie » vaut pour les deux formulaires, « Médecine générale » n'a de
+// sens que pour un médecin traitant.
+//
+// On désactive plutôt que de supprimer : une spécialité retirée de la liste
+// reste portée par les praticiens déjà enregistrés, et son libellé doit rester
+// lisible partout où il a été recopié.
+model Specialite {
+  id              String  @id @default(uuid())
+  nom             String  @unique
+  pourSpecialiste Boolean @default(true)
+  pourMedecin     Boolean @default(false)
+  actif           Boolean @default(true)
+
+  creeParId String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([actif])
 }

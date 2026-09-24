@@ -5,6 +5,20 @@ export const api = axios.create({
   baseURL: '/api',
 })
 
+/**
+ * Démonstration derrière un tunnel ngrok gratuit.
+ *
+ * ngrok intercale une page d'avertissement HTML (ERR_NGROK_6024) devant la
+ * première visite d'un tunnel gratuit. Pour une navigation, on clique
+ * « Visit Site » et c'est réglé ; pour un appel d'API, il n'y a personne pour
+ * cliquer : la réponse arrive en 200 avec du HTML là où le code attend du JSON,
+ * et chaque écran affiche « impossible de charger les données ».
+ *
+ * Cet en-tête fait sauter l'interstitiel. Il ne coûte rien hors tunnel — un
+ * en-tête inconnu que le serveur ignore.
+ */
+const ENTETE_NGROK = { 'ngrok-skip-browser-warning': 'true' }
+
 api.interceptors.request.use((config) => {
   // Le jeton dépend du rôle actif de CET onglet : deux onglets ouverts sur deux
   // espaces différents envoient donc chacun le leur.
@@ -12,6 +26,7 @@ api.interceptors.request.use((config) => {
   if (session?.accessToken) {
     config.headers.Authorization = `Bearer ${session.accessToken}`
   }
+  Object.assign(config.headers, ENTETE_NGROK)
   return config
 })
 
@@ -37,7 +52,7 @@ api.interceptors.response.use(
         rafraichissements.set(
           role,
           axios
-            .post('/api/auth/refresh', { refreshToken: session.refreshToken })
+            .post('/api/auth/refresh', { refreshToken: session.refreshToken }, { headers: ENTETE_NGROK })
             .finally(() => rafraichissements.delete(role)),
         )
       }

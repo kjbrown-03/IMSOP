@@ -26,6 +26,7 @@ const createDossier = {
     questionMedicale: longText(2000).optional(),
     symptomes: longText(2000).optional(),
     antecedents: longText(2000).optional(),
+    allergies: longText(2000).optional(),
     traitementEnCours: longText(2000).optional(),
     urgence: z.enum(URGENCE).optional(),
   }).strict(),
@@ -44,6 +45,7 @@ const creerDemandeMedecin = {
     question: longText(2000),
     symptomes: longText(2000).optional(),
     antecedents: longText(2000).optional(),
+    allergies: longText(2000).optional(),
     traitementEnCours: longText(2000).optional(),
     urgence: z.enum(URGENCE).optional(),
   }).strict(),
@@ -57,6 +59,7 @@ const updateDossier = {
     questionMedicale: longText(2000).optional(),
     symptomes: longText(2000).optional(),
     antecedents: longText(2000).optional(),
+    allergies: longText(2000).optional(),
     traitementEnCours: longText(2000).optional(),
     urgence: z.enum(URGENCE).optional(),
   }).strict(),
@@ -99,6 +102,13 @@ const refuserDossier = {
   body: z.object({ motif: z.string().trim().max(1000).optional() }).strict(),
 }
 
+// Le motif est obligatoire, là où celui du refus est facultatif : une récusation
+// sans raison ne serait pas exploitable par la coordination.
+const declarerConflitInterets = {
+  params: paramsWithId('id'),
+  body: z.object({ motif: z.string().trim().min(10).max(1000) }).strict(),
+}
+
 const poserQuestionMedecinLocal = {
   params: paramsWithId('id'),
   body: z.object({ question: longText(2000) }).strict(),
@@ -112,6 +122,7 @@ module.exports = {
   listDossiers,
   assignerSpecialiste,
   refuserDossier,
+  declarerConflitInterets,
   demanderComplement,
   changerStatut,
   designerMedecinLocal,
