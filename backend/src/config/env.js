@@ -115,7 +115,7 @@ module.exports = {
     // patient paie pour que la plateforme le relie aux médecins vérifiés de sa
     // zone qui peuvent le recevoir. Entièrement conservée par la plateforme
     // (aucun reversement au médecin). Prix arrêté par la direction : 3000 XAF.
-    ANNUAIRE: parseInt(process.env.TARIF_ANNUAIRE_XAF || '3000', 10),
+    ANNUAIRE: parseInt(process.env.TARIF_ANNUAIRE_XAF || '2000', 10),
     devise: 'XAF',
   },
 

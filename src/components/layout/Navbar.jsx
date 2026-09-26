@@ -49,7 +49,8 @@ export default function Navbar() {
   }
 
   return (
-    <nav
+    <>
+      <nav
       className={`fixed top-0 w-full z-50 transition-all duration-300 ${
         scrolled ? 'bg-[var(--color-surface)]/85 backdrop-blur-xl shadow-lg border-b border-[var(--color-border)]' : 'bg-[var(--color-surface)] border-b border-transparent'
       }`}
@@ -59,11 +60,13 @@ export default function Navbar() {
           <Logo light={false} size={52} />
         </Link>
 
+        {/* Bureau seulement : sur mobile la pilule est rendue hors du <nav>,
+            voir plus bas. */}
         <NavBar
           items={navItems}
           floating={false}
           labelsFrom="lg"
-          className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 md:static md:translate-x-0"
+          className="hidden md:flex"
           onSelect={(item) => goToLink(item.url)}
         />
 
@@ -114,6 +117,22 @@ export default function Navbar() {
           </div>
         </div>
       )}
-    </nav>
+      </nav>
+
+      {/* Pilule de navigation mobile, volontairement HORS du <nav>.
+          Celui-ci porte `backdrop-blur-xl` dès qu'on défile, et un ancêtre avec
+          `backdrop-filter` devient le bloc conteneur de ses descendants en
+          `position: fixed` : la pilule, censée se coller au bas de l'écran, se
+          calait alors sur le bas de la barre et recouvrait « Se connecter ».
+          En haut de page, sans flou, le bug ne se voyait pas — d'où son
+          caractère intermittent. */}
+      <NavBar
+        items={navItems}
+        floating={false}
+        labelsFrom="lg"
+        className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50"
+        onSelect={(item) => goToLink(item.url)}
+      />
+    </>
   )
 }
