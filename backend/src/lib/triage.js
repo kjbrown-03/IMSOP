@@ -83,26 +83,31 @@ const DRAPEAUX_ROUGES = [
 
 // Dictionnaire spécialité → motifs. Le score est le nombre de motifs distincts
 // rencontrés ; il sert à ordonner, pas à décider seul.
+//
+// Chaque spécialité porte aussi SON PROPRE NOM en racine (`cardiolog`,
+// `dermato`…). Sans cela, « je cherche un cardiologue » tombait en médecine
+// générale : le dictionnaire ne connaissait que les symptômes, alors qu'un
+// patient sur deux décrit ce qu'il cherche plutôt que ce qu'il ressent.
 const DICTIONNAIRE = {
-  cardiologie: ['coeur', 'cardiaque', 'palpitation', 'tension', 'hypertension', 'arythmie', 'battement', 'oedeme des jambes', 'jambes gonflees'],
-  pneumologie: ['toux', 'tousse', 'poumon', 'respir', 'asthme', 'bronchite', 'crachat', 'sifflement', 'essouffle'],
-  gastroenterologie: ['ventre', 'estomac', 'digestion', 'diarrhee', 'constipation', 'vomi', 'nausee', 'brulure d estomac', 'reflux', 'ballonn', 'foie', 'jaunisse', 'hemorroide', 'selles'],
-  dermatologie: ['peau', 'bouton', 'demangeaison', 'gratte', 'eczema', 'plaque', 'tache', 'acne', 'eruption', 'mycose', 'ongle', 'cheveux', 'chute de cheveux', 'urticaire'],
-  orl: ['oreille', 'gorge', 'nez', 'sinus', 'sinusite', 'angine', 'otite', 'entend mal', 'surdite', 'bourdonnement', 'enroue', 'amygdale', 'rhume', 'nez bouche'],
-  ophtalmologie: ['oeil', 'yeux', 'vue', 'vision', 'voit (flou|mal|trouble)', 'lunette', 'conjonctivite', 'oeil rouge', 'larmoie'],
-  dentaire: ['dent', 'gencive', 'carie', 'machoire', 'mal aux dents', 'rage de dent', 'dentiste', 'abces dentaire'],
-  gynecologie: ['regles', 'menstru', 'enceinte', 'grossesse', 'pertes', 'vaginal', 'uterus', 'ovaire', 'sein', 'menopause', 'contraception', 'sterilite', 'infertilite', 'accouchement'],
-  urologie: ['urine', 'uriner', 'pisse', 'vessie', 'prostate', 'testicule', 'erection', 'impuissance', 'brulure en urinant', 'sang dans les urines', 'calcul', 'rein'],
-  nephrologie: ['rein', 'renal', 'dialyse', 'insuffisance renale'],
-  neurologie: ['mal de tete', 'migraine', 'cephalee', 'vertige', 'tremblement', 'engourdi', 'fourmillement', 'memoire', 'epilepsie', 'nerf', 'sciatique', 'crise'],
-  orthopedie: ['os', 'articulation', 'genou', 'hanche', 'epaule', 'dos', 'colonne', 'lombaire', 'entorse', 'fracture', 'luxation', 'cheville', 'poignet', 'tendon'],
-  rhumatologie: ['articulation', 'arthrose', 'arthrite', 'rhumatisme', 'raideur', 'douleurs articulaires', 'goutte', 'polyarthrite'],
-  endocrinologie: ['diabete', 'sucre', 'glycemie', 'thyroide', 'hormone', 'poids', 'maigri', 'grossi', 'soif (intense|permanente)', 'cholesterol'],
-  infectiologie: ['fievre', 'paludisme', 'palu', 'malaria', 'typhoide', 'infection', 'vih', 'sida', 'hepatite', 'tuberculose', 'frisson', 'sueur nocturne'],
-  psychiatrie: ['depression', 'deprime', 'anxiete', 'anxieux', 'angoisse', 'stress', 'insomnie', 'dort mal', 'panique', 'triste', 'moral', 'hallucination', 'addiction', 'alcool', 'drogue'],
-  pediatrie: ['enfant', 'bebe', 'nourrisson', 'mon fils', 'ma fille', 'ans (a|et) (de la |une )?fievre', 'vaccin', 'croissance'],
-  oncologie: ['cancer', 'tumeur', 'grosseur', 'boule', 'masse', 'chimio', 'ganglion', 'amaigrissement inexplique'],
-  medecine_generale: ['fatigue', 'faible', 'malaise', 'douleur', 'mal partout', 'courbature', 'bilan', 'controle', 'certificat', 'consultation', 'generaliste', 'medecin de famille'],
+  cardiologie: ['coeur', 'cardiaque', 'palpitation', 'tension', 'hypertension', 'arythmie', 'battement', 'oedeme des jambes', 'jambes gonflees', 'cardiolog', 'cardio'],
+  pneumologie: ['toux', 'tousse', 'poumon', 'respir', 'asthme', 'bronchite', 'crachat', 'sifflement', 'essouffle', 'pneumolog', 'pneumo'],
+  gastroenterologie: ['ventre', 'estomac', 'digestion', 'diarrhee', 'constipation', 'vomi', 'nausee', 'brulure d estomac', 'reflux', 'ballonn', 'foie', 'jaunisse', 'hemorroide', 'selles', 'gastro'],
+  dermatologie: ['peau', 'bouton', 'demangeaison', 'gratte', 'eczema', 'plaque', 'tache', 'acne', 'eruption', 'mycose', 'ongle', 'cheveux', 'chute de cheveux', 'urticaire', 'dermatolog', 'dermato'],
+  orl: ['oreille', 'gorge', 'nez', 'sinus', 'sinusite', 'angine', 'otite', 'entend mal', 'surdite', 'bourdonnement', 'enroue', 'amygdale', 'rhume', 'nez bouche', 'oto rhino', 'oto-rhino'],
+  ophtalmologie: ['oeil', 'yeux', 'vue', 'vision', 'voit (flou|mal|trouble)', 'lunette', 'conjonctivite', 'oeil rouge', 'larmoie', 'ophtalmo'],
+  dentaire: ['dent', 'gencive', 'carie', 'machoire', 'mal aux dents', 'rage de dent', 'dentiste', 'abces dentaire', 'dentaire', 'odontolog'],
+  gynecologie: ['regles', 'menstru', 'enceinte', 'grossesse', 'pertes', 'vaginal', 'uterus', 'ovaire', 'sein', 'menopause', 'contraception', 'sterilite', 'infertilite', 'accouchement', 'gynecolog', 'gyneco', 'obstetri'],
+  urologie: ['urine', 'uriner', 'pisse', 'vessie', 'prostate', 'testicule', 'erection', 'impuissance', 'brulure en urinant', 'sang dans les urines', 'calcul', 'rein', 'urolog'],
+  nephrologie: ['rein', 'renal', 'dialyse', 'insuffisance renale', 'nephrolog', 'nephro'],
+  neurologie: ['mal de tete', 'migraine', 'cephalee', 'vertige', 'tremblement', 'engourdi', 'fourmillement', 'memoire', 'epilepsie', 'nerf', 'sciatique', 'crise', 'neurolog', 'neuro'],
+  orthopedie: ['os', 'articulation', 'genou', 'hanche', 'epaule', 'dos', 'colonne', 'lombaire', 'entorse', 'fracture', 'luxation', 'cheville', 'poignet', 'tendon', 'orthoped', 'traumatolog'],
+  rhumatologie: ['articulation', 'arthrose', 'arthrite', 'rhumatisme', 'raideur', 'douleurs articulaires', 'goutte', 'polyarthrite', 'rhumatolog', 'rhumato'],
+  endocrinologie: ['diabete', 'sucre', 'glycemie', 'thyroide', 'hormone', 'poids', 'maigri', 'grossi', 'soif (intense|permanente)', 'cholesterol', 'endocrinolog', 'endocrino', 'diabetolog'],
+  infectiologie: ['fievre', 'paludisme', 'palu', 'malaria', 'typhoide', 'infection', 'vih', 'sida', 'hepatite', 'tuberculose', 'frisson', 'sueur nocturne', 'infectiolog'],
+  psychiatrie: ['depression', 'deprime', 'anxiete', 'anxieux', 'angoisse', 'stress', 'insomnie', 'dort mal', 'panique', 'triste', 'moral', 'hallucination', 'addiction', 'alcool', 'drogue', 'psychiatr'],
+  pediatrie: ['enfant', 'bebe', 'nourrisson', 'mon fils', 'ma fille', 'ans (a|et) (de la |une )?fievre', 'vaccin', 'croissance', 'pediatr'],
+  oncologie: ['cancer', 'tumeur', 'grosseur', 'boule', 'masse', 'chimio', 'ganglion', 'amaigrissement inexplique', 'oncolog', 'cancerolog'],
+  medecine_generale: ['fatigue', 'faible', 'malaise', 'douleur', 'mal partout', 'courbature', 'bilan', 'controle', 'certificat', 'consultation', 'generaliste', 'medecin de famille', 'medecine generale', 'medecin generaliste', 'omnipraticien'],
 }
 
 const MOTIFS_PAR_SPECIALITE = Object.fromEntries(
