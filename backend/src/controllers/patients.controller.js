@@ -1,5 +1,6 @@
 const { prisma } = require('../lib/prisma')
-const { putObject, getSignedDownloadUrl } = require('../lib/s3')
+const { putObject } = require('../lib/s3')
+const { servirObjet } = require('../lib/servirFichier')
 const { logAction } = require('../services/auditService')
 const { notify } = require('../services/notificationService')
 
@@ -61,10 +62,9 @@ async function getIdentityDocumentUrl(req, res) {
     return res.status(404).json({ message: 'Document introuvable' })
   }
 
-  const url = await getSignedDownloadUrl(patient.identityDocumentKey)
   await logAction({ userId: req.userId, action: 'IDENTITE_DOCUMENT_CONSULTE', entityType: 'Patient', entityId: patient.id })
 
-  res.json({ url })
+  await servirObjet(res, patient.identityDocumentKey, { filename: `identite-${patient.patientRef || patient.id}` })
 }
 
 async function reviewIdentityDocument(req, res) {

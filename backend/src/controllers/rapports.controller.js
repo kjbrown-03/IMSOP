@@ -1,7 +1,8 @@
 const { prisma } = require('../lib/prisma')
 const { logAction } = require('../services/auditService')
 const { notify } = require('../services/notificationService')
-const { putObject, getSignedDownloadUrl } = require('../lib/s3')
+const { putObject } = require('../lib/s3')
+const { servirObjet } = require('../lib/servirFichier')
 const { buildRapportPdf } = require('../lib/pdf')
 const { loadDossierWithAccessCheck } = require('./dossiers.controller')
 const { safeUserSelect } = require('../lib/selectors')
@@ -148,9 +149,11 @@ async function downloadRapportPdf(req, res) {
     return res.status(403).json({ message: "Le rapport n'est pas encore disponible" })
   }
 
-  const url = await getSignedDownloadUrl(rapport.pdfStorageKey)
   await logAction({ userId: req.userId, action: 'RAPPORT_PDF_TELECHARGE', entityType: 'Rapport', entityId: rapport.id, dossierId: rapport.dossierId })
-  res.json({ url })
+  await servirObjet(res, rapport.pdfStorageKey, {
+    filename: `rapport-${rapport.id.slice(0, 8)}.pdf`,
+    contentType: 'application/pdf',
+  })
 }
 
 module.exports = { upsertBrouillon, soumettreRapport, validerRapport, getRapport, downloadRapportPdf }

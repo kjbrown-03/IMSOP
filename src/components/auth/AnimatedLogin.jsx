@@ -3,7 +3,6 @@ import { useNavigate, useSearchParams, useLocation, Link } from 'react-router-do
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '../../store/useAuthStore';
 import { ROLE_REDIRECTS } from '../../constants/roleRedirects';
-import { useTransitionStore } from '../../store/useTransitionStore';
 import AppInput from '../ui/AppInput';
 import { ArrowLeft, Sun, Moon } from 'lucide-react';
 
@@ -62,7 +61,6 @@ const ROLE_LINKS = {
 const AnimatedLogin = ({ role = 'PATIENT' }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const jouerTransition = useTransitionStore((s) => s.jouer);
   const [searchParams] = useSearchParams();
   const location = useLocation();
   // Page à rejoindre après connexion (ex. une recherche d'annuaire à payer).
@@ -108,7 +106,6 @@ const AnimatedLogin = ({ role = 'PATIENT' }) => {
     if (result?.twoFactorRequired) {
       navigate('/verification-2fa', { state: { challengeToken: result.challengeToken, role, from } });
     } else if (result?.ok) {
-      jouerTransition();
       navigate(from || ROLE_REDIRECTS[role] || '/');
     }
   }

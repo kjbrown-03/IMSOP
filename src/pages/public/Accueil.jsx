@@ -450,9 +450,18 @@ export default function Accueil() {
               </div>
               <div className="flex flex-col gap-2.5">
                 <b className="text-xs tracking-[0.14em] uppercase text-white">{t('public.footer.colTrust')}</b>
-                <span className="text-[#9FB6BD] text-sm">{t('public.footer.linkDataProtection')}</span>
-                <span className="text-[#9FB6BD] text-sm">{t('public.footer.linkConsent')}</span>
-                <span className="text-[#9FB6BD] text-sm">{t('public.footer.linkLegal')}</span>
+                {/* Ces trois-la etaient de simples textes : un pied de page
+                    qui annonce une politique de confidentialite sans y mener
+                    ne vaut pas mieux que rien. */}
+                <Link to="/confidentialite" className="text-[#9FB6BD] hover:text-white text-sm transition-colors">
+                  {t('public.footer.linkDataProtection')}
+                </Link>
+                <Link to="/conditions" className="text-[#9FB6BD] hover:text-white text-sm transition-colors">
+                  {t('public.footer.linkConsent')}
+                </Link>
+                <Link to="/mentions-legales" className="text-[#9FB6BD] hover:text-white text-sm transition-colors">
+                  {t('public.footer.linkLegal')}
+                </Link>
                 <span className="text-[#9FB6BD] text-sm">{t('public.footer.linkContact')}</span>
               </div>
             </div>

@@ -5,6 +5,7 @@ import PatientShell from '../../components/layout/PatientShell'
 import { api } from '../../lib/api'
 import ConsentementsCourants from '../../components/ui/ConsentementsCourants'
 import { ArrowLeft, CheckCircle, Download, Stethoscope, Activity, FileText, ClipboardList, Clock } from 'lucide-react'
+import { ouvrirFichier } from '../../lib/fichiers'
 
 export default function RapportExpertFinal() {
   const { id } = useParams()
@@ -52,8 +53,7 @@ export default function RapportExpertFinal() {
     if (!rapport?.id) return
     setDownloading(true)
     try {
-      const { data } = await api.get(`/rapports/${rapport.id}/pdf`)
-      if (data.url) window.open(data.url, '_blank', 'noopener')
+      await ouvrirFichier(`/rapports/${rapport.id}/pdf`)
     } catch (err) {
       alert(err.response?.data?.message || t('errors.pdfUnavailable'))
     } finally {

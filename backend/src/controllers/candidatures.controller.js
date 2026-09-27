@@ -137,25 +137,17 @@ async function deposer(req, res) {
       attachments: [
         { filename: `photo-${fichier}`, content: photoFichier.buffer, contentType: photoFichier.mimetype },
         ...(cvFichier
-          ? [{ filename: `CV-${fullName.replace(/[^\p{L}\p{N}]+/gu, '-')}.pdf`, content: cvFichier.buffer, contentType: 'application/pdf' }]
+          ? [{ filename: `CV-${nomDeFichier(fullName)}.pdf`, content: cvFichier.buffer, contentType: 'application/pdf' }]
           : []),
       ],
     }).catch((err) => console.error('envoi au comité échoué', err))
   }
 
-  // La coordination est prévenue aussi : c'est elle qui appliquera la décision.
-  const comite = await prisma.user.findMany({
-    where: { role: { in: ['COORDINATEUR', 'ADMIN'] }, active: true },
-    select: { id: true, email: true, fullName: true },
-  })
-  for (const membre of comite) {
-    await notify(membre.id, membre.email, 'CANDIDATURE_RECUE', {
-      name: membre.fullName,
-      candidat: fullName,
-      type: type === 'SPECIALISTE' ? 'spécialiste' : 'médecin traitant',
-      specialite,
-    })
-  }
+  // Volontairement, la coordination n'est PAS prévenue ici. Le comité
+  // scientifique reçoit le formulaire, décide hors de la plateforme, et
+  // transmet lui-même au coordinateur les seuls candidats qu'il retient. Une
+  // notification à chaque dépôt lui annoncerait des candidatures dont il n'a
+  // pas à connaître l'existence.
 
   res.status(201).json({ id: candidature.id, message: 'Candidature enregistrée' })
 }
@@ -269,8 +261,15 @@ async function photo(req, res) {
   objet.body.pipe(res)
 }
 
-// Le CV est un PDF : on rend une URL signée de courte durée plutôt qu'un flux,
-// comme pour les justificatifs — le navigateur l'ouvre dans sa visionneuse.
+// Le CV part en flux, comme la photo — jamais par une URL signée.
+//
+// Une URL signée se construit à partir de S3_ENDPOINT, qui vaut
+// `http://garage:3900` : un nom résolu dans le réseau Docker et nulle part
+// ailleurs. Le navigateur du coordinateur ne peut pas l'atteindre.
+//
+// Servir le fichier nous-mêmes règle ce point et un second, plus important :
+// une URL signée vaut laissez-passer pour quiconque la détient, alors qu'ici
+// chaque téléchargement repasse par l'authentification et le contrôle de rôle.
 async function cv(req, res) {
   const candidature = await prisma.candidature.findUnique({
     where: { id: req.params.id },
@@ -279,7 +278,15 @@ async function cv(req, res) {
   if (!candidature) return res.status(404).json({ message: 'Candidature introuvable' })
   if (!candidature.cvKey) return res.status(404).json({ message: 'Aucun CV fourni avec cette candidature' })
 
-  const url = await s3.getSignedDownloadUrl(`${CV_PREFIX}${candidature.cvKey}`)
+  let objet
+  try {
+    objet = await s3.getObjectStream(`${CV_PREFIX}${candidature.cvKey}`)
+  } catch (err) {
+    if (err.name === 'NoSuchKey' || err.$metadata?.httpStatusCode === 404) {
+      return res.status(404).json({ message: 'CV introuvable dans le stockage' })
+    }
+    throw err
+  }
 
   await logAction({
     userId: req.userId,
@@ -289,7 +296,17 @@ async function cv(req, res) {
     ipAddress: req.ip,
   })
 
-  res.json({ url })
+  res.setHeader('Content-Type', 'application/pdf')
+  if (objet.contentLength) res.setHeader('Content-Length', objet.contentLength)
+  // `inline` : la visionneuse du navigateur l'ouvre au lieu de le déposer dans
+  // les téléchargements.
+  res.setHeader('Content-Disposition', `inline; filename="CV-${nomDeFichier(candidature.fullName)}.pdf"`)
+  res.setHeader('Cache-Control', 'private, max-age=600')
+  objet.body.on('error', (err) => {
+    console.error('flux CV candidature échoué', err)
+    res.destroy(err)
+  })
+  objet.body.pipe(res)
 }
 
 /**
@@ -364,6 +381,22 @@ function versSpecialiteLocale(nom) {
   }
   const candidate = EXCEPTIONS[cle] || cle
   return estSpecialiteLocale(candidate) ? candidate : null
+}
+
+/**
+ * Nom de pièce jointe sûr : ASCII, sans accent ni ponctuation.
+ *
+ * « CV-Dr-Hélène-Ngo-Bissé.pdf » demande un encodage RFC 2231 que tous les
+ * clients de messagerie ne gèrent pas : le fichier arrive alors avec un nom
+ * illisible, voire refuse de s'ouvrir.
+ */
+function nomDeFichier(nom) {
+  return String(nom || 'candidat')
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .replace(/[^A-Za-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 60) || 'candidat'
 }
 
 function motDePasseInitial() {

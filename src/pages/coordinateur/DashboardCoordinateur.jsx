@@ -6,7 +6,7 @@ import { useLiveRefresh } from '../../components/hooks/useLiveRefresh'
 import { api } from '../../lib/api'
 import { nomPatient } from '../../lib/dossier'
 import SuiviDelais from '../../components/coordinateur/SuiviDelais'
-import { Sparkles, AlertTriangle, UserPlus, Bell, ChevronRight, ShieldAlert, FileText, FileSearch, ArrowRight, CheckCircle2, ClipboardCheck } from 'lucide-react'
+import { Bell, ChevronRight, ShieldAlert, FileText, FileSearch, ArrowRight, CheckCircle2, ClipboardCheck } from 'lucide-react'
 
 export default function DashboardCoordinateur() {
   const { t, i18n } = useTranslation()
@@ -17,12 +17,6 @@ export default function DashboardCoordinateur() {
   const [error, setError] = useState(null)
   const [validatingId, setValidatingId] = useState(null)
 
-  const METRIC_META = [
-    { key: 'nouveaux', label: t('coordinateur.metrics.nouveaux'), icon: Sparkles, bg: 'bg-blue-50', fg: 'text-blue-600', ring: 'ring-blue-100' },
-    { key: 'incomplets', label: t('coordinateur.metrics.incomplets'), icon: AlertTriangle, bg: 'bg-amber-50', fg: 'text-amber-600', ring: 'ring-amber-100' },
-    { key: 'aAffecter', label: t('coordinateur.metrics.aAffecter'), icon: UserPlus, bg: 'bg-indigo-50', fg: 'text-indigo-600', ring: 'ring-indigo-100' },
-    { key: 'urgents', label: t('coordinateur.metrics.urgents'), icon: Bell, bg: 'bg-rose-50', fg: 'text-rose-600', ring: 'ring-rose-100' },
-  ]
 
   function formatDate(iso) {
     return new Date(iso).toLocaleDateString(i18n.language === 'en' ? 'en-GB' : 'fr-FR', { day: '2-digit', month: 'short', year: 'numeric' })
@@ -87,24 +81,6 @@ export default function DashboardCoordinateur() {
       <div className="mb-8 animate-fade-in-up">
         <h2 className="text-3xl font-display font-bold text-slate-900 dark:text-white mb-2">{t('coordinateur.overviewTitle')}</h2>
         <p className="text-slate-500 dark:text-slate-400">{t('coordinateur.overviewSubtitle')}</p>
-      </div>
-
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mb-10">
-        {METRIC_META.map((m, idx) => (
-          <div
-            key={m.key}
-            className="glass-card dark:bg-neutral-900 p-6 rounded-3xl flex flex-col items-center justify-center gap-3 hover:-translate-y-1 hover:shadow-xl dark:hover:shadow-black/40 transition-all duration-300 group cursor-pointer animate-fade-in-up"
-            style={{ animationDelay: `${idx * 0.1}s` }}
-          >
-            <div className={`${m.bg} ${m.fg} p-4 rounded-2xl ring-1 ${m.ring} dark:bg-opacity-10 dark:ring-opacity-20 group-hover:scale-110 transition-transform duration-300 shadow-sm`}>
-              <m.icon className="w-7 h-7" />
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-slate-900 dark:text-white">{loading ? '—' : stats?.[m.key] ?? 0}</div>
-              <div className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mt-1">{m.label}</div>
-            </div>
-          </div>
-        ))}
       </div>
 
       {/* Sur téléphone le titre et le lien ne tiennent pas sur une ligne : sans

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import CoordinatorLayout from '../../components/layout/CoordinatorLayout'
 import { api } from '../../lib/api'
 import { ShieldCheck, FileSearch, Check, X, ExternalLink, Loader2 } from 'lucide-react'
+import { ouvrirFichier } from '../../lib/fichiers'
 
 export default function RevueIdentites() {
   const { t } = useTranslation()
@@ -27,8 +28,7 @@ export default function RevueIdentites() {
   }, [])
 
   async function onView(patientId) {
-    const { data } = await api.get(`/patients/${patientId}/identity-document`)
-    window.open(data.url, '_blank', 'noopener,noreferrer')
+    await ouvrirFichier(`/patients/${patientId}/identity-document`)
   }
 
   async function onApprove(patientId) {

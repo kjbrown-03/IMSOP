@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { FileText, Image as ImageIcon, FileScan, Download, Loader2 } from 'lucide-react'
-import { api } from '../../lib/api'
+import { ouvrirFichier } from '../../lib/fichiers'
 
 function iconFor(mimeType) {
   if (mimeType?.startsWith('image/')) return ImageIcon
@@ -30,8 +30,7 @@ export default function MessageAttachment({ document, mine, basePath = '/documen
     setBusy(true)
     setError(null)
     try {
-      const { data } = await api.get(`${basePath}/${document.id}/download`)
-      window.open(data.url, '_blank', 'noopener,noreferrer')
+      await ouvrirFichier(`${basePath}/${document.id}/download`)
     } catch (err) {
       setError(err.response?.data?.message || t('errors.downloadFailed'))
     } finally {

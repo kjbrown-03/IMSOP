@@ -4,7 +4,6 @@ import ProtectedRoute from './components/ProtectedRoute'
 import Placeholder from './pages/Placeholder'
 import NotFound from './pages/NotFound'
 import SplashScreen from './components/Splashscreen'
-import TransitionDamier from './components/ui/TransitionDamier'
 import { useThemeStore } from './store/useThemeStore'
 import { useAuthStore } from './store/useAuthStore'
 import { getCallSocket } from './lib/socket'
@@ -43,6 +42,9 @@ import CoordinateurCandidatures from './pages/coordinateur/CoordinateurCandidatu
 import CoordinateurSpecialites from './pages/coordinateur/CoordinateurSpecialites'
 import CoordinateurMedecins from './pages/coordinateur/CoordinateurMedecins'
 import Candidature from './pages/public/Candidature'
+import Confidentialite from './pages/public/Confidentialite'
+import Conditions from './pages/public/Conditions'
+import MentionsLegales from './pages/public/MentionsLegales'
 import CoordinateurReversements from './pages/coordinateur/CoordinateurReversements'
 import DashboardCoordinateur from './pages/coordinateur/DashboardCoordinateur'
 import AffectationExpert from './pages/coordinateur/AffectationExpert'
@@ -109,9 +111,6 @@ export default function App() {
           re-montage brutal une fois le splash retiré. */}
       <SplashScreen isLoading={!isAppReady} />
 
-      {/* Monté une seule fois pour toute l'application : l'écran d'arrivée n'a
-          rien à déclencher, le damier se retire par-dessus lui. */}
-      <TransitionDamier />
       <Routes>
       {/* Public */}
       <Route path="/" element={<Accueil />} />
@@ -120,6 +119,12 @@ export default function App() {
       {/* Formulaire de candidature envoyé par le comité scientifique : public,
           aucun compte n'existe encore. Deux variantes : specialiste | medecin. */}
       <Route path="/candidature/:type" element={<Candidature />} />
+      {/* Pages legales : publiques et sans compte. Google exige les deux
+          premieres pour publier l'application OAuth, et une plateforme qui
+          traite des donnees de sante les doit a ses utilisateurs. */}
+      <Route path="/confidentialite" element={<Confidentialite />} />
+      <Route path="/conditions" element={<Conditions />} />
+      <Route path="/mentions-legales" element={<MentionsLegales />} />
       {/* Annuaire « Trouver un médecin » : recherche et résultats sont
           publics (les résultats restent floutés tant que rien n'est payé). */}
       <Route path="/annuaire" element={<AnnuaireRecherche />} />

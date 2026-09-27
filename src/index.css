@@ -252,32 +252,6 @@
   --color-status-warning: #fdd663;
 }
 
-/* Transition de damier à l'entrée d'un espace connecté (voir
-   TransitionDamier.jsx). Chaque case recouvre l'écran puis se retire à son
-   propre délai : le décalage d'une case sur deux fait lire le damier, là où un
-   délai posé uniquement par colonne ne donnerait qu'un rideau. La case rétrécit
-   en même temps qu'elle s'efface, ce qui ouvre les jours entre les cases
-   voisines au lieu d'un simple fondu. */
-@keyframes imsop-damier-sortie {
-  from { opacity: 1; transform: scale(1); }
-  to { opacity: 0; transform: scale(0.62); }
-}
-
-.damier-case {
-  /* Durée et délai sont posés en style inline par le composant : ils découlent
-     tous deux du même réglage de rythme, les réécrire ici en ferait une
-     seconde source de vérité à tenir à jour en parallèle.
-
-     `both` et non `forwards` : la partie "backwards" garde la case opaque
-     pendant son délai d'attente - sans elle, la case laisserait voir l'écran
-     avant même d'avoir commencé à se retirer. Attention, `forwards backwards`
-     n'existe pas : deux valeurs de fill-mode dans un raccourci `animation`
-     rendent toute la déclaration invalide et rien ne se joue. */
-  animation-name: imsop-damier-sortie;
-  animation-timing-function: ease-in;
-  animation-fill-mode: both;
-}
-
 @media (prefers-reduced-motion: reduce) {
   .damier-case {
     animation: none;

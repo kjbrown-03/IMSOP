@@ -118,7 +118,7 @@
       "linkInternationalSpecialists": "International specialists",
       "linkInstitutions": "Institutions & insurers",
       "linkDataProtection": "Data protection",
-      "linkConsent": "Consent & GDPR",
+      "linkConsent": "Terms of use",
       "linkLegal": "Legal notice",
       "linkContact": "Contact us",
       "copyright": "IMSOP — International Medical Second Opinion.",
@@ -1555,5 +1555,149 @@
     "existe": "This specialty already exists.",
     "chargementEchoue": "Could not load the specialties.",
     "actionEchouee": "The action failed."
+  },
+  "legal": {
+    "majLe": "Last updated: {{date}}",
+    "majDate": "27 September 2026",
+    "confidentialite": {
+      "titre": "Privacy policy",
+      "chapeau": "IMSOP traite des données de santé. Cette page dit lesquelles, qui les lit, où elles sont conservées et comment vous en reprenez la main.",
+      "s1": {
+        "titre": "Qui est responsable de vos données",
+        "p1": "Le responsable du traitement est [RAISON SOCIALE À COMPLÉTER], dont le siège est situé [ADRESSE À COMPLÉTER]. Pour toute question relative à vos données, écrivez à [ADRESSE DE CONTACT À COMPLÉTER].",
+        "liste": [
+          "Aucune donnée n'est vendue, louée ni cédée à des tiers à des fins commerciales.",
+          "Aucune publicité n'est diffusée sur la plateforme, et aucun profilage publicitaire n'est réalisé."
+        ]
+      },
+      "s2": {
+        "titre": "Ce que nous collectons",
+        "p1": "Nous ne collectons que ce dont le service a besoin pour fonctionner.",
+        "liste": [
+          "Identité et contact : nom, adresse e-mail, téléphone, date de naissance, pays et ville de résidence.",
+          "Données de santé : motif de la demande, antécédents, allergies, et les documents médicaux que vous déposez (analyses, imageries, comptes rendus).",
+          "Données de praticien : spécialité, établissement, numéro d'inscription à l'ordre, justificatifs d'habilitation, curriculum vitae et photo professionnelle.",
+          "Données techniques : adresse IP et horodatage des actions sensibles, conservés dans un journal d'audit.",
+          "Données de paiement : montant, devise, statut et référence de transaction. Aucune coordonnée bancaire ne transite par nos serveurs ni n'y est stockée."
+        ]
+      },
+      "s3": {
+        "titre": "Qui accède à quoi",
+        "p1": "L'accès est cloisonné par rôle. Personne ne voit l'ensemble d'un dossier sans raison de le voir.",
+        "liste": [
+          "Le spécialiste affecté à votre dossier accède à vos documents médicaux et à votre motif, sans votre identité civile complète.",
+          "La coordination médicale organise l'affectation et le suivi des délais ; elle voit les dossiers pour les acheminer, sans rédiger d'avis.",
+          "Votre médecin traitant, si vous l'avez désigné, reçoit l'avis rendu.",
+          "Le comité scientifique reçoit les candidatures des praticiens par courriel. Il n'a aucun accès à la plateforme ni aux dossiers des patients."
+        ],
+        "p2": "Chaque consultation d'un dossier est inscrite dans un journal d'audit, avec l'auteur, la date et l'adresse IP. Ce journal n'est pas modifiable."
+      },
+      "s4": {
+        "titre": "Où vos données sont hébergées",
+        "p1": "Les données sont hébergées sur un serveur dédié situé en Europe, opéré par Hostinger International Ltd.",
+        "liste": [
+          "La base de données et le stockage des documents ne sont pas accessibles depuis Internet : seuls les composants de l'application les atteignent.",
+          "Les échanges entre votre navigateur et la plateforme sont chiffrés (HTTPS/TLS).",
+          "Les documents médicaux ne sont jamais servis par une adresse publique : chaque ouverture repasse par une vérification de vos droits."
+        ]
+      },
+      "s5": {
+        "titre": "Combien de temps nous les gardons",
+        "p1": "Les dossiers médicaux et les avis rendus sont conservés pendant la durée nécessaire au suivi médical, puis archivés conformément aux obligations de conservation applicables aux documents de santé.",
+        "p2": "Les consentements sont conservés sans effacement : ce sont eux qui prouvent ce que vous avez accepté, et à quelle date. Un retrait de consentement est enregistré comme un nouvel événement, il n'efface pas le précédent."
+      },
+      "s6": {
+        "titre": "Vos droits",
+        "p1": "Vous pouvez à tout moment :",
+        "liste": [
+          "accéder aux données qui vous concernent et en obtenir une copie,",
+          "demander la rectification d'une donnée inexacte,",
+          "retirer un consentement que vous aviez donné,",
+          "demander la limitation ou l'effacement, dans les limites des obligations de conservation médicale,",
+          "vous opposer à un traitement pour un motif tenant à votre situation."
+        ],
+        "p2": "Pour exercer ces droits, écrivez à [ADRESSE DE CONTACT À COMPLÉTER]. Une réponse vous sera apportée dans un délai d'un mois."
+      },
+      "s7": {
+        "titre": "Cookies et traceurs",
+        "p1": "La plateforme ne dépose aucun cookie publicitaire et n'utilise aucun traceur tiers. Le stockage local de votre navigateur sert uniquement à maintenir votre session ouverte et à retenir vos préférences d'affichage (langue, thème)."
+      }
+    },
+    "conditions": {
+      "titre": "Terms of use",
+      "chapeau": "Ce que la plateforme fait, ce qu'elle ne fait pas, et ce que vous vous engagez à respecter en l'utilisant.",
+      "s1": {
+        "titre": "Ce qu'IMSOP est — et ce qu'il n'est pas",
+        "p1": "IMSOP organise l'accès à un second avis médical rendu par un spécialiste, à partir d'un dossier que vous déposez. La plateforme met en relation et achemine : elle ne pose aucun diagnostic et ne prescrit aucun traitement.",
+        "p2": "Un second avis ne remplace ni votre médecin traitant, ni une consultation, ni une prise en charge en urgence. En cas d'urgence médicale, contactez les services de secours : n'utilisez pas cette plateforme."
+      },
+      "s2": {
+        "titre": "Qui peut utiliser la plateforme",
+        "p1": "L'accès est réservé :",
+        "liste": [
+          "aux patients majeurs, ou à leur représentant légal pour un mineur ou un majeur protégé,",
+          "aux médecins traitants et spécialistes dont l'habilitation a été vérifiée par la coordination médicale,",
+          "au personnel de coordination et d'administration désigné."
+        ]
+      },
+      "s3": {
+        "titre": "Vos engagements",
+        "p1": "En utilisant la plateforme, vous vous engagez à :",
+        "liste": [
+          "fournir des informations exactes, et ne déposer que des documents qui vous concernent ou pour lesquels vous avez qualité à agir,",
+          "ne pas partager vos identifiants, et signaler sans délai tout accès que vous n'auriez pas autorisé,",
+          "ne déposer aucun fichier malveillant, et ne pas tenter d'accéder à des données qui ne vous sont pas destinées,",
+          "respecter le secret médical si vous êtes professionnel de santé."
+        ]
+      },
+      "s4": {
+        "titre": "Tarifs et paiement",
+        "p1": "Le prix d'un second avis dépend du niveau d'urgence choisi, et celui d'une mise en relation avec un médecin de proximité est fixe. Le montant applicable vous est présenté avant tout paiement.",
+        "p2": "Le paiement conditionne l'affectation du dossier à un spécialiste. Une mise en relation vous donne accès aux coordonnées d'un médecin : elle ne garantit ni un rendez-vous, ni une prise en charge, lesquels relèvent du praticien."
+      },
+      "s5": {
+        "titre": "Délais et disponibilité",
+        "p1": "Nous nous efforçons de rendre un avis dans le délai annoncé lors de votre demande. Ce délai peut être dépassé lorsque le dossier appelle des éléments complémentaires.",
+        "liste": [
+          "La plateforme peut être interrompue pour maintenance, sans préavis en cas d'incident de sécurité.",
+          "Un dossier incomplet suspend le décompte du délai jusqu'à réception des éléments manquants."
+        ]
+      },
+      "s6": {
+        "titre": "Responsabilité",
+        "p1": "L'avis rendu engage le spécialiste qui le signe, dans les limites de son exercice professionnel. IMSOP répond de l'acheminement du dossier, de la vérification de l'habilitation des praticiens et de la sécurité des données ; il ne répond pas du contenu médical de l'avis, ni des décisions de soins prises à sa suite."
+      }
+    },
+    "mentions": {
+      "titre": "Legal notice",
+      "chapeau": "Éditeur, hébergeur et contact du service.",
+      "s1": {
+        "titre": "Éditeur du service",
+        "liste": [
+          "Raison sociale : [À COMPLÉTER]",
+          "Forme juridique : [À COMPLÉTER]",
+          "Siège : [ADRESSE À COMPLÉTER]",
+          "Responsable de la publication : [NOM À COMPLÉTER]",
+          "Contact : [ADRESSE DE CONTACT À COMPLÉTER]"
+        ]
+      },
+      "s2": {
+        "titre": "Hébergement",
+        "p1": "Le service est hébergé sur un serveur dédié opéré par :",
+        "liste": [
+          "Hostinger International Ltd.",
+          "61 Lordou Vironos Street, 6023 Larnaca, Chypre",
+          "Centre de données : Europe"
+        ]
+      },
+      "s3": {
+        "titre": "Propriété intellectuelle",
+        "p1": "La marque IMSOP, le logo, l'interface et les contenus éditoriaux de la plateforme sont protégés. Les documents médicaux déposés restent la propriété de leurs auteurs et des patients concernés ; ils ne sont utilisés que pour rendre le service."
+      },
+      "s4": {
+        "titre": "Signaler un problème",
+        "p1": "Pour signaler un contenu, une faille de sécurité ou un incident touchant vos données, écrivez à [ADRESSE DE CONTACT À COMPLÉTER]. Un signalement de sécurité reçoit une réponse prioritaire."
+      }
+    }
   }
 }

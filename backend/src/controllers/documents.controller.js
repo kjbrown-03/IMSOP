@@ -1,5 +1,6 @@
 const { prisma } = require('../lib/prisma')
-const { putObject, getSignedDownloadUrl } = require('../lib/s3')
+const { putObject } = require('../lib/s3')
+const { servirObjet } = require('../lib/servirFichier')
 const { logAction } = require('../services/auditService')
 const { loadDossierWithAccessCheck } = require('./dossiers.controller')
 const { v4: uuidv4 } = require('uuid')
@@ -60,8 +61,6 @@ async function downloadDocument(req, res) {
   const { error, message } = await loadDossierWithAccessCheck(req, document.dossierId)
   if (error) return res.status(error).json({ message })
 
-  const url = await getSignedDownloadUrl(document.storageKey)
-
   await logAction({
     userId: req.userId,
     action: 'DOCUMENT_DOWNLOAD',
@@ -70,7 +69,10 @@ async function downloadDocument(req, res) {
     dossierId: document.dossierId,
   })
 
-  res.json({ url })
+  await servirObjet(res, document.storageKey, {
+    filename: document.filename,
+    contentType: document.mimeType,
+  })
 }
 
 module.exports = { uploadDocument, listDocuments, downloadDocument }

@@ -1,5 +1,6 @@
 const { prisma } = require('../lib/prisma')
-const { putObject, getSignedDownloadUrl } = require('../lib/s3')
+const { putObject } = require('../lib/s3')
+const { servirObjet } = require('../lib/servirFichier')
 const { logAction } = require('../services/auditService')
 const { notify } = require('../services/notificationService')
 const { safeUserSelect } = require('../lib/selectors')
@@ -186,8 +187,6 @@ async function telechargerJustificatif(req, res) {
     return res.status(403).json({ message: "Vous n'avez pas accès à ce justificatif" })
   }
 
-  const url = await getSignedDownloadUrl(document.storageKey)
-
   await logAction({
     userId: req.userId,
     action: 'JUSTIFICATIF_TELECHARGE',
@@ -197,7 +196,10 @@ async function telechargerJustificatif(req, res) {
     ipAddress: req.ip,
   })
 
-  res.json({ url })
+  await servirObjet(res, document.storageKey, {
+    filename: document.filename,
+    contentType: document.mimeType,
+  })
 }
 
 // La décision d'habilitation. Un refus, une suspension ou une révocation exige

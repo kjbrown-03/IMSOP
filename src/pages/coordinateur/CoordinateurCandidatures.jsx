@@ -295,8 +295,15 @@ function LienCv({ id, aUnCv }) {
   async function ouvrir() {
     setEnCours(true)
     try {
-      const { data } = await api.get(`/candidatures/${id}/cv`)
-      window.open(data.url, '_blank', 'noopener,noreferrer')
+      // Le serveur sert le PDF lui-même : la requête porte le jeton, ce que
+      // `window.open` ne saurait pas faire. On récupère donc le fichier puis on
+      // ouvre une adresse locale au navigateur.
+      const { data } = await api.get(`/candidatures/${id}/cv`, { responseType: 'blob' })
+      const url = URL.createObjectURL(data)
+      window.open(url, '_blank', 'noopener,noreferrer')
+      // L'onglet a pris sa copie : on rend la mémoire, sans quoi chaque
+      // consultation en retiendrait une de plus jusqu'au rechargement.
+      setTimeout(() => URL.revokeObjectURL(url), 60_000)
     } catch {
       /* le message d'erreur global couvrirait mal un clic isolé */
     } finally {

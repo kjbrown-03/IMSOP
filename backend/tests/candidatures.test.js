@@ -220,12 +220,16 @@ test('Candidatures — dépôt public', async (t) => {
     await deposer({ email: user.email }).expect(409)
   })
 
-  await t.test('le comité est prévenu du dépôt', async () => {
+  // Le comité décide hors de la plateforme et transmet lui-même au coordinateur
+  // les candidats qu'il retient. Le prévenir de chaque dépôt lui annoncerait des
+  // candidatures dont il n'a pas à connaître l'existence, et brouillerait la
+  // frontière entre ce qui est validé et ce qui ne l'est pas encore.
+  await t.test("la coordination n'est pas prévenue du dépôt", async () => {
     const coordinateur = await creerCoordinateur()
     await deposer().expect(201)
 
-    const notif = await prisma.notification.findFirst({ where: { userId: coordinateur.id, type: 'CANDIDATURE_RECUE' } })
-    assert.ok(notif)
+    const notif = await prisma.notification.findFirst({ where: { userId: coordinateur.id } })
+    assert.equal(notif, null)
   })
 })
 

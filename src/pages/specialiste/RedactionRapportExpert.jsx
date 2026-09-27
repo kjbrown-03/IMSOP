@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { nomPatient } from '../../lib/dossier'
 import { api } from '../../lib/api'
+import { ouvrirFichier } from '../../lib/fichiers'
 
 function computeAge(dob) {
   if (!dob) return null
@@ -89,8 +90,7 @@ export default function RedactionRapportExpert() {
   }
 
   async function openDocument(docId) {
-    const { data } = await api.get(`/documents/${docId}/download`)
-    window.open(data.url, '_blank', 'noopener,noreferrer')
+    await ouvrirFichier(`/documents/${docId}/download`)
   }
 
   if (loading) {
