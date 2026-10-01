@@ -921,17 +921,16 @@
       "dashboard": "Dashboard",
       "dossiers": "Dossiers",
       "experts": "Experts",
-      "identites": "Identités",
       "parametres": "Paramètres",
-      "habilitations": "Habilitations",
       "messages": "Messages",
       "temoignages": "Témoignages",
       "gestionExperts": "Gestion des experts",
       "statistiques": "Statistiques",
       "reversements": "Reversements",
-      "candidatures": "Candidatures",
+      "candidatures": "Demandes d'intégration",
       "specialites": "Spécialités",
-      "gestionMedecins": "Médecins traitants"
+      "gestionMedecins": "Médecins traitants",
+      "habilitations": "Habilitations"
     },
     "userMenu": {
       "user": "Utilisateur",
@@ -1369,16 +1368,15 @@
       "intro": "Décrivez ce que vous ressentez : nous vous mettons en relation avec les médecins inscrits et vérifiés de votre zone qui peuvent vous recevoir.",
       "symptomes": "Vos symptômes",
       "symptomesPlaceholder": "Ex. : des boutons qui grattent sur les bras depuis une semaine, sans fièvre",
-      "symptomesAide": "En quelques phrases, avec vos mots. Précisez depuis quand.",
       "pays": "Pays",
       "ville": "Ville",
       "optionnel": "facultatif",
       "villeToutes": "Toutes les villes",
-      "noteUrgence": "Ce service n'est pas un service d'urgence. En cas de douleur thoracique, de difficulté à respirer, de perte de connaissance ou de saignement important, appelez immédiatement les secours.",
       "lancer": "Chercher un médecin",
       "tarifNote": "La recherche est gratuite. La mise en relation avec les médecins trouvés coûte {{montant}} {{devise}}.",
       "erreur": "La recherche a échoué. Réessayez.",
-      "tropCourt": "Décrivez un peu plus vos symptômes (au moins {{min}} caractères)."
+      "tropCourt": "Décrivez un peu plus vos symptômes (au moins {{min}} caractères).",
+      "retourAccueil": "Retour à l'accueil"
     },
     "resultats": {
       "nouvelleRecherche": "Nouvelle recherche",
@@ -1485,7 +1483,7 @@
     "photoIllisible": "Ce fichier ne peut pas être lu comme une image. Si elle vient d'un iPhone, ouvrez-la puis enregistrez-la en JPEG, ou choisissez une autre photo."
   },
   "candidatures": {
-    "titre": "Candidatures",
+    "titre": "Demandes d'intégration",
     "sousTitre": "Le comité scientifique reçoit chaque formulaire par e-mail et décide hors de la plateforme. Vous créez ici le compte des candidats qu'il vous transmet.",
     "statuts": {
       "A_CREER": "Comptes à créer",

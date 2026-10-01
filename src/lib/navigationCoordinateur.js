@@ -9,7 +9,6 @@ import {
   MessageCircleHeart,
   MessageSquare,
   Settings,
-  ShieldCheck,
   Stethoscope,
   UserCog,
 } from 'lucide-react'
@@ -32,7 +31,6 @@ export const LIENS_COORDINATEUR = [
   // c'est la recherche d'experts — les dossiers sont sur le tableau de bord.
   { to: '/coordinateur/recherche-expert', cle: 'experts', icone: Stethoscope },
   { to: '/coordinateur/messages', cle: 'messages', icone: MessageSquare },
-  { to: '/coordinateur/identites', cle: 'identites', icone: ShieldCheck },
   { to: '/coordinateur/statistiques', cle: 'statistiques', icone: BarChart3 },
   { to: '/coordinateur/candidatures', cle: 'candidatures', icone: ClipboardList },
   { to: '/coordinateur/specialites', cle: 'specialites', icone: ListChecks },

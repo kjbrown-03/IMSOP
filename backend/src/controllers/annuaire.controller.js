@@ -312,6 +312,16 @@ async function mettreAJourAnnuaire(req, res) {
   if (annuaireVisible && medecin.verificationStatus !== 'VALIDE') {
     return res.status(403).json({ message: 'Votre habilitation doit être validée avant d\'apparaître dans l\'annuaire' })
   }
+  // L'annuaire n'est pas la suite logique de l'inscription : c'est un service
+  // que la plateforme vend, où elle recommande un médecin à un patient qui ne
+  // connaît personne. Elle ne recommande que des praticiens que le comité
+  // scientifique a examinés sur dossier. Un médecin inscrit seul suit ses
+  // propres patients — pour rejoindre l'annuaire, il dépose une candidature.
+  if (annuaireVisible && !medecin.valideParComite) {
+    return res.status(403).json({
+      message: "L'annuaire est réservé aux médecins retenus par le comité scientifique. Déposez une candidature pour le rejoindre.",
+    })
+  }
   // Le pays doit être un code CEMAC connu, sinon la recherche géographique ne
   // trouverait jamais ce médecin : « Cameroun » ou « CM » saisis à l'inscription
   // ne suffisent pas, il faut choisir dans la liste.

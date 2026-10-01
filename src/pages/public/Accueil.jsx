@@ -6,32 +6,24 @@ import Navbar from '../../components/layout/Navbar'
 import Logo from '../../components/ui/Logo'
 import { api } from '../../lib/api'
 import {
-  FolderHeart,
-  HeartPulse,
   Shield,
   ShieldCheck,
   Users,
   Globe2,
   Lock,
-  Stethoscope,
-  Brain,
-  Bone,
-  ScanLine,
-  Microscope,
   Quote,
   Clock,
   ArrowRight,
-  ArrowUpRight,
   MapPin,
 } from 'lucide-react'
 
 const SPECIALTIES = [
-  { icon: HeartPulse, nameKey: 'specOncology', subKey: 'specOncologySub' },
-  { icon: Stethoscope, nameKey: 'specCardiology', subKey: 'specCardiologySub' },
-  { icon: Brain, nameKey: 'specNeurology', subKey: 'specNeurologySub' },
-  { icon: Bone, nameKey: 'specOrthopedics', subKey: 'specOrthopedicsSub' },
-  { icon: ScanLine, nameKey: 'specRadiology', subKey: 'specRadiologySub' },
-  { icon: Microscope, nameKey: 'specPathology', subKey: 'specPathologySub' },
+  { nameKey: 'specOncology', subKey: 'specOncologySub' },
+  { nameKey: 'specCardiology', subKey: 'specCardiologySub' },
+  { nameKey: 'specNeurology', subKey: 'specNeurologySub' },
+  { nameKey: 'specOrthopedics', subKey: 'specOrthopedicsSub' },
+  { nameKey: 'specRadiology', subKey: 'specRadiologySub' },
+  { nameKey: 'specPathology', subKey: 'specPathologySub' },
 ]
 
 function TrustBadge({ icon: Icon, children }) {
@@ -271,10 +263,7 @@ export default function Accueil() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
               {/* Phase 1 */}
               <div className="bg-white dark:bg-[#132530] border border-[#EBE3D9] dark:border-[#22404C] rounded-[20px] p-7 flex flex-col gap-5">
-                <div className="flex items-center gap-3">
-                  <span className="w-[38px] h-[38px] rounded-xl bg-[#EDE4D7] dark:bg-[rgba(143,196,186,0.14)] text-[#8A6E33] dark:text-[#8FC4BA] flex items-center justify-center shrink-0">
-                    <FolderHeart className="w-[21px] h-[21px]" />
-                  </span>
+                <div className="flex items-center">
                   <span className="font-semibold text-sm tracking-[0.03em] text-[#12303F] dark:text-[#F2F6F5]">
                     {t('public.home.phase1Label')}
                   </span>
@@ -289,10 +278,7 @@ export default function Accueil() {
 
               {/* Phase 2 — highlighted */}
               <div className="bg-[#163A52] rounded-[20px] p-7 flex flex-col gap-5">
-                <div className="flex items-center gap-3">
-                  <span className="w-[38px] h-[38px] rounded-xl bg-[rgba(143,196,186,0.18)] text-[#8FC4BA] flex items-center justify-center shrink-0">
-                    <Stethoscope className="w-[21px] h-[21px]" />
-                  </span>
+                <div className="flex items-center">
                   <span className="font-semibold text-sm tracking-[0.03em] text-[#F2F6F5]">
                     {t('public.home.phase2Label')}
                   </span>
@@ -311,10 +297,7 @@ export default function Accueil() {
 
               {/* Phase 3 */}
               <div className="bg-white dark:bg-[#132530] border border-[#EBE3D9] dark:border-[#22404C] rounded-[20px] p-7 flex flex-col gap-5">
-                <div className="flex items-center gap-3">
-                  <span className="w-[38px] h-[38px] rounded-xl bg-[#EAF1EE] dark:bg-[rgba(47,110,101,0.18)] text-[#2F6E65] dark:text-[#8FC4BA] flex items-center justify-center shrink-0">
-                    <ArrowUpRight className="w-[21px] h-[21px]" />
-                  </span>
+                <div className="flex items-center">
                   <span className="font-semibold text-sm tracking-[0.03em] text-[#12303F] dark:text-[#F2F6F5]">
                     {t('public.home.phase3Label')}
                   </span>
@@ -355,14 +338,11 @@ export default function Accueil() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-              {SPECIALTIES.map(({ icon: Icon, nameKey, subKey }) => (
+              {SPECIALTIES.map(({ nameKey, subKey }) => (
                 <div
                   key={nameKey}
-                  className="bg-[#FBF7F2] dark:bg-[#0F1D26] border border-[#E4DACE] dark:border-[#22404C] rounded-2xl p-6 flex items-center gap-4"
+                  className="bg-[#FBF7F2] dark:bg-[#0F1D26] border border-[#E4DACE] dark:border-[#22404C] rounded-2xl p-6 flex items-center"
                 >
-                  <span className="w-[46px] h-[46px] shrink-0 rounded-[13px] bg-[#EAF1EE] dark:bg-[rgba(47,110,101,0.18)] text-[#2F6E65] dark:text-[#8FC4BA] flex items-center justify-center">
-                    <Icon className="w-6 h-6" />
-                  </span>
                   <span className="flex flex-col gap-0.5">
                     <b className="text-[17px] text-[#16262F] dark:text-white">{t(`public.home.${nameKey}`)}</b>
                     <span className="text-[13.5px] text-[#7A8890] dark:text-[#93A7AF]">{t(`public.home.${subKey}`)}</span>

@@ -294,6 +294,19 @@ model MedecinLocal {
   habilitationExpireLe DateTime?
 
   // --- Annuaire « Trouver un médecin » (zone CEMAC) ---------------------------
+  // Le comité scientifique a examiné ce médecin sur dossier et l'a retenu.
+  //
+  // C'est ce qui sépare le médecin TRAITANT du médecin PROCHE. Le premier est
+  // choisi par un patient qui le connaît déjà : il peut s'inscrire seul, la
+  // confiance vient du patient. Le second est proposé par la plateforme à un
+  // patient qui ne connaît personne, contre paiement : la confiance vient alors
+  // de nous, et on ne l'engage pas sur une simple inscription en ligne.
+  //
+  // Posé à la création d'un compte depuis une candidature, ou sur un compte
+  // existant lorsqu'un médecin déjà inscrit dépose une candidature et qu'elle
+  // est retenue. Jamais modifiable par le médecin lui-même.
+  valideParComite      Boolean   @default(false)
+  valideParComiteLe    DateTime?
   // Un médecin traitant s'inscrit d'abord pour suivre SES patients. Apparaître
   // dans un service de mise en relation payant, où des patients lui seront
   // reliés, est un autre engagement :

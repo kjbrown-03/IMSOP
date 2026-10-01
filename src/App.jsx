@@ -50,7 +50,6 @@ import DashboardCoordinateur from './pages/coordinateur/DashboardCoordinateur'
 import AffectationExpert from './pages/coordinateur/AffectationExpert'
 import RechercheExpertCoordinateur from './pages/coordinateur/RechercheExpertCoordinateur'
 import GestionExceptions from './pages/coordinateur/GestionExceptions'
-import RevueIdentites from './pages/coordinateur/RevueIdentites'
 import ConsultationRapport from './pages/coordinateur/ConsultationRapport'
 import DashboardSpecialiste from './pages/specialiste/DashboardSpecialiste'
 import RedactionRapportExpert from './pages/specialiste/RedactionRapportExpert'
@@ -363,14 +362,6 @@ export default function App() {
         element={
           <ProtectedRoute role="COORDINATEUR">
             <GestionExceptions />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/coordinateur/identites"
-        element={
-          <ProtectedRoute role="COORDINATEUR">
-            <RevueIdentites />
           </ProtectedRoute>
         }
       />

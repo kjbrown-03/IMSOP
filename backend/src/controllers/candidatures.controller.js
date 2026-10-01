@@ -403,6 +403,98 @@ function motDePasseInitial() {
   return crypto.randomBytes(11).toString('base64url').slice(0, 14)
 }
 
+/**
+ * Le candidat retenu avait déjà un compte : on l'élève au lieu d'en créer un.
+ *
+ * C'est le passage du médecin TRAITANT au médecin PROCHE. Il s'était inscrit
+ * seul pour suivre ses propres patients ; le comité vient de le retenir pour
+ * l'annuaire. Même personne, même compte, mêmes dossiers — seule sa qualité
+ * change. Aucun mot de passe n'est renvoyé : il a déjà les siens.
+ *
+ * Ce qu'il a renseigné lui-même n'est jamais écrasé par le formulaire de
+ * candidature : on ne comble que les champs restés vides.
+ */
+async function eleverCompteExistant({ req, res, candidature, existant }) {
+  const profil = existant.medecinLocal
+  // Un compte MEDECIN_LOCAL sans profil ne devrait pas exister ; s'il existe,
+  // mieux vaut le dire que d'échouer sur une lecture de null.
+  if (!profil) {
+    return res.status(409).json({ message: 'Ce compte est incomplet : profil médecin introuvable' })
+  }
+  const specialiteAnnuaire = versSpecialiteLocale(candidature.specialite)
+  const combler = (actuel, propose) => (actuel ?? null) || propose || null
+
+  const user = await prisma.$transaction(async (tx) => {
+    await tx.medecinLocal.update({
+      where: { id: profil.id },
+      data: {
+        specialite: combler(profil.specialite, candidature.specialite),
+        etablissement: combler(profil.etablissement, candidature.etablissement),
+        pays: combler(profil.pays, candidature.pays),
+        ville: combler(profil.ville, candidature.ville),
+        numeroOrdre: combler(profil.numeroOrdre, candidature.numeroOrdre),
+        ...(profil.annuaireSpecialites?.length === 0 && specialiteAnnuaire
+          ? { annuaireSpecialites: [specialiteAnnuaire] }
+          : {}),
+        // La décision du comité vaut habilitation, comme pour un compte neuf.
+        verificationStatus: 'VALIDE',
+        verifiedAt: new Date(),
+        verifiedById: req.userId,
+        valideParComite: true,
+        valideParComiteLe: new Date(),
+      },
+    })
+
+    await tx.candidature.update({
+      where: { id: candidature.id },
+      data: { statut: 'COMPTE_CREE', compteUserId: existant.id, compteCreeLe: new Date() },
+    })
+
+    return tx.user.findUnique({
+      where: { id: existant.id },
+      select: { ...safeUserSelect, specialiste: true, medecinLocal: true },
+    })
+  })
+
+  await logAction({
+    userId: req.userId,
+    action: 'CANDIDATURE_COMPTE_EXISTANT_ELEVE',
+    entityType: 'User',
+    entityId: user.id,
+    metadata: { candidatureId: candidature.id },
+    ipAddress: req.ip,
+  })
+
+  // Il n'attend pas d'identifiants, mais il attend une réponse du comité : sans
+  // ce message, rien ne lui dirait qu'il peut désormais se rendre visible.
+  let prevenu = false
+  try {
+    await mailer.sendMail({
+      to: existant.email,
+      subject: 'IMSOP — votre candidature a été retenue',
+      text: [
+        `Bonjour ${existant.fullName},`,
+        '',
+        'Le comité scientifique a retenu votre candidature. Votre compte existant',
+        "a été mis à jour : vous pouvez désormais apparaître dans l'annuaire",
+        '« Trouver un médecin ».',
+        '',
+        "Rendez-vous dans vos réglages d'annuaire pour choisir vos spécialités,",
+        'votre quartier, et vous rendre visible.',
+        '',
+        `${env.publicUrl}/medecin/annuaire`,
+        '',
+        'Vos identifiants de connexion restent les mêmes.',
+      ].join('\n'),
+    })
+    prevenu = true
+  } catch (err) {
+    console.error('candidature retenue : e-mail non parti', err)
+  }
+
+  res.status(200).json({ user, compteExistantEleve: true, identifiantsEnvoyes: prevenu })
+}
+
 async function creerCompte(req, res) {
   const candidature = await prisma.candidature.findUnique({ where: { id: req.params.id } })
   if (!candidature) return res.status(404).json({ message: 'Candidature introuvable' })
@@ -416,8 +508,23 @@ async function creerCompte(req, res) {
     return res.status(409).json({ message: 'Cette candidature a été écartée' })
   }
 
-  const existant = await prisma.user.findUnique({ where: { email: candidature.email } })
-  if (existant) return res.status(409).json({ message: 'Un compte existe déjà avec cette adresse e-mail' })
+  const existant = await prisma.user.findUnique({
+    where: { email: candidature.email },
+    include: { medecinLocal: true, specialiste: true },
+  })
+
+  // Un médecin traitant inscrit de lui-même peut déposer une candidature pour
+  // rejoindre l’annuaire. Refuser parce que l’adresse est connue l’obligerait à
+  // créer un second compte, à dédoubler ses dossiers et à perdre ses patients.
+  // On élève le compte existant : c’est la même personne, le comité vient de
+  // se prononcer sur elle.
+  if (existant) {
+    const meme = ROLES_PAR_TYPE[candidature.type] === existant.role
+    if (!meme || existant.role !== 'MEDECIN_LOCAL') {
+      return res.status(409).json({ message: 'Un compte existe déjà avec cette adresse e-mail' })
+    }
+    return eleverCompteExistant({ req, res, candidature, existant })
+  }
 
   const motDePasse = motDePasseInitial()
   const passwordHash = await bcrypt.hash(motDePasse, 12)
@@ -457,6 +564,8 @@ async function creerCompte(req, res) {
               medecinLocal: {
                 create: {
                   ...profil,
+                  valideParComite: true,
+                  valideParComiteLe: new Date(),
                   ville: candidature.ville,
                   numeroOrdre: candidature.numeroOrdre,
                   ...(specialiteAnnuaire ? { annuaireSpecialites: [specialiteAnnuaire] } : {}),

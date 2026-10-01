@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Loader2, MapPin, Search, ShieldCheck } from 'lucide-react'
+import { ArrowLeft, Loader2, MapPin, Search } from 'lucide-react'
 import Navbar from '../../components/layout/Navbar'
 import { api } from '../../lib/api'
 
@@ -68,6 +68,15 @@ export default function AnnuaireRecherche() {
       <Navbar />
       <main className="pt-16 pb-28 md:pb-16">
         <section className="w-full py-14 px-margin-mobile md:px-margin-desktop bg-[var(--color-surface)] border-b border-[var(--color-border)]">
+          <div className="max-w-[760px] mx-auto">
+            <Link
+              to="/"
+              className="inline-flex items-center gap-2 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors mb-6"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              {t('annuaire.recherche.retourAccueil')}
+            </Link>
+          </div>
           <div className="max-w-[760px] mx-auto text-center">
             <span className="font-label-sm text-label-sm text-[var(--color-primary)] uppercase tracking-wider">
               {t('annuaire.recherche.eyebrow')}
@@ -94,9 +103,11 @@ export default function AnnuaireRecherche() {
                 placeholder={t('annuaire.recherche.symptomesPlaceholder')}
                 className={CHAMP + ' resize-y'}
               />
-              <span className={`text-xs ${tropCourt ? 'text-amber-700 dark:text-amber-400' : 'text-[var(--color-text-secondary)]'}`}>
-                {tropCourt ? t('annuaire.recherche.tropCourt', { min: SYMPTOMES_MIN }) : t('annuaire.recherche.symptomesAide')}
-              </span>
+              {tropCourt && (
+                <span className="text-xs text-amber-700 dark:text-amber-400">
+                  {t('annuaire.recherche.tropCourt', { min: SYMPTOMES_MIN })}
+                </span>
+              )}
             </label>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -118,11 +129,6 @@ export default function AnnuaireRecherche() {
                   {villes.map((v) => <option key={v} value={v}>{v}</option>)}
                 </select>
               </label>
-            </div>
-
-            <div className="flex items-start gap-3 rounded-xl bg-[var(--color-surface-container-low)] border border-[var(--color-border)] p-4 text-sm text-[var(--color-text-secondary)]">
-              <ShieldCheck className="w-5 h-5 shrink-0 text-[var(--color-secondary)] mt-0.5" />
-              <p>{t('annuaire.recherche.noteUrgence')}</p>
             </div>
 
             {erreur && <p className="text-sm font-semibold text-rose-600">{erreur}</p>}

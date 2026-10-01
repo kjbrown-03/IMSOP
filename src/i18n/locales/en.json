@@ -921,17 +921,16 @@
       "dashboard": "Dashboard",
       "dossiers": "Cases",
       "experts": "Experts",
-      "identites": "Identities",
       "parametres": "Settings",
-      "habilitations": "Credentials",
       "messages": "Messages",
       "temoignages": "Testimonials",
       "gestionExperts": "Expert management",
       "statistiques": "Statistics",
       "reversements": "Payouts",
-      "candidatures": "Applications",
+      "candidatures": "Integration requests",
       "specialites": "Specialties",
-      "gestionMedecins": "Treating doctors"
+      "gestionMedecins": "Treating doctors",
+      "habilitations": "Credentials"
     },
     "userMenu": {
       "user": "User",
@@ -1369,16 +1368,15 @@
       "intro": "Describe how you feel: we connect you with the registered, verified doctors in your area who can see you.",
       "symptomes": "Your symptoms",
       "symptomesPlaceholder": "E.g.: itchy spots on my arms for a week, no fever",
-      "symptomesAide": "A few sentences, in your own words. Say since when.",
       "pays": "Country",
       "ville": "City",
       "optionnel": "optional",
       "villeToutes": "All cities",
-      "noteUrgence": "This is not an emergency service. For chest pain, difficulty breathing, loss of consciousness or heavy bleeding, call emergency services immediately.",
       "lancer": "Find a doctor",
       "tarifNote": "Searching is free. Being connected with the doctors found costs {{montant}} {{devise}}.",
       "erreur": "The search failed. Please try again.",
-      "tropCourt": "Describe your symptoms a little more (at least {{min}} characters)."
+      "tropCourt": "Describe your symptoms a little more (at least {{min}} characters).",
+      "retourAccueil": "Back to home"
     },
     "resultats": {
       "nouvelleRecherche": "New search",
@@ -1485,7 +1483,7 @@
     "photoIllisible": "This file cannot be read as an image. If it comes from an iPhone, open it and save it as JPEG, or pick another photo."
   },
   "candidatures": {
-    "titre": "Applications",
+    "titre": "Integration requests",
     "sousTitre": "The scientific committee receives each form by email and decides outside the platform. Here you create the account for the candidates it forwards to you.",
     "statuts": {
       "A_CREER": "Accounts to create",
