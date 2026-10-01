@@ -213,6 +213,7 @@ export default function Candidature() {
     <AuthLayout
       heading={titre}
       tagline={t('candidature.accroche')}
+      bgImage="/medecin-login.png"
       badges={
         <>
           <span className="text-on-surface-variant"><Stethoscope className="w-6 h-6 text-primary" /></span>

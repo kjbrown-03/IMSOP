@@ -35,12 +35,27 @@ const FALLBACK_META = { icon: Bell, tone: 'bg-slate-100 text-slate-600' }
 // thread only exists between the coordination team and the specialist now -
 // the patient and the médecin local get an entry that is still readable and
 // dismissable but does not navigate anywhere for a MESSAGE_RECU.
+// L'espace de messagerie de chaque rôle. Le médecin traitant n'en a pas :
+// il échange depuis son dossier, pas depuis un fil dédié.
+const MESSAGERIE_PAR_ROLE = {
+  COORDINATEUR: '/coordinateur/messages',
+  ADMIN: '/coordinateur/messages',
+  SPECIALISTE: '/specialiste/messagerie',
+}
+
 function linkFor(notification, role) {
+  // Discussion directe : elle n'a pas de dossier, mais elle a un fil. Sans ce
+  // cas, la notification s'affichait et le clic ne menait nulle part.
+  const discussion = notification.payload?.conversationId
+  if (discussion) {
+    const base = MESSAGERIE_PAR_ROLE[role]
+    return base ? `${base}?discussion=${discussion}` : null
+  }
+
   if (!notification.dossierId) return null
   if (notification.type === 'MESSAGE_RECU') {
-    if (role === 'COORDINATEUR' || role === 'ADMIN') return `/coordinateur/messages/${notification.dossierId}`
-    if (role === 'SPECIALISTE') return `/specialiste/messagerie/${notification.dossierId}`
-    return null
+    const base = MESSAGERIE_PAR_ROLE[role]
+    return base ? `${base}/${notification.dossierId}` : null
   }
   if (role === 'PATIENT') return `/patient/dossiers/${notification.dossierId}`
   return null

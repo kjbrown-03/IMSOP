@@ -55,7 +55,7 @@ export default function InscriptionMedecinLocal() {
     <AuthLayout
       heading={t('medecin.register.title')}
       tagline={t('medecin.register.subtitle')}
-      bgImage="https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80"
+      bgImage="/medecin-login.png"
       badges={
         <>
           <span className="flex flex-col items-center gap-1 text-on-surface-variant">

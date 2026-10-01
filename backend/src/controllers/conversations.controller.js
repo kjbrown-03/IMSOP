@@ -182,11 +182,15 @@ async function envoyerMessage(req, res) {
     metadata: { conversationId: conversation.id },
   })
 
+  // `conversationId` dans la charge utile : sans lui, la cloche de
+  // notifications affichait bien le message mais le clic ne menait nulle part,
+  // faute de dossier auquel se rattacher.
   await notify(destinataire.id, destinataire.email, 'MESSAGE_RECU', {
     name: destinataire.fullName,
-    reference: 'discussion directe',
+    reference: null,
     senderName: cree.sender.fullName,
     excerpt: body.slice(0, 140),
+    conversationId: conversation.id,
   })
 
   res.status(201).json(cree)

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useIsMobile } from '@/components/hooks/use-mobile'
 import { LIENS_COORDINATEUR } from '@/lib/navigationCoordinateur'
@@ -75,6 +75,10 @@ export const Home = ({ avecBarreLaterale = true }) => {
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()
   const { id: urlDossierId } = useParams()
+  // `?discussion=<id>` : c'est par là qu'arrive un clic sur une notification de
+  // message direct, qui n'a pas de dossier à mettre dans l'adresse.
+  const [parametresUrl] = useSearchParams()
+  const discussionDemandee = parametresUrl.get('discussion')
   const user = useAuthStore((s) => s.user)
   const logout = useAuthStore((s) => s.logout)
   const markReadByDossier = useNotificationStore((s) => s.markReadByDossier)
@@ -236,6 +240,15 @@ export const Home = ({ avecBarreLaterale = true }) => {
       .catch(() => { /* la liste des dossiers reste utilisable sans elles */ })
     return () => { annule = true }
   }, [rechargerDiscussions])
+
+  // Un clic sur une notification de message direct arrive avec l'identifiant du
+  // fil dans l'adresse : on l'ouvre dès que la liste est là.
+  useEffect(() => {
+    if (!discussionDemandee) return
+    if (!discussions.some((d) => d.id === discussionDemandee)) return
+    setActiveDossierId(null)
+    setActiveDiscussionId(discussionDemandee)
+  }, [discussionDemandee, discussions])
 
   // La recherche interroge aussi les praticiens joignables : c'est le seul
   // moyen d'atteindre quelqu'un avec qui aucun fil n'existe encore.
