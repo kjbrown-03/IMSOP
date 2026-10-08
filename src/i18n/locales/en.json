@@ -105,7 +105,7 @@
       "testimonial4Meta": "Bafoussam · Neurology",
       "testimonial5Quote": "An external, documented opinion let me explain the options to my patient with more confidence.",
       "testimonial5Meta": "Treating doctor · Yaoundé",
-      "heroSecondaryCta": "Find a doctor near me"
+      "heroSecondaryCta": "Find the nearest practitioner"
     },
     "footer": {
       "tagline": "International Medical Second Opinion Platform. An African program for second medical opinions and international tele-expertise. Pilot country: Cameroon.",
@@ -1376,7 +1376,17 @@
       "tarifNote": "Searching is free. Being connected with the doctors found costs {{montant}} {{devise}}.",
       "erreur": "The search failed. Please try again.",
       "tropCourt": "Describe your symptoms a little more (at least {{min}} characters).",
-      "retourAccueil": "Back to home"
+      "retourAccueil": "Back to home",
+      "CONVENTIONNEL": {
+        "eyebrow": "Conventional medicine",
+        "titre": "The nearest specialist to you",
+        "intro": "Describe your symptoms in a few words. We work out the relevant speciality, then look for the practitioners closest to you."
+      },
+      "TRADITIONNEL": {
+        "eyebrow": "Traditional medicine",
+        "titre": "The nearest traditional practitioner",
+        "intro": "Describe what you feel, in your own words. We search among the traditional practitioners selected by the scientific committee for those practising near you."
+      }
     },
     "resultats": {
       "nouvelleRecherche": "New search",
@@ -1425,6 +1435,22 @@
       "presentationTitre": "Presentation (optional)",
       "presentationPlaceholder": "Opening hours, languages, access… Shown once your details are unlocked.",
       "enregistre": "Settings saved"
+    },
+    "choix": {
+      "eyebrow": "Nearest practitioner",
+      "titre": "Which practitioner are you looking for?",
+      "intro": "Both practices exist near you. Choose the one you wish to consult: the next search will only offer practitioners from that path.",
+      "CONVENTIONNEL": {
+        "titre": "Conventional medicine",
+        "description": "A qualified doctor registered with the medical council of their country of practice: general practitioner or specialist, in a surgery, clinic or hospital.",
+        "action": "Describe my symptoms"
+      },
+      "TRADITIONNEL": {
+        "titre": "Traditional medicine",
+        "description": "A recognised traditional practitioner, working with local pharmacopoeia and therapeutic knowledge, selected by the scientific committee on file.",
+        "action": "Describe what I feel"
+      },
+      "note": "In both cases, IMSOP connects you: we do not book appointments on your behalf and make no diagnosis. In an emergency, call the emergency services."
     }
   },
   "candidature": {
@@ -1480,7 +1506,13 @@
     "nomHopital": "Hospital name",
     "telStructure": "Facility phone",
     "emailStructure": "Facility email",
-    "photoIllisible": "This file cannot be read as an image. If it comes from an iPhone, open it and save it as JPEG, or pick another photo."
+    "photoIllisible": "This file cannot be read as an image. If it comes from an iPhone, open it and save it as JPEG, or pick another photo.",
+    "typePratique": "Nature of your practice",
+    "typePratiqueAide": "The committee reviews both paths, each against its own criteria.",
+    "pratique": {
+      "CONVENTIONNEL": "Conventional medicine",
+      "TRADITIONNEL": "Traditional medicine"
+    }
   },
   "candidatures": {
     "titre": "Integration requests",

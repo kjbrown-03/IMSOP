@@ -43,10 +43,21 @@ async function creerSpecialiste({ verificationStatus = 'VALIDE', ...options } = 
   return { user, specialiste }
 }
 
-async function creerMedecinLocal({ verificationStatus = 'VALIDE', ...options } = {}) {
+// `valideParComite` par defaut : l'annuaire n'accepte que les praticiens
+// retenus par le comite. Le laisser a false ferait echouer tout test de
+// visibilite sur un 403, alors que ce n'est pas ce qu'il cherche a verifier.
+// Un test qui veut l'inverse passe explicitement `valideParComite: false`.
+async function creerMedecinLocal({ verificationStatus = 'VALIDE', valideParComite = true, ...options } = {}) {
   const user = await creerUtilisateur('MEDECIN_LOCAL', options)
   const medecinLocal = await prisma.medecinLocal.create({
-    data: { userId: user.id, specialite: 'Médecine générale', pays: 'CM', verificationStatus },
+    data: {
+      userId: user.id,
+      specialite: 'Médecine générale',
+      pays: 'CM',
+      verificationStatus,
+      valideParComite,
+      ...(valideParComite ? { valideParComiteLe: new Date() } : {}),
+    },
   })
   return { user, medecinLocal }
 }

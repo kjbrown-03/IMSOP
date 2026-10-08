@@ -8,6 +8,9 @@ const rechercher = {
     symptomes: z.string().trim().min(10, 'Décrivez vos symptômes en quelques mots').max(2000),
     pays: z.enum(CODES_PAYS),
     ville: z.string().trim().max(100).optional(),
+    // Par défaut conventionnel : un appel qui ne précise rien garde le
+    // comportement d'avant l'ouverture à la médecine traditionnelle.
+    typePratique: z.enum(['CONVENTIONNEL', 'TRADITIONNEL']).default('CONVENTIONNEL'),
   }).strict(),
 }
 

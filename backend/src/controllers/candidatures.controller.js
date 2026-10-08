@@ -49,7 +49,7 @@ async function deposer(req, res) {
 
   const {
     type, fullName, email, phone, specialite, etablissement, pays, ville, langues, numeroOrdre, presentation,
-    typeStructure, nomClinique, telClinique, emailClinique, nomHopital, telHopital, emailHopital,
+    typeStructure, typePratique, nomClinique, telClinique, emailClinique, nomHopital, telHopital, emailHopital,
   } = req.body
 
   // Un compte existant avec cet e-mail n'a rien à candidater ; une candidature
@@ -86,6 +86,7 @@ async function deposer(req, res) {
       numeroOrdre,
       presentation,
       typeStructure,
+      ...(typePratique ? { typePratique } : {}),
       nomClinique,
       telClinique,
       emailClinique,
@@ -129,7 +130,7 @@ async function deposer(req, res) {
       text: formulaireEnTexte({
         type, fullName, email, phone, specialite, pays, ville, langues, numeroOrdre, presentation,
         etablissement: candidature.etablissement,
-        typeStructure, nomClinique, telClinique, emailClinique, nomHopital, telHopital, emailHopital,
+        typePratique, typeStructure, nomClinique, telClinique, emailClinique, nomHopital, telHopital, emailHopital,
         cvJoint: Boolean(cvFichier),
       }),
       // Photo et CV joints : le comité lit tout dans son courriel, sans avoir
@@ -199,6 +200,7 @@ function formulaireEnTexte(c) {
     ligne('Ville de résidence', c.ville),
     ligne('Langues', c.langues),
     ligne("Numéro d'ordre", c.numeroOrdre),
+    ligne('Nature de la pratique', c.typePratique === 'TRADITIONNEL' ? 'Médecine traditionnelle' : c.typePratique ? 'Médecine conventionnelle' : null),
     ...blocStructure(c),
     '',
     'Parcours et motivations :',
@@ -568,6 +570,7 @@ async function creerCompte(req, res) {
                   valideParComiteLe: new Date(),
                   ville: candidature.ville,
                   numeroOrdre: candidature.numeroOrdre,
+                  typePratique: candidature.typePratique,
                   ...(specialiteAnnuaire ? { annuaireSpecialites: [specialiteAnnuaire] } : {}),
                 },
               },

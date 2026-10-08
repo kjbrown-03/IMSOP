@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { ArrowLeft, Loader2, MapPin, Search } from 'lucide-react'
 import Navbar from '../../components/layout/Navbar'
@@ -16,6 +16,13 @@ const CHAMP =
 export default function AnnuaireRecherche() {
   const { t } = useTranslation()
   const navigate = useNavigate()
+
+  // Le chemin porte la voie choisie à l'écran précédent : /annuaire/traditionnel
+  // ou /annuaire/conventionnel. Une valeur inconnue retombe sur le
+  // conventionnel plutôt que d'échouer.
+  const { type } = useParams()
+  const typePratique = type === 'traditionnel' ? 'TRADITIONNEL' : 'CONVENTIONNEL'
+  const prefixe = `annuaire.recherche.${typePratique}`
 
   const [referentiels, setReferentiels] = useState(null)
   const [symptomes, setSymptomes] = useState('')
@@ -51,6 +58,7 @@ export default function AnnuaireRecherche() {
       const { data } = await api.post('/annuaire/recherches', {
         symptomes: symptomes.trim(),
         pays,
+        typePratique,
         ...(ville ? { ville } : {}),
       })
       // Retenue localement : la personne n'a peut-être pas de compte, et doit
@@ -70,7 +78,7 @@ export default function AnnuaireRecherche() {
         <section className="w-full py-14 px-margin-mobile md:px-margin-desktop bg-[var(--color-surface)] border-b border-[var(--color-border)]">
           <div className="max-w-[760px] mx-auto">
             <Link
-              to="/"
+              to="/annuaire"
               className="inline-flex items-center gap-2 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors mb-6"
             >
               <ArrowLeft className="w-4 h-4" />
@@ -79,13 +87,13 @@ export default function AnnuaireRecherche() {
           </div>
           <div className="max-w-[760px] mx-auto text-center">
             <span className="font-label-sm text-label-sm text-[var(--color-primary)] uppercase tracking-wider">
-              {t('annuaire.recherche.eyebrow')}
+              {t(`${prefixe}.eyebrow`)}
             </span>
             <h1 className="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-[var(--color-primary)] mt-2">
-              {t('annuaire.recherche.titre')}
+              {t(`${prefixe}.titre`)}
             </h1>
             <p className="font-body-lg text-body-lg text-[var(--color-text-secondary)] mt-4">
-              {t('annuaire.recherche.intro')}
+              {t(`${prefixe}.intro`)}
             </p>
           </div>
         </section>

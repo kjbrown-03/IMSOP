@@ -12,7 +12,7 @@ const CHAMP =
   'w-full bg-surface-container-low border border-outline-variant rounded-xl px-4 py-3 font-body-md text-body-md text-on-surface outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all'
 
 const CHAMPS_STRUCTURE = [
-  'typeStructure', 'nomClinique', 'telClinique', 'emailClinique', 'nomHopital', 'telHopital', 'emailHopital',
+  'typePratique', 'typeStructure', 'nomClinique', 'telClinique', 'emailClinique', 'nomHopital', 'telHopital', 'emailHopital',
 ]
 
 // Plafond sur le fichier d'origine. Large : la photo est réencodée avant
@@ -43,6 +43,9 @@ export default function Candidature() {
     etablissement: '', pays: estMedecin ? 'cm' : '', ville: '', langues: '', numeroOrdre: '', presentation: '',
     // Lieu d'exercice du médecin traitant. Vide tant qu'il n'a rien coché :
     // les champs n'apparaissent qu'une fois le type choisi.
+    // Médecine conventionnelle par défaut : c'est le cas de la majorité, et
+    // un champ sans réponse possible ne doit pas bloquer l'envoi.
+    typePratique: 'CONVENTIONNEL',
     typeStructure: '', nomClinique: '', telClinique: '', emailClinique: '',
     nomHopital: '', telHopital: '', emailHopital: '',
   })
@@ -323,6 +326,28 @@ export default function Candidature() {
                     videLabel={t('candidature.aucunResultat')}
                   />
                 </Champ>
+                {/* Conventionnel ou traditionnel. Posé avant le lieu
+                    d'exercice : un tradipraticien ne répond pas aux mêmes
+                    questions de structure qu'un médecin de clinique. */}
+                <fieldset className="flex flex-col gap-3">
+                  <legend className="font-label-md text-label-md text-on-surface mb-2">
+                    {t('candidature.typePratique')} <span className="text-error">*</span>
+                  </legend>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {['CONVENTIONNEL', 'TRADITIONNEL'].map((valeur) => (
+                      <OptionRadio
+                        key={valeur}
+                        nom="typePratique"
+                        valeur={valeur}
+                        choisi={form.typePratique === valeur}
+                        onChange={choisir('typePratique')}
+                        label={t(`candidature.pratique.${valeur}`)}
+                      />
+                    ))}
+                  </div>
+                  <p className="text-xs text-on-surface-variant">{t('candidature.typePratiqueAide')}</p>
+                </fieldset>
+
                 {/* Lieu d'exercice : le comité appelle la structure pour
                     vérifier que le médecin y exerce réellement. Les champs
                     n'apparaissent qu'une fois le type choisi — afficher les six
@@ -334,8 +359,9 @@ export default function Candidature() {
                   </legend>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                     {['CLINIQUE', 'HOPITAL', 'LES_DEUX'].map((valeur) => (
-                      <OptionStructure
+                      <OptionRadio
                         key={valeur}
+                        nom="typeStructure"
                         valeur={valeur}
                         choisi={form.typeStructure === valeur}
                         onChange={choisirStructure}
@@ -437,7 +463,7 @@ export default function Candidature() {
  * là, masqué visuellement mais bien présent pour le clavier et les lecteurs
  * d'écran, qui annoncent ainsi « 1 sur 3 ».
  */
-function OptionStructure({ valeur, choisi, onChange, label }) {
+function OptionRadio({ nom, valeur, choisi, onChange, label }) {
   return (
     <label
       className={`flex items-center gap-2 rounded-xl border px-3 py-3 cursor-pointer transition-colors ${
@@ -448,7 +474,7 @@ function OptionStructure({ valeur, choisi, onChange, label }) {
     >
       <input
         type="radio"
-        name="typeStructure"
+        name={nom}
         value={valeur}
         checked={choisi}
         onChange={() => onChange(valeur)}

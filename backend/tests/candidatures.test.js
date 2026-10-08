@@ -624,7 +624,9 @@ test('Candidatures — CV', async (t) => {
     assert.equal(await prisma.candidature.count(), 0)
   })
 
-  await t.test('la coordination obtient un lien vers le CV', async () => {
+  // Le CV est servi en flux, jamais par une URL signée : celle-ci est construite
+  // sur l'adresse interne du stockage, qu'aucun navigateur ne peut résoudre.
+  await t.test('la coordination reçoit le CV en flux, pas un lien', async () => {
     const coordinateur = await creerCoordinateur()
     const depot = await deposerAvecCv().expect(201)
 
@@ -633,7 +635,9 @@ test('Candidatures — CV', async (t) => {
       .set('Authorization', entete(coordinateur))
       .expect(200)
 
-    assert.match(res.body.url, /candidatures\/cv\//)
+    assert.match(res.headers['content-type'], /application\/pdf/)
+    assert.match(res.headers['content-disposition'], /^inline; filename="CV-/)
+    assert.ok(res.body.length > 0, 'le corps porte le fichier')
   })
 
   await t.test("sans CV, le téléchargement le dit clairement", async () => {

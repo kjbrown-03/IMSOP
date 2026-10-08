@@ -24,6 +24,9 @@ const deposer = {
     langues: champTexte(200),
     numeroOrdre: champTexte(100),
     typeStructure: z.enum(TYPES_STRUCTURE).optional(),
+    // Médecine conventionnelle ou traditionnelle. Facultatif ici, par défaut
+    // conventionnel : seul le formulaire médecin l'affiche.
+    typePratique: z.enum(['CONVENTIONNEL', 'TRADITIONNEL']).optional(),
     nomClinique: champTexte(200),
     telClinique: champTexte(40),
     emailClinique: emailStructure,
@@ -54,7 +57,7 @@ const deposer = {
     // accepter ces champs laisserait croire qu'ils comptent, et ils
     // ressortiraient dans le courriel du comité sans que personne les ait
     // remplis sciemment.
-    for (const champ of ['typeStructure', 'nomClinique', 'telClinique', 'emailClinique', 'nomHopital', 'telHopital', 'emailHopital']) {
+    for (const champ of ['typeStructure', 'typePratique', 'nomClinique', 'telClinique', 'emailClinique', 'nomHopital', 'telHopital', 'emailHopital']) {
       if (val[champ] !== undefined) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,

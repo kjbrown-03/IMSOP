@@ -105,7 +105,7 @@
       "testimonial4Meta": "Bafoussam · Neurologie",
       "testimonial5Quote": "Recevoir un avis extérieur documenté m'a permis d'expliquer plus sereinement les options à ma patiente.",
       "testimonial5Meta": "Médecin traitant · Yaoundé",
-      "heroSecondaryCta": "Trouver un médecin près de moi"
+      "heroSecondaryCta": "Trouver le praticien le plus proche"
     },
     "footer": {
       "tagline": "International Medical Second Opinion Platform. Programme africain de deuxième avis médical et de télé-expertise médicale internationale. Pays pilote : Cameroun.",
@@ -1376,7 +1376,17 @@
       "tarifNote": "La recherche est gratuite. La mise en relation avec les médecins trouvés coûte {{montant}} {{devise}}.",
       "erreur": "La recherche a échoué. Réessayez.",
       "tropCourt": "Décrivez un peu plus vos symptômes (au moins {{min}} caractères).",
-      "retourAccueil": "Retour à l'accueil"
+      "retourAccueil": "Retour à l'accueil",
+      "CONVENTIONNEL": {
+        "eyebrow": "Médecine conventionnelle",
+        "titre": "Le spécialiste le plus proche de vous",
+        "intro": "Décrivez vos symptômes en quelques mots. Nous en déduisons la ou les spécialités concernées, puis nous cherchons les praticiens les plus proches de chez vous."
+      },
+      "TRADITIONNEL": {
+        "eyebrow": "Médecine traditionnelle",
+        "titre": "Le tradipraticien le plus proche de vous",
+        "intro": "Décrivez ce que vous ressentez, avec vos mots. Nous cherchons parmi les tradipraticiens retenus par le comité scientifique ceux qui exercent près de chez vous."
+      }
     },
     "resultats": {
       "nouvelleRecherche": "Nouvelle recherche",
@@ -1425,6 +1435,22 @@
       "presentationTitre": "Présentation (facultatif)",
       "presentationPlaceholder": "Horaires, langues parlées, accès… Visible une fois vos coordonnées débloquées.",
       "enregistre": "Réglages enregistrés"
+    },
+    "choix": {
+      "eyebrow": "Praticien le plus proche",
+      "titre": "Quel praticien cherchez-vous ?",
+      "intro": "Les deux pratiques existent près de chez vous. Choisissez celle que vous souhaitez consulter : la recherche suivante ne vous proposera que des praticiens de cette voie.",
+      "CONVENTIONNEL": {
+        "titre": "Médecine conventionnelle",
+        "description": "Un médecin diplômé, inscrit à l'ordre de son pays d'exercice : généraliste ou spécialiste, en cabinet, en clinique ou à l'hôpital.",
+        "action": "Décrire mes symptômes"
+      },
+      "TRADITIONNEL": {
+        "titre": "Médecine traditionnelle",
+        "description": "Un tradipraticien reconnu, exerçant la pharmacopée et les savoirs thérapeutiques locaux, retenu par le comité scientifique sur dossier.",
+        "action": "Décrire ce que je ressens"
+      },
+      "note": "Dans les deux cas, IMSOP vous met en relation : nous ne prenons pas de rendez-vous à votre place et ne posons aucun diagnostic. En cas d'urgence, appelez les secours."
     }
   },
   "candidature": {
@@ -1480,7 +1506,13 @@
     "nomHopital": "Nom de l'hôpital",
     "telStructure": "Téléphone de la structure",
     "emailStructure": "E-mail de la structure",
-    "photoIllisible": "Ce fichier ne peut pas être lu comme une image. Si elle vient d'un iPhone, ouvrez-la puis enregistrez-la en JPEG, ou choisissez une autre photo."
+    "photoIllisible": "Ce fichier ne peut pas être lu comme une image. Si elle vient d'un iPhone, ouvrez-la puis enregistrez-la en JPEG, ou choisissez une autre photo.",
+    "typePratique": "Nature de votre pratique",
+    "typePratiqueAide": "Le comité examine les deux voies, selon des critères propres à chacune.",
+    "pratique": {
+      "CONVENTIONNEL": "Médecine conventionnelle",
+      "TRADITIONNEL": "Médecine traditionnelle"
+    }
   },
   "candidatures": {
     "titre": "Demandes d'intégration",

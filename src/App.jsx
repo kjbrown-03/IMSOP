@@ -57,6 +57,7 @@ import PaiementSecurise from './pages/patient/PaiementSecurise'
 import AccueilV2 from './pages/public/AccueilV2'
 import PourMedecins from './pages/public/PourMedecins'
 import AnnuaireRecherche from './pages/public/AnnuaireRecherche'
+import AnnuaireChoix from './pages/public/AnnuaireChoix'
 import AnnuaireResultats from './pages/public/AnnuaireResultats'
 import AnnuaireMedecin from './pages/medecin/AnnuaireMedecin'
 import AdminDashboard from './pages/admin/AdminDashboard'
@@ -126,7 +127,11 @@ export default function App() {
       <Route path="/mentions-legales" element={<MentionsLegales />} />
       {/* Annuaire « Trouver un médecin » : recherche et résultats sont
           publics (les résultats restent floutés tant que rien n'est payé). */}
-      <Route path="/annuaire" element={<AnnuaireRecherche />} />
+      {/* L'annuaire commence par un choix : conventionnel ou traditionnel. Les
+          deux pratiques ne se mélangent pas dans une liste de résultats. */}
+      <Route path="/annuaire" element={<AnnuaireChoix />} />
+      <Route path="/annuaire/conventionnel" element={<AnnuaireRecherche />} />
+      <Route path="/annuaire/traditionnel" element={<AnnuaireRecherche />} />
       <Route path="/annuaire/:id" element={<AnnuaireResultats />} />
 
       {/* Auth */}

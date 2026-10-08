@@ -128,6 +128,14 @@ enum TypeStructure {
   LES_DEUX
 }
 
+// Nature de la pratique d'un medecin de proximite. Les deux coexistent dans la
+// zone, et un patient qui cherche l'une ne cherche pas l'autre : melanger les
+// deux dans une meme liste de resultats ne rendrait service a personne.
+enum TypePratique {
+  CONVENTIONNEL
+  TRADITIONNEL
+}
+
 // Parcours de recrutement (comité scientifique) :
 //   EN_ATTENTE -> ACCEPTEE -> COMPTE_CREE
 //              -> REFUSEE
@@ -268,9 +276,9 @@ model Specialiste {
 }
 
 model MedecinLocal {
-  id            String   @id @default(uuid())
-  userId        String   @unique
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id            String       @id @default(uuid())
+  userId        String       @unique
+  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   specialite    String?
   etablissement String?
   pays          String?
@@ -283,7 +291,10 @@ model MedecinLocal {
   // manuellement par un coordinateur avant que le compte puisse être rattaché
   // à un dossier.
   numeroOrdre   String?
-  createdAt     DateTime @default(now())
+  // Medecine conventionnelle ou traditionnelle. Par defaut conventionnel : les
+  // comptes crees avant l'ouverture a la medecine traditionnelle le sont tous.
+  typePratique  TypePratique @default(CONVENTIONNEL)
+  createdAt     DateTime     @default(now())
 
   verificationStatus   VerificationStatus @default(EN_VERIFICATION)
   // Renseigne quand un coordinateur refuse, suspend ou revoque l'habilitation.
@@ -311,12 +322,12 @@ model MedecinLocal {
   // dans un service de mise en relation payant, où des patients lui seront
   // reliés, est un autre engagement :
   // il doit le demander explicitement. Désactivé par défaut, toujours.
-  annuaireVisible      Boolean  @default(false)
+  annuaireVisible      Boolean   @default(false)
   // Spécialités déclarées pour l'annuaire, depuis une liste fermée (voir
   // specialitesLocales.js) - un médecin en couvre souvent plusieurs (médecine
   // générale + pédiatrie). Distinct du champ libre `specialite` ci-dessus, qui
   // reste ce qu'il est.
-  annuaireSpecialites  String[] @default([])
+  annuaireSpecialites  String[]  @default([])
   // Quartier, après pays et ville : « Cameroun · Douala · Logpom ». C'est le
   // niveau où un patient décide s'il peut s'y rendre.
   quartier             String?
@@ -329,6 +340,10 @@ model MedecinLocal {
   demandes          Dossier[]                   @relation("DossierDemandeur")
   // Apparitions dans des recherches d'annuaire.
   resultatsAnnuaire RechercheAnnuaireResultat[]
+
+  // Toute recherche de patient filtre sur ces deux colonnes a la fois : sans
+  // index, chaque recherche parcourt la table entiere.
+  @@index([typePratique, annuaireVisible])
 }
 
 enum RechercheAnnuaireStatut {
@@ -357,6 +372,9 @@ model RechercheAnnuaire {
   symptomes    String
   // Spécialités déduites des symptômes (clés de specialitesLocales.js).
   specialites  String[]                @default([])
+  // Le patient choisit conventionnel ou traditionnel AVANT de decrire ses
+  // symptomes : les deux ne se melangent pas dans une liste de resultats.
+  typePratique TypePratique            @default(CONVENTIONNEL)
   pays         String
   ville        String?
   // Drapeau rouge détecté dans les symptômes : la recherche est enregistrée
@@ -790,6 +808,8 @@ model Candidature {
   // comite verifie l'exercice reel en appelant l'etablissement, et un nom seul
   // ne permet pas de le faire. Nul pour un specialiste international.
   typeStructure TypeStructure?
+  // Choisi par le candidat dans le formulaire d'enrolement.
+  typePratique  TypePratique   @default(CONVENTIONNEL)
   nomClinique   String?
   telClinique   String?
   emailClinique String?

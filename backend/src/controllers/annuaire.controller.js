@@ -76,6 +76,7 @@ function serialiser(recherche) {
     statut: recherche.statut,
     urgence: recherche.urgence,
     specialites: recherche.specialites,
+    typePratique: recherche.typePratique,
     pays: recherche.pays,
     ville: recherche.ville,
     nombre: recherche.resultats.length,
@@ -106,7 +107,7 @@ async function referentiels(req, res) {
 }
 
 async function rechercher(req, res) {
-  const { symptomes, pays, ville } = req.body
+  const { symptomes, pays, ville, typePratique } = req.body
 
   // Le formulaire ne propose déjà que les pays ouverts, mais rien n'empêche
   // d'appeler l'API directement : on refuse ici aussi, avant d'enregistrer quoi
@@ -125,7 +126,7 @@ async function rechercher(req, res) {
   // appeler les secours.
   if (urgence) {
     const recherche = await prisma.rechercheAnnuaire.create({
-      data: { userId: req.userId ?? null, symptomes, specialites, pays, ville: ville || null, urgence: true },
+      data: { userId: req.userId ?? null, symptomes, specialites, typePratique, pays, ville: ville || null, urgence: true },
       include: INCLUDE_RESULTATS,
     })
     await logAction({ userId: req.userId, action: 'ANNUAIRE_URGENCE_DETECTEE', entityType: 'RechercheAnnuaire', entityId: recherche.id, ipAddress: req.ip })
@@ -138,6 +139,10 @@ async function rechercher(req, res) {
   // d'un patient de Douala. Elle classe : les plus proches passent devant.
   const candidats = await prisma.medecinLocal.findMany({
     where: {
+      // Conventionnel et traditionnel ne se mélangent jamais : le patient a
+      // choisi avant de décrire ses symptômes, lui proposer l'autre serait
+      // répondre à côté de sa demande.
+      typePratique,
       annuaireVisible: true,
       verificationStatus: 'VALIDE',
       annuaireSpecialites: { hasSome: specialites },
@@ -167,6 +172,7 @@ async function rechercher(req, res) {
       userId: req.userId ?? null,
       symptomes,
       specialites,
+      typePratique,
       pays,
       ville: ville || null,
       resultats: { create: classes },
@@ -179,7 +185,7 @@ async function rechercher(req, res) {
     action: 'ANNUAIRE_RECHERCHE',
     entityType: 'RechercheAnnuaire',
     entityId: recherche.id,
-    metadata: { pays, ville: ville || null, specialites, nombre: classes.length },
+    metadata: { pays, ville: ville || null, specialites, typePratique, nombre: classes.length },
     ipAddress: req.ip,
   })
 
