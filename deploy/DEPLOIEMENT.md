@@ -331,13 +331,19 @@ Ces points ne bloquent pas le démarrage, mais aucun ne doit être oublié :
 cd /opt/imsop
 git pull
 npm ci && NODE_OPTIONS=--max-old-space-size=4096 npm run build
-docker compose -f deploy/docker-compose.prod.yml --env-file deploy/.env.production build backend
+docker compose -f deploy/docker-compose.prod.yml --env-file deploy/.env.production build backend migrate
 docker compose -f deploy/docker-compose.prod.yml --env-file deploy/.env.production run --rm migrate
 docker compose -f deploy/docker-compose.prod.yml --env-file deploy/.env.production up -d backend
 ```
 
 Les migrations passent avant le redémarrage du backend : l'ordre inverse
 exposerait brièvement un code neuf à un schéma ancien.
+
+`build backend migrate` et non `build backend` seul : ce sont **deux images**
+distinctes, et le Dockerfile copie `prisma/` — migrations comprises — dans
+l'image. Ne reconstruire que `backend` laisse le conteneur de migration tourner
+avec l'ancien dossier, et `migrate deploy` annonce tranquillement
+« No pending migrations to apply » alors qu'une migration vient d'arriver.
 
 ## Regarder ce qui se passe
 
