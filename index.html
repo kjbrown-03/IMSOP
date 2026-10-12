@@ -20,17 +20,83 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Les polices ne doivent PAS retarder le premier affichage.
+         Une feuille de style classique bloque le rendu : le navigateur
+         n'affiche rien tant qu'elle n'est pas arrivee, depuis un serveur
+         externe, sur une connexion qui peut etre lente. On la charge donc
+         comme feuille d'impression — que le navigateur ne considere pas
+         urgente — puis on la bascule en « all » une fois recue.
+         Le texte s'affiche entre-temps dans une police systeme, et change
+         d'aspect a l'arrivee : c'est le prix a payer, et il est bien moindre
+         qu'un ecran blanc. <noscript> couvre le cas sans JavaScript. -->
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Poppins:wght@500;600;700;800;900&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Figtree:wght@400;500;600;700&family=Fraunces:wght@600&display=swap"
       rel="stylesheet"
+      media="print"
+      onload="this.media='all'"
     />
     <link
       href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
       rel="stylesheet"
+      media="print"
+      onload="this.media='all'"
     />
+    <noscript>
+      <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Poppins:wght@500;600;700;800;900&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Figtree:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+      />
+    </noscript>
   </head>
   <body>
-    <div id="root"></div>
+    <!-- Ecran d'attente affiche IMMEDIATEMENT, avant que le JavaScript n'arrive.
+         Sans lui, #root est vide et l'ecran reste blanc le temps du
+         telechargement puis de l'execution du bundle — plusieurs secondes sur
+         un telephone, et c'est ce que voyaient les utilisateurs au lancement de
+         l'application installee.
+         Tout est en ligne : ni fichier CSS, ni police, ni image a attendre. Le
+         logo est un SVG ecrit ici meme. React remplace ce contenu des qu'il
+         monte, il n'y a rien a nettoyer. -->
+    <style>
+      #demarrage {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 18px;
+        background: #f8f9fb;
+        color: #003f87;
+        font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      }
+      @media (prefers-color-scheme: dark) {
+        #demarrage { background: #0f1420; color: #cfe0ff; }
+      }
+      #demarrage .nom { font-size: 22px; font-weight: 700; letter-spacing: 0.12em; }
+      #demarrage .roue {
+        width: 28px; height: 28px; border-radius: 50%;
+        border: 3px solid currentColor; border-top-color: transparent;
+        animation: demarrage-tourne 0.8s linear infinite;
+      }
+      @keyframes demarrage-tourne { to { transform: rotate(360deg); } }
+      /* Respecte un systeme regle sur « moins d'animations » : la roue reste
+         visible, elle cesse simplement de tourner. */
+      @media (prefers-reduced-motion: reduce) {
+        #demarrage .roue { animation: none; border-top-color: currentColor; opacity: 0.45; }
+      }
+    </style>
+    <div id="root">
+      <div id="demarrage" role="status" aria-live="polite">
+        <svg width="56" height="56" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 21s-7-4.35-7-10a7 7 0 0 1 14 0c0 5.65-7 10-7 10z" stroke="currentColor" stroke-width="1.6" />
+          <path d="M9 11h2l1-2 1.5 4 1-2h1.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        <span class="nom">IMSOP</span>
+        <span class="roue" aria-hidden="true"></span>
+        <span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Chargement de l'application</span>
+      </div>
+    </div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
