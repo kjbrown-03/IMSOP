@@ -232,6 +232,29 @@ docker run --rm -v /opt/imsop:/app -w /app -u "$(id -u):$(id -g)" \
 > Les passages suivants peuvent se contenter de `npm run build` si aucune
 > dépendance n'a changé — `npm ci` réinstalle tout et coûte plusieurs minutes.
 
+Le build **ne vide pas** `dist/` : les anciens `index-<empreinte>.js` restent en
+place. Ce n'est pas un oubli. Une page ouverte avant le déploiement — une
+application installée qui restaure sa session, un onglet laissé de côté — réclame
+encore les fichiers de la version précédente. Les effacer lui renvoie un 404 et
+un écran blanc, le temps qu'elle recharge.
+
+Ils s'accumulent donc, de quelques centaines de kilo-octets par déploiement. À
+purger de loin en loin, pas à chaque fois :
+
+```bash
+# Liste d'abord les fichiers que l'index.html courant designe : ce sont les
+# seuls dont la suppression casserait le site tout de suite.
+cd /opt/imsop/dist/assets
+grep -oE 'index-[A-Za-z0-9_-]+[.](js|css)' ../index.html | sort -u > /tmp/a-garder
+
+# Puis retire ceux qui ne sont ni dans cette liste, ni recents.
+ls -1 | grep -vxF -f /tmp/a-garder > /tmp/candidats
+while read -r f; do
+  [ -n "$(find "$f" -maxdepth 0 -mtime +30)" ] && rm -v -- "$f"
+done < /tmp/candidats
+rm -f /tmp/a-garder /tmp/candidats
+```
+
 Puis la pile applicative :
 
 ```bash

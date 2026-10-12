@@ -21,6 +21,24 @@ function estHoteLocal(hote) {
 
 export default defineConfig({
   plugins: [react()],
+
+  build: {
+    // NE PAS vider le dossier de sortie.
+    //
+    // Par défaut Vite l'efface avant chaque construction, et les anciens
+    // `index-<empreinte>.js` disparaissent du serveur. Une page déjà ouverte
+    // avant le déploiement — l'application installée qui restaure sa session, un
+    // onglet laissé en arrière-plan — réclame alors un fichier qui n'existe
+    // plus : 404, et écran blanc. Le chargement suivant récupère le nouvel
+    // index.html et tout rentre dans l'ordre, ce qui rend le symptôme fugace et
+    // difficile à attribuer.
+    //
+    // Les noms portent une empreinte du contenu : conserver les anciens ne crée
+    // aucun conflit, ils cohabitent. Ils finissent par s'accumuler — la purge est
+    // décrite dans deploy/DEPLOIEMENT.md, à faire de loin en loin, pas à chaque
+    // déploiement.
+    emptyOutDir: false,
+  },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),

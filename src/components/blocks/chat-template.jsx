@@ -78,7 +78,7 @@ async function obtenirServeursIce() {
   if (iceEnCache && iceEnCache.expireLe > Date.now()) return iceEnCache.serveurs
 
   try {
-    const { data } = await api.get('/api/webrtc/ice')
+    const { data } = await api.get('/webrtc/ice')
     const serveurs = Array.isArray(data?.iceServers) && data.iceServers.length
       ? data.iceServers
       : ICE_SECOURS

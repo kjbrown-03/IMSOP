@@ -122,7 +122,7 @@ export default function EnregistreurVocal({ onTexte, langue, desactive }) {
       donnees.append('audio', blob, `description.${extension}`)
       if (langue) donnees.append('langue', langue)
 
-      const { data } = await api.post('/api/annuaire/transcription', donnees)
+      const { data } = await api.post('/annuaire/transcription', donnees)
       if (data?.texte) onTexte(data.texte)
       else setErreur(t('vocal.rienCompris'))
     } catch (err) {
