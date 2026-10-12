@@ -41,7 +41,7 @@ import CoordinateurStatistiques from './pages/coordinateur/CoordinateurStatistiq
 import CoordinateurCandidatures from './pages/coordinateur/CoordinateurCandidatures'
 import CoordinateurSpecialites from './pages/coordinateur/CoordinateurSpecialites'
 import CoordinateurMedecins from './pages/coordinateur/CoordinateurMedecins'
-import Candidature from './pages/public/Candidature'
+import Candidature, { CandidatureRedirection } from './pages/public/Candidature'
 import Confidentialite from './pages/public/Confidentialite'
 import Conditions from './pages/public/Conditions'
 import MentionsLegales from './pages/public/MentionsLegales'
@@ -118,7 +118,12 @@ export default function App() {
       <Route path="/pour-medecins" element={<PourMedecins />} />
       {/* Formulaire de candidature envoyé par le comité scientifique : public,
           aucun compte n'existe encore. Deux variantes : specialiste | medecin. */}
-      <Route path="/candidature/:type" element={<Candidature />} />
+      <Route path="/candidature/medecin" element={<Candidature type="MEDECIN_LOCAL" />} />
+      <Route path="/candidature/specialiste" element={<Candidature type="SPECIALISTE" />} />
+      {/* Absorbe les variantes d'écriture du lien (majuscule, accent, pluriel).
+          Une valeur inconnue n'ouvre plus un formulaire au hasard : elle affiche
+          la page d'erreur. */}
+      <Route path="/candidature/:type" element={<CandidatureRedirection />} />
       {/* Pages legales : publiques et sans compte. Google exige les deux
           premieres pour publier l'application OAuth, et une plateforme qui
           traite des donnees de sante les doit a ses utilisateurs. */}

@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, Navigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { ArrowLeft, Camera, CheckCircle2, FileText, Loader2, Stethoscope, ShieldCheck, X } from 'lucide-react'
 import AuthLayout from '../../components/layout/AuthLayout'
+import NotFound from '../NotFound'
 import ListeDeroulante from '../../components/ui/ListeDeroulante'
 import { api } from '../../lib/api'
 import { OPTIONS_PAYS, villesDe } from '../../lib/cemac'
@@ -31,12 +32,21 @@ const CV_MAX = 10 * 1024 * 1024
  * partent avec le formulaire, et le candidat reçoit un accusé de réception par
  * e-mail.
  */
-export default function Candidature() {
-  const { type: typeUrl } = useParams()
+/**
+ * `type` vient de la route, pas du chemin.
+ *
+ * Il était auparavant déduit par `useParams()` avec une comparaison exacte à
+ * « medecin », et TOUT le reste donnait le formulaire spécialiste : une
+ * majuscule, un accent ou une faute de frappe dans le lien envoyé par le comité
+ * suffisaient à faire remplir le mauvais formulaire à un candidat, sans que rien
+ * ne l'avertisse. Les variantes d'écriture sont désormais absorbées en amont par
+ * `CandidatureRedirection`, et une valeur inconnue n'aboutit plus à un
+ * formulaire au hasard mais à une page introuvable.
+ */
+export default function Candidature({ type = 'SPECIALISTE' }) {
   const { t } = useTranslation()
 
-  const estMedecin = typeUrl === 'medecin'
-  const type = estMedecin ? 'MEDECIN_LOCAL' : 'SPECIALISTE'
+  const estMedecin = type === 'MEDECIN_LOCAL'
 
   const [form, setForm] = useState({
     fullName: '', email: '', phone: '', specialite: '',
@@ -519,4 +529,45 @@ function Champ({ label, obligatoire, aide, liste, children }) {
       {aide && <span className="text-xs text-on-surface-variant">{aide}</span>}
     </Enveloppe>
   )
+}
+
+/**
+ * Absorbe les variantes d'écriture de /candidature/<type>.
+ *
+ * Le lien est recopié à la main dans des courriels envoyés par le comité : il
+ * arrive avec une majuscule, un accent, ou un pluriel. Normaliser la casse et
+ * les accents coûte peu et évite d'envoyer quelqu'un sur une page introuvable
+ * pour un « Médecin » au lieu de « medecin ».
+ *
+ * En revanche, une valeur qui ne correspond à rien de connu N'OUVRE PLUS de
+ * formulaire. Avant, elle donnait silencieusement celui des spécialistes — un
+ * médecin traitant pouvait remplir le mauvais dossier sans jamais s'en rendre
+ * compte. Mieux vaut une page introuvable, qui se signale, qu'une candidature
+ * déposée dans la mauvaise file.
+ */
+const VOIES = {
+  medecin: 'medecin',
+  medecins: 'medecin',
+  specialiste: 'specialiste',
+  specialistes: 'specialiste',
+}
+
+export function CandidatureRedirection() {
+  const { type } = useParams()
+
+  const normalise = (type || '')
+    .toLowerCase()
+    // Décompose les lettres accentuées puis retire les diacritiques : « médecin »
+    // et « medecin » deviennent la même chaîne.
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .trim()
+
+  const voie = VOIES[normalise]
+
+  // La page d'erreur est rendue en place plutôt que par une redirection : on
+  // garde ainsi l'adresse telle qu'elle a été ouverte, ce qui permet de voir ce
+  // qui avait été écrit dans le courriel au lieu d'une URL de remplacement.
+  if (!voie) return <NotFound />
+  return <Navigate to={`/candidature/${voie}`} replace />
 }
