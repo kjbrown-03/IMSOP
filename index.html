@@ -14,7 +14,14 @@
     <meta name="description" content="Plateforme de deuxieme avis medical international. Deposez votre dossier, un specialiste l'etudie, vous recevez son avis." />
 
     <!-- iOS ignore le manifeste : nom, icone et mode plein ecran se declarent ici. -->
-    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <!-- iOS prend l'icone de l'ecran d'accueil ICI, pas dans le manifeste.
+         `sizes` leve toute ambiguite, et la copie a la racine couvre les
+         versions qui vont la chercher a /apple-touch-icon.png sans lire le
+         document. L'icone est mise en cache par iOS au moment de l'ajout :
+         pour la rafraichir il faut retirer l'icone de l'ecran d'accueil ET
+         effacer les donnees du site dans Safari. -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="180x180" href="/icons/apple-touch-icon.png" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="IMSOP" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />

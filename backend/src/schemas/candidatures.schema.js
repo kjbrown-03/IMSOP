@@ -33,8 +33,11 @@ const deposer = {
     nomHopital: champTexte(200),
     telHopital: champTexte(40),
     emailHopital: emailStructure,
-    // Assez long pour un parcours, assez court pour rester lisible par le comité.
-    presentation: z.string().trim().min(50).max(4000),
+    // Le formulaire ne demande plus de parcours écrit : le CV le dit mieux, et
+    // le réclamer en plus faisait abandonner des candidats. Le champ reste
+    // accepté — d'anciens envois en contiennent, et rien n'empêche de le
+    // remettre un jour — mais il n'est plus exigé.
+    presentation: z.string().trim().max(4000).optional().default(''),
   }).strict().superRefine((val, ctx) => {
     const exige = (champ, message) => {
       if (!val[champ]) ctx.addIssue({ code: z.ZodIssueCode.custom, path: [champ], message })

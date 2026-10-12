@@ -202,9 +202,10 @@ function formulaireEnTexte(c) {
     ligne("Numéro d'ordre", c.numeroOrdre),
     ligne('Nature de la pratique', c.typePratique === 'TRADITIONNEL' ? 'Médecine traditionnelle' : c.typePratique ? 'Médecine conventionnelle' : null),
     ...blocStructure(c),
-    '',
-    'Parcours et motivations :',
-    c.presentation,
+    // Le parcours écrit n'est plus demandé : le CV le dit mieux. Les anciennes
+    // candidatures en portent un, on continue donc de l'afficher quand il
+    // existe — mais sans laisser un intitulé suivi du vide pour les autres.
+    ...(c.presentation ? ['', 'Parcours et motivations :', c.presentation] : []),
     '',
     c.cvJoint ? 'La photo et le CV sont joints à ce message.' : 'La photo est jointe à ce message. Aucun CV fourni.',
     '',

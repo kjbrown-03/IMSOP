@@ -50,7 +50,7 @@ export default function Candidature({ type = 'SPECIALISTE' }) {
 
   const [form, setForm] = useState({
     fullName: '', email: '', phone: '', specialite: '',
-    etablissement: '', pays: estMedecin ? 'cm' : '', ville: '', langues: '', numeroOrdre: '', presentation: '',
+    etablissement: '', pays: estMedecin ? 'cm' : '', ville: '', langues: '', numeroOrdre: '',
     // Lieu d'exercice du médecin traitant. Vide tant qu'il n'a rien coché :
     // les champs n'apparaissent qu'une fois le type choisi.
     // Médecine conventionnelle par défaut : c'est le cas de la majorité, et
@@ -71,6 +71,19 @@ export default function Candidature({ type = 'SPECIALISTE' }) {
   const modifier = (cle) => (e) => setForm((f) => ({ ...f, [cle]: e.target.value }))
   const choisir = (cle) => (valeur) => setForm((f) => ({ ...f, [cle]: valeur }))
 
+  // Passer en traditionnel fixe le lieu d'exercice a « clinique » et vide ce qui
+  // ne s'applique plus : sans ca, un candidat qui coche d'abord « hopital » puis
+  // se ravise enverrait un nom d'hopital et un numero d'ordre saisis pour une
+  // autre voie, que le comite lirait comme des informations valides.
+  function choisirPratique(valeur) {
+    setForm((f) =>
+      valeur === 'TRADITIONNEL'
+        ? { ...f, typePratique: valeur, typeStructure: 'CLINIQUE',
+            nomHopital: '', telHopital: '', emailHopital: '', numeroOrdre: '' }
+        : { ...f, typePratique: valeur },
+    )
+  }
+
   // La liste vient du serveur : la coordination peut l'enrichir sans qu'on
   // redéploie le formulaire.
   useEffect(() => {
@@ -88,8 +101,11 @@ export default function Candidature({ type = 'SPECIALISTE' }) {
 
   const villes = useMemo(() => (estMedecin ? villesDe(form.pays) : []), [estMedecin, form.pays])
 
-  const aClinique = form.typeStructure === 'CLINIQUE' || form.typeStructure === 'LES_DEUX'
-  const aHopital = form.typeStructure === 'HOPITAL' || form.typeStructure === 'LES_DEUX'
+  // La medecine traditionnelle ne s'exerce pas a l'hopital : le lieu est une
+  // clinique, et on ne pose pas une question dont la reponse est connue.
+  const estTraditionnel = form.typePratique === 'TRADITIONNEL'
+  const aClinique = estTraditionnel || form.typeStructure === 'CLINIQUE' || form.typeStructure === 'LES_DEUX'
+  const aHopital = !estTraditionnel && (form.typeStructure === 'HOPITAL' || form.typeStructure === 'LES_DEUX')
 
   // Changer de type efface la structure qu'on abandonne : sans ça, un médecin
   // qui coche « clinique » puis se ravise enverrait un nom d'hôpital saisi par
@@ -350,7 +366,7 @@ export default function Candidature({ type = 'SPECIALISTE' }) {
                         nom="typePratique"
                         valeur={valeur}
                         choisi={form.typePratique === valeur}
-                        onChange={choisir('typePratique')}
+                        onChange={choisirPratique}
                         label={t(`candidature.pratique.${valeur}`)}
                       />
                     ))}
@@ -363,24 +379,26 @@ export default function Candidature({ type = 'SPECIALISTE' }) {
                     n'apparaissent qu'une fois le type choisi — afficher les six
                     d'emblée donnerait un formulaire deux fois plus long dont la
                     moitié ne le concerne pas. */}
-                <fieldset className="flex flex-col gap-3">
-                  <legend className="font-label-md text-label-md text-on-surface mb-2">
-                    {t('candidature.lieuExercice')} <span className="text-error">*</span>
-                  </legend>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                    {['CLINIQUE', 'HOPITAL', 'LES_DEUX'].map((valeur) => (
-                      <OptionRadio
-                        key={valeur}
-                        nom="typeStructure"
-                        valeur={valeur}
-                        choisi={form.typeStructure === valeur}
-                        onChange={choisirStructure}
-                        label={t(`candidature.structure.${valeur}`)}
-                      />
-                    ))}
-                  </div>
-                  <p className="text-xs text-on-surface-variant">{t('candidature.lieuExerciceAide')}</p>
-                </fieldset>
+                {!estTraditionnel && (
+                  <fieldset className="flex flex-col gap-3">
+                    <legend className="font-label-md text-label-md text-on-surface mb-2">
+                      {t('candidature.lieuExercice')} <span className="text-error">*</span>
+                    </legend>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                      {['CLINIQUE', 'HOPITAL', 'LES_DEUX'].map((valeur) => (
+                        <OptionRadio
+                          key={valeur}
+                          nom="typeStructure"
+                          valeur={valeur}
+                          choisi={form.typeStructure === valeur}
+                          onChange={choisirStructure}
+                          label={t(`candidature.structure.${valeur}`)}
+                        />
+                      ))}
+                    </div>
+                    <p className="text-xs text-on-surface-variant">{t('candidature.lieuExerciceAide')}</p>
+                  </fieldset>
+                )}
 
                 {aClinique && (
                   <GroupeStructure titre={t('candidature.blocClinique')}>
@@ -410,9 +428,14 @@ export default function Candidature({ type = 'SPECIALISTE' }) {
                   </GroupeStructure>
                 )}
 
-                <Champ label={t('candidature.numeroOrdre')}>
-                  <input className={CHAMP} value={form.numeroOrdre} onChange={modifier('numeroOrdre')} />
-                </Champ>
+                {/* Il n'existe pas encore d'ordre professionnel pour la medecine
+                    traditionnelle : demander un numero qui ne peut pas exister
+                    ne ferait que semer le doute chez le candidat. */}
+                {!estTraditionnel && (
+                  <Champ label={t('candidature.numeroOrdre')}>
+                    <input className={CHAMP} value={form.numeroOrdre} onChange={modifier('numeroOrdre')} />
+                  </Champ>
+                )}
               </>
             ) : (
               <>
@@ -446,10 +469,6 @@ export default function Candidature({ type = 'SPECIALISTE' }) {
                   <input type="file" accept="application/pdf" onChange={choisirCv} className="sr-only" />
                 </label>
               )}
-            </Champ>
-
-            <Champ label={t('candidature.presentation')} obligatoire aide={t('candidature.presentationAide')}>
-              <textarea required minLength={50} rows={6} className={`${CHAMP} resize-y`} value={form.presentation} onChange={modifier('presentation')} />
             </Champ>
 
             <button

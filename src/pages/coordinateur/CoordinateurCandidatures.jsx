@@ -165,15 +165,21 @@ export default function CoordinateurCandidatures() {
                   <p className="text-xs text-slate-400 dark:text-slate-500 mt-2">{t('candidatures.deposeeLe', { date: formatDate(c.createdAt) })}</p>
 
                   <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-3">
-                    <button
-                      onClick={() => setOuverte(estOuverte ? null : c.id)}
-                      className="text-sm font-semibold text-primary-600 dark:text-primary-400 hover:underline"
-                    >
-                      {estOuverte ? t('candidatures.masquerPresentation') : t('candidatures.lirePresentation')}
-                    </button>
+                    {/* Le parcours ecrit n'est plus demande au candidat : le CV
+                        le dit mieux. Les anciennes candidatures en portent un,
+                        d'ou le bouton — mais il ne s'affiche que s'il y a
+                        quelque chose a lire. */}
+                    {c.presentation && (
+                      <button
+                        onClick={() => setOuverte(estOuverte ? null : c.id)}
+                        className="text-sm font-semibold text-primary-600 dark:text-primary-400 hover:underline"
+                      >
+                        {estOuverte ? t('candidatures.masquerPresentation') : t('candidatures.lirePresentation')}
+                      </button>
+                    )}
                     <LienCv id={c.id} aUnCv={Boolean(c.cvKey)} />
                   </div>
-                  {estOuverte && (
+                  {estOuverte && c.presentation && (
                     <p className="mt-3 text-sm text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-line bg-slate-50 dark:bg-neutral-800/60 rounded-xl p-4">
                       {c.presentation}
                     </p>
