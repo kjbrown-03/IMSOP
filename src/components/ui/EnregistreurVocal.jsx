@@ -74,7 +74,25 @@ export default function EnregistreurVocal({ onTexte, langue, desactive }) {
   async function demarrer() {
     setErreur(null)
     try {
-      const flux = await navigator.mediaDevices.getUserMedia({ audio: true })
+      // `audio: true` laisse le navigateur décider, et il décide mal : on
+      // obtient souvent un signal brut, faible et bruité, que le moteur de
+      // transcription peine à déchiffrer. La qualité de ce qui entre compte
+      // davantage que la taille du modèle qui l'écoute.
+      //
+      // Les trois traitements ci-dessous sont ceux dont dépend une dictée au
+      // téléphone : suppression du bruit ambiant, réglage automatique du
+      // volume — décisif pour quelqu'un qui parle loin du micro — et annulation
+      // d'écho. 16 kHz en mono est ce que le modèle attend : au-delà, on
+      // transporte des données qu'il rééchantillonne de toute façon.
+      const flux = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true,
+          channelCount: 1,
+          sampleRate: 16000,
+        },
+      })
       const type = formatSupporte()
       const recorder = new MediaRecorder(flux, type ? { mimeType: type } : undefined)
 

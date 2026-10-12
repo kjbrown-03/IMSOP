@@ -35,6 +35,18 @@ const env = require('../config/env')
 //
 // La comparaison se fait sur un texte sans accent ni ponctuation : le modele
 // ponctue de facon variable.
+// Amorce donnee au moteur avant la transcription. Elle n'est pas transcrite :
+// elle sert de contexte, comme un debut de phrase imaginaire, et rend les
+// termes medicaux plus probables que leurs homophones du langage courant.
+//
+// Les deux langues y figurent parce que les patients decrivent leur mal en
+// francais comme en anglais, et que la langue n'est pas toujours imposee par
+// l'appelant.
+//
+// A garder court : une amorce longue rogne la fenetre de contexte du modele.
+const AMORCE_MEDICALE =
+  "Le patient décrit ses symptômes. Il parle de douleurs thoraciques, abdominales ou articulaires, de céphalées, de fièvre, de toux, d'essoufflement, de palpitations, de vertiges, de nausées, de diarrhée, de démangeaisons, d'éruptions cutanées, de fatigue, de troubles du sommeil ou de la vue. Il indique depuis combien de jours ou de semaines, et s'il prend un traitement. The patient describes their symptoms: chest or abdominal pain, headache, fever, cough, shortness of breath, palpitations, dizziness, nausea, rash, fatigue."
+
 // Phrases exactes : des mots isoles que le modele lache quand il n'entend rien.
 // Compares a l'identique, car « merci » seul est du bruit alors que « merci,
 // j'ai mal au ventre » est une vraie description.
@@ -110,6 +122,19 @@ async function transcrire(mémoire, nomFichier, typeMime, langue) {
       // Vérifié : avec le filtre, le même silence ressort vide, ce que la
       // couche au-dessus traduit par « aucune parole reconnue ».
       vad_filter: 'true',
+      // Amorce : quelques phrases dans le vocabulaire attendu, qui orientent le
+      // decodage sans rien imposer.
+      //
+      // Le modele choisit chaque mot d'apres ce qui precede. Sans contexte, il
+      // part du francais courant et rend « thoracique » par « tour à six » ou
+      // « céphalées » par « ses phallées ». Lui donner d'abord des phrases
+      // medicales le place dans le bon registre : les termes rares deviennent
+      // probables, et c'est precisement eux qui portent le sens d'une
+      // description de symptomes.
+      //
+      // L'amorce n'apparait JAMAIS dans le resultat : elle sert de debut de
+      // phrase imaginaire, pas de texte a transcrire.
+      initial_prompt: AMORCE_MEDICALE,
     })
     // Sans langue imposée, le moteur la détecte. On ne l'impose que si l'appelant
     // l'a choisie : une détection automatique vaut mieux qu'un mauvais choix,
