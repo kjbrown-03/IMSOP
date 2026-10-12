@@ -15,16 +15,32 @@ backend/dist/
 # Claude Code (local runtime state)
 .claude/scheduled_tasks.lock
 
-# Configuration de production : clés de paiement, mot de passe SMTP, secrets de
-# session. L'exemple versionné (deploy/.env.production.example) suffit à savoir
-# quoi remplir.
+# --- Configuration de production remplie ---------------------------------
+#
+# Ces fichiers portent les secrets réels : clés de paiement, mot de passe SMTP,
+# secrets de session, mot de passe de la base, secret du relais, et la phrase de
+# passe qui déchiffre TOUTES les sauvegardes. Le dépôt est public : un seul
+# `git add -A` lancé depuis le serveur suffirait à les publier.
+#
+# Les motifs couvrent les VARIANTES, pas seulement le nom exact. Un
+# `.env.production.save` laissé par nano est resté deux semaines à côté du
+# fichier ignoré, sans l'être lui-même. Les exemples, eux, restent versionnés :
+# c'est à ça qu'ils servent.
 deploy/.env.production
+deploy/.env.production.*
+!deploy/.env.production.example
+deploy/.env.sauvegarde
+deploy/.env.sauvegarde.*
+!deploy/.env.sauvegarde.example
+deploy/garage/garage.toml
 deploy/backups/
 
-# Sauvegarde hors site : contient la phrase de passe qui déchiffre TOUTES les
-# sauvegardes. Publiée, elle rendrait le chiffrement inutile et exposerait
-# l'intégralité des dossiers médicaux conservés chez l'hébergeur distant.
-deploy/.env.sauvegarde
+# Résidus d'éditeurs : une copie de secours porte les mêmes secrets que
+# l'original, sans en porter le nom.
+*.save
+*.bak
+*~
+*.swp
 
 # Clés SSH et certificats. Une clé privée generee par megarde dans le dossier
 # du projet partirait au premier `git add .` — et une cle publiee est une cle
