@@ -2,8 +2,14 @@
 Description=Déclenche la sauvegarde IMSOP hors site chaque nuit
 
 [Timer]
-# 02h30, heure du serveur (Africa/Douala) : après le creux d'activité, et avant
-# la fermeture automatique des messageries à 03h00.
+# 02h30 UTC. Le serveur est en Etc/UTC, pas en heure locale : cela place la
+# sauvegarde à 03h30 au Cameroun, en pleine nuit, ce qui est le but.
+#
+# Elle passe avant la fermeture automatique des messageries, planifiée à 03h00
+# par node-cron dans le conteneur backend — lequel est AUSSI en UTC. L'ordre
+# tient donc parce que les deux horloges sont la même. Si un jour on donne un
+# fuseau local à l'un des deux, il faudra revoir cet écart : ce n'est pas une
+# marge de trente minutes, c'est une coïncidence de fuseaux.
 OnCalendar=*-*-* 02:30:00
 
 # Si la machine était éteinte à l'heure dite, la sauvegarde part au démarrage
