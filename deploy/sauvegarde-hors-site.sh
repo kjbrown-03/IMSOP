@@ -96,8 +96,12 @@ mkdir -p "${PREPARATION}/documents"
 # qu'un échec en cours de route ne laisse pas un dump tronqué que restic
 # enverrait comme s'il était valide.
 journal "dump de la base ${POSTGRES_DB}"
+# `< /dev/null` n'est pas superflu : `docker compose exec -T` lit l'entrée
+# standard, et sans ça il consomme ce qui reste du script quand celui-ci est
+# lui-même alimenté par un tuyau ou un here-document. Le dump réussit, puis la
+# sauvegarde s'arrête en silence au milieu.
 ${COMPOSE} exec -T postgres pg_dump -U "${POSTGRES_USER}" -Fc "${POSTGRES_DB}" \
-  > "${PREPARATION}/base.dump.partiel"
+  < /dev/null > "${PREPARATION}/base.dump.partiel"
 mv "${PREPARATION}/base.dump.partiel" "${PREPARATION}/base.dump"
 journal "base : $(du -h "${PREPARATION}/base.dump" | cut -f1)"
 
@@ -105,7 +109,8 @@ journal "base : $(du -h "${PREPARATION}/base.dump" | cut -f1)"
 # Le miroir supprime les fichiers retirés du bucket : un document effacé à la
 # demande d'un patient ne doit pas survivre dans la zone de préparation.
 journal "miroir des documents"
-${COMPOSE} exec -T backend node scripts/backup.js --documents-vers /app/backups/courant/documents
+${COMPOSE} exec -T backend node scripts/backup.js \
+  --documents-vers /app/backups/courant/documents < /dev/null
 
 # --- 3. Envoi -----------------------------------------------------------------
 if ! restic cat config >/dev/null 2>&1; then
