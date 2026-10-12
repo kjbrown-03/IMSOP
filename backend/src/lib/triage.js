@@ -52,6 +52,7 @@ const DRAPEAUX_ROUGES = [
   'serrement (de|dans) la poitrine', 'mal (a la|dans la) poitrine',
   'difficulte(s)? (a|pour) respirer', 'n arrive (plus |pas )?a respirer', 'ne peux (plus |pas )?respirer',
   'etouffe', 'suffoque', 'essouffle(e)? au repos', 'levres bleues',
+  'infarctus', 'crise cardiaque', 'arret cardiaque',
   // Neurologique (AVC, convulsions, conscience). Les signes d'AVC sont écrits
   // avec de la tolérance (« bouche est deviee », « ne peut plus bouger ») :
   // c'est le cas où rater coûte le plus cher.
@@ -89,7 +90,24 @@ const DRAPEAUX_ROUGES = [
 // générale : le dictionnaire ne connaissait que les symptômes, alors qu'un
 // patient sur deux décrit ce qu'il cherche plutôt que ce qu'il ressent.
 const DICTIONNAIRE = {
-  cardiologie: ['coeur', 'cardiaque', 'palpitation', 'tension', 'hypertension', 'arythmie', 'battement', 'oedeme des jambes', 'jambes gonflees', 'cardiolog', 'cardio'],
+  // La douleur thoracique manquait, alors qu'elle est LE motif cardiologique.
+  // « j'ai des douleurs thoraciques » ne renvoyait que medecine_generale, et
+  // « infarctus » aussi : un patient decrivant un probleme de coeur ne se
+  // voyait proposer aucun cardiologue. Les drapeaux rouges, eux, couvraient
+  // deja la douleur de poitrine — l'urgence etait signalee, mais la specialite
+  // manquait.
+  //
+  // `essouffl` figure ici ET en pneumologie : un essoufflement a l'effort est
+  // aussi bien cardiaque que pulmonaire, et c'est au medecin de trancher, pas
+  // a ce dictionnaire.
+  cardiologie: [
+    'coeur', 'cardiaque', 'palpitation', 'tension', 'hypertension', 'arythmie',
+    'battement', 'oedeme des jambes', 'jambes gonflees', 'cardiolog', 'cardio',
+    'thorac', 'poitrine', 'infarctus', 'crise cardiaque', 'angine de poitrine',
+    'insuffisance cardiaque', 'souffle au coeur', 'tachycardie', 'bradycardie',
+    'pouls', 'essouffl', 'arteriel', 'artere', 'phlebite', 'thrombose', 'embolie',
+    'pacemaker', 'stimulateur cardiaque', 'pontage', 'stent', 'electrocardiogramme', 'ecg',
+  ],
   pneumologie: ['toux', 'tousse', 'poumon', 'respir', 'asthme', 'bronchite', 'crachat', 'sifflement', 'essouffle', 'pneumolog', 'pneumo'],
   gastroenterologie: ['ventre', 'estomac', 'digestion', 'diarrhee', 'constipation', 'vomi', 'nausee', 'brulure d estomac', 'reflux', 'ballonn', 'foie', 'jaunisse', 'hemorroide', 'selles', 'gastro'],
   dermatologie: ['peau', 'bouton', 'demangeaison', 'gratte', 'eczema', 'plaque', 'tache', 'acne', 'eruption', 'mycose', 'ongle', 'cheveux', 'chute de cheveux', 'urticaire', 'dermatolog', 'dermato'],
@@ -99,7 +117,7 @@ const DICTIONNAIRE = {
   gynecologie: ['regles', 'menstru', 'enceinte', 'grossesse', 'pertes', 'vaginal', 'uterus', 'ovaire', 'sein', 'menopause', 'contraception', 'sterilite', 'infertilite', 'accouchement', 'gynecolog', 'gyneco', 'obstetri'],
   urologie: ['urine', 'uriner', 'pisse', 'vessie', 'prostate', 'testicule', 'erection', 'impuissance', 'brulure en urinant', 'sang dans les urines', 'calcul', 'rein', 'urolog'],
   nephrologie: ['rein', 'renal', 'dialyse', 'insuffisance renale', 'nephrolog', 'nephro'],
-  neurologie: ['mal de tete', 'migraine', 'cephalee', 'vertige', 'tremblement', 'engourdi', 'fourmillement', 'memoire', 'epilepsie', 'nerf', 'sciatique', 'crise', 'neurolog', 'neuro'],
+  neurologie: ['mal de tete', 'migraine', 'cephalee', 'vertige', 'tremblement', 'engourdi', 'fourmillement', 'memoire', 'epilepsie', 'nerf', 'sciatique', 'crise', 'neurolog', 'neuro', 'avc', 'accident vasculaire', 'attaque cerebrale', 'paralysie'],
   orthopedie: ['os', 'articulation', 'genou', 'hanche', 'epaule', 'dos', 'colonne', 'lombaire', 'entorse', 'fracture', 'luxation', 'cheville', 'poignet', 'tendon', 'orthoped', 'traumatolog'],
   rhumatologie: ['articulation', 'arthrose', 'arthrite', 'rhumatisme', 'raideur', 'douleurs articulaires', 'goutte', 'polyarthrite', 'rhumatolog', 'rhumato'],
   endocrinologie: ['diabete', 'sucre', 'glycemie', 'thyroide', 'hormone', 'poids', 'maigri', 'grossi', 'soif (intense|permanente)', 'cholesterol', 'endocrinolog', 'endocrino', 'diabetolog'],
