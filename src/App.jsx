@@ -130,8 +130,8 @@ export default function App() {
       {/* L'annuaire commence par un choix : conventionnel ou traditionnel. Les
           deux pratiques ne se mélangent pas dans une liste de résultats. */}
       <Route path="/annuaire" element={<AnnuaireChoix />} />
-      <Route path="/annuaire/conventionnel" element={<AnnuaireRecherche />} />
-      <Route path="/annuaire/traditionnel" element={<AnnuaireRecherche />} />
+      <Route path="/annuaire/conventionnel" element={<AnnuaireRecherche typePratique="CONVENTIONNEL" />} />
+      <Route path="/annuaire/traditionnel" element={<AnnuaireRecherche typePratique="TRADITIONNEL" />} />
       <Route path="/annuaire/:id" element={<AnnuaireResultats />} />
 
       {/* Auth */}

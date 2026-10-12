@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { ArrowLeft, Loader2, MapPin, Search } from 'lucide-react'
 import Navbar from '../../components/layout/Navbar'
@@ -13,15 +13,25 @@ const CHAMP =
  * l'on est. Ouvert sans compte : la recherche donne un nombre et des fiches
  * floutées, c'est au moment de payer qu'il faudra se connecter.
  */
-export default function AnnuaireRecherche() {
+/**
+ * La voie choisie à l'écran précédent est passée par la route, pas déduite du
+ * chemin.
+ *
+ * Une version précédente la lisait avec `useParams()`. Les routes
+ * `/annuaire/conventionnel` et `/annuaire/traditionnel` sont littérales : elles
+ * ne contiennent aucun segment dynamique, donc `useParams()` ne renvoyait rien
+ * et le repli ramenait TOUJOURS au conventionnel. Les deux parcours affichaient
+ * le même texte — et, plus grave, la recherche interrogeait les médecins
+ * conventionnels même depuis la voie traditionnelle, sans que rien ne le
+ * signale.
+ *
+ * Avec une propriété, la route déclare ce qu'elle ouvre et une erreur de
+ * câblage se voit au lieu de se deviner.
+ */
+export default function AnnuaireRecherche({ typePratique = 'CONVENTIONNEL' }) {
   const { t } = useTranslation()
   const navigate = useNavigate()
 
-  // Le chemin porte la voie choisie à l'écran précédent : /annuaire/traditionnel
-  // ou /annuaire/conventionnel. Une valeur inconnue retombe sur le
-  // conventionnel plutôt que d'échouer.
-  const { type } = useParams()
-  const typePratique = type === 'traditionnel' ? 'TRADITIONNEL' : 'CONVENTIONNEL'
   const prefixe = `annuaire.recherche.${typePratique}`
 
   const [referentiels, setReferentiels] = useState(null)
