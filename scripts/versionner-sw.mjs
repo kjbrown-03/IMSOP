@@ -55,6 +55,19 @@ if (!source.includes(JETON)) {
   process.exit(1)
 }
 
-const empreinte = createHash('sha256').update(readFileSync(index)).digest('hex').slice(0, 12)
+
+// L'empreinte couvre index.html ET le service worker lui-meme.
+//
+// Elle ne portait d'abord que sur index.html, qui nomme les bundles : elle
+// changeait donc quand le code de l'application changeait, mais PAS quand on
+// corrigeait le service worker seul. Or c'est precisement le nom du cache :
+// une correction du service worker laissait alors en place le cache cree par la
+// version fautive, et les visiteurs bloques le restaient. C'est arrive.
+const empreinte = createHash('sha256')
+  .update(readFileSync(index))
+  .update(source)
+  .digest('hex')
+  .slice(0, 12)
+
 writeFileSync(sw, source.replaceAll(JETON, empreinte))
 console.log(`service worker versionné : imsop-${empreinte}`)

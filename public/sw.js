@@ -36,12 +36,24 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     caches
       .open(COQUILLE)
-      // Sans option `cache` : la même raison que pour la navigation plus bas —
-      // tous les moteurs n'acceptent pas ce réglage dans un service worker, et
-      // l'échec y est une exception, pas un simple repli. nginx sert déjà
-      // index.html en `no-store`, donc ce préchargement obtient une copie
-      // fraîche sans avoir à le forcer ici.
-      .then((cache) => cache.addAll(PRECHARGE))
+      // `addAll` rangerait les réponses telles qu'elles arrivent, donc avec
+      // l'en-tête `Content-Encoding: gzip` que nginx y pose — alors que le corps
+      // stocké, lui, est déjà décompressé. Au rechargement, le navigateur
+      // décompresserait une seconde fois et la coquille serait illisible. On
+      // passe donc par mettreEnCache, qui retire cet en-tête.
+      //
+      // Pas d'option `cache` sur les requêtes : tous les moteurs ne l'acceptent
+      // pas dans un service worker, et l'échec y est une exception plutôt qu'un
+      // repli. nginx sert déjà index.html en `no-store`, la copie est fraîche.
+      .then(() =>
+        Promise.all(
+          PRECHARGE.map((url) =>
+            fetch(url)
+              .then((reponse) => (reponse.ok ? mettreEnCache(url, reponse) : undefined))
+              .catch(() => undefined),
+          ),
+        ),
+      )
       // Une ressource absente ne doit pas empêcher l'installation : mieux vaut
       // un service worker partiel qu'aucun.
       .catch(() => undefined)
@@ -111,11 +123,9 @@ function traiterRequete(event) {
           // Une copie fraîche remplace la coquille hors ligne à chaque passage :
           // sans ça, le repli servirait l'index.html du jour de l'installation,
           // qui désigne un bundle que le serveur ne sert plus.
-          const copie = reponse.clone()
-          caches
-            .open(COQUILLE)
-            .then((cache) => cache.put('/index.html', copie))
-            .catch(() => undefined)
+          // Par mettreEnCache, qui retire l'en-tête de compression : le corps
+          // range est deja decompresse.
+          mettreEnCache('/index.html', reponse.clone())
           return reponse
         })
         .catch(() => caches.match('/index.html').then((r) => r || Response.error())),
@@ -123,19 +133,63 @@ function traiterRequete(event) {
     return
   }
 
-  // Fichiers statiques : le cache d'abord, puisqu'ils portent une empreinte
-  // dans leur nom et ne changent jamais sous un même nom.
+  // Fichiers construits (/assets/…) : ON NE S'EN MELE PAS.
+  //
+  // Ils portent une empreinte de leur contenu dans leur nom et nginx les sert
+  // en `immutable` pour un an : le cache HTTP du navigateur fait deja ce travail,
+  // mieux et sans nous.
+  //
+  // Les mettre AUSSI dans le cache du service worker avait un cout qu'on a paye :
+  // depuis que nginx compresse, les reponses arrivent avec
+  // `Content-Encoding: gzip`. L'API Cache range alors le corps DEJA DECOMPRESSE
+  // en conservant cet en-tete ; au rechargement, le navigateur tente de
+  // decompresser ce qui l'est deja et le script devient illisible. L'application
+  // restait bloquee sur son ecran de demarrage, indefiniment.
+  //
+  // On laisse donc passer. Hors ligne, la coquille s'affiche et les fichiers
+  // viennent du cache HTTP, qui les detient pour un an.
+  if (url.pathname.startsWith('/assets/')) return
+
+  // Le reste — icones, manifeste, images — passe par le cache, mais SANS son
+  // en-tete de compression : on range un corps decompresse, il ne faut pas
+  // affirmer le contraire.
   event.respondWith(
     caches.match(request).then((enCache) => {
       if (enCache) return enCache
       return fetch(request).then((reponse) => {
         // Une réponse partielle ou opaque n'a rien à faire en cache.
         if (reponse.ok && reponse.type === 'basic') {
-          const copie = reponse.clone()
-          caches.open(COQUILLE).then((cache) => cache.put(request, copie))
+          mettreEnCache(request, reponse.clone())
         }
         return reponse
       })
     }),
   )
+}
+
+// Range une reponse en retirant les en-tetes qui decrivent son encodage de
+// transport. Le corps stocke par l'API Cache est deja decode : garder
+// `Content-Encoding` ferait decompresser deux fois, et `Content-Length` ne
+// correspondrait plus a rien.
+function mettreEnCache(request, reponse) {
+  return reponse
+    .blob()
+    .then((corps) => {
+      const entetes = new Headers(reponse.headers)
+      entetes.delete('content-encoding')
+      entetes.delete('content-length')
+      // `Vary: Accept-Encoding` sert a distinguer les variantes compressees et
+      // non compressees cote serveur. Ce qu'on range ici n'est plus une variante
+      // de transport : le garder ferait seulement rater des correspondances
+      // selon les en-tetes de la requete suivante.
+      entetes.delete('vary')
+      return caches.open(COQUILLE).then((cache) =>
+        cache.put(request, new Response(corps, {
+          status: reponse.status,
+          statusText: reponse.statusText,
+          headers: entetes,
+        })),
+      )
+    })
+    .catch(() => undefined)
 }
