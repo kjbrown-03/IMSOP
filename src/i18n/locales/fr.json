@@ -105,7 +105,7 @@
       "testimonial4Meta": "Bafoussam · Neurologie",
       "testimonial5Quote": "Recevoir un avis extérieur documenté m'a permis d'expliquer plus sereinement les options à ma patiente.",
       "testimonial5Meta": "Médecin traitant · Yaoundé",
-      "heroSecondaryCta": "Trouver le praticien le plus proche"
+      "heroSecondaryCta": "Médecin spécialiste le plus proche"
     },
     "footer": {
       "tagline": "International Medical Second Opinion Platform. Programme africain de deuxième avis médical et de télé-expertise médicale internationale. Pays pilote : Cameroun.",
@@ -180,7 +180,7 @@
     },
     "loginSpecialist": {
       "title": "Portail IMSOP",
-      "badge": "Accès Praticien",
+      "badge": "Accès Médecin",
       "intro": "Veuillez vous authentifier pour accéder aux dossiers médicaux sécurisés.",
       "remember": "Se souvenir de moi",
       "forgot": "Mot de passe oublié ?",
@@ -1380,7 +1380,7 @@
       "CONVENTIONNEL": {
         "eyebrow": "Médecine conventionnelle",
         "titre": "Le spécialiste le plus proche de vous",
-        "intro": "Décrivez vos symptômes en quelques mots. Nous en déduisons la ou les spécialités concernées, puis nous cherchons les praticiens les plus proches de chez vous."
+        "intro": "Décrivez vos symptômes en quelques mots. Nous en déduisons la ou les spécialités concernées, puis nous cherchons les médecins les plus proches de chez vous."
       },
       "TRADITIONNEL": {
         "eyebrow": "Médecine traditionnelle",
@@ -1437,9 +1437,9 @@
       "enregistre": "Réglages enregistrés"
     },
     "choix": {
-      "eyebrow": "Praticien le plus proche",
-      "titre": "Quel praticien cherchez-vous ?",
-      "intro": "Les deux pratiques existent près de chez vous. Choisissez celle que vous souhaitez consulter : la recherche suivante ne vous proposera que des praticiens de cette voie.",
+      "eyebrow": "Médecin spécialiste le plus proche",
+      "titre": "Quel médecin cherchez-vous ?",
+      "intro": "Les deux pratiques existent près de chez vous. Choisissez celle que vous souhaitez consulter : la recherche suivante ne vous proposera que des médecins de cette voie.",
       "CONVENTIONNEL": {
         "titre": "Médecine conventionnelle",
         "description": "Un médecin diplômé, inscrit à l'ordre de son pays d'exercice : généraliste ou spécialiste, en cabinet, en clinique ou à l'hôpital.",
@@ -1552,9 +1552,9 @@
     "aucunLieu": "Non renseigné",
     "compteCreeSansMail": "Compte créé, mais l'envoi des identifiants à {{email}} a échoué. Utilisez « Renvoyer les identifiants » pour réessayer.",
     "renvoyerIdentifiants": "Renvoyer les identifiants",
-    "renvoyerAide": "Le praticien n'a rien reçu ? Un nouveau mot de passe sera généré et envoyé à son adresse. L'ancien cessera de fonctionner.",
+    "renvoyerAide": "Le médecin n'a rien reçu ? Un nouveau mot de passe sera généré et envoyé à son adresse. L'ancien cessera de fonctionner.",
     "identifiantsRenvoyes": "Nouveaux identifiants envoyés à {{email}}.",
-    "creerAide": "Créer le compte génère un mot de passe et envoie les identifiants au praticien par e-mail.",
+    "creerAide": "Créer le compte génère un mot de passe et envoie les identifiants au médecin par e-mail.",
     "ecarter": "Écarter"
   },
   "specialites": {
@@ -1579,7 +1579,7 @@
     "retiree": "Retirée",
     "retirer": "Retirer de la liste",
     "reactiver": "Proposer à nouveau",
-    "retireeAide": "Retirée des formulaires. Les praticiens qui la portent gardent leur libellé.",
+    "retireeAide": "Retirée des formulaires. Les médecins qui la portent gardent leur libellé.",
     "aucune": "Aucune spécialité ne correspond.",
     "ajoutee": "« {{nom}} » a été ajoutée.",
     "existe": "Cette spécialité existe déjà.",
@@ -1606,7 +1606,7 @@
         "liste": [
           "Identité et contact : nom, adresse e-mail, téléphone, date de naissance, pays et ville de résidence.",
           "Données de santé : motif de la demande, antécédents, allergies, et les documents médicaux que vous déposez (analyses, imageries, comptes rendus).",
-          "Données de praticien : spécialité, établissement, numéro d'inscription à l'ordre, justificatifs d'habilitation, curriculum vitae et photo professionnelle.",
+          "Données de médecin : spécialité, établissement, numéro d'inscription à l'ordre, justificatifs d'habilitation, curriculum vitae et photo professionnelle.",
           "Données techniques : adresse IP et horodatage des actions sensibles, conservés dans un journal d'audit.",
           "Données de paiement : montant, devise, statut et référence de transaction. Aucune coordonnée bancaire ne transite par nos serveurs ni n'y est stockée."
         ]
@@ -1618,7 +1618,7 @@
           "Le spécialiste affecté à votre dossier accède à vos documents médicaux et à votre motif, sans votre identité civile complète.",
           "La coordination médicale organise l'affectation et le suivi des délais ; elle voit les dossiers pour les acheminer, sans rédiger d'avis.",
           "Votre médecin traitant, si vous l'avez désigné, reçoit l'avis rendu.",
-          "Le comité scientifique reçoit les candidatures des praticiens par courriel. Il n'a aucun accès à la plateforme ni aux dossiers des patients."
+          "Le comité scientifique reçoit les candidatures des médecins par courriel. Il n'a aucun accès à la plateforme ni aux dossiers des patients."
         ],
         "p2": "Chaque consultation d'un dossier est inscrite dans un journal d'audit, avec l'auteur, la date et l'adresse IP. Ce journal n'est pas modifiable."
       },
@@ -1683,7 +1683,7 @@
       "s4": {
         "titre": "Tarifs et paiement",
         "p1": "Le prix d'un second avis dépend du niveau d'urgence choisi, et celui d'une mise en relation avec un médecin de proximité est fixe. Le montant applicable vous est présenté avant tout paiement.",
-        "p2": "Le paiement conditionne l'affectation du dossier à un spécialiste. Une mise en relation vous donne accès aux coordonnées d'un médecin : elle ne garantit ni un rendez-vous, ni une prise en charge, lesquels relèvent du praticien."
+        "p2": "Le paiement conditionne l'affectation du dossier à un spécialiste. Une mise en relation vous donne accès aux coordonnées d'un médecin : elle ne garantit ni un rendez-vous, ni une prise en charge, lesquels relèvent du médecin."
       },
       "s5": {
         "titre": "Délais et disponibilité",
@@ -1695,7 +1695,7 @@
       },
       "s6": {
         "titre": "Responsabilité",
-        "p1": "L'avis rendu engage le spécialiste qui le signe, dans les limites de son exercice professionnel. IMSOP répond de l'acheminement du dossier, de la vérification de l'habilitation des praticiens et de la sécurité des données ; il ne répond pas du contenu médical de l'avis, ni des décisions de soins prises à sa suite."
+        "p1": "L'avis rendu engage le spécialiste qui le signe, dans les limites de son exercice professionnel. IMSOP répond de l'acheminement du dossier, de la vérification de l'habilitation des médecins et de la sécurité des données ; il ne répond pas du contenu médical de l'avis, ni des décisions de soins prises à sa suite."
       }
     },
     "mentions": {

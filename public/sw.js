@@ -19,7 +19,12 @@
  * (photos de candidature, CV, PDF de rapport) : même raisonnement.
  */
 
-const VERSION = 'imsop-v1'
+// __EMPREINTE_BUILD__ est remplacé à la construction par le plugin
+// `versionnerServiceWorker` de vite.config.js, à partir du hachage d'index.html.
+// C'est ce qui fait que le fichier CHANGE d'un déploiement à l'autre : sans
+// différence d'octets, le navigateur ne réinstalle rien et garde son vieux cache
+// jusqu'à la fin des temps. Ne pas figer cette valeur à la main.
+const VERSION = 'imsop-__EMPREINTE_BUILD__'
 const COQUILLE = `${VERSION}-coquille`
 
 // Le strict minimum pour afficher quelque chose sans réseau. Les fichiers
@@ -31,7 +36,11 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     caches
       .open(COQUILLE)
-      .then((cache) => cache.addAll(PRECHARGE))
+      // `cache: 'reload'` force chaque requête à passer par le réseau au lieu du
+      // cache HTTP du navigateur. Sans ça, une installation neuve pourrait
+      // recopier dans son cache la version périmée d'index.html que le cache
+      // HTTP détient encore — et reconduire le bug qu'on cherche à corriger.
+      .then((cache) => cache.addAll(PRECHARGE.map((url) => new Request(url, { cache: 'reload' }))))
       // Une ressource absente ne doit pas empêcher l'installation : mieux vaut
       // un service worker partiel qu'aucun.
       .catch(() => undefined)
@@ -62,9 +71,18 @@ self.addEventListener('fetch', (event) => {
 
   // Navigation : on tente le réseau, et on retombe sur la coquille si l'appareil
   // est hors ligne. L'application est une SPA, index.html suffit à l'amorcer.
+  //
+  // `cache: 'no-store'` court-circuite le cache HTTP du navigateur dans les deux
+  // sens. index.html ne porte pas d'empreinte dans son nom — c'est lui qui
+  // désigne le bundle à charger — donc le resservir depuis le cache fait démarrer
+  // une version périmée alors que les fichiers neufs sont en ligne. nginx pose
+  // déjà `no-store` sur ce fichier ; on le redit ici parce qu'un service worker
+  // survit aux changements de configuration du serveur.
   if (request.mode === 'navigate') {
     event.respondWith(
-      fetch(request).catch(() => caches.match('/index.html').then((r) => r || Response.error())),
+      fetch(request.url, { cache: 'no-store', credentials: 'same-origin' }).catch(() =>
+        caches.match('/index.html').then((r) => r || Response.error()),
+      ),
     )
     return
   }
