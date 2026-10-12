@@ -324,8 +324,11 @@ sudo systemctl daemon-reload
 sudo systemctl enable --now imsop-sauvegarde.timer
 systemctl list-timers imsop-sauvegarde.timer
 
-# L'alerte en cas d'echec : a tester une fois, sinon on ne saura jamais
-# qu'elle ne part pas.
+# L'alerte en cas d'echec. DEUX verifications, et il faut les deux :
+# le cablage d'abord — une reponse vide signifie qu'aucune alerte ne
+# partira jamais, meme si le service d'alerte marche quand on l'appelle.
+systemctl show imsop-sauvegarde.service -p OnFailure
+# puis l'envoi lui-meme.
 sudo systemctl start imsop-sauvegarde-alerte.service
 ```
 

@@ -5,6 +5,23 @@ Documentation=file:///opt/imsop/docs/BACKUPS.md
 Requires=docker.service
 After=docker.service network-online.target
 
+# Un échec doit réclamer l'attention de quelqu'un.
+#
+# Les sauvegardes de cette plateforme ont échoué chaque nuit pendant des
+# semaines sans que personne ne le sache : elles écrivaient dans un journal que
+# rien n'obligeait à lire. Le dispositif a changé, pas cette propriété — une
+# sauvegarde silencieuse ressemble exactement à une sauvegarde qui marche.
+#
+# ATTENTION : cette directive appartient à [Unit]. Placée dans [Service],
+# systemd l'IGNORE en se contentant d'une ligne de journal
+# (« Unknown key 'OnFailure' in section [Service] ») — et l'alerte ne part
+# jamais. C'est arrivé : seul un essai manuel du service d'alerte masquait le
+# problème, puisqu'il fonctionnait très bien quand on l'appelait directement.
+#
+# Le délai d'attente de [Service] compte comme un échec, donc un envoi qui part
+# dans le vide déclenche l'alerte au même titre qu'une erreur de restic.
+OnFailure=imsop-sauvegarde-alerte.service
+
 [Service]
 Type=oneshot
 User=imsop
@@ -20,17 +37,6 @@ IOSchedulingClass=idle
 # Un dépôt distant lent ou injoignable ne doit pas laisser le script tourner
 # indéfiniment et chevaucher le passage du lendemain.
 TimeoutStartSec=3h
-
-# Un échec doit réclamer l'attention de quelqu'un.
-#
-# Les sauvegardes de cette plateforme ont échoué chaque nuit pendant des
-# semaines sans que personne ne le sache : elles écrivaient dans un journal que
-# rien n'obligeait à lire. Le dispositif a changé, pas cette propriété — une
-# sauvegarde silencieuse ressemble exactement à une sauvegarde qui marche.
-#
-# Le délai d'attente ci-dessus compte comme un échec, donc un envoi qui part
-# dans le vide déclenche l'alerte au même titre qu'une erreur de restic.
-OnFailure=imsop-sauvegarde-alerte.service
 
 [Install]
 WantedBy=multi-user.target

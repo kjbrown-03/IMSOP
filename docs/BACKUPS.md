@@ -103,7 +103,23 @@ Le courriel passe par le conteneur backend, qui détient déjà la configuration
 SMTP — plutôt que d'installer un agent de courrier sur la machine et d'y
 recopier le mot de passe.
 
-Pour vérifier qu'elle fonctionne, sans casser quoi que ce soit :
+Deux vérifications, et il faut les deux.
+
+**1. Le câblage.** C'est celle qu'on oublie :
+
+```bash
+systemctl show imsop-sauvegarde.service -p OnFailure
+```
+
+Doit répondre `OnFailure=imsop-sauvegarde-alerte.service`. Une réponse vide
+signifie que l'alerte ne partira **jamais**, quoi qu'il arrive à la sauvegarde.
+
+C'est arrivé : la directive avait été écrite dans la section `[Service]` au lieu
+de `[Unit]`. systemd l'ignore alors en se contentant d'une ligne de journal, et
+le service d'alerte, lui, fonctionnait parfaitement quand on l'appelait à la
+main. Les deux tests se ressemblent, un seul dit la vérité.
+
+**2. L'envoi.** Sans casser quoi que ce soit :
 
 ```bash
 sudo systemctl start imsop-sauvegarde-alerte.service
