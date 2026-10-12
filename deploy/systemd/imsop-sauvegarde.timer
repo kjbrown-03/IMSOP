@@ -1,0 +1,19 @@
+[Unit]
+Description=Déclenche la sauvegarde IMSOP hors site chaque nuit
+
+[Timer]
+# 02h30, heure du serveur (Africa/Douala) : après le creux d'activité, et avant
+# la fermeture automatique des messageries à 03h00.
+OnCalendar=*-*-* 02:30:00
+
+# Si la machine était éteinte à l'heure dite, la sauvegarde part au démarrage
+# suivant au lieu d'être simplement sautée. C'est précisément les jours
+# anormaux qu'on veut une sauvegarde.
+Persistent=true
+
+# Évite que tous les serveurs d'un même hébergeur frappent le dépôt distant à la
+# seconde près.
+RandomizedDelaySec=15m
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,25 @@
+[Unit]
+Description=Sauvegarde IMSOP hors site (base + documents, chiffrée)
+Documentation=file:///opt/imsop/docs/BACKUPS.md
+# La sauvegarde entre dans les conteneurs : sans Docker, elle ne peut rien faire.
+Requires=docker.service
+After=docker.service network-online.target
+
+[Service]
+Type=oneshot
+User=imsop
+Group=imsop
+WorkingDirectory=/opt/imsop
+ExecStart=/opt/imsop/deploy/sauvegarde-hors-site.sh
+
+# Une sauvegarde ne doit jamais peser sur le service qu'elle protège : elle
+# s'efface devant l'application si la machine est chargée.
+Nice=10
+IOSchedulingClass=idle
+
+# Un dépôt distant lent ou injoignable ne doit pas laisser le script tourner
+# indéfiniment et chevaucher le passage du lendemain.
+TimeoutStartSec=3h
+
+[Install]
+WantedBy=multi-user.target

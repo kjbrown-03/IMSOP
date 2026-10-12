@@ -17,6 +17,19 @@ async function runBackup() {
 }
 
 function startBackupCron() {
+  // BACKUP_CRON_IN_APP=0 coupe cette tâche au profit d'une planification au
+  // niveau du système (deploy/systemd/imsop-sauvegarde.timer).
+  //
+  // C'est ce que fait la production, et pas par préférence : le dump de la base
+  // passe par `docker compose exec`, or le conteneur backend n'embarque pas le
+  // client Docker. Laissée active, cette tâche échoue toutes les nuits — elle
+  // l'a fait pendant des semaines sans que rien ne le signale, et l'application
+  // se croyait sauvegardée alors qu'elle ne l'était pas.
+  if (process.env.BACKUP_CRON_IN_APP === '0') {
+    console.log('[backup] tâche interne désactivée : la sauvegarde est planifiée côté système')
+    return
+  }
+
   // Under PM2 cluster mode (ecosystem.config.js runs 8 workers in
   // production) every worker would otherwise schedule this and the backup
   // would run 8x a day. PM2 sets NODE_APP_INSTANCE per worker - only

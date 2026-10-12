@@ -1,0 +1,72 @@
+# coturn — serveur de relais pour les appels audio/vidéo d'IMSOP.
+#
+#   cp deploy/coturn/turnserver.conf.example deploy/coturn/turnserver.conf
+#   puis remplacer les deux valeurs marquées « ← »
+#
+# Le fichier rempli n'est pas versionné : il contient le secret partagé avec le
+# backend, qui vaut accès au relais.
+
+# --- Écoute -------------------------------------------------------------------
+listening-port=3478
+
+# L'adresse publique du serveur. coturn ne peut pas la deviner de façon fiable
+# derrière la couche réseau d'un hébergeur, et une mauvaise valeur produit des
+# candidats que personne ne peut joindre : l'appel sonne puis échoue.
+external-ip=187.6.167.189          # ← l'IP publique du VPS
+
+# --- Authentification ---------------------------------------------------------
+# Identifiants éphémères : le backend fabrique un couple nom/mot de passe signé
+# avec ce secret, coturn recalcule le HMAC et vérifie. Aucun compte à tenir des
+# deux côtés, et un identifiant qui fuite expire tout seul.
+#
+# Doit être IDENTIQUE à TURN_SECRET dans deploy/.env.production.
+# Pour en générer un : openssl rand -base64 48
+use-auth-secret
+static-auth-secret=CHANGEME        # ← le même que TURN_SECRET
+
+realm=imsop.org
+fingerprint
+
+# --- Plage de relais ----------------------------------------------------------
+# Chaque appel relayé consomme un port. Une plage étroite suffit largement au
+# volume actuel et limite ce qu'il faut ouvrir dans le pare-feu.
+min-port=49160
+max-port=49200
+
+# --- Verrouillage -------------------------------------------------------------
+# CE QUI SUIT N'EST PAS FACULTATIF.
+#
+# Un serveur TURN relaie vers l'adresse que le client demande. Sans interdiction
+# explicite, n'importe quel compte de la plateforme pourrait s'en servir pour
+# atteindre les services internes du VPS — PostgreSQL et Garage sont sur le
+# réseau Docker en 172.16.0.0/12, le backend écoute sur 127.0.0.1:4000, et les
+# métadonnées de l'hébergeur vivent en 169.254.169.254. Le relais deviendrait
+# une porte d'entrée vers tout ce que le pare-feu protège.
+denied-peer-ip=0.0.0.0-0.255.255.255
+denied-peer-ip=10.0.0.0-10.255.255.255
+denied-peer-ip=127.0.0.0-127.255.255.255
+denied-peer-ip=169.254.0.0-169.254.255.255
+denied-peer-ip=172.16.0.0-172.31.255.255
+denied-peer-ip=192.168.0.0-192.168.255.255
+denied-peer-ip=224.0.0.0-255.255.255.255
+denied-peer-ip=::1
+denied-peer-ip=fc00::-fdff:ffff:ffff:ffff:ffff:ffff:ffff:ffff
+denied-peer-ip=fe80::-febf:ffff:ffff:ffff:ffff:ffff:ffff:ffff
+
+# Pas de relais multicast, pas de console d'administration ouverte, pas de
+# requêtes anonymes.
+no-multicast-peers
+no-cli
+no-tlsv1
+no-tlsv1_1
+
+# Plafond global de sessions : empêche qu'un seul compte sature la bande
+# passante du VPS, qui sert aussi l'application.
+total-quota=100
+user-quota=6
+stale-nonce=600
+
+# --- Journalisation -----------------------------------------------------------
+# Vers la sortie standard, pour que `docker compose logs coturn` suffise.
+log-file=stdout
+simple-log

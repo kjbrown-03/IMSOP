@@ -211,15 +211,26 @@ La clé secrète n'est affichée qu'une fois. Si tu la perds, `g key info imsop-
 
 ## 6. Construire et lancer
 
-Le front est un build statique, servi par nginx :
+Le front est un build statique, servi par nginx. Node n'est **pas** installé sur
+l'hôte — et n'a pas à l'être : le build passe par un conteneur jetable, ce qui
+évite d'avoir à suivre une version de Node de plus sur le serveur.
 
 ```bash
-npm ci
-NODE_OPTIONS=--max-old-space-size=4096 npm run build     # produit dist/
+cd /opt/imsop
+docker run --rm -v /opt/imsop:/app -w /app -u "$(id -u):$(id -g)" \
+  -e HOME=/tmp -e npm_config_cache=/tmp/.npm -e NODE_OPTIONS=--max-old-space-size=4096 \
+  node:22-alpine sh -c "npm ci && npm run build"      # produit dist/
 ```
 
-> Le build Vite a déjà épuisé la mémoire par défaut de Node sur cette base de
-> code : ce `NODE_OPTIONS` évite un `Fatal process out of memory`.
+> `-u "$(id -u):$(id -g)"` fait écrire `dist/` et `node_modules/` au compte
+> `imsop` plutôt qu'à `root` : sans ça, le déploiement suivant ne pourrait plus
+> les remplacer.
+>
+> `NODE_OPTIONS` n'est pas décoratif : le build Vite a déjà épuisé la mémoire
+> par défaut de Node sur cette base de code (`Fatal process out of memory`).
+>
+> Les passages suivants peuvent se contenter de `npm run build` si aucune
+> dépendance n'a changé — `npm ci` réinstalle tout et coûte plusieurs minutes.
 
 Puis la pile applicative :
 
@@ -283,20 +294,90 @@ docker compose -f deploy/docker-compose.prod.yml --env-file deploy/.env.producti
 
 ## 9. Les sauvegardes
 
-Le projet embarque `npm run backup` (base + documents). Une fois par nuit :
+La procédure complète, la restauration comprise, est dans
+**[docs/BACKUPS.md](../docs/BACKUPS.md)**. L'essentiel ici.
+
+La tâche interne à l'application ne peut **pas** faire ce travail en production :
+le dump de la base passe par `docker compose exec`, or le conteneur backend
+n'embarque pas le client Docker. Laissée active, elle échoue chaque nuit en
+silence — ce qui s'est produit pendant des semaines après la mise en ligne, avec
+`BACKUP_CRON_IN_APP` non renseigné et un dossier `deploy/backups` appartenant à
+`root`. La sauvegarde est donc planifiée par systemd, sur l'hôte.
 
 ```bash
-crontab -e
+sudo apt install -y restic
+
+cd /opt/imsop
+cp deploy/.env.sauvegarde.example deploy/.env.sauvegarde
+chmod 600 deploy/.env.sauvegarde
+nano deploy/.env.sauvegarde          # dépôt distant, phrase de passe, clés
+
+# Le conteneur backend écrit ici sous l'uid 1000.
+sudo chown -R 1000:1000 deploy/backups
+
+chmod +x deploy/sauvegarde-hors-site.sh
+./deploy/sauvegarde-hors-site.sh     # premier passage, à la main
+
+sudo cp deploy/systemd/imsop-sauvegarde.* /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable --now imsop-sauvegarde.timer
+systemctl list-timers imsop-sauvegarde.timer
 ```
 
-```
-0 2 * * * cd /opt/imsop && docker compose -f deploy/docker-compose.prod.yml --env-file deploy/.env.production exec -T backend node scripts/backup.js >> /var/log/imsop-backup.log 2>&1
+Et dans `deploy/.env.production` : `BACKUP_CRON_IN_APP=0`.
+
+restic chiffre avant d'envoyer, ce qui est la condition pour que des dossiers
+médicaux quittent la machine. **Gardez une copie de `RESTIC_PASSWORD` hors du
+serveur** : sans elle, aucune restauration n'est possible.
+
+---
+
+## 9 bis. Le relais d'appels (TURN)
+
+Sans relais, un appel vidéo entre deux réseaux mobiles sonne puis échoue : les
+opérateurs placent leurs abonnés derrière un NAT symétrique, et aucun des deux
+navigateurs ne peut recevoir l'autre.
+
+```bash
+cd /opt/imsop
+cp deploy/coturn/turnserver.conf.example deploy/coturn/turnserver.conf
+nano deploy/coturn/turnserver.conf   # external-ip et static-auth-secret
 ```
 
-Les archives atterrissent dans `deploy/backups/`, **sur le même disque que la
-base**. Tant qu'elles n'en partent pas, elles ne protègent de rien : un disque
-perdu emporte les deux. Ajoute une copie vers un stockage externe (`rclone`,
-`restic`, ou un simple `scp` vers une autre machine).
+Le même secret va dans `deploy/.env.production`, en `TURN_SECRET` — les deux
+valeurs doivent être identiques, sinon coturn rejettera tout le monde.
+
+```bash
+openssl rand -base64 48              # à coller aux deux endroits
+```
+
+Ouvrir les ports, puis lancer :
+
+```bash
+sudo ufw allow 3478/udp
+sudo ufw allow 3478/tcp
+sudo ufw allow 49160:49200/udp       # plage de relais (turnserver.conf)
+
+docker compose -f deploy/docker-compose.prod.yml --env-file deploy/.env.production up -d coturn
+docker compose -f deploy/docker-compose.prod.yml --env-file deploy/.env.production logs coturn --tail 20
+```
+
+Vérifier que le backend distribue bien des identifiants (depuis un compte
+connecté, jeton en main) :
+
+```bash
+curl -s -H "Authorization: Bearer <jeton>" https://imsop.org/api/webrtc/ice | head -c 400
+```
+
+`relaisDisponible: true` et un `username` de la forme `<horodatage>:<id>`
+signifient que tout est en place. Pour tester le relais lui-même, l'outil de
+Google ([webrtc.github.io/samples/src/content/peerconnection/trickle-ice](https://webrtc.github.io/samples/src/content/peerconnection/trickle-ice/))
+doit faire apparaître au moins un candidat de type `relay`.
+
+> `turnserver.conf` interdit le relais vers les réseaux privés
+> (`denied-peer-ip`). Ce n'est pas optionnel : sans ces lignes, n'importe quel
+> compte pourrait faire transiter du trafic vers PostgreSQL, Garage ou le
+> backend, que le pare-feu protège justement d'Internet.
 
 ---
 

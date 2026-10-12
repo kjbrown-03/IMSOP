@@ -52,6 +52,30 @@ services:
       - garage_meta:/var/lib/garage/meta
       - garage_data:/var/lib/garage/data
 
+  # Relais pour les appels audio/vidéo.
+  #
+  # STUN seul ne suffit pas entre deux réseaux mobiles : les opérateurs placent
+  # leurs abonnés derrière un NAT symétrique, et l'appel sonne puis échoue parce
+  # qu'aucun des deux navigateurs ne peut recevoir l'autre. coturn relaie alors
+  # le flux.
+  #
+  # `network_mode: host` n'est pas un raccourci : un relais TURN ouvre un port
+  # par appel dans une plage, et publier cette plage à travers la couche réseau
+  # de Docker coûte un processus de redirection par port. Il a aussi besoin de
+  # voir l'adresse réelle des clients pour fabriquer des candidats joignables.
+  #
+  # L'isolation ne vient donc pas de Docker ici, mais de la configuration :
+  # `denied-peer-ip` dans turnserver.conf interdit tout relais vers les réseaux
+  # internes, sans quoi le service deviendrait une porte vers PostgreSQL, Garage
+  # et le backend.
+  coturn:
+    image: coturn/coturn:4.6-alpine
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - ./coturn/turnserver.conf:/etc/coturn/turnserver.conf:ro
+    command: ['-c', '/etc/coturn/turnserver.conf']
+
   # Applique les migrations puis se retire. Séparé du backend pour que deux
   # instances ne migrent jamais en même temps, et pour que l'échec d'une
   # migration se voie tout de suite au lieu de boucler dans un redémarrage.

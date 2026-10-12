@@ -58,13 +58,26 @@ function backupDatabase() {
   })
 }
 
-// Mirrors every object currently in the documents bucket into a timestamped
-// local folder. Not incremental - fine at this project's current volume,
-// but worth revisiting (e.g. only copying new keys) once the bucket is
-// large enough for a full daily copy to be slow.
-async function backupDocuments() {
+// Mirrors every object currently in the documents bucket into a local folder.
+// Not incremental - fine at this project's current volume, but worth revisiting
+// (e.g. only copying new keys) once the bucket is large enough for a full daily
+// copy to be slow.
+//
+// With no argument it writes a fresh timestamped folder, which is what the
+// local retention scheme expects. Given an explicit `destination` it mirrors
+// into that stable folder instead and DELETES local files that are no longer in
+// the bucket - the mode used by the off-site backup, where history is kept by
+// restic rather than by accumulating folders on the same disk.
+//
+// The deletion half is not an optimisation. These are medical documents: a file
+// removed from the bucket (a patient exercising erasure, a candidate's CV being
+// purged) must not survive indefinitely in a staging folder that then gets
+// shipped off-site every night.
+async function backupDocuments(destination) {
   await ensureBucket()
-  const dir = path.join(BACKUP_ROOT, 'documents', timestamp())
+  const dir = destination || path.join(BACKUP_ROOT, 'documents', timestamp())
+  const miroir = Boolean(destination)
+  const vues = new Set()
 
   let continuationToken
   let count = 0
@@ -74,6 +87,7 @@ async function backupDocuments() {
     )
     for (const obj of page.Contents || []) {
       const dest = path.join(dir, obj.Key)
+      vues.add(path.resolve(dest))
       fs.mkdirSync(path.dirname(dest), { recursive: true })
       const { Body } = await s3.send(new GetObjectCommand({ Bucket: env.s3.bucket, Key: obj.Key }))
       await new Promise((resolve, reject) => {
@@ -88,8 +102,34 @@ async function backupDocuments() {
     continuationToken = page.NextContinuationToken
   } while (continuationToken)
 
-  console.log(`[backup] ${count} document(s) mirrored to ${dir}`)
+  let supprimes = 0
+  if (miroir && fs.existsSync(dir)) {
+    supprimes = elaguerMiroir(dir, vues)
+  }
+
+  console.log(
+    `[backup] ${count} document(s) mirrored to ${dir}` +
+      (miroir ? ` (${supprimes} stale file(s) removed)` : ''),
+  )
   return dir
+}
+
+// Retire du miroir tout fichier absent du lot qu'on vient d'écrire, puis les
+// dossiers devenus vides. Rien d'autre n'écrit dans ce dossier : ce qui n'a pas
+// été vu à ce tour n'existe plus côté bucket.
+function elaguerMiroir(dir, vues) {
+  let supprimes = 0
+  for (const entree of fs.readdirSync(dir, { withFileTypes: true })) {
+    const complet = path.join(dir, entree.name)
+    if (entree.isDirectory()) {
+      supprimes += elaguerMiroir(complet, vues)
+      if (fs.readdirSync(complet).length === 0) fs.rmdirSync(complet)
+    } else if (!vues.has(path.resolve(complet))) {
+      fs.rmSync(complet, { force: true })
+      supprimes += 1
+    }
+  }
+  return supprimes
 }
 
 function pruneOldBackups(subdir) {
@@ -106,6 +146,22 @@ function pruneOldBackups(subdir) {
 }
 
 async function main() {
+  // `--documents-vers <dossier>` : miroir des documents seulement, dans un
+  // dossier stable. C'est ce qu'appelle la sauvegarde hors site, qui tourne sur
+  // l'hôte : le dump de la base y est fait directement avec le client Docker,
+  // dont ce conteneur ne dispose pas.
+  const i = process.argv.indexOf('--documents-vers')
+  if (i !== -1) {
+    const destination = process.argv[i + 1]
+    if (!destination) {
+      console.error('[backup] --documents-vers attend un chemin de dossier')
+      process.exitCode = 1
+      return
+    }
+    await backupDocuments(destination)
+    return
+  }
+
   console.log(`[backup] Starting IMSOP backup - ${new Date().toISOString()}`)
   let failed = false
 

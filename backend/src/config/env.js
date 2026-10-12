@@ -200,6 +200,34 @@ module.exports = {
     autoCloseDays: parseInt(process.env.MESSAGING_AUTO_CLOSE_DAYS || '14', 10),
   },
 
+  // Appels audio/vidéo : serveurs que les deux navigateurs interrogent pour
+  // trouver un chemin l'un vers l'autre.
+  //
+  // STUN suffit quand au moins un des deux peut recevoir une connexion entrante.
+  // Entre deux réseaux mobiles, ce n'est presque jamais le cas : les opérateurs
+  // placent leurs abonnés derrière un NAT symétrique, et l'appel échoue après
+  // avoir sonné. TURN relaie alors le flux, ce qui marche toujours mais coûte
+  // de la bande passante — d'où un serveur qu'on héberge, et dont l'accès est
+  // limité dans le temps.
+  //
+  // TURN_SECRET est partagé avec coturn (`static-auth-secret`). Le backend s'en
+  // sert pour fabriquer des identifiants éphémères : rien de permanent n'est
+  // jamais envoyé au navigateur, et un identifiant intercepté expire seul.
+  webrtc: {
+    stunUrls: (process.env.STUN_URLS || 'stun:stun.l.google.com:19302')
+      .split(',')
+      .map((url) => url.trim())
+      .filter(Boolean),
+    turnUrls: (process.env.TURN_URLS || '')
+      .split(',')
+      .map((url) => url.trim())
+      .filter(Boolean),
+    turnSecret: process.env.TURN_SECRET || '',
+    // 12 h : largement plus qu'un appel, assez court pour qu'un identifiant qui
+    // fuite ne serve pas de relais gratuit bien longtemps.
+    turnTtlSeconds: parseInt(process.env.TURN_TTL_SECONDS || '43200', 10),
+  },
+
   // Optional: "Sign in with Google" only appears functional once these are
   // set. Without them the button still renders (existing frontend design)
   // but oauth.controller rejects the attempt with a clear message instead

@@ -61,10 +61,39 @@ import MessageAttachment, { formatSize } from '@/components/ui/MessageAttachment
 const ACCEPTED_MIME = ['application/pdf', 'image/jpeg', 'image/png', 'application/dicom']
 const MAX_BYTES = 25 * 1024 * 1024
 
-// No TURN server: this simplified calling feature works peer-to-peer over
-// STUN alone, which covers most home/office networks but can fail behind
-// restrictive corporate NATs. Adding TURN is a later, infra-level upgrade.
-const ICE_SERVERS = [{ urls: 'stun:stun.l.google.com:19302' }]
+// Repli si le backend ne répond pas : l'appel reste possible entre deux réseaux
+// accommodants. C'est ce que faisait l'application avant d'avoir un relais.
+const ICE_SECOURS = [{ urls: 'stun:stun.l.google.com:19302' }]
+
+// Les serveurs ICE viennent du backend et non d'une constante, parce que les
+// identifiants TURN sont éphémères : ils sont signés par le serveur, valables
+// quelques heures, et ne peuvent donc pas être écrits dans le bundle — qui est
+// public. Voir backend/src/controllers/webrtc.controller.js.
+//
+// On garde la réponse en mémoire le temps de sa validité : un appel ne doit pas
+// attendre un aller-retour HTTP de plus pour commencer à sonner.
+let iceEnCache = null
+
+async function obtenirServeursIce() {
+  if (iceEnCache && iceEnCache.expireLe > Date.now()) return iceEnCache.serveurs
+
+  try {
+    const { data } = await api.get('/api/webrtc/ice')
+    const serveurs = Array.isArray(data?.iceServers) && data.iceServers.length
+      ? data.iceServers
+      : ICE_SECOURS
+    // Une minute de marge : mieux vaut redemander un peu tôt que de lancer un
+    // appel avec des identifiants qui expirent pendant la négociation.
+    const duree = Math.max(60, (data?.expiresIn ?? 300) - 60) * 1000
+    iceEnCache = { serveurs, expireLe: Date.now() + duree }
+    return serveurs
+  } catch (err) {
+    // Un appel dégradé vaut mieux qu'un appel impossible : sans relais il
+    // aboutira quand même si l'un des deux réseaux accepte l'entrant.
+    console.warn('Serveurs ICE indisponibles, repli sur STUN seul :', err?.message)
+    return ICE_SECOURS
+  }
+}
 
 // `avecBarreLaterale` : la page rend sa propre barre latérale quand elle est
 // affichée seule. Insérée dans la coquille d'un rôle, celle-ci fournit déjà la
@@ -550,8 +579,8 @@ export const Home = ({ avecBarreLaterale = true }) => {
     return stream
   }
 
-  function createPeerConnection(peerUserId) {
-    const pc = new RTCPeerConnection({ iceServers: ICE_SERVERS })
+  async function createPeerConnection(peerUserId) {
+    const pc = new RTCPeerConnection({ iceServers: await obtenirServeursIce() })
     pc.onicecandidate = (event) => {
       if (event.candidate) {
         getCallSocket().emit('call:signal', { toUserId: peerUserId, data: { candidate: event.candidate } })
@@ -567,7 +596,7 @@ export const Home = ({ avecBarreLaterale = true }) => {
 
   async function startWebRTCOffer(peerUserId) {
     setCallStatus('connecting')
-    const pc = createPeerConnection(peerUserId)
+    const pc = await createPeerConnection(peerUserId)
     const stream = localStreamRef.current
     stream.getTracks().forEach((track) => pc.addTrack(track, stream))
     const offer = await pc.createOffer()
@@ -580,7 +609,7 @@ export const Home = ({ avecBarreLaterale = true }) => {
     let pc = peerConnectionRef.current
     if (!pc) {
       // Callee side: the first signal we ever receive is the caller's offer.
-      pc = createPeerConnection(fromUserId)
+      pc = await createPeerConnection(fromUserId)
       const stream = await ensureLocalStream()
       stream.getTracks().forEach((track) => pc.addTrack(track, stream))
     }
