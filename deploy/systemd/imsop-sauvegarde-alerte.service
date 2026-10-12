@@ -1,0 +1,16 @@
+[Unit]
+Description=Prévient par courriel qu'une sauvegarde IMSOP a échoué
+Documentation=file:///opt/imsop/docs/BACKUPS.md
+
+[Service]
+Type=oneshot
+
+# Root, et non le compte de déploiement : le script lit le journal de l'unité
+# en échec (journalctl), ce qui demande un accès que `imsop` n'a pas.
+User=root
+WorkingDirectory=/opt/imsop
+ExecStart=/opt/imsop/deploy/alerte-sauvegarde.sh imsop-sauvegarde.service
+
+# Un serveur SMTP qui ne répond pas ne doit pas laisser cette unité tourner
+# indéfiniment : l'alerte rate, c'est regrettable, mais le journal garde trace.
+TimeoutStartSec=5m

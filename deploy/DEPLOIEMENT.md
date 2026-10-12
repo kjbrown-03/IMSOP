@@ -318,10 +318,15 @@ sudo chown -R 1000:1000 deploy/backups
 chmod +x deploy/sauvegarde-hors-site.sh
 ./deploy/sauvegarde-hors-site.sh     # premier passage, à la main
 
-sudo cp deploy/systemd/imsop-sauvegarde.* /etc/systemd/system/
+sudo cp deploy/systemd/imsop-sauvegarde*.service /etc/systemd/system/
+sudo cp deploy/systemd/imsop-sauvegarde.timer /etc/systemd/system/
 sudo systemctl daemon-reload
 sudo systemctl enable --now imsop-sauvegarde.timer
 systemctl list-timers imsop-sauvegarde.timer
+
+# L'alerte en cas d'echec : a tester une fois, sinon on ne saura jamais
+# qu'elle ne part pas.
+sudo systemctl start imsop-sauvegarde-alerte.service
 ```
 
 Et dans `deploy/.env.production` : `BACKUP_CRON_IN_APP=0`.

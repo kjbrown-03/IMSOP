@@ -21,5 +21,16 @@ IOSchedulingClass=idle
 # indéfiniment et chevaucher le passage du lendemain.
 TimeoutStartSec=3h
 
+# Un échec doit réclamer l'attention de quelqu'un.
+#
+# Les sauvegardes de cette plateforme ont échoué chaque nuit pendant des
+# semaines sans que personne ne le sache : elles écrivaient dans un journal que
+# rien n'obligeait à lire. Le dispositif a changé, pas cette propriété — une
+# sauvegarde silencieuse ressemble exactement à une sauvegarde qui marche.
+#
+# Le délai d'attente ci-dessus compte comme un échec, donc un envoi qui part
+# dans le vide déclenche l'alerte au même titre qu'une erreur de restic.
+OnFailure=imsop-sauvegarde-alerte.service
+
 [Install]
 WantedBy=multi-user.target

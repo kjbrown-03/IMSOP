@@ -89,10 +89,34 @@ cd /opt/imsop && set -a && source deploy/.env.sauvegarde && set +a
 restic snapshots --tag imsop
 ```
 
-> Une sauvegarde silencieuse n'est pas une sauvegarde réussie. La tâche interne
-> à l'application a échoué chaque nuit pendant des semaines sans que rien ne le
-> signale : regardez `systemctl status` de temps en temps, ou branchez-y une
-> alerte.
+### L'alerte en cas d'échec
+
+Un échec déclenche un courriel, via `OnFailure=` sur le service. Le message
+contient l'état du service et les 40 dernières lignes du journal, pour qu'on
+sache quoi faire sans avoir à se connecter d'abord.
+
+L'adresse se règle avec `SAUVEGARDE_ALERTE_EMAIL` dans `deploy/.env.sauvegarde`.
+Laissée vide, l'alerte part à l'adresse du compte SMTP de l'application : une
+alerte doit arriver quelque part, même mal configurée.
+
+Le courriel passe par le conteneur backend, qui détient déjà la configuration
+SMTP — plutôt que d'installer un agent de courrier sur la machine et d'y
+recopier le mot de passe.
+
+Pour vérifier qu'elle fonctionne, sans casser quoi que ce soit :
+
+```bash
+sudo systemctl start imsop-sauvegarde-alerte.service
+journalctl -u imsop-sauvegarde-alerte.service -n 20
+```
+
+Un courriel doit arriver. **Refaites ce test après tout changement de mot de
+passe SMTP** : une alerte qui ne part plus laisse exactement le même silence
+qu'avant.
+
+> Pourquoi tout ça : la tâche interne à l'application a échoué chaque nuit
+> pendant des semaines sans que rien ne le signale. Une sauvegarde silencieuse
+> ressemble exactement à une sauvegarde qui marche.
 
 ## Restaurer
 
@@ -166,6 +190,7 @@ moment pour s'en apercevoir n'est pas le jour où la production est perdue.
 
 ## Ce qui reste à faire
 
-- Une alerte quand la sauvegarde échoue, plutôt qu'un `systemctl status` qu'on
-  pense à consulter. Un `OnFailure=` systemd qui envoie un courriel suffirait.
-- Une restauration de bout en bout sur machine de test, jamais encore faite.
+- Une restauration de bout en bout sur une machine de test, en repartant de zéro
+  comme si la production était perdue. La restauration a été vérifiée sur le
+  serveur lui-même, ce qui prouve que les données sont relisibles, mais pas que
+  la procédure tienne quand la machine n'existe plus.
