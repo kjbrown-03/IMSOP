@@ -36,11 +36,12 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     caches
       .open(COQUILLE)
-      // `cache: 'reload'` force chaque requête à passer par le réseau au lieu du
-      // cache HTTP du navigateur. Sans ça, une installation neuve pourrait
-      // recopier dans son cache la version périmée d'index.html que le cache
-      // HTTP détient encore — et reconduire le bug qu'on cherche à corriger.
-      .then((cache) => cache.addAll(PRECHARGE.map((url) => new Request(url, { cache: 'reload' }))))
+      // Sans option `cache` : la même raison que pour la navigation plus bas —
+      // tous les moteurs n'acceptent pas ce réglage dans un service worker, et
+      // l'échec y est une exception, pas un simple repli. nginx sert déjà
+      // index.html en `no-store`, donc ce préchargement obtient une copie
+      // fraîche sans avoir à le forcer ici.
+      .then((cache) => cache.addAll(PRECHARGE))
       // Une ressource absente ne doit pas empêcher l'installation : mieux vaut
       // un service worker partiel qu'aucun.
       .catch(() => undefined)
@@ -58,6 +59,26 @@ self.addEventListener('activate', (event) => {
 })
 
 self.addEventListener('fetch', (event) => {
+  // TOUT le gestionnaire est sous filet.
+  //
+  // `respondWith` doit etre appele de maniere synchrone : si quoi que ce soit
+  // leve avant, le navigateur fait ce qu'il aurait fait sans service worker,
+  // c'est-a-dire aller au reseau. C'est exactement le comportement qu'on veut en
+  // cas d'imprevu. Sans ce filet, une exception ici rend le site ENTIEREMENT
+  // inutilisable — page blanche a chaque ouverture, y compris pour l'application
+  // installee, et sans moyen simple de s'en sortir pour l'utilisateur. C'est
+  // arrive avec une option `cache` non supportee par WebKit.
+  //
+  // Regle a retenir : un service worker ne doit jamais rendre le site pire que
+  // son absence.
+  try {
+    traiterRequete(event)
+  } catch (err) {
+    console.error('[sw] requete laissee au reseau :', err && err.message)
+  }
+})
+
+function traiterRequete(event) {
   const { request } = event
   if (request.method !== 'GET') return
 
@@ -72,17 +93,32 @@ self.addEventListener('fetch', (event) => {
   // Navigation : on tente le réseau, et on retombe sur la coquille si l'appareil
   // est hors ligne. L'application est une SPA, index.html suffit à l'amorcer.
   //
-  // `cache: 'no-store'` court-circuite le cache HTTP du navigateur dans les deux
-  // sens. index.html ne porte pas d'empreinte dans son nom — c'est lui qui
-  // désigne le bundle à charger — donc le resservir depuis le cache fait démarrer
-  // une version périmée alors que les fichiers neufs sont en ligne. nginx pose
-  // déjà `no-store` sur ce fichier ; on le redit ici parce qu'un service worker
-  // survit aux changements de configuration du serveur.
+  // La requête est passée TELLE QUELLE, sans option `cache`. Une version
+  // précédente forçait `cache: 'no-store'` pour garantir un index.html frais ;
+  // là où ce mode n'est pas accepté dans un service worker — WebKit, donc tout
+  // iPhone — la construction de la requête lève une exception SYNCHRONE, que le
+  // `.catch()` d'une promesse n'attrape pas. L'exception traversait le
+  // gestionnaire, le navigateur traitait la navigation comme une erreur réseau,
+  // et l'application s'ouvrait sur une page blanche.
+  //
+  // La fraîcheur n'a pas besoin de ce forçage : nginx sert index.html en
+  // `no-store` (deploy/nginx/imsop.conf), ce qui est l'endroit juste pour le
+  // dire — le serveur décide de la durée de vie de ce qu'il sert.
   if (request.mode === 'navigate') {
     event.respondWith(
-      fetch(request.url, { cache: 'no-store', credentials: 'same-origin' }).catch(() =>
-        caches.match('/index.html').then((r) => r || Response.error()),
-      ),
+      fetch(request)
+        .then((reponse) => {
+          // Une copie fraîche remplace la coquille hors ligne à chaque passage :
+          // sans ça, le repli servirait l'index.html du jour de l'installation,
+          // qui désigne un bundle que le serveur ne sert plus.
+          const copie = reponse.clone()
+          caches
+            .open(COQUILLE)
+            .then((cache) => cache.put('/index.html', copie))
+            .catch(() => undefined)
+          return reponse
+        })
+        .catch(() => caches.match('/index.html').then((r) => r || Response.error())),
     )
     return
   }
@@ -102,4 +138,4 @@ self.addEventListener('fetch', (event) => {
       })
     }),
   )
-})
+}
