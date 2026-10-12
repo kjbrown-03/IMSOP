@@ -12,7 +12,19 @@ listening-port=3478
 # L'adresse publique du serveur. coturn ne peut pas la deviner de façon fiable
 # derrière la couche réseau d'un hébergeur, et une mauvaise valeur produit des
 # candidats que personne ne peut joindre : l'appel sonne puis échoue.
-external-ip=187.6.167.189          # ← l'IP publique du VPS
+# ← remplacer par l'IP publique du VPS
+external-ip=187.6.167.189
+
+# Sur quelle interface écouter, et depuis laquelle relayer.
+#
+# Ces deux lignes ne sont pas facultatives en `network_mode: host`. Sans elles,
+# coturn parcourt toutes les interfaces de la machine et y ajoute les passerelles
+# Docker — on l'a vu annoncer 172.18.0.1 et 172.16.0.1 comme adresses de relais.
+# Il allouerait alors des relais sur le réseau interne, celui-là même que
+# `denied-peer-ip` plus bas cherche à mettre hors de portée.
+# ← les deux prennent l'IP publique du VPS
+listening-ip=187.6.167.189
+relay-ip=187.6.167.189
 
 # --- Authentification ---------------------------------------------------------
 # Identifiants éphémères : le backend fabrique un couple nom/mot de passe signé
@@ -22,7 +34,8 @@ external-ip=187.6.167.189          # ← l'IP publique du VPS
 # Doit être IDENTIQUE à TURN_SECRET dans deploy/.env.production.
 # Pour en générer un : openssl rand -base64 48
 use-auth-secret
-static-auth-secret=CHANGEME        # ← le même que TURN_SECRET
+# ← le même que TURN_SECRET dans deploy/.env.production
+static-auth-secret=CHANGEME
 
 realm=imsop.org
 fingerprint

@@ -71,6 +71,16 @@ services:
   coturn:
     image: coturn/coturn:4.6-alpine
     restart: unless-stopped
+    # L'image tourne sous `nobody` (65534), qui ne peut pas lire un
+    # turnserver.conf en 600 appartenant au compte de déploiement. coturn
+    # démarre alors SANS SA CONFIGURATION, en silence : il écoute sur toutes les
+    # interfaces, annonce les passerelles Docker comme adresses de relais, et
+    # n'applique aucun des `denied-peer-ip`. On l'a observé.
+    #
+    # Deux issues : rendre le fichier lisible par tous — il contient le secret —,
+    # ou faire tourner le conteneur sous le propriétaire du fichier. C'est la
+    # seconde, l'uid reste non privilégié et aucun port sous 1024 n'est demandé.
+    user: '1000:1000'
     network_mode: host
     volumes:
       - ./coturn/turnserver.conf:/etc/coturn/turnserver.conf:ro
