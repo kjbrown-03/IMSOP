@@ -1,73 +1,88 @@
-import { useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import ProtectedRoute from './components/ProtectedRoute'
-import Placeholder from './pages/Placeholder'
-import NotFound from './pages/NotFound'
 import SplashScreen from './components/Splashscreen'
 import { useThemeStore } from './store/useThemeStore'
 import { useAuthStore } from './store/useAuthStore'
 import { getCallSocket } from './lib/socket'
 
+/*
+ * Les pages sont chargees a la demande, pas toutes au demarrage.
+ *
+ * Elles etaient toutes importees directement : un visiteur qui ouvrait
+ * l'accueil telechargeait AUSSI les ecrans d'administration, le tableau de bord
+ * du coordinateur, la redaction de rapport et le dossier medical — soit la
+ * quasi-totalite du site, pour voir une page. Sur un telephone, le temps perdu
+ * n'est pas que le telechargement : c'est aussi l'analyse de tout ce code avant
+ * que quoi que ce soit ne s'affiche.
+ *
+ * Chaque page devient donc un fichier separe, demande au moment ou l'on y va.
+ * Seules la racine et l'ossature restent chargees d'emblee.
+ */
+const Placeholder = lazy(() => import('./pages/Placeholder'))
+const NotFound = lazy(() => import('./pages/NotFound'))
+const SelectionRole = lazy(() => import('./pages/auth/SelectionRole'))
+const ConnexionPatient = lazy(() => import('./pages/auth/ConnexionPatient'))
+const ConnexionCoordinateur = lazy(() => import('./pages/auth/ConnexionCoordinateur'))
+const ConnexionSpecialiste = lazy(() => import('./pages/auth/ConnexionSpecialiste'))
+const ConnexionAdmin = lazy(() => import('./pages/auth/ConnexionAdmin'))
+const ConnexionMedecinLocal = lazy(() => import('./pages/auth/ConnexionMedecinLocal'))
+const InscriptionMedecinLocal = lazy(() => import('./pages/auth/InscriptionMedecinLocal'))
+const VerificationDeuxFacteurs = lazy(() => import('./pages/auth/VerificationDeuxFacteurs'))
+const OAuthCallback = lazy(() => import('./pages/auth/OAuthCallback'))
+const VerificationEmail = lazy(() => import('./pages/auth/VerificationEmail'))
+const MotDePasseOublie = lazy(() => import('./pages/auth/MotDePasseOublie'))
+const ReinitialiserMotDePasse = lazy(() => import('./pages/auth/ReinitialiserMotDePasse'))
+const InscriptionPatientInfos = lazy(() => import('./pages/auth/InscriptionPatientInfos'))
+const InscriptionPatientSecurite = lazy(() => import('./pages/auth/InscriptionPatientSecurite'))
+const InscriptionPatientValidation = lazy(() => import('./pages/auth/InscriptionPatientValidation'))
+const DashboardPatient = lazy(() => import('./pages/patient/DashboardPatient'))
+const QuestionnaireMedical = lazy(() => import('./pages/patient/QuestionnaireMedical'))
+const DocumentsUpload = lazy(() => import('./pages/patient/DocumentsUpload'))
+const MatchingEnCours = lazy(() => import('./pages/patient/MatchingEnCours'))
+const ProfilPatient = lazy(() => import('./pages/patient/ProfilPatient'))
+const MonProfil = lazy(() => import('./pages/MonProfil'))
+const RapportExpertFinal = lazy(() => import('./pages/patient/RapportExpertFinal'))
+const DashboardMedecinLocal = lazy(() => import('./pages/medecin/DashboardMedecinLocal'))
+const NouvelleDemandeMedecin = lazy(() => import('./pages/medecin/NouvelleDemandeMedecin'))
+const DossierMedecinLocal = lazy(() => import('./pages/medecin/DossierMedecinLocal'))
+const MesJustificatifs = lazy(() => import('./pages/professionnel/MesJustificatifs'))
+const RevueHabilitations = lazy(() => import('./pages/coordinateur/RevueHabilitations'))
+const CoordinateurSpecialistes = lazy(() => import('./pages/coordinateur/CoordinateurSpecialistes'))
+const CoordinateurStatistiques = lazy(() => import('./pages/coordinateur/CoordinateurStatistiques'))
+const CoordinateurCandidatures = lazy(() => import('./pages/coordinateur/CoordinateurCandidatures'))
+const CoordinateurSpecialites = lazy(() => import('./pages/coordinateur/CoordinateurSpecialites'))
+const CoordinateurMedecins = lazy(() => import('./pages/coordinateur/CoordinateurMedecins'))
+const Candidature = lazy(() => import('./pages/public/Candidature'))
+const CandidatureRedirection = lazy(() => import('./pages/public/Candidature').then((m) => ({ default: m.CandidatureRedirection })))
+const Confidentialite = lazy(() => import('./pages/public/Confidentialite'))
+const Conditions = lazy(() => import('./pages/public/Conditions'))
+const MentionsLegales = lazy(() => import('./pages/public/MentionsLegales'))
+const CoordinateurReversements = lazy(() => import('./pages/coordinateur/CoordinateurReversements'))
+const DashboardCoordinateur = lazy(() => import('./pages/coordinateur/DashboardCoordinateur'))
+const AffectationExpert = lazy(() => import('./pages/coordinateur/AffectationExpert'))
+const RechercheExpertCoordinateur = lazy(() => import('./pages/coordinateur/RechercheExpertCoordinateur'))
+const GestionExceptions = lazy(() => import('./pages/coordinateur/GestionExceptions'))
+const ConsultationRapport = lazy(() => import('./pages/coordinateur/ConsultationRapport'))
+const DashboardSpecialiste = lazy(() => import('./pages/specialiste/DashboardSpecialiste'))
+const RedactionRapportExpert = lazy(() => import('./pages/specialiste/RedactionRapportExpert'))
+const PaiementSecurise = lazy(() => import('./pages/patient/PaiementSecurise'))
+const AccueilV2 = lazy(() => import('./pages/public/AccueilV2'))
+const PourMedecins = lazy(() => import('./pages/public/PourMedecins'))
+const AnnuaireRecherche = lazy(() => import('./pages/public/AnnuaireRecherche'))
+const AnnuaireChoix = lazy(() => import('./pages/public/AnnuaireChoix'))
+const AnnuaireResultats = lazy(() => import('./pages/public/AnnuaireResultats'))
+const AnnuaireMedecin = lazy(() => import('./pages/medecin/AnnuaireMedecin'))
+const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'))
+const AdminSpecialistes = lazy(() => import('./pages/admin/AdminSpecialistes'))
+const AdminCoordinateurs = lazy(() => import('./pages/admin/AdminCoordinateurs'))
+const AdminJournal = lazy(() => import('./pages/admin/AdminJournal'))
+const AdminStatistiques = lazy(() => import('./pages/admin/AdminStatistiques'))
+const MessagerieSpecialiste = lazy(() => import('./pages/specialiste/MessagerieSpecialiste'))
+const MessagerieCoordinateur = lazy(() => import('./pages/coordinateur/MessagerieCoordinateur'))
+const CoordinateurTemoignages = lazy(() => import('./pages/coordinateur/CoordinateurTemoignages'))
+
 import Accueil from './pages/public/Accueil'
-import SelectionRole from './pages/auth/SelectionRole'
-import ConnexionPatient from './pages/auth/ConnexionPatient'
-import ConnexionCoordinateur from './pages/auth/ConnexionCoordinateur'
-import ConnexionSpecialiste from './pages/auth/ConnexionSpecialiste'
-import ConnexionAdmin from './pages/auth/ConnexionAdmin'
-import ConnexionMedecinLocal from './pages/auth/ConnexionMedecinLocal'
-import InscriptionMedecinLocal from './pages/auth/InscriptionMedecinLocal'
-import VerificationDeuxFacteurs from './pages/auth/VerificationDeuxFacteurs'
-import OAuthCallback from './pages/auth/OAuthCallback'
-import VerificationEmail from './pages/auth/VerificationEmail'
-import MotDePasseOublie from './pages/auth/MotDePasseOublie'
-import ReinitialiserMotDePasse from './pages/auth/ReinitialiserMotDePasse'
-import InscriptionPatientInfos from './pages/auth/InscriptionPatientInfos'
-import InscriptionPatientSecurite from './pages/auth/InscriptionPatientSecurite'
-import InscriptionPatientValidation from './pages/auth/InscriptionPatientValidation'
-import DashboardPatient from './pages/patient/DashboardPatient'
-import QuestionnaireMedical from './pages/patient/QuestionnaireMedical'
-import DocumentsUpload from './pages/patient/DocumentsUpload'
-import MatchingEnCours from './pages/patient/MatchingEnCours'
-import ProfilPatient from './pages/patient/ProfilPatient'
-import MonProfil from './pages/MonProfil'
-import RapportExpertFinal from './pages/patient/RapportExpertFinal'
-import DashboardMedecinLocal from './pages/medecin/DashboardMedecinLocal'
-import NouvelleDemandeMedecin from './pages/medecin/NouvelleDemandeMedecin'
-import DossierMedecinLocal from './pages/medecin/DossierMedecinLocal'
-import MesJustificatifs from './pages/professionnel/MesJustificatifs'
-import RevueHabilitations from './pages/coordinateur/RevueHabilitations'
-import CoordinateurSpecialistes from './pages/coordinateur/CoordinateurSpecialistes'
-import CoordinateurStatistiques from './pages/coordinateur/CoordinateurStatistiques'
-import CoordinateurCandidatures from './pages/coordinateur/CoordinateurCandidatures'
-import CoordinateurSpecialites from './pages/coordinateur/CoordinateurSpecialites'
-import CoordinateurMedecins from './pages/coordinateur/CoordinateurMedecins'
-import Candidature, { CandidatureRedirection } from './pages/public/Candidature'
-import Confidentialite from './pages/public/Confidentialite'
-import Conditions from './pages/public/Conditions'
-import MentionsLegales from './pages/public/MentionsLegales'
-import CoordinateurReversements from './pages/coordinateur/CoordinateurReversements'
-import DashboardCoordinateur from './pages/coordinateur/DashboardCoordinateur'
-import AffectationExpert from './pages/coordinateur/AffectationExpert'
-import RechercheExpertCoordinateur from './pages/coordinateur/RechercheExpertCoordinateur'
-import GestionExceptions from './pages/coordinateur/GestionExceptions'
-import ConsultationRapport from './pages/coordinateur/ConsultationRapport'
-import DashboardSpecialiste from './pages/specialiste/DashboardSpecialiste'
-import RedactionRapportExpert from './pages/specialiste/RedactionRapportExpert'
-import PaiementSecurise from './pages/patient/PaiementSecurise'
-import AccueilV2 from './pages/public/AccueilV2'
-import PourMedecins from './pages/public/PourMedecins'
-import AnnuaireRecherche from './pages/public/AnnuaireRecherche'
-import AnnuaireChoix from './pages/public/AnnuaireChoix'
-import AnnuaireResultats from './pages/public/AnnuaireResultats'
-import AnnuaireMedecin from './pages/medecin/AnnuaireMedecin'
-import AdminDashboard from './pages/admin/AdminDashboard'
-import AdminSpecialistes from './pages/admin/AdminSpecialistes'
-import AdminCoordinateurs from './pages/admin/AdminCoordinateurs'
-import AdminJournal from './pages/admin/AdminJournal'
-import AdminStatistiques from './pages/admin/AdminStatistiques'
-import MessagerieSpecialiste from './pages/specialiste/MessagerieSpecialiste'
-import MessagerieCoordinateur from './pages/coordinateur/MessagerieCoordinateur'
-import CoordinateurTemoignages from './pages/coordinateur/CoordinateurTemoignages'
 
 export default function App() {
   // Passe à true une fois les vérifications initiales faites. Aujourd'hui
@@ -111,6 +126,13 @@ export default function App() {
           re-montage brutal une fois le splash retiré. */}
       <SplashScreen isLoading={!isAppReady} />
 
+      {/* Une page chargee a la demande arrive avec un leger delai la premiere
+          fois qu'on s'y rend. Suspense est ce qui s'affiche pendant ce delai :
+          sans lui, React leve une erreur au lieu d'attendre.
+          Volontairement discret — un ecran plein ferait clignoter l'interface a
+          chaque navigation, alors que le fichier arrive en general en moins
+          d'une seconde et qu'il est ensuite garde par le navigateur. */}
+      <Suspense fallback={<ChargementPage />}>
       <Routes>
       {/* Public */}
       <Route path="/" element={<Accueil />} />
@@ -494,6 +516,17 @@ export default function App() {
 
       <Route path="*" element={<NotFound />} />
       </Routes>
+      </Suspense>
     </>
+  )
+}
+
+/** Attente discrete pendant qu'une page chargee a la demande arrive. */
+function ChargementPage() {
+  return (
+    <div className="flex items-center justify-center py-24" role="status" aria-live="polite">
+      <span className="w-6 h-6 rounded-full border-2 border-[var(--color-primary)] border-t-transparent animate-spin" />
+      <span className="sr-only">Chargement</span>
+    </div>
   )
 }

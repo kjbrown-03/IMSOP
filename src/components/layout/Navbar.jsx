@@ -100,13 +100,20 @@ export default function Navbar() {
       {menuOpen && (
         <div className="md:hidden bg-[var(--color-surface)] border-t border-[var(--color-border)] px-margin-mobile py-4 flex flex-col gap-1">
           <div className="flex items-center justify-between">
-            <button
-              onClick={toggleLang}
-              className="flex items-center gap-1.5 text-[var(--color-on-surface)] font-label-sm text-label-sm border border-[var(--color-border)] rounded-full px-3 py-1.5"
-            >
-              <span className="material-symbols-outlined text-[16px]">language</span>
-              {lang === 'fr' ? 'FR' : 'EN'}
-            </button>
+            {/* Thème et langue cote a cote. La bascule de thème n'existait que
+                dans la barre de bureau, en `hidden md:flex` : sur un téléphone,
+                elle n'était affichée nulle part, et le thème ne pouvait pas
+                être changé du tout. */}
+            <div className="flex items-center gap-2">
+              <ThemeToggle className="text-[var(--color-on-surface)] border border-[var(--color-border)]" />
+              <button
+                onClick={toggleLang}
+                className="flex items-center gap-1.5 text-[var(--color-on-surface)] font-label-sm text-label-sm border border-[var(--color-border)] rounded-full px-3 py-1.5"
+              >
+                <span className="material-symbols-outlined text-[16px]">language</span>
+                {lang === 'fr' ? 'FR' : 'EN'}
+              </button>
+            </div>
             <Link
               to="/connexion"
               onClick={() => setMenuOpen(false)}
