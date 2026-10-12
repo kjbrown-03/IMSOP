@@ -1729,5 +1729,16 @@
         "p1": "Pour signaler un contenu, une faille de sécurité ou un incident touchant vos données, écrivez à [ADRESSE DE CONTACT À COMPLÉTER]. Un signalement de sécurité reçoit une réponse prioritaire."
       }
     }
+  },
+  "vocal": {
+    "demarrer": "Décrire à voix haute",
+    "arreter": "Arrêter l'enregistrement",
+    "transcription": "Transcription en cours…",
+    "aide": "Vous pouvez dire votre mal au lieu de l'écrire. L'enregistrement est transcrit sur nos serveurs, puis effacé : seul le texte est conservé, et vous pouvez le corriger avant de lancer la recherche.",
+    "permissionRefusee": "L'accès au micro a été refusé. Vous pouvez l'autoriser dans les réglages de votre navigateur, ou simplement écrire votre description.",
+    "microIndisponible": "Aucun micro n'est accessible sur cet appareil. Écrivez votre description dans le champ ci-dessus.",
+    "rienCompris": "Aucune parole n'a été reconnue. Réessayez en parlant plus près du micro, dans un endroit calme.",
+    "occupe": "Le service est occupé en ce moment. Réessayez dans quelques instants, ou écrivez votre description.",
+    "echec": "La transcription n'a pas abouti. Vous pouvez réessayer ou écrire votre description."
   }
 }

@@ -6,6 +6,7 @@ const { PAYS_CEMAC, villesDe, estPaysCemac } = require('../lib/cemac')
 const { SPECIALITES_LOCALES } = require('../lib/specialitesLocales')
 const paiements = require('./paiements.controller')
 const env = require('../config/env')
+const transcription = require('../services/transcriptionService')
 
 /**
  * Annuaire « Trouver un médecin » (zone CEMAC).
@@ -358,4 +359,45 @@ async function mettreAJourAnnuaire(req, res) {
   res.json(maj)
 }
 
-module.exports = { referentiels, rechercher, consulter, initierPaiement, simulerPaiement, monAnnuaire, mettreAJourAnnuaire }
+/**
+ * Transcrit un message vocal decrivant des symptomes.
+ *
+ * Le patient qui ne peut pas ecrire — illettrisme, douleur, main blessee,
+ * telephone malcommode — doit pouvoir dire son mal. Le texte obtenu revient au
+ * navigateur, qui le place dans le champ de description : il reste MODIFIABLE
+ * avant l envoi. C est volontaire. La transcription est excellente mais pas
+ * infaillible, et personne ne doit lancer une recherche medicale sur des mots
+ * qu il n a pas relus.
+ *
+ * Rien n est enregistre ici : ni l audio, qui n existe qu en memoire le temps du
+ * traitement, ni le texte, qui n est conserve que si le patient lance ensuite
+ * une recherche. Un essai abandonne ne laisse aucune trace.
+ */
+async function transcrireSymptomes(req, res, next) {
+  try {
+    if (!env.transcription.url) {
+      return res.status(503).json({ message: "La description vocale n'est pas disponible" })
+    }
+    if (!req.file) {
+      return res.status(400).json({ message: 'Aucun enregistrement recu' })
+    }
+
+    const langue = ['fr', 'en'].includes(req.body?.langue) ? req.body.langue : undefined
+    const { texte, langue: detectee } = await transcription.transcrire(
+      req.file.buffer,
+      req.file.originalname || 'message.webm',
+      req.file.mimetype,
+      langue,
+    )
+
+    if (!texte) {
+      return res.status(422).json({ message: "Aucune parole n'a ete reconnue dans cet enregistrement" })
+    }
+
+    res.json({ texte, langue: detectee })
+  } catch (err) {
+    next(err)
+  }
+}
+
+module.exports = { referentiels, rechercher, consulter, initierPaiement, simulerPaiement, monAnnuaire, mettreAJourAnnuaire, transcrireSymptomes }

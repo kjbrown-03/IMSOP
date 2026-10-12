@@ -37,6 +37,42 @@ const avatarUpload = multer({
   },
 })
 
+// Message vocal décrivant des symptômes. Stocké en mémoire comme le reste, et
+// jamais écrit sur disque : il n'est conservé que le temps de la transcription,
+// puis le texte seul subsiste.
+//
+// Les formats dépendent du navigateur et non d'un choix de notre part :
+// Chrome et Android enregistrent en WebM/Opus, Safari et iOS en MP4/AAC,
+// Firefox en Ogg. Le type arrive souvent suffixé (« audio/webm;codecs=opus »),
+// d'où la comparaison sur la partie qui précède le point-virgule.
+const AUDIO_MIME_TYPES = new Set([
+  'audio/webm',
+  'audio/ogg',
+  'audio/mp4',
+  'audio/mpeg',
+  'audio/wav',
+  'audio/x-wav',
+  'audio/x-m4a',
+  'audio/aac',
+])
+
+// 8 Mo : environ dix minutes d'Opus, soit bien au-delà d'une description de
+// symptômes. La durée réelle est bornée côté navigateur, cette limite-ci ne
+// sert qu'à ce qu'un envoi forgé ne remplisse pas la mémoire du serveur.
+const audioUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 8 * 1024 * 1024, files: 1 },
+  fileFilter: (req, file, cb) => {
+    const base = (file.mimetype || '').split(';')[0].trim().toLowerCase()
+    if (!AUDIO_MIME_TYPES.has(base)) {
+      const err = new Error("Format audio non autorisé")
+      err.status = 400
+      return cb(err)
+    }
+    cb(null, true)
+  },
+})
+
 // Candidature : deux fichiers de natures différentes dans le même envoi. La
 // photo s'affiche dans une balise <img> (donc les formats du navigateur), le CV
 // se lit et s'imprime (donc PDF). Le contrôle porte sur le champ, pas sur une
@@ -77,4 +113,4 @@ function handleUploadErrors(err, req, res, next) {
   next(err)
 }
 
-module.exports = { upload, avatarUpload, candidatureUpload, handleUploadErrors }
+module.exports = { upload, avatarUpload, candidatureUpload, audioUpload, handleUploadErrors }

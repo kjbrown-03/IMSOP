@@ -1729,5 +1729,16 @@
         "p1": "Pour signaler un contenu, une faille de sécurité ou un incident touchant vos données, écrivez à [ADRESSE DE CONTACT À COMPLÉTER]. Un signalement de sécurité reçoit une réponse prioritaire."
       }
     }
+  },
+  "vocal": {
+    "demarrer": "Describe out loud",
+    "arreter": "Stop recording",
+    "transcription": "Transcribing...",
+    "aide": "You can speak instead of typing. The recording is transcribed on our own servers, then deleted: only the text is kept, and you can correct it before searching.",
+    "permissionRefusee": "Microphone access was denied. You can allow it in your browser settings, or simply type your description.",
+    "microIndisponible": "No microphone is available on this device. Please type your description in the field above.",
+    "rienCompris": "No speech was recognised. Try again, closer to the microphone and somewhere quiet.",
+    "occupe": "The service is busy right now. Try again shortly, or type your description.",
+    "echec": "The transcription failed. You can try again or type your description."
   }
 }

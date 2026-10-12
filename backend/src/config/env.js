@@ -200,6 +200,25 @@ module.exports = {
     autoCloseDays: parseInt(process.env.MESSAGING_AUTO_CLOSE_DAYS || '14', 10),
   },
 
+  // Transcription des messages vocaux décrivant des symptômes.
+  //
+  // Le moteur tourne dans la même pile Docker, sans port publié : un
+  // enregistrement où quelqu'un décrit sa maladie est une donnée de santé, et
+  // elle ne quitte pas la machine. TRANSCRIPTION_URL vide désactive la
+  // fonctionnalité — le formulaire reste utilisable en écrivant.
+  transcription: {
+    url: process.env.TRANSCRIPTION_URL || '',
+    // Un seul passage à la fois. Le VPS a deux cœurs et l'application tourne
+    // dessus : la transcription est la seule opération qui en occupe un
+    // entièrement pendant plusieurs secondes. Au-delà, on refuse plutôt que de
+    // servir tout le monde mal.
+    simultaneesMax: parseInt(process.env.TRANSCRIPTION_SIMULTANEES_MAX || '1', 10),
+    // Mesuré à ~3 s pour 11 s d'audio. Une minute de marge couvre un
+    // enregistrement long sur une machine chargée, sans laisser une requête
+    // bloquer le verrou indéfiniment.
+    delaiMaxMs: parseInt(process.env.TRANSCRIPTION_DELAI_MAX_MS || '60000', 10),
+  },
+
   // Appels audio/vidéo : serveurs que les deux navigateurs interrogent pour
   // trouver un chemin l'un vers l'autre.
   //

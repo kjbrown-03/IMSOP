@@ -52,6 +52,37 @@ services:
       - garage_meta:/var/lib/garage/meta
       - garage_data:/var/lib/garage/data
 
+  # Transcription des messages vocaux décrivant des symptômes.
+  #
+  # Hébergée ici, et pas chez un prestataire : un enregistrement où quelqu'un
+  # décrit sa maladie est une donnée de santé. La garder sur la machine évite de
+  # la confier à un tiers, de l'annoncer dans la politique de confidentialité et
+  # de la faire accepter au patient.
+  #
+  # Aucun port publié : seul le backend lui parle, par le réseau Docker.
+  #
+  # `cpus` n'est pas une précaution de principe. La machine a deux cœurs et
+  # l'application tourne dessus ; sans plafond, la transcription les prendrait
+  # tous les deux et le site deviendrait injoignable pendant qu'elle travaille.
+  # Avec un cœur et demi, elle met environ 3 s pour 11 s d'audio et il reste de
+  # quoi servir les pages.
+  transcription:
+    image: onerahmet/openai-whisper-asr-webservice:latest
+    restart: unless-stopped
+    environment:
+      # faster-whisper : même modèle que Whisper, plusieurs fois plus rapide sur
+      # processeur. « small » transcrit le français et l'anglais sans faute sur
+      # des descriptions de symptômes — vérifié avant de choisir.
+      ASR_ENGINE: faster_whisper
+      ASR_MODEL: small
+      ASR_DEVICE: cpu
+    volumes:
+      # Le modèle pèse quelques centaines de Mo : sans ce volume, il serait
+      # retéléchargé à chaque redémarrage du conteneur.
+      - whisper_modeles:/root/.cache
+    cpus: 1.5
+    mem_limit: 2g
+
   # Relais pour les appels audio/vidéo.
   #
   # STUN seul ne suffit pas entre deux réseaux mobiles : les opérateurs placent
@@ -135,3 +166,4 @@ volumes:
   pg_data:
   garage_meta:
   garage_data:
+  whisper_modeles:

@@ -57,4 +57,21 @@ const rechercheAnnuaireLimiter = rateLimit({
   skip: enTest,
 })
 
-module.exports = { apiLimiter, authLimiter, webhookLimiter, rechercheAnnuaireLimiter }
+// La transcription vocale est le seul point d'entree public qui occupe un coeur
+// entier pendant plusieurs secondes. Le verrou de concurrence du service protege
+// le processeur ; ce plafond-ci protege l'equite entre visiteurs, sans quoi un
+// seul suffirait a tenir le verrou en permanence et a fermer la fonctionnalite
+// pour tous les autres.
+//
+// Six par quart d'heure : large pour quelqu'un qui s'y reprend a plusieurs fois,
+// etroit pour une boucle.
+const transcriptionLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 6,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: "Trop d'enregistrements, réessayez dans quelques minutes" },
+  skip: enTest,
+})
+
+module.exports = { apiLimiter, authLimiter, webhookLimiter, rechercheAnnuaireLimiter, transcriptionLimiter }

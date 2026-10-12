@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { ArrowLeft, Loader2, MapPin, Search } from 'lucide-react'
 import Navbar from '../../components/layout/Navbar'
+import EnregistreurVocal from '../../components/ui/EnregistreurVocal'
 import { api } from '../../lib/api'
 
 const CHAMP =
@@ -29,7 +30,7 @@ const CHAMP =
  * câblage se voit au lieu de se deviner.
  */
 export default function AnnuaireRecherche({ typePratique = 'CONVENTIONNEL' }) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const navigate = useNavigate()
 
   const prefixe = `annuaire.recherche.${typePratique}`
@@ -127,6 +128,19 @@ export default function AnnuaireRecherche({ typePratique = 'CONVENTIONNEL' }) {
                 </span>
               )}
             </label>
+
+            {/* Le bouton est hors du <label> : un clic dessus ne doit pas donner
+                le focus au champ de texte, qui ferait remonter le clavier du
+                téléphone par-dessus l'enregistrement en cours. */}
+            <EnregistreurVocal
+              langue={i18n.language?.startsWith('en') ? 'en' : 'fr'}
+              desactive={envoi}
+              onTexte={(texte) =>
+                // On complète plutôt qu'on écrase : quelqu'un qui a commencé à
+                // écrire puis dicte la suite ne doit pas perdre son début.
+                setSymptomes((actuel) => (actuel.trim() ? `${actuel.trim()} ${texte}` : texte))
+              }
+            />
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <label className="flex flex-col gap-2">
