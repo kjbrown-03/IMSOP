@@ -1606,6 +1606,7 @@
         "liste": [
           "Identité et contact : nom, adresse e-mail, téléphone, date de naissance, pays et ville de résidence.",
           "Données de santé : motif de la demande, antécédents, allergies, et les documents médicaux que vous déposez (analyses, imageries, comptes rendus).",
+          "Enregistrements vocaux : si vous choisissez de décrire vos symptômes à la voix plutôt que par écrit, l'enregistrement est transcrit sur nos propres serveurs, puis immédiatement effacé. Il n'est transmis à aucun prestataire extérieur et n'est jamais conservé : seul le texte obtenu subsiste, et uniquement si vous lancez ensuite une recherche.",
           "Données de médecin : spécialité, établissement, numéro d'inscription à l'ordre, justificatifs d'habilitation, curriculum vitae et photo professionnelle.",
           "Données techniques : adresse IP et horodatage des actions sensibles, conservés dans un journal d'audit.",
           "Données de paiement : montant, devise, statut et référence de transaction. Aucune coordonnée bancaire ne transite par nos serveurs ni n'y est stockée."
