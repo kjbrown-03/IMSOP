@@ -9,6 +9,7 @@
     <!-- Application installable (PWA). `theme_color` du manifeste et cette
          balise doivent rester identiques : la premiere colore la barre systeme
          une fois installee, la seconde le fait des la visite dans le navigateur. -->
+    <link rel="preload" as="image" href="/icons/icone-192.png" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <meta name="theme-color" content="#003f87" />
     <meta name="description" content="Plateforme de deuxieme avis medical international. Deposez votre dossier, un specialiste l'etudie, vous recevez son avis." />
@@ -80,6 +81,7 @@
       @media (prefers-color-scheme: dark) {
         #demarrage { background: #0f1420; color: #cfe0ff; }
       }
+      #demarrage img { width: 92px; height: 92px; object-fit: contain; }
       #demarrage .nom { font-size: 22px; font-weight: 700; letter-spacing: 0.12em; }
       #demarrage .roue {
         width: 28px; height: 28px; border-radius: 50%;
@@ -95,10 +97,7 @@
     </style>
     <div id="root">
       <div id="demarrage" role="status" aria-live="polite">
-        <svg width="56" height="56" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M12 21s-7-4.35-7-10a7 7 0 0 1 14 0c0 5.65-7 10-7 10z" stroke="currentColor" stroke-width="1.6" />
-          <path d="M9 11h2l1-2 1.5 4 1-2h1.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
-        </svg>
+        <img src="/icons/icone-192.png" width="92" height="92" alt="" aria-hidden="true" />
         <span class="nom">IMSOP</span>
         <span class="roue" aria-hidden="true"></span>
         <span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Chargement de l'application</span>

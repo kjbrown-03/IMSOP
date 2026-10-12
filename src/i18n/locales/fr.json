@@ -1740,6 +1740,7 @@
     "microIndisponible": "Aucun micro n'est accessible sur cet appareil. Écrivez votre description dans le champ ci-dessus.",
     "rienCompris": "Aucune parole n'a été reconnue. Réessayez en parlant plus près du micro, dans un endroit calme.",
     "occupe": "Le service est occupé en ce moment. Réessayez dans quelques instants, ou écrivez votre description.",
-    "echec": "La transcription n'a pas abouti. Vous pouvez réessayer ou écrire votre description."
+    "echec": "La transcription n'a pas abouti. Vous pouvez réessayer ou écrire votre description.",
+    "tropCourt": "L'enregistrement est trop court. Maintenez le bouton le temps de décrire votre mal, puis arrêtez."
   }
 }

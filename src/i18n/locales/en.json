@@ -1740,6 +1740,7 @@
     "microIndisponible": "No microphone is available on this device. Please type your description in the field above.",
     "rienCompris": "No speech was recognised. Try again, closer to the microphone and somewhere quiet.",
     "occupe": "The service is busy right now. Try again shortly, or type your description.",
-    "echec": "The transcription failed. You can try again or type your description."
+    "echec": "The transcription failed. You can try again or type your description.",
+    "tropCourt": "The recording is too short. Keep recording while you describe your problem, then stop."
   }
 }

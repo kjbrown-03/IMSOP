@@ -28,6 +28,12 @@ import { api } from '../../lib/api'
 // fichier inutile sur une connexion mobile.
 const DUREE_MAX_S = 60
 
+// En dessous, il n'y a rien a transcrire : un appui involontaire, ou quelqu'un
+// qui relache avant d'avoir parle. Le refuser ici evite un aller-retour inutile
+// et, surtout, evite que le moteur n'INVENTE une phrase faute d'avoir entendu
+// quoi que ce soit — voir le filtre dans transcriptionService.js.
+const DUREE_MIN_S = 1
+
 // Par ordre de préférence. Chrome et Android donnent WebM/Opus, Safari et iOS
 // MP4/AAC, Firefox Ogg. On ne force rien : on prend le premier que le navigateur
 // déclare savoir produire, et le serveur accepte les trois familles.
@@ -47,6 +53,9 @@ export default function EnregistreurVocal({ onTexte, langue, desactive }) {
   const recorderRef = useRef(null)
   const morceauxRef = useRef([])
   const minuteurRef = useRef(null)
+  // `envoyer` est declenchee par recorder.onstop, dont la fermeture a capture
+  // `secondes` a zero. La duree reelle passe donc par une reference.
+  const dureeRef = useRef(0)
 
   // Couper le micro quoi qu'il arrive : sans ça, le voyant de l'appareil reste
   // allumé après un changement de page, ce qui est au mieux inquiétant.
@@ -80,10 +89,13 @@ export default function EnregistreurVocal({ onTexte, langue, desactive }) {
       setEtat('enregistre')
       setSecondes(0)
 
+      dureeRef.current = 0
       minuteurRef.current = setInterval(() => {
         setSecondes((n) => {
-          if (n + 1 >= DUREE_MAX_S) arreter()
-          return n + 1
+          const suivant = n + 1
+          dureeRef.current = suivant
+          if (suivant >= DUREE_MAX_S) arreter()
+          return suivant
         })
       }, 1000)
     } catch (err) {
@@ -109,6 +121,13 @@ export default function EnregistreurVocal({ onTexte, langue, desactive }) {
 
     if (!morceaux.length) {
       setEtat('pret')
+      return
+    }
+
+    if (dureeRef.current < DUREE_MIN_S) {
+      setErreur(t('vocal.tropCourt'))
+      setEtat('pret')
+      setSecondes(0)
       return
     }
 

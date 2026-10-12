@@ -26,6 +26,54 @@ const env = require('../config/env')
  * d'accepter tout le monde et de servir tout le monde mal.
  */
 
+// Phrases que le modele produit quand il n'entend pas de parole claire. Elles
+// viennent de ses donnees d'entrainement — des sous-titres de videos — et non de
+// l'enregistrement. Le filtre VAD en supprime la plupart, mais un murmure ou un
+// bruit de fond rythme passe parfois au travers, et le patient voit alors
+// s'inscrire une phrase qu'il n'a jamais dite. Mieux vaut lui dire qu'on n'a
+// rien compris.
+//
+// La comparaison se fait sur un texte sans accent ni ponctuation : le modele
+// ponctue de facon variable.
+// Phrases exactes : des mots isoles que le modele lache quand il n'entend rien.
+// Compares a l'identique, car « merci » seul est du bruit alors que « merci,
+// j'ai mal au ventre » est une vraie description.
+const HALLUCINATIONS_EXACTES = new Set([
+  '', 'you', 'merci', 'merci beaucoup', 'thank you', 'thanks', 'bye', 'ok', 'oui', 'non',
+])
+
+// Fragments distinctifs : ils viennent des sous-titres de videos vus a
+// l'entrainement, jamais d'un patient qui decrit sa douleur. Compares par
+// inclusion, car le modele ajoute parfois un bout de phrase autour.
+const HALLUCINATIONS_FRAGMENTS = [
+  'amara org',
+  'sous titrage societe radio canada',
+  'sous titres realises par',
+  'merci d avoir regarde cette video',
+  'abonnez vous a la chaine',
+  'thanks for watching',
+  'thank you for watching',
+  'subtitles by',
+]
+
+function normaliserPourComparaison(texte) {
+  return texte
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    // L'apostrophe et la ponctuation deviennent des espaces : « d'Amara » et
+    // « d Amara » doivent se comparer de la meme facon.
+    .replace(/[^a-z0-9 ]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
+function estHallucination(texte) {
+  const nu = normaliserPourComparaison(texte)
+  if (HALLUCINATIONS_EXACTES.has(nu)) return true
+  return HALLUCINATIONS_FRAGMENTS.some((f) => nu.includes(f))
+}
+
 // Le point d'entrée public est limité par IP (voir rateLimit.js). Ce verrou-ci
 // est global : il protège le processeur, pas l'équité entre visiteurs.
 let enCours = 0
@@ -52,6 +100,16 @@ async function transcrire(mémoire, nomFichier, typeMime, langue) {
       // Le moteur sait réencoder les formats que les navigateurs produisent
       // (WebM, MP4, Ogg) : sans ça il n'accepterait que du WAV brut.
       encode: 'true',
+      // Détection de parole : les passages sans voix sont retirés avant la
+      // transcription.
+      //
+      // Sans ce filtre, le modèle INVENTE du texte quand il n'entend rien. Un
+      // enregistrement de trois secondes de silence ressortait « You », et un
+      // patient a vu s'inscrire « Sous-titres réalisés par la communauté
+      // d'Amara.org » — une phrase vue à l'entraînement sur des sous-titres.
+      // Vérifié : avec le filtre, le même silence ressort vide, ce que la
+      // couche au-dessus traduit par « aucune parole reconnue ».
+      vad_filter: 'true',
     })
     // Sans langue imposée, le moteur la détecte. On ne l'impose que si l'appelant
     // l'a choisie : une détection automatique vaut mieux qu'un mauvais choix,
@@ -72,8 +130,13 @@ async function transcrire(mémoire, nomFichier, typeMime, langue) {
     }
 
     const donnees = await reponse.json()
+    const texte = (donnees.text || '').trim()
+
+    // Une phrase inventee vaut moins que rien : elle a l'air d'une vraie
+    // reponse. On renvoie du vide, que l'appelant traduit en « aucune parole
+    // reconnue », ce qui invite a reessayer au lieu d'induire en erreur.
     return {
-      texte: (donnees.text || '').trim(),
+      texte: estHallucination(texte) ? '' : texte,
       langue: donnees.language || null,
     }
   } catch (err) {
@@ -90,4 +153,4 @@ async function transcrire(mémoire, nomFichier, typeMime, langue) {
   }
 }
 
-module.exports = { transcrire, occupe }
+module.exports = { transcrire, occupe, estHallucination }
