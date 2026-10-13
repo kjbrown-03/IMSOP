@@ -28,6 +28,15 @@ router.get('/cle', (req, res) => {
 const abonnement = {
   body: z.object({
     endpoint: z.string().url().max(2000),
+    // `PushSubscription.toJSON()` renvoie aussi `expirationTime`, souvent null.
+    // Il faut l'accepter : `.strict()` le refusait, et l'abonnement echouait sur
+    // « Requête invalide » alors que le navigateur envoyait exactement ce que la
+    // norme prevoit.
+    //
+    // On l'accepte sans le stocker : il indique quand un abonnement cessera
+    // d'etre valide, mais aucun navigateur ne le renseigne en pratique, et un
+    // abonnement mort se detecte de toute facon au premier envoi refuse.
+    expirationTime: z.number().nullable().optional(),
     keys: z.object({
       p256dh: z.string().min(10).max(200),
       auth: z.string().min(4).max(200),

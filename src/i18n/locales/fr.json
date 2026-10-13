@@ -993,6 +993,94 @@
     "error": "Impossible d'envoyer votre commentaire. Réessayez."
   },
   "notifications": {
+    "title": "Notifications",
+    "aria": "Notifications",
+    "ariaUnread": "Notifications, {{count}} non lues",
+    "markAllRead": "Tout marquer lu",
+    "loading": "Chargement…",
+    "empty": "Aucune notification non lue.",
+    "time": {
+      "now": "à l'instant",
+      "minutes": "il y a {{count}} min",
+      "hours": "il y a {{count}} h",
+      "days": "il y a {{count}} j"
+    },
+    "types": {
+      "MESSAGE_RECU": {
+        "title": "Message de {{sender}}",
+        "titleFallback": "Nouveau message sécurisé",
+        "preview": "Ouvrir la conversation"
+      },
+      "DOSSIER_SOUMIS": {
+        "title": "Dossier soumis",
+        "preview": "Votre dossier {{reference}} est en cours de vérification."
+      },
+      "DOSSIER_AFFECTE": {
+        "title": "Spécialiste affecté",
+        "preview": "Un spécialiste a pris en charge le dossier {{reference}}."
+      },
+      "RAPPORT_DISPONIBLE": {
+        "title": "Rapport disponible",
+        "preview": "Le rapport du dossier {{reference}} est consultable."
+      },
+      "PAIEMENT_CONFIRME": {
+        "title": "Paiement confirmé",
+        "preview": "Le paiement du dossier {{reference}} a été validé."
+      },
+      "NOUVEAU_DOSSIER_SPECIALISTE": {
+        "title": "Nouveau dossier assigné",
+        "preview": "Le dossier {{reference}} vous a été assigné."
+      },
+      "VERIFICATION_EMAIL": {
+        "title": "Vérifiez votre e-mail",
+        "preview": "Un code de vérification vous a été envoyé."
+      },
+      "MOT_DE_PASSE_RESET": {
+        "title": "Réinitialisation du mot de passe",
+        "preview": "Un lien de réinitialisation vous a été envoyé."
+      },
+      "IDENTITE_VALIDEE": {
+        "title": "Identité vérifiée",
+        "preview": "Votre pièce d’identité a été validée."
+      },
+      "IDENTITE_REFUSEE": {
+        "title": "Identité refusée",
+        "preview": "Merci de téléverser un nouveau document."
+      },
+      "fallback": {
+        "title": "Notification",
+        "preview": "Dossier {{reference}}"
+      },
+      "PIECE_JOINTE_RECUE": {
+        "title": "Document de {{sender}}",
+        "titleFallback": "Nouveau document",
+        "preview": "Une pièce a été déposée sur le dossier {{reference}}."
+      },
+      "MEDECIN_LOCAL_RATTACHE": {
+        "title": "Vous êtes désigné médecin traitant",
+        "preview": "Un patient vous a rattaché au dossier {{reference}}."
+      },
+      "COMPLEMENT_DEMANDE": {
+        "title": "Information complémentaire demandée",
+        "preview": "Le spécialiste attend des précisions sur le dossier {{reference}}."
+      },
+      "COMPLEMENT_FOURNI": {
+        "title": "Complément fourni",
+        "preview": "Le dossier {{reference}} repart en analyse."
+      },
+      "HABILITATION_STATUT": {
+        "title": "Votre habilitation a changé",
+        "preview": "Nouveau statut : {{statut}}."
+      },
+      "DEUX_FACTEURS": {
+        "title": "Code de connexion",
+        "preview": "Un code de vérification vous a été envoyé."
+      },
+      "INSCRIPTION_EXISTANTE": {
+        "title": "Compte déjà existant",
+        "preview": "Une inscription a été tentée avec votre adresse."
+      }
+    },
     "activer": "Activer les notifications",
     "aide": "Soyez prévenu d'un message, d'un appel ou d'une avancée de votre dossier, même application fermée. L'autorisation vaut pour cet appareil seulement.",
     "desactiver": "Désactiver",

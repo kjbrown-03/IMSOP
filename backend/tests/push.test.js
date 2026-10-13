@@ -53,6 +53,19 @@ describe('Notifications poussées', () => {
     assert.equal(reste, 1, "l'abonnement de la victime doit survivre")
   })
 
+  // Ce que `PushSubscription.toJSON()` renvoie REELLEMENT dans un navigateur :
+  // `expirationTime` y figure, souvent a null. Le schema le refusait, et
+  // l'abonnement echouait sur « Requête invalide » alors que le navigateur
+  // envoyait exactement ce que la norme prevoit. Vu sur un vrai telephone.
+  test("l'objet exact produit par le navigateur est accepté", async () => {
+    const { user } = await f.creerPatient()
+    await api()
+      .post('/api/push/abonnements')
+      .set('Authorization', entete(user))
+      .send({ ...ABONNEMENT, expirationTime: null })
+      .expect(201)
+  })
+
   test('un endpoint mal formé est refusé', async () => {
     const { user } = await f.creerPatient()
     await api()
