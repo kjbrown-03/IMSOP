@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { AlertTriangle, Building2, Loader2, Lock, LockOpen, Mail, MapPin, Phone, Search, Stethoscope, UserCheck, UserX } from 'lucide-react'
+import { AlertTriangle, Building2, Loader2, Lock, LockOpen, Mail, MapPin, Phone, Search, Stethoscope } from 'lucide-react'
 import Navbar from '../../components/layout/Navbar'
 import { useAuthStore } from '../../store/useAuthStore'
 import { api } from '../../lib/api'
@@ -36,7 +36,6 @@ function FicheFloutee({ fiche, t }) {
             <MapPin className="w-3.5 h-3.5" /> {fiche.ville || t('annuaire.resultats.villeInconnue')}
             <span className="inline-block h-3 w-20 rounded bg-[var(--color-surface-container-high)] blur-[3px] ml-1" aria-hidden="true" />
           </p>
-          <Disponibilite fiche={fiche} t={t} />
           <div className="flex gap-3 mt-1">
             <span className="inline-block h-3 w-28 rounded bg-[var(--color-surface-container-high)] blur-[3px]" aria-hidden="true" />
             <span className="inline-block h-3 w-36 rounded bg-[var(--color-surface-container-high)] blur-[3px]" aria-hidden="true" />
@@ -45,26 +44,6 @@ function FicheFloutee({ fiche, t }) {
         <Lock className="w-4 h-4 text-[var(--color-text-secondary)] shrink-0" aria-label={t('annuaire.resultats.verrouille')} />
       </div>
     </article>
-  )
-}
-
-/**
- * Disponibilite du medecin, montree AVANT comme APRES le paiement.
- *
- * Avant, c'est le point important : le patient paie pour etre mis en relation.
- * Lui vendre un contact vers un medecin complet serait indefendable, et il
- * l'apprendrait de toute facon en appelant — apres avoir paye.
- */
-function Disponibilite({ fiche, t }) {
-  if (fiche.accepteNouveaux === undefined) return null
-  return fiche.accepteNouveaux ? (
-    <p className="text-sm text-emerald-700 dark:text-emerald-400 flex items-center gap-1.5 font-medium">
-      <UserCheck className="w-3.5 h-3.5 shrink-0" /> {t('annuaire.resultats.accepte')}
-    </p>
-  ) : (
-    <p className="text-sm text-amber-700 dark:text-amber-400 flex items-center gap-1.5 font-medium">
-      <UserX className="w-3.5 h-3.5 shrink-0" /> {t('annuaire.resultats.complet')}
-    </p>
   )
 }
 
@@ -87,7 +66,6 @@ function FicheComplete({ fiche, t }) {
               <Building2 className="w-3.5 h-3.5 shrink-0" /> {fiche.etablissement}
             </p>
           )}
-          <Disponibilite fiche={fiche} t={t} />
           {fiche.presentation && <p className="text-sm text-[var(--color-text-main)] mt-1">{fiche.presentation}</p>}
           <div className="flex flex-wrap gap-2 mt-2">
             {fiche.telephone && (

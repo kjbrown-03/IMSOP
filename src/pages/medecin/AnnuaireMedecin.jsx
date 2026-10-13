@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { CheckCircle2, Eye, EyeOff, Loader2, MapPin, ShieldAlert, UserCheck, UserX } from 'lucide-react'
+import { CheckCircle2, Eye, EyeOff, Loader2, MapPin, ShieldAlert } from 'lucide-react'
 import MedecinShell from '../../components/layout/MedecinShell'
 import { api } from '../../lib/api'
 
@@ -34,7 +34,6 @@ export default function AnnuaireMedecin() {
         const paysBrut = (m.data.pays || '').toLowerCase()
         setReglages({
           annuaireVisible: m.data.annuaireVisible,
-          annuaireAccepteNouveaux: m.data.annuaireAccepteNouveaux !== false,
           annuaireSpecialites: m.data.annuaireSpecialites || [],
           pays: codes.includes(paysBrut) ? paysBrut : '',
           ville: m.data.ville || '',
@@ -82,7 +81,6 @@ export default function AnnuaireMedecin() {
     try {
       const { data } = await api.put('/annuaire/medecin/moi', {
         annuaireVisible: reglages.annuaireVisible,
-        annuaireAccepteNouveaux: reglages.annuaireAccepteNouveaux,
         annuaireSpecialites: reglages.annuaireSpecialites,
         ...(reglages.pays ? { pays: reglages.pays } : {}),
         ville: reglages.ville || null,
@@ -143,33 +141,6 @@ export default function AnnuaireMedecin() {
             </span>
           </label>
 
-          {/* Disponibilite, distincte de la visibilite.
-              « Je figure dans l'annuaire » et « j'ai de la place cette semaine »
-              sont deux choses : un medecin complet reste visible — le patient a
-              le droit de savoir qu'il existe — mais l'information lui est donnee
-              AVANT qu'il ne paie la mise en relation.
-              Ne s'affiche que si le medecin figure dans l'annuaire : sinon la
-              question ne se pose pas. */}
-          {reglages.annuaireVisible && (
-            <label className={`glass-card rounded-2xl p-5 flex items-start gap-4 cursor-pointer ${!habilite ? 'opacity-60' : ''}`}>
-              <input
-                type="checkbox"
-                checked={reglages.annuaireAccepteNouveaux}
-                disabled={!habilite}
-                onChange={(e) => modifier('annuaireAccepteNouveaux', e.target.checked)}
-                className="mt-1 h-5 w-5 rounded border-slate-300 text-primary-600 focus:ring-primary-500"
-              />
-              <span className="flex flex-col gap-1">
-                <span className="font-semibold text-slate-900 dark:text-white flex items-center gap-2">
-                  {reglages.annuaireAccepteNouveaux
-                    ? <UserCheck className="w-4 h-4 text-emerald-600" />
-                    : <UserX className="w-4 h-4 text-amber-600" />}
-                  {t('annuaire.medecin.accepteLabel')}
-                </span>
-                <span className="text-sm text-slate-500 dark:text-neutral-400">{t('annuaire.medecin.accepteAide')}</span>
-              </span>
-            </label>
-          )}
 
           <section className="glass-card rounded-2xl p-5 flex flex-col gap-4">
             <h2 className="font-semibold text-slate-900 dark:text-white">{t('annuaire.medecin.specialitesTitre')}</h2>

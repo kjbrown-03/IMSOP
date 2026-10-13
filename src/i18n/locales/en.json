@@ -1418,9 +1418,7 @@
       "emailLabel": "Your email address",
       "emailPlaceholder": "you@example.com",
       "emailAide": "No account needed. This email is used for your payment and to find your connection again.",
-      "emailRequis": "Enter a valid email address to get connected.",
-      "accepte": "Accepting new patients",
-      "complet": "Not accepting new patients"
+      "emailRequis": "Enter a valid email address to get connected."
     },
     "urgence": {
       "titre": "What you describe may be an emergency",
@@ -1443,9 +1441,7 @@
       "quartierPlaceholder": "E.g.: Logpom",
       "presentationTitre": "Presentation (optional)",
       "presentationPlaceholder": "Opening hours, languages, access… Shown once your details are unlocked.",
-      "enregistre": "Settings saved",
-      "accepteLabel": "I am accepting new patients",
-      "accepteAide": "Uncheck if you are full. You stay listed, but patients will know before paying for the introduction rather than finding out when they call."
+      "enregistre": "Settings saved"
     },
     "choix": {
       "eyebrow": "Nearest specialist doctor",

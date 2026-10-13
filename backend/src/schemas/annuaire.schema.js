@@ -31,9 +31,6 @@ const initierPaiement = {
 const mettreAJourAnnuaire = {
   body: z.object({
     annuaireVisible: z.boolean(),
-    // Facultatif : un medecin qui ne touche pas a ce reglage reste
-    // disponible, ce qui est l'etat normal.
-    annuaireAccepteNouveaux: z.boolean().optional(),
     annuaireSpecialites: z.array(z.enum(SPECIALITES_LOCALES)).max(6).optional(),
     pays: z.enum(CODES_PAYS).optional(),
     ville: z.string().trim().max(100).optional().nullable(),

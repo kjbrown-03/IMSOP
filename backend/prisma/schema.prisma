@@ -324,19 +324,6 @@ model MedecinLocal {
   // reliés, est un autre engagement :
   // il doit le demander explicitement. Désactivé par défaut, toujours.
   annuaireVisible         Boolean   @default(false)
-  // Le medecin accepte-t-il de nouveaux patients en ce moment ?
-  //
-  // Distinct de `annuaireVisible` : celui-la dit « je veux figurer dans
-  // l'annuaire », celui-ci dit « j'ai de la place cette semaine ». Un medecin
-  // complet reste dans l'annuaire — le patient a le droit de savoir qu'il
-  // existe — mais l'information lui est donnee AVANT qu'il ne paie la mise en
-  // relation. Vendre un contact vers quelqu'un qui ne peut pas le recevoir
-  // serait indefendable.
-  //
-  // Vrai par defaut : un medecin qui demande a figurer dans l'annuaire veut des
-  // patients. C'est l'indisponibilite qui est l'exception, et c'est donc elle
-  // qu'on declare.
-  annuaireAccepteNouveaux Boolean   @default(true)
   // Spécialités déclarées pour l'annuaire, depuis une liste fermée (voir
   // specialitesLocales.js) - un médecin en couvre souvent plusieurs (médecine
   // générale + pédiatrie). Distinct du champ libre `specialite` ci-dessus, qui
