@@ -12,7 +12,7 @@ import useNotificationsPoussees from '../../hooks/useNotificationsPoussees'
  */
 export default function ReglageNotifications() {
   const { t } = useTranslation()
-  const { etat, enCours, erreur, activer, desactiver } = useNotificationsPoussees()
+  const { etat, enCours, erreur, essai, activer, desactiver, essayer } = useNotificationsPoussees()
 
   // Rien à proposer sur un appareil qui ne sait pas les recevoir. Afficher un
   // bouton mort serait pire que de ne rien afficher.
@@ -58,6 +58,24 @@ export default function ReglageNotifications() {
           {enCours && <Loader2 className="w-4 h-4 animate-spin" />}
           {actif ? t('notifications.desactiver') : t('notifications.activer')}
         </button>
+      )}
+
+      {/* L'essai n'a de sens qu'une fois l'abonnement en place. */}
+      {actif && (
+        <div className="flex flex-col gap-2 border-t border-slate-100 dark:border-neutral-800 pt-4">
+          <button
+            type="button"
+            onClick={essayer}
+            disabled={enCours}
+            className="self-start inline-flex items-center gap-2 rounded-xl border border-slate-300 dark:border-neutral-700 px-4 py-2 text-sm font-semibold text-slate-700 dark:text-neutral-200 hover:bg-slate-50 dark:hover:bg-neutral-800 disabled:opacity-60"
+          >
+            {enCours && <Loader2 className="w-4 h-4 animate-spin" />}
+            {t('notifications.essayer')}
+          </button>
+          {essai === 'envoye' && (
+            <p className="text-sm text-emerald-700 dark:text-emerald-400">{t('notifications.essaiEnvoye')}</p>
+          )}
+        </div>
       )}
 
       {erreur && <p className="text-sm text-red-600 dark:text-red-400">{erreur}</p>}

@@ -996,6 +996,8 @@
     "activer": "Turn on notifications",
     "aide": "Get told about a message, a call or a step forward in your case, even when the app is closed. The permission applies to this device only.",
     "desactiver": "Turn off",
+    "essaiEnvoye": "Sent. It should appear on this device within a few seconds — lock the screen to see it better.",
+    "essayer": "Send a test notification",
     "iosInstaller": "On iPhone, notifications only work once the app has been added to the Home Screen. Tap Share, then \"Add to Home Screen\".",
     "refuseAide": "You have blocked notifications for this site.",
     "refuseSolution": "Your browser will not ask again. To re-enable them, allow notifications for imsop.org in your browser settings, then come back here.",

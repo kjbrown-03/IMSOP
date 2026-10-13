@@ -996,6 +996,8 @@
     "activer": "Activer les notifications",
     "aide": "Soyez prévenu d'un message, d'un appel ou d'une avancée de votre dossier, même application fermée. L'autorisation vaut pour cet appareil seulement.",
     "desactiver": "Désactiver",
+    "essaiEnvoye": "Envoyée. Elle devrait apparaître sur cet appareil d'ici quelques secondes — verrouillez l'écran pour mieux la voir.",
+    "essayer": "Envoyer une notification d'essai",
     "iosInstaller": "Sur iPhone, les notifications ne fonctionnent que si l'application a été ajoutée à l'écran d'accueil. Touchez Partager, puis « Sur l'écran d'accueil ».",
     "refuseAide": "Vous avez refusé les notifications pour ce site.",
     "refuseSolution": "Votre navigateur ne redemandera plus. Pour les réactiver, autorisez les notifications pour imsop.org dans les réglages de votre navigateur, puis revenez ici.",

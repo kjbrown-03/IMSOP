@@ -76,6 +76,13 @@ function composer(type, donnees = {}) {
       corps: 'Une nouvelle étape a été franchie.',
       url: donnees.dossierId ? `/dossiers/${donnees.dossierId}` : '/',
     },
+    // Pour le bouton « envoyer un essai ». Dit explicitement ce qu'il est, pour
+    // qu'on ne le confonde pas avec une vraie alerte en le recevant.
+    ESSAI: {
+      titre: 'Essai réussi',
+      corps: 'Les notifications fonctionnent sur cet appareil.',
+      url: '/profil',
+    },
     COORDINATION: {
       titre: 'Action attendue',
       corps: 'Un élément attend votre revue sur la plateforme.',

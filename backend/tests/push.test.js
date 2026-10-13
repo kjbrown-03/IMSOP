@@ -92,6 +92,25 @@ describe('Notifications poussées', () => {
     })
   })
 
+  describe("notification d'essai", () => {
+    test("sans appareil abonné, l'essai répond franchement qu'il n'est pas parti", async () => {
+      const { user } = await f.creerPatient()
+      const res = await api().post('/api/push/essai').set('Authorization', entete(user))
+      assert.equal(res.status, 409)
+    })
+
+    test("l'essai exige d'être connecté", async () => {
+      await api().post('/api/push/essai').expect(401)
+    })
+
+    // Il dit ce qu'il est : reçu sur un écran verrouillé, on ne doit pas le
+    // prendre pour une vraie alerte.
+    test("le contenu de l'essai s'annonce comme un essai", () => {
+      const c = push.composer('ESSAI', {})
+      assert.match(`${c.titre} ${c.corps}`.toLowerCase(), /essai|fonctionne/)
+    })
+  })
+
   test("l'envoi à un utilisateur sans appareil ne lève pas", async () => {
     const { user } = await f.creerPatient()
     const r = await push.envoyer(user.id, 'MESSAGE', {})

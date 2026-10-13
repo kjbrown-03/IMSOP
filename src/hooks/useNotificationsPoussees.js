@@ -36,6 +36,9 @@ export function useNotificationsPoussees() {
   const [etat, setEtat] = useState('inconnu') // inconnu | indisponible | refuse | inactif | actif
   const [enCours, setEnCours] = useState(false)
   const [erreur, setErreur] = useState(null)
+  // `envoye` dit que le serveur a accepte et transmis — PAS que le telephone a
+  // affiche. Seul l'utilisateur peut constater l'affichage, et le libelle le dit.
+  const [essai, setEssai] = useState(null)
 
   useEffect(() => {
     let vivant = true
@@ -121,7 +124,31 @@ export function useNotificationsPoussees() {
     }
   }, [])
 
-  return { etat, enCours, erreur, activer, desactiver }
+  /**
+   * Demande au serveur de nous notifier nous-memes.
+   *
+   * C'est le seul essai qui prouve quelque chose : il traverse les cles du
+   * serveur, l'abonnement, le relais d'Apple ou de Google, le service worker et
+   * l'affichage. Une verification cote navigateur seul ne dirait rien du reste.
+   */
+  const essayer = useCallback(async () => {
+    setErreur(null)
+    setEnCours(true)
+    setEssai(null)
+    try {
+      await api.post('/push/essai')
+      setEssai('envoye')
+    } catch (e) {
+      // 409 : plus aucun appareil joignable. L'abonnement a ete revoque du cote
+      // du navigateur sans qu'on en soit averti — il faut reactiver.
+      if (e?.response?.status === 409) setEtat('inactif')
+      setErreur(e?.response?.data?.message || "L'essai n'a pas pu partir")
+    } finally {
+      setEnCours(false)
+    }
+  }, [])
+
+  return { etat, enCours, erreur, essai, activer, desactiver, essayer }
 }
 
 export default useNotificationsPoussees
