@@ -28,6 +28,17 @@ function normaliser(texte) {
     .normalize('NFD')
     .replace(/[̀-ͯ]/g, '')
     .replace(/[’']/g, ' ')
+    // Ligatures. NFD ne les decompose PAS : « œ » reste « œ », et « cœur » ne
+    // correspondait donc a aucun motif, tous ecrits en « oe ».
+    //
+    // Ce n'est pas un cas marginal : les claviers de telephone composent la
+    // ligature automatiquement en francais. Un patient qui ecrivait
+    // « j'ai mal au cœur » n'obtenait AUCUN cardiologue, alors que
+    // « j ai mal au coeur » en trouvait un. Vu sur la production.
+    //
+    // Touche aussi œil, œdeme, œsophage, sœur, et cæcum pour æ.
+    .replace(/œ/g, 'oe')
+    .replace(/æ/g, 'ae')
     .replace(/\s+/g, ' ')
     .trim()
 }
@@ -109,12 +120,16 @@ const DICTIONNAIRE = {
     'pacemaker', 'stimulateur cardiaque', 'pontage', 'stent', 'electrocardiogramme', 'ecg',
   
     'avc', 'accident vasculaire', 'pericardite', 'myocardite', 'valvulopathie', 'cardiopathie', 'athero',
+  
+    'oedeme',
   ],
   pneumologie: ['toux', 'tousse', 'poumon', 'respir', 'asthme', 'bronchite', 'crachat', 'sifflement', 'essouffle', 'pneumolog', 'pneumo',
     'bronchiolite', 'pneumonie', 'pleuresie', 'emphyseme', 'bpco', 'silicose', 'apnee du sommeil', 'embolie pulmonaire',
   ],
   gastroenterologie: ['ventre', 'estomac', 'digestion', 'diarrhee', 'constipation', 'constip', 'vomi', 'nausee', 'brulure d estomac', 'reflux', 'ballonn', 'foie', 'jaunisse', 'yeux .{0,10}jaune', 'peau .{0,10}jaune', 'hemorroide', 'selles', 'gastro',
     'ulcere', 'gastrite', 'appendicite', 'colite', 'cirrhose', 'pancreatite', 'occlusion intestinale', 'colopathie', 'maladie de crohn', 'amibiase', 'parasitose', 'ascaris', 'typhoide', 'ver intestinal',
+  
+    'oesophage', 'oesophagite',
   ],
   dermatologie: ['peau', 'bouton', 'demangeaison', 'gratte', 'eczema', 'plaque', 'tache', 'acne', 'eruption', 'mycose', 'ongle', 'cheveux', 'chute de cheveux', 'urticaire', 'dermatolog', 'dermato',
     'psoriasis', 'zona', 'gale', 'impetigo', 'vitiligo', 'furoncle', 'abces cutane', 'teigne', 'dartre', 'verrue', 'molluscum',

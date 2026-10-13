@@ -156,6 +156,17 @@ module.exports = [
   ['oncologie', "j'ai des ganglions qui ont grossi"],
   ['oncologie', "j'ai un cancer du sein"],
 
+  // --- ligatures francaises ---
+  // Les claviers de telephone composent « œ » automatiquement. NFD ne la
+  // decompose pas, et tous les motifs sont ecrits en « oe » : « j'ai mal au
+  // cœur » ne renvoyait AUCUN cardiologue en production, alors que
+  // « j'ai mal au coeur » en trouvait un.
+  ['cardiologie', "j'ai mal au cœur"],
+  ['cardiologie', "mon cœur bat très fort"],
+  ['cardiologie', "j'ai un œdème aux jambes"],
+  ['ophtalmologie', "j'ai mal à l'œil"],
+  ['gastroenterologie', "j'ai mal à l'œsophage"],
+
   // --- pathologies nommees ---
   // Beaucoup de patients arrivent avec un diagnostic deja pose, par un medecin
   // ou par l'entourage, et ecrivent le nom de la maladie plutot que ce qu'ils
