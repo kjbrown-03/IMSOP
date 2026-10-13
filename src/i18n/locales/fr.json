@@ -1411,7 +1411,9 @@
       "emailLabel": "Votre adresse e-mail",
       "emailPlaceholder": "vous@exemple.com",
       "emailAide": "Aucun compte nécessaire. Cet e-mail sert à votre paiement et à retrouver votre mise en relation.",
-      "emailRequis": "Indiquez une adresse e-mail valide pour être mis en relation."
+      "emailRequis": "Indiquez une adresse e-mail valide pour être mis en relation.",
+      "accepte": "Accepte de nouveaux patients",
+      "complet": "Complet actuellement"
     },
     "urgence": {
       "titre": "Ce que vous décrivez peut être une urgence",
@@ -1434,7 +1436,9 @@
       "quartierPlaceholder": "Ex. : Logpom",
       "presentationTitre": "Présentation (facultatif)",
       "presentationPlaceholder": "Horaires, langues parlées, accès… Visible une fois vos coordonnées débloquées.",
-      "enregistre": "Réglages enregistrés"
+      "enregistre": "Réglages enregistrés",
+      "accepteLabel": "J'accepte de nouveaux patients",
+      "accepteAide": "Décochez si vous êtes complet. Vous resterez dans l'annuaire, mais le patient le saura avant de payer la mise en relation — plutôt que de l'apprendre en vous appelant."
     },
     "choix": {
       "eyebrow": "Médecin spécialiste le plus proche",

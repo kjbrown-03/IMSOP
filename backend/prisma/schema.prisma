@@ -316,23 +316,36 @@ model MedecinLocal {
   // Posé à la création d'un compte depuis une candidature, ou sur un compte
   // existant lorsqu'un médecin déjà inscrit dépose une candidature et qu'elle
   // est retenue. Jamais modifiable par le médecin lui-même.
-  valideParComite      Boolean   @default(false)
-  valideParComiteLe    DateTime?
+  valideParComite         Boolean   @default(false)
+  valideParComiteLe       DateTime?
   // Un médecin traitant s'inscrit d'abord pour suivre SES patients. Apparaître
   // dans un service de mise en relation payant, où des patients lui seront
   // reliés, est un autre engagement :
   // il doit le demander explicitement. Désactivé par défaut, toujours.
-  annuaireVisible      Boolean   @default(false)
+  annuaireVisible         Boolean   @default(false)
+  // Le medecin accepte-t-il de nouveaux patients en ce moment ?
+  //
+  // Distinct de `annuaireVisible` : celui-la dit « je veux figurer dans
+  // l'annuaire », celui-ci dit « j'ai de la place cette semaine ». Un medecin
+  // complet reste dans l'annuaire — le patient a le droit de savoir qu'il
+  // existe — mais l'information lui est donnee AVANT qu'il ne paie la mise en
+  // relation. Vendre un contact vers quelqu'un qui ne peut pas le recevoir
+  // serait indefendable.
+  //
+  // Vrai par defaut : un medecin qui demande a figurer dans l'annuaire veut des
+  // patients. C'est l'indisponibilite qui est l'exception, et c'est donc elle
+  // qu'on declare.
+  annuaireAccepteNouveaux Boolean   @default(true)
   // Spécialités déclarées pour l'annuaire, depuis une liste fermée (voir
   // specialitesLocales.js) - un médecin en couvre souvent plusieurs (médecine
   // générale + pédiatrie). Distinct du champ libre `specialite` ci-dessus, qui
   // reste ce qu'il est.
-  annuaireSpecialites  String[]  @default([])
+  annuaireSpecialites     String[]  @default([])
   // Quartier, après pays et ville : « Cameroun · Douala · Logpom ». C'est le
   // niveau où un patient décide s'il peut s'y rendre.
-  quartier             String?
+  quartier                String?
   // Quelques lignes de présentation, visibles sur la fiche une fois débloquée.
-  annuairePresentation String?
+  annuairePresentation    String?
 
   // Dossiers ou ce medecin a ete designe medecin traitant par le patient.
   dossiers          Dossier[]                   @relation("DossierMedecinTraitant")
