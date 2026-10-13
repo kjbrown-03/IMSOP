@@ -206,6 +206,23 @@ module.exports = {
   // enregistrement où quelqu'un décrit sa maladie est une donnée de santé, et
   // elle ne quitte pas la machine. TRANSCRIPTION_URL vide désactive la
   // fonctionnalité — le formulaire reste utilisable en écrivant.
+  // Notifications poussees (Web Push).
+  //
+  // Les cles VAPID identifient CE serveur aupres des services de notification
+  // d'Apple, Google et Mozilla. Elles se generent une fois, et NE CHANGENT PLUS :
+  // en changer invaliderait tous les abonnements existants, et chaque
+  // utilisateur devrait reautoriser depuis son telephone.
+  //
+  // Absentes, les notifications sont simplement inactives — c'est l'etat normal
+  // en developpement, pas une panne.
+  push: {
+    publicKey: process.env.VAPID_PUBLIC_KEY || '',
+    privateKey: process.env.VAPID_PRIVATE_KEY || '',
+    // Exige par la specification : une adresse joignable, pour qu'un service de
+    // notification puisse signaler un probleme au lieu de couper sans prevenir.
+    contact: process.env.VAPID_CONTACT || 'mailto:contact@imsop.org',
+  },
+
   transcription: {
     url: process.env.TRANSCRIPTION_URL || '',
     // Un seul passage à la fois. Le VPS a deux cœurs et l'application tourne

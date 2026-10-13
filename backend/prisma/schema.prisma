@@ -180,6 +180,7 @@ model User {
   temoignages           Temoignage[]           @relation("TemoignageAuteur")
   temoignagesModeres    Temoignage[]           @relation("TemoignageModerateur")
   recherchesAnnuaire    RechercheAnnuaire[]
+  pushSubscriptions     PushSubscription[]
 
   @@index([role])
 }
@@ -666,6 +667,42 @@ model AuditLog {
   @@index([userId])
   @@index([entityType, entityId])
   @@index([dossierId])
+}
+
+/// Abonnement d'un appareil aux notifications poussees.
+///
+/// Un utilisateur en a autant qu'il a d'appareils : telephone, tablette,
+/// ordinateur. Chacun porte son propre `endpoint`, fourni par le navigateur, qui
+/// sert aussi d'identifiant unique — c'est lui qu'on remplace quand le meme
+/// appareil se reabonne.
+///
+/// Sur iPhone, un abonnement n'existe que si l'application a ete ajoutee a
+/// l'ecran d'accueil : Safari ne delivre pas de notification depuis un simple
+/// onglet. C'est une regle d'Apple, pas un choix d'implementation.
+model PushSubscription {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  /// URL fournie par le service de notification du navigateur. Unique par
+  /// appareil et par navigateur.
+  endpoint String @unique
+  /// Cles de chiffrement du navigateur : le contenu est chiffre pour ce seul
+  /// appareil, le service de notification ne peut pas le lire.
+  p256dh   String
+  auth     String
+
+  /// Pour distinguer les appareils dans les reglages, et diagnostiquer.
+  userAgent String?
+
+  createdAt   DateTime  @default(now())
+  /// Dernier envoi reussi. Un abonnement muet depuis longtemps est souvent mort.
+  lastSuccess DateTime?
+  /// Echecs consecutifs. Au-dela d'un seuil, ou sur un refus definitif du
+  /// service (404, 410), l'abonnement est supprime : le navigateur l'a revoque.
+  echecs      Int       @default(0)
+
+  @@index([userId])
 }
 
 model Notification {

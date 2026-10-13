@@ -1,6 +1,7 @@
 const { prisma } = require('../lib/prisma')
 const { sendMail } = require('../lib/mailer')
 const { sendSms } = require('../lib/sms')
+const push = require('./pushService')
 
 const TEMPLATES = {
   DOSSIER_SOUMIS: {
@@ -161,6 +162,42 @@ async function envoyerSmsSiPertinent(userId, template, context) {
   )
 }
 
+/**
+ * Quels types meritent une notification sur le telephone, et sous quelle forme.
+ *
+ * TOUS N'Y FIGURENT PAS, VOLONTAIREMENT.
+ *
+ * Un code a deux facteurs, une reinitialisation de mot de passe ou une
+ * verification d'adresse arrivent par courriel, et la personne est DEJA devant
+ * son ecran en train de les attendre. Les pousser en plus sur l'ecran
+ * verrouille n'aiderait personne et afficherait un evenement de securite a qui
+ * passe a cote.
+ *
+ * Ce qui reste est ce qu'on ne peut pas deviner sans etre prevenu : un message,
+ * un appel, une etape franchie, une revue qui attend.
+ */
+const PUSH_PAR_TYPE = {
+  MESSAGE_RECU: 'MESSAGE',
+  PIECE_JOINTE_RECUE: 'MESSAGE',
+  COMPLEMENT_DEMANDE: 'MESSAGE',
+  COMPLEMENT_FOURNI: 'MESSAGE',
+
+  DOSSIER_SOUMIS: 'DOSSIER',
+  DOSSIER_AFFECTE: 'DOSSIER',
+  RAPPORT_DISPONIBLE: 'DOSSIER',
+  PAIEMENT_CONFIRME: 'DOSSIER',
+  MEDECIN_LOCAL_RATTACHE: 'DOSSIER',
+  HABILITATION_STATUT: 'DOSSIER',
+  IDENTITE_VALIDEE: 'DOSSIER',
+  IDENTITE_REFUSEE: 'DOSSIER',
+
+  NOUVEAU_DOSSIER_SPECIALISTE: 'COORDINATION',
+  DELAI_REPONSE_ALERTE: 'COORDINATION',
+  CANDIDATURE_RECUE: 'COORDINATION',
+  CANDIDATURE_A_CREER: 'COORDINATION',
+  CONFLIT_INTERETS: 'COORDINATION',
+}
+
 async function notify(userId, email, type, context, options = {}) {
   const template = TEMPLATES[type]
   if (!template) throw new Error(`Unknown notification type: ${type}`)
@@ -170,6 +207,16 @@ async function notify(userId, email, type, context, options = {}) {
   envoyerSmsSiPertinent(userId, template, context).catch((err) =>
     console.error('canal SMS indisponible', err),
   )
+
+  // Meme principe pour le telephone : non attendu, et son echec ne fait jamais
+  // echouer l'action qui l'a declenchee. Un message envoye reste envoye meme si
+  // le telephone du destinataire est injoignable.
+  const categorie = PUSH_PAR_TYPE[type]
+  if (categorie) {
+    push
+      .envoyer(userId, categorie, { dossierId: options.dossierId ?? null })
+      .catch((err) => console.error('notification poussee indisponible', err))
+  }
 
   // Envoi direct, sans trace en base : rien à afficher dans la cloche, et le
   // code ou le lien ne survit pas à l'e-mail.

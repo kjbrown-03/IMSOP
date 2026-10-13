@@ -2,6 +2,7 @@ const { Server } = require('socket.io')
 const jwt = require('jsonwebtoken')
 const env = require('../config/env')
 const { prisma } = require('../lib/prisma')
+const push = require('./pushService')
 
 // In-memory only: one process, no cross-instance fanout needed for the MVP's
 // 1-to-1 calling. A multi-instance deployment would need this in Redis.
@@ -200,7 +201,21 @@ function initCallSignaling(server) {
         fromUserId: socket.userId,
         fromName: socket.userName,
       })
-      if (!delivered) return socket.emit('call:unavailable', { dossierId, toUserId })
+      if (!delivered) {
+        // Le destinataire n'a aucune session ouverte : l'appel ne peut pas
+        // aboutir maintenant. On le previent sur son telephone pour qu'il
+        // ouvre l'application et rappelle.
+        //
+        // On continue d'annoncer `call:unavailable` a l'appelant : une
+        // notification poussee n'est PAS un appel. Elle n'a pas de sonnerie
+        // persistante, elle peut etre retardee par le systeme, et le
+        // destinataire peut ne jamais la voir. Lui laisser croire que ca sonne
+        // serait mentir.
+        push
+          .envoyer(toUserId, 'APPEL', { dossierId })
+          .catch((err) => console.error('notification d appel indisponible', err))
+        return socket.emit('call:unavailable', { dossierId, toUserId })
+      }
 
       // C'est cette session qui autorisera les evenements suivants : sans
       // invitation acceptee par le controle d'acces, rien ne passe.

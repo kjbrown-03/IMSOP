@@ -9,6 +9,7 @@ import PatientShell from '../components/layout/PatientShell'
 import AvatarUploader from '../components/ui/AvatarUploader'
 import ChangementMotDePasse from '../components/ui/ChangementMotDePasse'
 import { useAuthStore } from '../store/useAuthStore'
+import ReglageNotifications from '../components/ui/ReglageNotifications'
 
 // Chaque rôle a déjà sa propre coque (barre latérale, navigation, en-tête) :
 // la page se contente de choisir la bonne, pour que « Mon profil » ne dépayse
@@ -80,6 +81,8 @@ export default function MonProfil() {
           muted={!user?.phone}
         />
       </section>
+
+      <ReglageNotifications />
 
       <ChangementMotDePasse />
     </div>

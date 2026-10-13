@@ -70,6 +70,62 @@ self.addEventListener('activate', (event) => {
   )
 })
 
+// --- Notifications poussees --------------------------------------------------
+//
+// Ces deux ecouteurs tournent meme quand l'application est fermee : c'est tout
+// l'interet du service worker. Sur iPhone, ils ne sont appeles que si
+// l'application a ete ajoutee a l'ecran d'accueil — dans un onglet Safari,
+// aucune notification n'est delivree. C'est une regle d'Apple.
+
+self.addEventListener('push', (event) => {
+  // Une notification sans donnees lisibles reste affichee : mieux vaut une
+  // mention generique qu'un silence, car le navigateur peut penaliser un
+  // service worker qui recoit un push sans rien montrer.
+  let contenu = { titre: 'IMSOP', corps: 'Vous avez une nouvelle information.', url: '/' }
+  try {
+    if (event.data) contenu = { ...contenu, ...event.data.json() }
+  } catch {
+    // Charge illisible : on garde le texte generique.
+  }
+
+  event.waitUntil(
+    self.registration.showNotification(contenu.titre, {
+      body: contenu.corps,
+      icon: '/icons/icone-192.png',
+      badge: '/icons/icone-192.png',
+      // `tag` fait qu'une nouvelle notification du meme type REMPLACE la
+      // precedente au lieu de s'empiler : trois messages non lus donnent une
+      // ligne, pas trois.
+      tag: contenu.type || 'imsop',
+      // Un appel doit insister ; le reste ne doit pas reveiller la nuit pour
+      // une etape de dossier.
+      renotify: Boolean(contenu.urgent),
+      requireInteraction: Boolean(contenu.urgent),
+      data: { url: contenu.url || '/' },
+    }),
+  )
+})
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close()
+  const cible = event.notification.data?.url || '/'
+
+  // Si l'application est deja ouverte quelque part, on y navigue au lieu d'en
+  // ouvrir une seconde fenetre — sinon le patient se retrouve avec plusieurs
+  // copies de l'application empilees.
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((fenetres) => {
+      for (const f of fenetres) {
+        if ('focus' in f) {
+          f.navigate?.(cible)
+          return f.focus()
+        }
+      }
+      return clients.openWindow(cible)
+    }),
+  )
+})
+
 self.addEventListener('fetch', (event) => {
   // TOUT le gestionnaire est sous filet.
   //
