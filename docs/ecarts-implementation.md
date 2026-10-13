@@ -292,6 +292,11 @@ dédié — l'API lui sert déjà le sous-ensemble correct, mais la page est sou
 - **§4.1 / §32 cloisonnement** — testé : un médecin non désigné reçoit 403 sur le
   dossier et la messagerie, et voit 0 dossier sur 6.
 - **§32 paiement** — le médecin local n'a effectivement aucun accès au paiement.
+  Vrai depuis le 2026-10-13 seulement : les quatre routes `/dossiers/:id/paiement/*`
+  ne posaient aucun contrôle de rôle et se fiaient à l'accès au dossier, lequel
+  autorise le médecin traitant désigné. Elles sont désormais réservées au patient,
+  à la coordination et à l'administration, et `paiement.test.js` le vérifie sur les
+  quatre — le test n'est plus en `todo`.
 - **§19 messagerie** — texte, pièces jointes, horodatage, historique, traçabilité,
   triangle médecin local ↔ coordinateur ↔ spécialiste.
 - **§10 formats** — PDF, JPEG, PNG, DICOM acceptés.

@@ -204,8 +204,17 @@ test('Candidatures — dépôt public', async (t) => {
     assert.equal(await prisma.candidature.count(), 0)
   })
 
-  await t.test('une présentation trop courte est refusée', async () => {
-    await deposer({ presentation: 'Trop court.' }).expect(400)
+  // Le parcours écrit n'est plus demandé au candidat : le CV le dit mieux, et le
+  // réclamer en plus — cinquante caractères minimum — faisait abandonner des
+  // candidats sur un téléphone. Le champ reste ACCEPTÉ pour les candidatures
+  // déjà déposées qui en portent un, mais il n'est plus exigé, et une valeur
+  // courte ne fait plus échouer le dépôt.
+  await t.test('une candidature sans parcours écrit est acceptée', async () => {
+    await deposer({ presentation: undefined }).expect(201)
+  })
+
+  await t.test('un parcours écrit court ne fait plus échouer le dépôt', async () => {
+    await deposer({ presentation: 'Court.' }).expect(201)
   })
 
   // Le comité recevrait sinon la même personne plusieurs fois.

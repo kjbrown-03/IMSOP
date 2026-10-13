@@ -176,20 +176,17 @@ describe('Accès au statut de paiement', () => {
     assert.equal(res.status, 403)
   })
 
-  // ÉCART CONNU, volontairement laissé en `todo` plutôt que supprimé.
+  // Le volet financier ne regarde que le patient qui paie et la coordination qui
+  // en repond.
   //
-  // `docs/ecarts-implementation.md` (§32) affirme « le médecin local n'a
-  // effectivement aucun accès au paiement », et backend/README.md reprend la
-  // même garantie. Le code dit autre chose : `GET .../paiement/status` ne pose
-  // aucun `requireRole`, il se contente de `loadDossierWithAccessCheck`, qui
-  // autorise le médecin traitant désigné. Ce test renvoie donc 200 là où la
-  // documentation promet 403.
+  // Ce test a longtemps ete en `todo` : la documentation promettait 403, le code
+  // renvoyait 200, et personne n'avait tranche. Les routes de paiement ne
+  // posaient aucun controle de role — elles verifiaient seulement l'acces au
+  // dossier, lequel autorise le medecin traitant designe.
   //
-  // Le corriger est une décision produit, pas une évidence technique : on peut
-  // défendre que le médecin traitant voie l'état d'avancement du paiement de
-  // son patient. Tant que l'arbitrage n'est pas rendu, l'écart reste visible
-  // ici à chaque exécution au lieu de dormir dans un document.
-  test('le médecin traitant désigné est tenu à l\'écart du volet financier', { todo: 'écart documenté : le code renvoie 200, la doc annonce 403' }, async () => {
+  // Arbitrage rendu : le medecin traitant accompagne le parcours medical, pas la
+  // transaction. Il garde l'acces au dossier, aux pieces et a la messagerie.
+  test("le médecin traitant désigné est tenu à l'écart du volet financier", async () => {
     const { patient } = await creerPaiementEnAttente()
     const { user, medecinLocal } = await f.creerMedecinLocal()
     const dossier = await f.creerDossier({ patient, medecinLocal, status: 'EN_ATTENTE_PAIEMENT' })
@@ -197,10 +194,26 @@ describe('Accès au statut de paiement', () => {
       data: { dossierId: dossier.id, amount: 150000, status: 'EN_ATTENTE', cinetpayTransactionId: `TX-med-${dossier.id.slice(0, 8)}` },
     })
 
+    // Les quatre routes, pas seulement la consultation : initier ou simuler un
+    // paiement a la place du patient ne le regarde pas davantage.
+    for (const appel of [
+      () => api().get(`/api/dossiers/${dossier.id}/paiement/status`),
+      () => api().get(`/api/dossiers/${dossier.id}/paiement/tarif`),
+      () => api().post(`/api/dossiers/${dossier.id}/paiement/init`),
+      () => api().post(`/api/dossiers/${dossier.id}/paiement/simulate`),
+    ]) {
+      const res = await appel().set('Authorization', entete(user))
+      assert.equal(res.status, 403)
+    }
+  })
+
+  // Le patient, lui, doit continuer de passer : fermer l'acces au medecin ne
+  // devait pas fermer la porte a celui qui paie.
+  test('le patient garde accès à son propre paiement', async () => {
+    const { user, dossier } = await creerPaiementEnAttente()
     const res = await api()
       .get(`/api/dossiers/${dossier.id}/paiement/status`)
       .set('Authorization', entete(user))
-
-    assert.equal(res.status, 403)
+    assert.equal(res.status, 200)
   })
 })
