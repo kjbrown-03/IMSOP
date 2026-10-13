@@ -7,6 +7,19 @@ import { useRegistrationStore } from '../../store/useRegistrationStore'
 import { PAYS_DE_LA_LISTE, VILLES_CAMEROUN, VILLE_AUTRE } from '../../lib/villesCameroun'
 
 const COUNTRY_CODES = ['sn', 'ci', 'cm', 'fr', 'be', 'ch']
+
+/**
+ * Indicatif telephonique par pays de residence.
+ *
+ * Le pays est demande AVANT le telephone, et choisir « Cameroun » place « +237 »
+ * dans le champ : taper un indicatif de memoire est une source d'erreur
+ * frequente, et un numero mal prefixe rend le patient injoignable alors que
+ * c'est par la qu'on le rappelle.
+ *
+ * Le prefixe reste MODIFIABLE : quelqu'un qui reside au Cameroun peut avoir un
+ * numero francais. On aide, on n'impose pas.
+ */
+const INDICATIFS = { sn: '+221', ci: '+225', cm: '+237', fr: '+33', be: '+32', ch: '+41' }
 const LANGUAGE_CODES = ['fr', 'en']
 
 export default function InscriptionPatientInfos() {
@@ -31,6 +44,26 @@ export default function InscriptionPatientInfos() {
       return
     }
     setField('city', valeur)
+  }
+
+  /**
+   * Choisir le pays pose l'indicatif telephonique, si le champ n'est pas deja
+   * renseigne autrement.
+   *
+   * On ne REMPLACE jamais un numero commence : quelqu'un qui a tape son numero
+   * puis corrige son pays verrait sa saisie effacee. On ne remplace qu'un champ
+   * vide, ou un champ qui ne contient encore QUE l'indicatif precedent — le cas
+   * de celui qui se trompe de pays et se reprend aussitot.
+   */
+  function choisirPays(code) {
+    setField('country', code)
+
+    const indicatif = INDICATIFS[code]
+    if (!indicatif) return
+
+    const actuel = (phone || '').trim()
+    const ancienSeul = Object.values(INDICATIFS).includes(actuel)
+    if (actuel === '' || ancienSeul) setField('phone', indicatif + ' ')
   }
 
   function onNext(e) {
@@ -122,27 +155,6 @@ export default function InscriptionPatientInfos() {
               </div>
             </div>
 
-            <div className="flex flex-col gap-1 mt-2">
-              <label className="font-label-md text-label-md text-[var(--color-text-main)]" htmlFor="phone">
-                {t('auth.registerInfos.phone')}
-              </label>
-              <div className="flex relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-text-secondary)] material-symbols-outlined text-[20px]">
-                  phone
-                </span>
-                <input
-                  className="h-12 w-full pl-11 pr-4 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] font-body-md text-body-md text-[var(--color-text-main)] placeholder:text-slate-400 dark:placeholder:text-slate-500 transition-colors"
-                  id="phone"
-                  name="phone"
-                  placeholder="+237 6 12 34 56 78"
-                  required
-                  type="tel"
-                  value={phone}
-                  onChange={(e) => setField('phone', e.target.value)}
-                />
-              </div>
-            </div>
-
             <div className="flex flex-col gap-1">
               <label className="font-label-md text-label-md text-[var(--color-text-main)]" htmlFor="country">
                 {t('auth.registerInfos.country')}
@@ -154,7 +166,7 @@ export default function InscriptionPatientInfos() {
                   name="country"
                   required
                   value={country}
-                  onChange={(e) => setField('country', e.target.value)}
+                  onChange={(e) => choisirPays(e.target.value)}
                 >
                   <option disabled value="">
                     {t('auth.registerInfos.countrySelect')}
@@ -196,6 +208,27 @@ export default function InscriptionPatientInfos() {
                 <span className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[var(--color-text-secondary)] material-symbols-outlined">
                   expand_more
                 </span>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-1 mt-2">
+              <label className="font-label-md text-label-md text-[var(--color-text-main)]" htmlFor="phone">
+                {t('auth.registerInfos.phone')}
+              </label>
+              <div className="flex relative">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-text-secondary)] material-symbols-outlined text-[20px]">
+                  phone
+                </span>
+                <input
+                  className="h-12 w-full pl-11 pr-4 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] font-body-md text-body-md text-[var(--color-text-main)] placeholder:text-slate-400 dark:placeholder:text-slate-500 transition-colors"
+                  id="phone"
+                  name="phone"
+                  placeholder={`${INDICATIFS[country] || '+237'} 6 12 34 56 78`}
+                  required
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setField('phone', e.target.value)}
+                />
               </div>
             </div>
 
@@ -309,7 +342,7 @@ export default function InscriptionPatientInfos() {
                 className="h-12 px-4 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] font-body-md text-body-md text-[var(--color-text-main)] placeholder:text-slate-400 dark:placeholder:text-slate-500 transition-colors"
                 id="emergencyContactPhone"
                 name="emergencyContactPhone"
-                placeholder="+237 6 12 34 56 78"
+                placeholder={`${INDICATIFS[country] || '+237'} 6 12 34 56 78`}
                 type="tel"
                 value={emergencyContactPhone}
                 onChange={(e) => setField('emergencyContactPhone', e.target.value)}

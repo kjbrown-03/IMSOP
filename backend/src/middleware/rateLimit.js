@@ -74,16 +74,4 @@ const transcriptionLimiter = rateLimit({
   skip: enTest,
 })
 
-// L'essai de notification n'envoie qu'a soi-meme, donc rien a protéger contre
-// un tiers. La limite est la pour l'utilisateur lui-meme : appuyer dix fois sur
-// le bouton ferait dix notifications sur son propre ecran.
-const essaiNotificationLimiter = rateLimit({
-  windowMs: 5 * 60 * 1000,
-  limit: 5,
-  standardHeaders: true,
-  legacyHeaders: false,
-  message: { message: "Trop d'essais, patientez quelques minutes" },
-  skip: enTest,
-})
-
-module.exports = { apiLimiter, authLimiter, webhookLimiter, rechercheAnnuaireLimiter, transcriptionLimiter, essaiNotificationLimiter }
+module.exports = { apiLimiter, authLimiter, webhookLimiter, rechercheAnnuaireLimiter, transcriptionLimiter }

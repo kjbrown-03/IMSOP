@@ -107,7 +107,17 @@ export const MobileSidebar = ({ className, children, topBar, ...props }) => {
   return (
     <>
       <div
-        className="h-16 px-4 flex flex-row md:hidden items-center justify-between gap-2 bg-white/90 dark:bg-neutral-900/90 backdrop-blur-xl border-b border-slate-200/70 dark:border-neutral-800 w-full shrink-0"
+        // `relative z-50` n'est pas decoratif : cette barre porte
+        // `backdrop-blur-xl`, et un `backdrop-filter` cree un contexte
+        // d'empilement. Les menus deroulants du profil et de la cloche,
+        // `absolute z-50` a l'interieur, restaient donc confines au niveau de la
+        // barre — et la zone de contenu, qui vient apres dans le document,
+        // peignait par-dessus. On les voyait a moitie caches derriere les cartes
+        // du tableau de bord.
+        //
+        // Elever la barre elle-meme fait remonter tout son contexte, menus
+        // compris. Meme cause que le tiroir plus haut, autre consequence.
+        className="relative z-50 h-16 px-4 flex flex-row md:hidden items-center justify-between gap-2 bg-white/90 dark:bg-neutral-900/90 backdrop-blur-xl border-b border-slate-200/70 dark:border-neutral-800 w-full shrink-0"
         {...props}
       >
         <button

@@ -130,7 +130,7 @@ export default function DashboardShell({
       <div className="flex flex-1 min-w-0 min-h-0 md:p-2">
         <div className="flex flex-col flex-1 min-w-0 min-h-0 bg-white dark:bg-neutral-900 md:rounded-2xl md:border border-slate-200 dark:border-neutral-700 shadow-sm">
           {/* Desktop header: the mobile equivalent lives in the sidebar top bar. */}
-          <header className="hidden md:flex items-center justify-between gap-4 px-8 h-16 shrink-0 border-b border-slate-100 dark:border-neutral-800">
+          <header className="relative z-50 hidden md:flex items-center justify-between gap-4 px-8 h-16 shrink-0 border-b border-slate-100 dark:border-neutral-800">
             <div className="flex items-center gap-3 min-w-0">
               {headerLeft}
               <h1 className="text-lg font-display font-bold tracking-tight text-slate-900 dark:text-white truncate">

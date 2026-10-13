@@ -258,3 +258,27 @@
     opacity: 0;
   }
 }
+
+/* Deux fleches dans les listes deroulantes.
+ *
+ * Les `select` du site portent `appearance-none` et une icone dessinee par nous.
+ * Mais Tailwind n'emet que `appearance: none`, et Safari — sur iPhone comme sur
+ * Mac — exige encore le prefixe pour masquer la fleche native. On voyait donc
+ * les deux : la fleche du systeme et la notre, cote a cote.
+ *
+ * La regle est posee ici plutot que classe par classe : le defaut touchait tous
+ * les `select` du site, et il repartirait au prochain formulaire ecrit sans y
+ * penser.
+ */
+select.appearance-none {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  /* Firefox garde une fleche grise en plus sans ceci. */
+  background-image: none;
+}
+
+/* Masque la fleche que Firefox dessine dans sa propre couche. */
+select.appearance-none::-ms-expand {
+  display: none;
+}
