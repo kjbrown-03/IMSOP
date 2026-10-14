@@ -1204,7 +1204,8 @@
         "CV": "CV",
         "REFERENCES": "Professional references",
         "AUTRE": "Other"
-      }
+      },
+      "origineCandidature": "application file"
     },
     "verifications": {
       "title": "Professional credentials",

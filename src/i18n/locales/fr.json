@@ -1204,7 +1204,8 @@
         "CV": "CV",
         "REFERENCES": "Références professionnelles",
         "AUTRE": "Autre"
-      }
+      },
+      "origineCandidature": "dossier de candidature"
     },
     "verifications": {
       "title": "Habilitations des professionnels",

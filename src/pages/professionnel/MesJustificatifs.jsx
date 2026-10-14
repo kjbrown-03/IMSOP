@@ -162,9 +162,29 @@ export default function MesJustificatifs() {
             {documents.map((doc) => (
               <li key={doc.id} className="flex flex-col gap-1">
                 <span className="text-xs uppercase tracking-wider font-semibold text-slate-400 dark:text-neutral-500">
-                  {t(`medecin.justificatifs.types.${doc.type}`)}
+                  {t(`medecin.justificatifs.types.${doc.type}`, { defaultValue: doc.type })}
+                  {/* Les pieces du dossier de candidature sont des archives : le
+                      comite s'est prononce dessus, elles ne se modifient pas.
+                      On le dit plutot que de laisser croire a un oubli. */}
+                  {doc.origine === 'CANDIDATURE' && (
+                    <span className="ml-2 normal-case tracking-normal text-slate-400 dark:text-neutral-500 font-normal">
+                      · {t('medecin.justificatifs.origineCandidature')}
+                    </span>
+                  )}
                 </span>
-                <MessageAttachment document={doc} mine={false} basePath="/professionnels/justificatifs" />
+                {doc.origine === 'CANDIDATURE' ? (
+                  <a
+                    href={doc.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-2 text-sm font-semibold text-primary-600 dark:text-primary-400 hover:underline"
+                  >
+                    <FileText className="w-4 h-4 shrink-0" />
+                    {doc.filename}
+                  </a>
+                ) : (
+                  <MessageAttachment document={doc} mine={false} basePath="/professionnels/justificatifs" />
+                )}
               </li>
             ))}
           </ul>

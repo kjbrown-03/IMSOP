@@ -23,6 +23,12 @@ router.post(
 )
 router.get('/me/justificatifs', requireRole(...PRATICIENS), ctrl.listerMesJustificatifs)
 
+// Relecture de son PROPRE dossier de candidature. Aucun identifiant n'est lu
+// dans l'URL : le controleur part du compte connecte, on ne peut donc pas
+// demander la piece d'un autre.
+router.get('/me/candidature/cv', requireRole(...PRATICIENS), ctrl.monCvCandidature)
+router.get('/me/candidature/photo', requireRole(...PRATICIENS), ctrl.maPhotoCandidature)
+
 // Instruction par la coordination.
 router.get('/verifications', requireRole(...CONTROLEURS), validate(schema.listerDemandes), ctrl.listerDemandes)
 router.get('/:userId/justificatifs', requireRole(...CONTROLEURS), validate(schema.userIdParam), ctrl.listerJustificatifsDe)

@@ -78,11 +78,53 @@ async function listerMesJustificatifs(req, res) {
     select: { id: true, type: true, filename: true, mimeType: true, sizeBytes: true, createdAt: true },
   })
 
+  // Les pieces du dossier de candidature, jointes a la liste.
+  //
+  // Elles n'etaient visibles que de la coordination : le praticien ne voyait
+  // pas le CV qu'il avait lui-meme envoye, et pouvait croire qu'il ne l'avait
+  // jamais transmis — ou le redeposer pour rien.
+  //
+  // Elles sont marquees `origine: 'CANDIDATURE'` et NON SUPPRIMABLES : le
+  // dossier sur lequel le comite s'est prononce doit rester tel quel. Ce sont
+  // des pieces d'archive, pas des documents de travail.
+  const candidature = await prisma.candidature.findFirst({
+    where: { compteUserId: req.userId },
+    select: { id: true, cvKey: true, photoKey: true, createdAt: true },
+  })
+
+  const piecesCandidature = []
+  if (candidature?.cvKey) {
+    piecesCandidature.push({
+      id: `candidature-cv-${candidature.id}`,
+      origine: 'CANDIDATURE',
+      type: 'CV',
+      filename: 'CV déposé avec votre candidature',
+      mimeType: 'application/pdf',
+      sizeBytes: null,
+      createdAt: candidature.createdAt,
+      url: '/api/professionnels/me/candidature/cv',
+    })
+  }
+  if (candidature?.photoKey) {
+    piecesCandidature.push({
+      id: `candidature-photo-${candidature.id}`,
+      origine: 'CANDIDATURE',
+      type: 'PHOTO',
+      filename: 'Photo déposée avec votre candidature',
+      mimeType: 'image/jpeg',
+      sizeBytes: null,
+      createdAt: candidature.createdAt,
+      url: '/api/professionnels/me/candidature/photo',
+    })
+  }
+
   const user = await chargerProfessionnel(req.userId)
   const profil = profilDe(user)
 
   res.json({
-    documents,
+    // Les pieces de candidature d'abord : c'est le dossier d'origine, et le
+    // praticien les cherche en premier.
+    documents: [...piecesCandidature, ...documents],
     habilitation: {
       status: profil?.verificationStatus ?? null,
       motif: profil?.verificationMotif ?? null,
@@ -257,7 +299,42 @@ async function statuerHabilitation(req, res) {
   })
 }
 
+/**
+ * Sert une piece du dossier de candidature a son AUTEUR.
+ *
+ * La route des candidatures est reservee a la coordination, ce qui est juste
+ * pour examiner un dossier — mais le praticien doit pouvoir relire ce qu'il a
+ * lui-meme envoye.
+ *
+ * Celle-ci ne lit AUCUN identifiant fourni par l'appelant : elle part de
+ * `req.userId` et retrouve la candidature rattachee a ce compte. Il est donc
+ * impossible d'y demander celle d'un autre, meme en connaissant son
+ * identifiant.
+ */
+function servirPieceCandidature(champ, prefixe, options) {
+  return async (req, res) => {
+    const candidature = await prisma.candidature.findFirst({
+      where: { compteUserId: req.userId },
+      select: { [champ]: true },
+    })
+    const cle = candidature?.[champ]
+    if (!cle) return res.status(404).json({ message: 'Aucune pièce de ce type dans votre candidature' })
+    return servirObjet(res, `${prefixe}${cle}`, options)
+  }
+}
+
+const monCvCandidature = servirPieceCandidature('cvKey', 'candidatures/cv/', {
+  filename: 'cv-candidature.pdf',
+  contentType: 'application/pdf',
+})
+
+const maPhotoCandidature = servirPieceCandidature('photoKey', 'candidatures/photos/', {
+  filename: 'photo-candidature',
+})
+
 module.exports = {
+  monCvCandidature,
+  maPhotoCandidature,
   uploadJustificatif,
   listerMesJustificatifs,
   listerDemandes,
