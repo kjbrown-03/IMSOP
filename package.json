@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && node scripts/versionner-sw.mjs && node scripts/precompresser.mjs",
+    "build": "vite build && node scripts/versionner-sw.mjs && node scripts/prerendre-pages-legales.mjs && node scripts/precompresser.mjs",
     "preview": "vite preview",
     "demo": "npm run build && vite preview --port 4173 --host",
     "lint": "eslint . --ext js,jsx",
