@@ -94,7 +94,6 @@ export default function InscriptionPatientInfos() {
                 className="h-12 px-4 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] font-body-md text-body-md text-[var(--color-text-main)] placeholder:text-slate-400 dark:placeholder:text-slate-500 transition-colors"
                 id="fullName"
                 name="fullName"
-                placeholder={t('auth.registerInfos.fullNamePlaceholder')}
                 required
                 type="text"
                 value={fullName}
@@ -110,7 +109,6 @@ export default function InscriptionPatientInfos() {
                 className="h-12 px-4 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] font-body-md text-body-md text-[var(--color-text-main)] placeholder:text-slate-400 dark:placeholder:text-slate-500 transition-colors"
                 id="email"
                 name="email"
-                placeholder="votre.email@exemple.com"
                 required
                 type="email"
                 value={email}
@@ -223,7 +221,6 @@ export default function InscriptionPatientInfos() {
                   className="h-12 w-full pl-11 pr-4 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] font-body-md text-body-md text-[var(--color-text-main)] placeholder:text-slate-400 dark:placeholder:text-slate-500 transition-colors"
                   id="phone"
                   name="phone"
-                  placeholder={`${INDICATIFS[country] || '+237'} 6 12 34 56 78`}
                   required
                   type="tel"
                   value={phone}
@@ -266,7 +263,6 @@ export default function InscriptionPatientInfos() {
                     className="h-12 px-4 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] font-body-md text-body-md text-[var(--color-text-main)] placeholder:text-slate-400 dark:placeholder:text-slate-500 transition-colors"
                     id="city"
                     name="city"
-                    placeholder={t('auth.registerInfos.cityPlaceholder')}
                     required
                     type="text"
                     value={city}
@@ -327,7 +323,6 @@ export default function InscriptionPatientInfos() {
                 className="h-12 px-4 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] font-body-md text-body-md text-[var(--color-text-main)] placeholder:text-slate-400 dark:placeholder:text-slate-500 transition-colors"
                 id="emergencyContactName"
                 name="emergencyContactName"
-                placeholder="Ex: Marie Dupont"
                 type="text"
                 value={emergencyContactName}
                 onChange={(e) => setField('emergencyContactName', e.target.value)}
@@ -342,7 +337,6 @@ export default function InscriptionPatientInfos() {
                 className="h-12 px-4 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] font-body-md text-body-md text-[var(--color-text-main)] placeholder:text-slate-400 dark:placeholder:text-slate-500 transition-colors"
                 id="emergencyContactPhone"
                 name="emergencyContactPhone"
-                placeholder={`${INDICATIFS[country] || '+237'} 6 12 34 56 78`}
                 type="tel"
                 value={emergencyContactPhone}
                 onChange={(e) => setField('emergencyContactPhone', e.target.value)}

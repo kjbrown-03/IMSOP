@@ -166,7 +166,6 @@ export default function CoordinateurSpecialites() {
               required
               value={nom}
               onChange={(e) => setNom(e.target.value)}
-              placeholder={t('specialites.nomPlaceholder')}
               className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
             />
           </label>

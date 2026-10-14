@@ -178,7 +178,6 @@ export default function PaiementSecurise() {
               {methode === 'mobile_money' && (
                 <input
                   className="mt-stack-sm h-12 px-4 rounded-xl border border-outline-variant bg-surface font-body-md text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary w-full"
-                  placeholder={t('patient.payment.mobileMoneyPlaceholder')}
                   type="tel"
                   inputMode="tel"
                   autoComplete="tel"

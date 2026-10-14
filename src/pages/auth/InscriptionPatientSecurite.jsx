@@ -80,7 +80,6 @@ export default function InscriptionPatientSecurite() {
                   className="w-full h-12 px-4 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg font-body-md text-body-md text-[var(--color-text-main)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent transition-colors placeholder:text-slate-400 dark:placeholder:text-slate-500"
                   id="password"
                   name="password"
-                  placeholder="••••••••"
                   value={password}
                   onChange={(e) => setField('password', e.target.value)}
                 />
@@ -135,7 +134,6 @@ export default function InscriptionPatientSecurite() {
                   className="w-full h-12 px-4 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg font-body-md text-body-md text-[var(--color-text-main)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent transition-colors placeholder:text-slate-400 dark:placeholder:text-slate-500"
                   id="confirm_password"
                   name="confirm_password"
-                  placeholder="••••••••"
                   value={confirmPassword}
                   onChange={(e) => setField('confirmPassword', e.target.value)}
                 />

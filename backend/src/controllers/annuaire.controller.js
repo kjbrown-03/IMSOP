@@ -44,6 +44,10 @@ function ficheFloutee(resultat, specialitesRecherchees) {
     specialites: m.annuaireSpecialites.filter((s) => specialitesRecherchees.includes(s)),
     ville: m.ville,
     score: resultat.score,
+    // Donne avant le paiement : c'est l'un des rares reperes dont dispose un
+    // patient qui ne connait personne, et il lui sert a CHOISIR. Le lui cacher
+    // jusqu'apres le paiement le ferait choisir a l'aveugle.
+    experience: m.annuaireExperience ?? null,
   }
 }
 
@@ -149,7 +153,7 @@ async function rechercher(req, res) {
       annuaireSpecialites: { hasSome: specialites },
       user: { active: true },
     },
-    select: { id: true, pays: true, ville: true, annuaireSpecialites: true },
+    select: { id: true, pays: true, ville: true, annuaireSpecialites: true, annuaireExperience: true },
   })
 
   // Score : la spécialité la plus probable pèse le plus ; puis même pays, puis
@@ -295,7 +299,7 @@ async function simulerPaiement(req, res) {
 // --- Côté médecin ------------------------------------------------------------
 
 const SELECT_ANNUAIRE_MEDECIN = {
-  annuaireVisible: true, annuaireSpecialites: true, pays: true, ville: true, quartier: true,
+  annuaireVisible: true, annuaireSpecialites: true, annuaireExperience: true, pays: true, ville: true, quartier: true,
   annuairePresentation: true, verificationStatus: true,
 }
 
@@ -309,7 +313,7 @@ async function mettreAJourAnnuaire(req, res) {
   const medecin = await prisma.medecinLocal.findUnique({ where: { userId: req.userId } })
   if (!medecin) return res.status(404).json({ message: 'Profil médecin introuvable' })
 
-  const { annuaireVisible, annuaireSpecialites, pays, ville, quartier, annuairePresentation } = req.body
+  const { annuaireVisible, annuaireSpecialites, annuaireExperience, pays, ville, quartier, annuairePresentation } = req.body
   const paysFinal = pays ?? medecin.pays
 
   // Un médecin non habilité peut préparer sa fiche, mais pas se rendre visible :
@@ -341,6 +345,7 @@ async function mettreAJourAnnuaire(req, res) {
 
   const data = { annuaireVisible }
   if (annuaireSpecialites !== undefined) data.annuaireSpecialites = annuaireSpecialites
+  if (annuaireExperience !== undefined) data.annuaireExperience = annuaireExperience
   if (pays !== undefined) data.pays = pays
   if (ville !== undefined) data.ville = ville
   if (quartier !== undefined) data.quartier = quartier

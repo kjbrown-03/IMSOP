@@ -1056,7 +1056,6 @@ export const Home = ({ avecBarreLaterale = true }) => {
                       <Input
                         autoFocus
                         className="h-8 flex-1 border-0 bg-transparent focus-visible:ring-0"
-                        placeholder={t('chat.searchPlaceholder')}
                         value={threadSearchQuery}
                         onChange={(e) => setThreadSearchQuery(e.target.value)}
                       />
@@ -1173,7 +1172,6 @@ export const Home = ({ avecBarreLaterale = true }) => {
                         )}
                         <Input
                           className="flex-grow border-0"
-                          placeholder={pendingFile ? t('chat.attachCaptionPlaceholder') : t('patient.chat.placeholder')}
                           value={draft}
                           onChange={(e) => setDraft(e.target.value)}
                         />

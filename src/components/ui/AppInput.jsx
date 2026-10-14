@@ -29,7 +29,6 @@ const AppInput = (props) => {
       <div className="relative w-full">
         <input
           className={`peer relative z-10 border-2 border-[var(--color-border)] h-12 w-full rounded-md bg-[var(--color-surface)] px-4 font-medium text-[var(--color-text-primary)] outline-none drop-shadow-sm transition-all duration-200 ease-in-out focus:bg-[var(--color-bg)] placeholder:font-medium placeholder:text-[var(--color-text-secondary)] ${estMotDePasse ? 'pr-12' : ''}`}
-          placeholder={placeholder}
           onMouseMove={handleMouseMove}
           onMouseEnter={() => setIsHovering(true)}
           onMouseLeave={() => setIsHovering(false)}

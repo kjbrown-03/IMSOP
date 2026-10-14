@@ -214,7 +214,6 @@ export default function RedactionRapportExpert() {
             <div className="p-4">
               <textarea
                 className="block w-full rounded-md border-0 py-3 text-on-surface shadow-sm ring-1 ring-inset ring-outline-variant placeholder:text-outline focus:ring-2 focus:ring-inset focus:ring-primary sm:text-body-md font-body-md bg-surface resize-y min-h-[150px] disabled:opacity-60"
-                placeholder={t('specialiste.report.diagnosticPlaceholder')}
                 value={diagnostic}
                 onChange={(e) => setDiagnostic(e.target.value)}
                 disabled={readOnly}
@@ -230,7 +229,6 @@ export default function RedactionRapportExpert() {
             <div className="p-4">
               <textarea
                 className="block w-full rounded-md border-0 py-3 text-on-surface shadow-sm ring-1 ring-inset ring-outline-variant placeholder:text-outline focus:ring-2 focus:ring-inset focus:ring-primary sm:text-body-md font-body-md bg-surface resize-y min-h-[150px] disabled:opacity-60"
-                placeholder={t('specialiste.report.therapeuticPlaceholder')}
                 value={therapeutique}
                 onChange={(e) => setTherapeutique(e.target.value)}
                 disabled={readOnly}
@@ -246,7 +244,6 @@ export default function RedactionRapportExpert() {
             <div className="p-4">
               <textarea
                 className="block w-full rounded-md border-0 py-3 text-on-surface shadow-sm ring-1 ring-inset ring-outline-variant placeholder:text-outline focus:ring-2 focus:ring-inset focus:ring-primary sm:text-body-md font-body-md bg-surface resize-y min-h-[150px] disabled:opacity-60"
-                placeholder={t('specialiste.report.synthesisPlaceholder')}
                 value={synthese}
                 onChange={(e) => setSynthese(e.target.value)}
                 disabled={readOnly}

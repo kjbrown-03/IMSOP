@@ -202,7 +202,6 @@ export default function RevueHabilitations() {
                       <textarea
                         value={motif}
                         onChange={(e) => setMotif(e.target.value)}
-                        placeholder={t('medecin.verifications.motifPlaceholder')}
                         rows={2}
                         className="w-full rounded-xl border border-slate-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-2.5 text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                       />

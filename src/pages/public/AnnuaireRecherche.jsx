@@ -119,7 +119,7 @@ export default function AnnuaireRecherche({ typePratique = 'CONVENTIONNEL' }) {
                 rows={5}
                 maxLength={2000}
                 required
-                placeholder={t('annuaire.recherche.symptomesPlaceholder')}
+                
                 className={CHAMP + ' resize-y'}
               />
               {tropCourt && (

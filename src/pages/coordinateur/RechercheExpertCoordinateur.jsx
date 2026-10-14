@@ -113,7 +113,6 @@ export default function RechercheExpertCoordinateur() {
             <div className="relative min-w-[140px] md:w-full">
               <input
                 className="w-full bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-3 font-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary"
-                placeholder={t('coordinateur.search.countryPlaceholder')}
                 type="text"
                 value={pays}
                 onChange={(e) => setPays(e.target.value)}

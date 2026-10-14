@@ -38,6 +38,7 @@ export default function AnnuaireMedecin() {
           pays: codes.includes(paysBrut) ? paysBrut : '',
           ville: m.data.ville || '',
           quartier: m.data.quartier || '',
+          annuaireExperience: m.data.annuaireExperience ?? '',
           annuairePresentation: m.data.annuairePresentation || '',
           verificationStatus: m.data.verificationStatus,
         })
@@ -85,9 +86,11 @@ export default function AnnuaireMedecin() {
         ...(reglages.pays ? { pays: reglages.pays } : {}),
         ville: reglages.ville || null,
         quartier: reglages.quartier || null,
+        // Chaine vide = « non renseigne », pas « zero an ».
+        annuaireExperience: reglages.annuaireExperience === '' ? null : Number(reglages.annuaireExperience),
         annuairePresentation: reglages.annuairePresentation || null,
       })
-      setReglages((r) => ({ ...r, ...data, pays: data.pays || r.pays, ville: data.ville || '', quartier: data.quartier || '', annuairePresentation: data.annuairePresentation || '' }))
+      setReglages((r) => ({ ...r, ...data, pays: data.pays || r.pays, ville: data.ville || '', quartier: data.quartier || '', annuairePresentation: data.annuairePresentation || '', annuaireExperience: data.annuaireExperience ?? '' }))
       setEnregistre(true)
     } catch (err) {
       setErreur(err.response?.data?.message || t('annuaire.medecin.erreurEnregistrement'))
@@ -191,10 +194,26 @@ export default function AnnuaireMedecin() {
                   value={reglages.quartier}
                   onChange={(e) => modifier('quartier', e.target.value)}
                   maxLength={120}
-                  placeholder={t('annuaire.medecin.quartierPlaceholder')}
                   className={CHAMP}
                 />
               </label>
+            </div>
+          </section>
+
+          <section className="glass-card rounded-2xl p-5 flex flex-col gap-3">
+            <h2 className="font-semibold text-slate-900 dark:text-white">{t('annuaire.medecin.experienceTitre')}</h2>
+            <p className="text-sm text-slate-500 dark:text-neutral-400">{t('annuaire.medecin.experienceAide')}</p>
+            <div className="flex items-center gap-3">
+              <input
+                type="number"
+                min={0}
+                max={70}
+                inputMode="numeric"
+                value={reglages.annuaireExperience}
+                onChange={(e) => modifier('annuaireExperience', e.target.value)}
+                className={CHAMP + ' w-28'}
+              />
+              <span className="text-sm text-slate-600 dark:text-neutral-300">{t('annuaire.medecin.experienceUnite')}</span>
             </div>
           </section>
 
@@ -205,7 +224,6 @@ export default function AnnuaireMedecin() {
               onChange={(e) => modifier('annuairePresentation', e.target.value)}
               rows={3}
               maxLength={600}
-              placeholder={t('annuaire.medecin.presentationPlaceholder')}
               className={CHAMP + ' resize-y'}
             />
           </section>

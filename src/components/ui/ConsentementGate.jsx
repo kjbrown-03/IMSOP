@@ -146,7 +146,6 @@ export default function ConsentementGate({
           value={nomSignataire}
           onChange={(e) => onNomChange(e.target.value)}
           disabled={disabled || !accepted}
-          placeholder={t('consentement.signaturePlaceholder')}
           aria-invalid={nomIncorrect}
           autoComplete="name"
           className={`w-full rounded-lg border bg-transparent px-3 py-2 text-slate-900 dark:text-white disabled:opacity-50 ${
@@ -191,7 +190,6 @@ export default function ConsentementGate({
                     value={code}
                     onChange={(e) => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
                     disabled={disabled || verification}
-                    placeholder={t('consentement.otpPlaceholder')}
                     className="w-full sm:w-40 rounded-lg border border-slate-300 dark:border-neutral-700 bg-transparent px-3 py-2 tracking-[0.4em] text-center font-mono text-slate-900 dark:text-white disabled:opacity-50"
                   />
                   <button

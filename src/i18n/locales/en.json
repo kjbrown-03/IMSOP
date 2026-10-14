@@ -1418,7 +1418,9 @@
       "emailLabel": "Your email address",
       "emailPlaceholder": "you@example.com",
       "emailAide": "No account needed. This email is used for your payment and to find your connection again.",
-      "emailRequis": "Enter a valid email address to get connected."
+      "emailRequis": "Enter a valid email address to get connected.",
+      "experience_one": "{{count}} year of experience",
+      "experience_other": "{{count}} years of experience"
     },
     "urgence": {
       "titre": "What you describe may be an emergency",
@@ -1441,7 +1443,10 @@
       "quartierPlaceholder": "E.g.: Logpom",
       "presentationTitre": "Presentation (optional)",
       "presentationPlaceholder": "Opening hours, languages, access… Shown once your details are unlocked.",
-      "enregistre": "Settings saved"
+      "enregistre": "Settings saved",
+      "experienceTitre": "Years of experience",
+      "experienceAide": "How long have you been practising? Patients see this before requesting an introduction. Leave blank to omit it.",
+      "experienceUnite": "years in practice"
     },
     "choix": {
       "eyebrow": "Nearest specialist doctor",
@@ -1519,7 +1524,9 @@
     "pratique": {
       "CONVENTIONNEL": "Conventional medicine",
       "TRADITIONNEL": "Traditional medicine"
-    }
+    },
+    "anneesExperience": "Years of experience",
+    "anneesExperienceAide": "How many years have you been practising? Patients will see this on your listing."
   },
   "candidatures": {
     "titre": "Integration requests",

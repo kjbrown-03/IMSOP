@@ -50,7 +50,7 @@ export default function Candidature({ type = 'SPECIALISTE' }) {
 
   const [form, setForm] = useState({
     fullName: '', email: '', phone: '', specialite: '',
-    etablissement: '', pays: estMedecin ? 'cm' : '', ville: '', langues: '', numeroOrdre: '',
+    etablissement: '', pays: estMedecin ? 'cm' : '', ville: '', langues: '', numeroOrdre: '', anneesExperience: '',
     // Lieu d'exercice du médecin traitant. Vide tant qu'il n'a rien coché :
     // les champs n'apparaissent qu'une fois le type choisi.
     // Médecine conventionnelle par défaut : c'est le cas de la majorité, et
@@ -316,7 +316,6 @@ export default function Candidature({ type = 'SPECIALISTE' }) {
                 value={form.specialite}
                 onChange={choisir('specialite')}
                 options={specialites}
-                placeholder={t('candidature.specialiteChoisir')}
                 autreAutorise={estMedecin}
                 autrePlaceholder={t('candidature.specialiteAutrePlaceholder')}
                 {...libellesListe}
@@ -338,7 +337,6 @@ export default function Candidature({ type = 'SPECIALISTE' }) {
                     value={form.pays}
                     onChange={choisirPays}
                     options={OPTIONS_PAYS.map((p) => ({ valeur: p.code, label: p.nom }))}
-                    placeholder={t('candidature.paysChoisir')}
                     videLabel={t('candidature.aucunResultat')}
                   />
                 </Champ>
@@ -347,7 +345,6 @@ export default function Candidature({ type = 'SPECIALISTE' }) {
                     value={form.ville}
                     onChange={choisir('ville')}
                     options={villes}
-                    placeholder={form.pays ? t('candidature.villeChoisir') : t('candidature.villePaysDabord')}
                     disabled={!form.pays}
                     videLabel={t('candidature.aucunResultat')}
                   />
@@ -436,6 +433,20 @@ export default function Candidature({ type = 'SPECIALISTE' }) {
                     <input className={CHAMP} value={form.numeroOrdre} onChange={modifier('numeroOrdre')} />
                   </Champ>
                 )}
+
+                {/* L'experience concerne les deux voies : un tradipraticien
+                    exerce depuis un certain nombre d'annees comme un autre. */}
+                <Champ label={t('candidature.anneesExperience')} aide={t('candidature.anneesExperienceAide')}>
+                  <input
+                    type="number"
+                    min={0}
+                    max={70}
+                    inputMode="numeric"
+                    className={CHAMP}
+                    value={form.anneesExperience}
+                    onChange={modifier('anneesExperience')}
+                  />
+                </Champ>
               </>
             ) : (
               <>
@@ -443,7 +454,7 @@ export default function Candidature({ type = 'SPECIALISTE' }) {
                   <input className={CHAMP} value={form.pays} onChange={modifier('pays')} autoComplete="country-name" />
                 </Champ>
                 <Champ label={t('candidature.langues')}>
-                  <input className={CHAMP} value={form.langues} onChange={modifier('langues')} placeholder="FR, EN" />
+                  <input className={CHAMP} value={form.langues} onChange={modifier('langues')} />
                 </Champ>
               </>
             )}

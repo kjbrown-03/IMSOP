@@ -145,7 +145,6 @@ export default function ListeDeroulante({
           required={required}
           disabled={disabled}
           className={CHAMP}
-          placeholder={autrePlaceholder || placeholder}
           value={value}
           onChange={(e) => onChange(e.target.value)}
         />
@@ -176,7 +175,6 @@ export default function ListeDeroulante({
           autoComplete="off"
           disabled={disabled}
           className={`${CHAMP} pr-10`}
-          placeholder={selection ? selection.label : placeholder}
           value={ouvert ? saisie : selection?.label || ''}
           onChange={(e) => {
             setSaisie(e.target.value)

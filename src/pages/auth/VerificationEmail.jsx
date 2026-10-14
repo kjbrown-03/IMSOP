@@ -75,7 +75,6 @@ export default function VerificationEmail() {
               id="code"
               inputMode="numeric"
               maxLength={6}
-              placeholder="000000"
               value={code}
               onChange={(e) => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
             />

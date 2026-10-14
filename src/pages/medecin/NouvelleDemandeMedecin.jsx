@@ -218,7 +218,6 @@ export default function NouvelleDemandeMedecin() {
               rows={3}
               value={champs.motif}
               onChange={modifier('motif')}
-              placeholder={t('medecin.nouvelleDemande.motifPlaceholder')}
               className={CHAMP + ' resize-y'}
             />
           </Champ>
@@ -233,7 +232,6 @@ export default function NouvelleDemandeMedecin() {
               rows={2}
               value={champs.allergies}
               onChange={modifier('allergies')}
-              placeholder={t('medecin.nouvelleDemande.allergiesPlaceholder')}
               className={CHAMP + ' resize-y'}
             />
           </Champ>
@@ -301,7 +299,6 @@ export default function NouvelleDemandeMedecin() {
             rows={3}
             value={champs.question}
             onChange={modifier('question')}
-            placeholder={t('medecin.nouvelleDemande.questionPlaceholder')}
             className={CHAMP + ' resize-y'}
           />
         </section>

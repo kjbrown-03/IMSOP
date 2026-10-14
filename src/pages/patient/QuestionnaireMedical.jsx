@@ -195,7 +195,6 @@ export default function QuestionnaireMedical() {
                 <textarea
                   className="w-full bg-slate-50 dark:bg-neutral-800 border border-slate-200/60 dark:border-neutral-700 rounded-xl px-4 py-3.5 text-sm font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all resize-y placeholder:text-slate-400 dark:placeholder:text-slate-500 hover:bg-white dark:hover:bg-neutral-700 min-h-[120px]"
                   id="symptomes"
-                  placeholder={t('patient.questionnaire.symptomesPlaceholder')}
                   rows={4}
                   required
                   value={symptomes}
@@ -236,7 +235,6 @@ export default function QuestionnaireMedical() {
                 <input
                   className="w-full bg-slate-50 dark:bg-neutral-800 border border-slate-200/60 dark:border-neutral-700 rounded-xl px-4 py-3.5 text-sm font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all placeholder:text-slate-400 dark:placeholder:text-slate-500 hover:bg-white dark:hover:bg-neutral-700"
                   id="allergies"
-                  placeholder={t('patient.questionnaire.allergiesPlaceholder')}
                   type="text"
                   value={allergies}
                   onChange={(e) => setAllergies(e.target.value)}
@@ -251,7 +249,6 @@ export default function QuestionnaireMedical() {
                 <input
                   className="w-full bg-slate-50 dark:bg-neutral-800 border border-slate-200/60 dark:border-neutral-700 rounded-xl px-4 py-3.5 text-sm font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all placeholder:text-slate-400 dark:placeholder:text-slate-500 hover:bg-white dark:hover:bg-neutral-700"
                   id="traitement"
-                  placeholder={t('patient.questionnaire.traitementPlaceholder')}
                   type="text"
                   value={traitement}
                   onChange={(e) => setTraitement(e.target.value)}

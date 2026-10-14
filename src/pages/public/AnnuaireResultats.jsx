@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { AlertTriangle, Building2, Loader2, Lock, LockOpen, Mail, MapPin, Phone, Search, Stethoscope } from 'lucide-react'
+import { AlertTriangle, Award, Building2, Loader2, Lock, LockOpen, Mail, MapPin, Phone, Search, Stethoscope } from 'lucide-react'
 import Navbar from '../../components/layout/Navbar'
 import { useAuthStore } from '../../store/useAuthStore'
 import { api } from '../../lib/api'
@@ -36,6 +36,7 @@ function FicheFloutee({ fiche, t }) {
             <MapPin className="w-3.5 h-3.5" /> {fiche.ville || t('annuaire.resultats.villeInconnue')}
             <span className="inline-block h-3 w-20 rounded bg-[var(--color-surface-container-high)] blur-[3px] ml-1" aria-hidden="true" />
           </p>
+          <Experience fiche={fiche} t={t} />
           <div className="flex gap-3 mt-1">
             <span className="inline-block h-3 w-28 rounded bg-[var(--color-surface-container-high)] blur-[3px]" aria-hidden="true" />
             <span className="inline-block h-3 w-36 rounded bg-[var(--color-surface-container-high)] blur-[3px]" aria-hidden="true" />
@@ -44,6 +45,23 @@ function FicheFloutee({ fiche, t }) {
         <Lock className="w-4 h-4 text-[var(--color-text-secondary)] shrink-0" aria-label={t('annuaire.resultats.verrouille')} />
       </div>
     </article>
+  )
+}
+
+/**
+ * Annees d'exercice, montrees AVANT le paiement.
+ *
+ * C'est un repere pour CHOISIR, pas une recompense : le cacher jusqu'apres le
+ * paiement ferait choisir le patient a l'aveugle. Absent si le medecin ne l'a
+ * pas renseigne — mieux vaut rien qu'un « 0 an » trompeur.
+ */
+function Experience({ fiche, t }) {
+  if (fiche.experience === null || fiche.experience === undefined) return null
+  return (
+    <p className="text-sm text-[var(--color-text-secondary)] flex items-center gap-1.5">
+      <Award className="w-3.5 h-3.5 shrink-0" />
+      {t('annuaire.resultats.experience', { count: fiche.experience })}
+    </p>
   )
 }
 
@@ -66,6 +84,7 @@ function FicheComplete({ fiche, t }) {
               <Building2 className="w-3.5 h-3.5 shrink-0" /> {fiche.etablissement}
             </p>
           )}
+          <Experience fiche={fiche} t={t} />
           {fiche.presentation && <p className="text-sm text-[var(--color-text-main)] mt-1">{fiche.presentation}</p>}
           <div className="flex flex-wrap gap-2 mt-2">
             {fiche.telephone && (
@@ -277,7 +296,6 @@ export default function AnnuaireResultats() {
                         type="email"
                         value={email}
                         onChange={(e) => { setEmail(e.target.value); setErreur(null) }}
-                        placeholder={t('annuaire.resultats.emailPlaceholder')}
                         autoComplete="email"
                         inputMode="email"
                         className="w-full rounded-xl border border-[var(--color-border)] bg-[var(--color-bg)] px-4 py-3 text-[var(--color-text-main)] outline-none focus:border-[var(--color-primary)] transition-colors"

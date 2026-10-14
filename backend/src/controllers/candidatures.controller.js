@@ -48,7 +48,7 @@ async function deposer(req, res) {
   if (!photoFichier) return res.status(400).json({ message: 'La photo est obligatoire' })
 
   const {
-    type, fullName, email, phone, specialite, etablissement, pays, ville, langues, numeroOrdre, presentation,
+    type, fullName, email, phone, specialite, etablissement, pays, ville, langues, numeroOrdre, anneesExperience, presentation,
     typeStructure, typePratique, nomClinique, telClinique, emailClinique, nomHopital, telHopital, emailHopital,
   } = req.body
 
@@ -85,6 +85,7 @@ async function deposer(req, res) {
       langues,
       numeroOrdre,
       presentation,
+      anneesExperience,
       typeStructure,
       ...(typePratique ? { typePratique } : {}),
       nomClinique,
@@ -200,6 +201,7 @@ function formulaireEnTexte(c) {
     ligne('Ville de résidence', c.ville),
     ligne('Langues', c.langues),
     ligne("Numéro d'ordre", c.numeroOrdre),
+    ligne("Années d'exercice", c.anneesExperience != null ? `${c.anneesExperience} an(s)` : null),
     ligne('Nature de la pratique', c.typePratique === 'TRADITIONNEL' ? 'Médecine traditionnelle' : c.typePratique ? 'Médecine conventionnelle' : null),
     ...blocStructure(c),
     // Le parcours écrit n'est plus demandé : le CV le dit mieux. Les anciennes
@@ -498,6 +500,41 @@ async function eleverCompteExistant({ req, res, candidature, existant }) {
   res.status(200).json({ user, compteExistantEleve: true, identifiantsEnvoyes: prevenu })
 }
 
+/**
+ * Recopie la photo de la candidature vers l'espace des avatars, et renvoie
+ * l'adresse publique a poser sur le compte.
+ *
+ * POURQUOI RECOPIER PLUTOT QUE POINTER
+ *
+ * Les deux espaces n'ont pas les memes regles. La photo de candidature est
+ * servie par une route reservee a la coordination, le temps de l'examen du
+ * dossier ; l'avatar est public et immuable, avec un nom aleatoire pour qu'on ne
+ * puisse pas enumerer les comptes. Faire pointer l'un sur l'autre melangerait
+ * ces deux regimes — et supprimer une candidature effacerait la photo de profil
+ * d'un medecin en exercice.
+ *
+ * L'echec n'est jamais bloquant : un compte sans photo reste utilisable, et le
+ * medecin pourra en poser une lui-meme. Refuser la creation d'un compte pour
+ * une image serait disproportionne.
+ */
+async function recopierPhotoEnAvatar(photoKey) {
+  if (!photoKey || !PHOTO_FILE_NAME.test(photoKey)) return null
+  try {
+    const objet = await s3.getObjectStream(`${PHOTO_PREFIX}${photoKey}`)
+    const morceaux = []
+    for await (const morceau of objet.body) morceaux.push(morceau)
+    const contenu = Buffer.concat(morceaux)
+
+    const extension = photoKey.split('.').pop()
+    const nom = `${crypto.randomBytes(16).toString('hex')}.${extension}`
+    await s3.putObject(`avatars/${nom}`, contenu, objet.contentType || MIME_PAR_EXTENSION[extension])
+    return `/api/users/avatar/${nom}`
+  } catch (err) {
+    console.error('recopie de la photo de candidature impossible', err)
+    return null
+  }
+}
+
 async function creerCompte(req, res) {
   const candidature = await prisma.candidature.findUnique({ where: { id: req.params.id } })
   if (!candidature) return res.status(404).json({ message: 'Candidature introuvable' })
@@ -551,6 +588,10 @@ async function creerCompte(req, res) {
   // quartier et à se rendre visible — le reste est prêt.
   const specialiteAnnuaire = versSpecialiteLocale(candidature.specialite)
 
+  // Hors transaction : un envoi vers le stockage objet n'a pas sa place dans une
+  // transaction de base, qu'il tiendrait ouverte le temps du reseau.
+  const avatarUrl = await recopierPhotoEnAvatar(candidature.photoKey)
+
   const user = await prisma.$transaction(async (tx) => {
     const cree = await tx.user.create({
       data: {
@@ -561,6 +602,10 @@ async function creerCompte(req, res) {
         role,
         twoFactorEnabled: true,
         emailVerified: true,
+        // La photo deposee avec la candidature devient la photo de profil : le
+        // medecin n'a pas a la redonner, et le comite a valide un dossier ou
+        // elle figurait.
+        ...(avatarUrl ? { avatarUrl } : {}),
         ...(role === 'SPECIALISTE'
           ? { specialiste: { create: { ...profil, langues: candidature.langues, disponible: true } } }
           : {
@@ -572,6 +617,7 @@ async function creerCompte(req, res) {
                   ville: candidature.ville,
                   numeroOrdre: candidature.numeroOrdre,
                   typePratique: candidature.typePratique,
+                  annuaireExperience: candidature.anneesExperience ?? null,
                   ...(specialiteAnnuaire ? { annuaireSpecialites: [specialiteAnnuaire] } : {}),
                 },
               },

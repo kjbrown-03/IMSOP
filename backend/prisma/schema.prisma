@@ -333,6 +333,14 @@ model MedecinLocal {
   // niveau où un patient décide s'il peut s'y rendre.
   quartier                String?
   // Quelques lignes de présentation, visibles sur la fiche une fois débloquée.
+  // Annees d'exercice declarees par le medecin, affichees au patient AVANT le
+  // paiement de la mise en relation.
+  //
+  // C'est l'un des rares reperes dont dispose quelqu'un qui ne connait personne :
+  // la specialite dit ce que le medecin traite, l'experience dit depuis combien
+  // de temps. Facultatif — un medecin qui ne le renseigne pas n'est pas penalise,
+  // le champ est simplement absent de sa fiche.
+  annuaireExperience      Int?
   annuairePresentation    String?
 
   // Dossiers ou ce medecin a ete designe medecin traitant par le patient.
@@ -840,6 +848,9 @@ model Candidature {
   ville         String?
   langues       String?
   numeroOrdre   String?
+  // Annees d'exercice. Lues par le comite, puis recopiees sur la fiche
+  // d'annuaire a la creation du compte : le candidat ne les ressaisit pas.
+  anneesExperience Int?
 
   // Structure d'exercice du medecin traitant, avec de quoi la joindre : le
   // comite verifie l'exercice reel en appelant l'etablissement, et un nom seul

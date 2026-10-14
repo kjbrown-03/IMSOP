@@ -133,7 +133,6 @@ export default function CoordinateurTemoignages() {
                   type="text"
                   value={motifDrafts[item.id] || ''}
                   onChange={(e) => setMotifDrafts((prev) => ({ ...prev, [item.id]: e.target.value }))}
-                  placeholder={t('coordinateur.temoignages.motifPlaceholder')}
                   className="flex-1 bg-white dark:bg-neutral-800 border border-slate-200 dark:border-neutral-700 rounded-xl px-3 py-2 text-sm text-slate-900 dark:text-white outline-none focus:border-primary-500 transition-all"
                 />
                 <div className="flex gap-2 shrink-0">

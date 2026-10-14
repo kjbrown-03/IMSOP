@@ -23,6 +23,9 @@ const deposer = {
     ville: champTexte(100),
     langues: champTexte(200),
     numeroOrdre: champTexte(100),
+    // Arrive en multipart, donc en chaine : on convertit avant de valider.
+    // Borne a 70 ans — au-dela c'est une faute de frappe, pas une carriere.
+    anneesExperience: z.coerce.number().int().min(0).max(70).optional(),
     typeStructure: z.enum(TYPES_STRUCTURE).optional(),
     // Médecine conventionnelle ou traditionnelle. Facultatif ici, par défaut
     // conventionnel : seul le formulaire médecin l'affiche.

@@ -243,7 +243,6 @@ export default function DossierMedecinLocal() {
                   onChange={(e) => setQuestion(e.target.value)}
                   rows={4}
                   maxLength={2000}
-                  placeholder={t('medecin.file.questionPlaceholder')}
                   className="bg-white dark:bg-neutral-800 border border-slate-200 dark:border-neutral-700 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white outline-none focus:border-primary-500 transition-all resize-none"
                 />
                 {questionError && (

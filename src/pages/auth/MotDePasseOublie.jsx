@@ -43,7 +43,6 @@ export default function MotDePasseOublie() {
                 className="block w-full px-3 py-3 border border-outline-variant rounded-lg bg-surface-container-lowest text-on-surface focus:ring-2 focus:ring-primary focus:border-primary transition-colors font-body-md h-12"
                 id="email"
                 name="email"
-                placeholder="votre.email@exemple.com"
                 required
                 type="email"
                 value={email}

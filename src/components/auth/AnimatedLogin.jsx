@@ -191,14 +191,12 @@ const AnimatedLogin = ({ role = 'PATIENT' }) => {
 
             <form onSubmit={onSubmit} className="flex flex-col gap-4">
               <AppInput 
-                placeholder={t('common.email')} 
                 type="email" 
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
               />
               <AppInput 
-                placeholder={t('common.password')} 
                 type="password" 
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}

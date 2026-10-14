@@ -75,7 +75,6 @@ export default function TemoignageForm() {
           onChange={(e) => setTexte(e.target.value)}
           rows={3}
           maxLength={1000}
-          placeholder={t('temoignage.placeholder')}
           className="bg-white dark:bg-neutral-800 border border-slate-200 dark:border-neutral-700 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white outline-none focus:border-primary-500 transition-all resize-none"
         />
 

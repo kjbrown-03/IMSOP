@@ -217,7 +217,6 @@ export default function Reversements() {
                       <input
                         value={references[h.id] || ''}
                         onChange={(e) => setReferences((r) => ({ ...r, [h.id]: e.target.value }))}
-                        placeholder={t('coordinateur.reversements.referencePlaceholder')}
                         className="flex-1 min-w-0 rounded-xl border border-slate-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 px-3 py-2 text-sm text-slate-900 dark:text-white"
                       />
                       <button
