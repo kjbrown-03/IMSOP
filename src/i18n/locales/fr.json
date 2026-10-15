@@ -1624,7 +1624,8 @@
           "Enregistrements vocaux : si vous choisissez de décrire vos symptômes à la voix plutôt que par écrit, l'enregistrement est transcrit sur nos propres serveurs, puis immédiatement effacé. Il n'est transmis à aucun prestataire extérieur et n'est jamais conservé : seul le texte obtenu subsiste, et uniquement si vous lancez ensuite une recherche.",
           "Données de médecin : spécialité, établissement, numéro d'inscription à l'ordre, justificatifs d'habilitation, curriculum vitae et photo professionnelle.",
           "Données techniques : adresse IP et horodatage des actions sensibles, conservés dans un journal d'audit.",
-          "Données de paiement : montant, devise, statut et référence de transaction. Aucune coordonnée bancaire ne transite par nos serveurs ni n'y est stockée."
+          "Données de paiement : montant, devise, statut et référence de transaction. Aucune coordonnée bancaire ne transite par nos serveurs ni n'y est stockée.",
+          "Connexion avec Google : si vous choisissez ce mode de connexion, Google nous transmet votre nom, votre adresse e-mail et votre photo de profil. Ces informations servent uniquement à créer votre compte et à vous identifier lors de vos connexions suivantes. Nous ne demandons aucun autre accès à votre compte Google — ni vos contacts, ni votre agenda, ni vos fichiers — et nous ne publions rien en votre nom. Vous pouvez révoquer cet accès à tout moment depuis les paramètres de sécurité de votre compte Google."
         ]
       },
       "s3": {

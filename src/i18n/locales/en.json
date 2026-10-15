@@ -1624,7 +1624,8 @@
           "Voice recordings: if you choose to describe your symptoms by voice rather than in writing, the recording is transcribed on our own servers and then deleted immediately. It is never sent to any outside provider and never retained: only the resulting text remains, and only if you then run a search.",
           "Données de médecin : spécialité, établissement, numéro d'inscription à l'ordre, justificatifs d'habilitation, curriculum vitae et photo professionnelle.",
           "Données techniques : adresse IP et horodatage des actions sensibles, conservés dans un journal d'audit.",
-          "Données de paiement : montant, devise, statut et référence de transaction. Aucune coordonnée bancaire ne transite par nos serveurs ni n'y est stockée."
+          "Données de paiement : montant, devise, statut et référence de transaction. Aucune coordonnée bancaire ne transite par nos serveurs ni n'y est stockée.",
+          "Signing in with Google: if you choose this method, Google passes us your name, email address and profile picture. We use them only to create your account and recognise you on later sign-ins. We request no other access to your Google account — not your contacts, calendar or files — and we post nothing on your behalf. You can revoke this access at any time from your Google account security settings."
         ]
       },
       "s3": {
