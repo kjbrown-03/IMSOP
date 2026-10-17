@@ -340,6 +340,16 @@ model MedecinLocal {
   // la specialite dit ce que le medecin traite, l'experience dit depuis combien
   // de temps. Facultatif — un medecin qui ne le renseigne pas n'est pas penalise,
   // le champ est simplement absent de sa fiche.
+  // Adresse du cabinet, telle que le medecin l'ecrirait sur une ordonnance.
+  //
+  // Sert a construire un lien « Voir sur la carte » qui ouvre l'application de
+  // navigation du patient. On ne stocke NI latitude NI longitude : la position
+  // en direct d'un medecin ne regarde personne, et pour un rendez-vous une
+  // adresse suffit — c'est elle qui figure sur sa plaque.
+  //
+  // Donnee APRES paiement seulement, comme le telephone : c'est precisement ce
+  // que la mise en relation achete.
+  annuaireAdresse         String?
   annuaireExperience      Int?
   annuairePresentation    String?
 

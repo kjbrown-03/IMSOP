@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { CheckCircle2, Eye, EyeOff, Loader2, MapPin, ShieldAlert } from 'lucide-react'
 import MedecinShell from '../../components/layout/MedecinShell'
 import { api } from '../../lib/api'
+import ReglageNotifications from '../../components/ui/ReglageNotifications'
 
 const CHAMP =
   'w-full rounded-lg border border-slate-300 dark:border-neutral-700 bg-transparent px-3 py-2 text-slate-900 dark:text-white'
@@ -38,6 +39,7 @@ export default function AnnuaireMedecin() {
           pays: codes.includes(paysBrut) ? paysBrut : '',
           ville: m.data.ville || '',
           quartier: m.data.quartier || '',
+          annuaireAdresse: m.data.annuaireAdresse || '',
           annuaireExperience: m.data.annuaireExperience ?? '',
           annuairePresentation: m.data.annuairePresentation || '',
           verificationStatus: m.data.verificationStatus,
@@ -87,10 +89,11 @@ export default function AnnuaireMedecin() {
         ville: reglages.ville || null,
         quartier: reglages.quartier || null,
         // Chaine vide = « non renseigne », pas « zero an ».
+        annuaireAdresse: reglages.annuaireAdresse || null,
         annuaireExperience: reglages.annuaireExperience === '' ? null : Number(reglages.annuaireExperience),
         annuairePresentation: reglages.annuairePresentation || null,
       })
-      setReglages((r) => ({ ...r, ...data, pays: data.pays || r.pays, ville: data.ville || '', quartier: data.quartier || '', annuairePresentation: data.annuairePresentation || '', annuaireExperience: data.annuaireExperience ?? '' }))
+      setReglages((r) => ({ ...r, ...data, pays: data.pays || r.pays, ville: data.ville || '', quartier: data.quartier || '', annuairePresentation: data.annuairePresentation || '', annuaireExperience: data.annuaireExperience ?? '', annuaireAdresse: data.annuaireAdresse || '' }))
       setEnregistre(true)
     } catch (err) {
       setErreur(err.response?.data?.message || t('annuaire.medecin.erreurEnregistrement'))
@@ -143,6 +146,17 @@ export default function AnnuaireMedecin() {
               <span className="text-sm text-slate-500 dark:text-neutral-400">{t('annuaire.medecin.visibleAide')}</span>
             </span>
           </label>
+
+          {/* Invitation, pas condition.
+              Le moment est le bon : le medecin vient d'accepter que des patients
+              le contactent, l'interet des notifications est evident pour lui.
+              Mais on ne BLOQUE pas — le navigateur n'autorise qu'une seule
+              demande, et s'il refuse il ne redemandera jamais. En faire une
+              obligation couterait des medecins sans rien garantir.
+              `ReglageNotifications` ne s'affiche de lui-meme que si l'appareil
+              sait recevoir des notifications et qu'elles ne sont pas deja
+              actives. */}
+          {reglages.annuaireVisible && <ReglageNotifications />}
 
 
           <section className="glass-card rounded-2xl p-5 flex flex-col gap-4">
@@ -198,6 +212,17 @@ export default function AnnuaireMedecin() {
                 />
               </label>
             </div>
+          </section>
+
+          <section className="glass-card rounded-2xl p-5 flex flex-col gap-3">
+            <h2 className="font-semibold text-slate-900 dark:text-white">{t('annuaire.medecin.adresseTitre')}</h2>
+            <p className="text-sm text-slate-500 dark:text-neutral-400">{t('annuaire.medecin.adresseAide')}</p>
+            <input
+              value={reglages.annuaireAdresse}
+              onChange={(e) => modifier('annuaireAdresse', e.target.value)}
+              maxLength={300}
+              className={CHAMP}
+            />
           </section>
 
           <section className="glass-card rounded-2xl p-5 flex flex-col gap-3">

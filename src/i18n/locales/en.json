@@ -1421,7 +1421,8 @@
       "emailAide": "No account needed. This email is used for your payment and to find your connection again.",
       "emailRequis": "Enter a valid email address to get connected.",
       "experience_one": "{{count}} year of experience",
-      "experience_other": "{{count}} years of experience"
+      "experience_other": "{{count}} years of experience",
+      "voirCarte": "View on map"
     },
     "urgence": {
       "titre": "What you describe may be an emergency",
@@ -1447,7 +1448,9 @@
       "enregistre": "Settings saved",
       "experienceTitre": "Years of experience",
       "experienceAide": "How long have you been practising? Patients see this before requesting an introduction. Leave blank to omit it.",
-      "experienceUnite": "years in practice"
+      "experienceUnite": "years in practice",
+      "adresseTitre": "Practice address",
+      "adresseAide": "As you would write it on a prescription. Patients who paid for the introduction can open directions from their phone. Leave blank to give only the neighbourhood."
     },
     "choix": {
       "eyebrow": "Nearest specialist doctor",

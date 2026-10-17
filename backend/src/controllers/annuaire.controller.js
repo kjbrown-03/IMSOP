@@ -62,6 +62,10 @@ function ficheComplete(resultat, specialitesRecherchees) {
     etablissement: m.etablissement,
     pays: m.pays,
     quartier: m.quartier,
+    // Apres paiement seulement, comme le telephone : c'est precisement ce que la
+    // mise en relation achete. Le patient construit lui-meme le lien vers son
+    // application de carte — on ne stocke aucune coordonnee.
+    adresse: m.annuaireAdresse || null,
     presentation: m.annuairePresentation,
     toutesSpecialites: m.annuaireSpecialites,
   }
@@ -299,7 +303,7 @@ async function simulerPaiement(req, res) {
 // --- Côté médecin ------------------------------------------------------------
 
 const SELECT_ANNUAIRE_MEDECIN = {
-  annuaireVisible: true, annuaireSpecialites: true, annuaireExperience: true, pays: true, ville: true, quartier: true,
+  annuaireVisible: true, annuaireSpecialites: true, annuaireExperience: true, annuaireAdresse: true, pays: true, ville: true, quartier: true,
   annuairePresentation: true, verificationStatus: true,
 }
 
@@ -313,7 +317,7 @@ async function mettreAJourAnnuaire(req, res) {
   const medecin = await prisma.medecinLocal.findUnique({ where: { userId: req.userId } })
   if (!medecin) return res.status(404).json({ message: 'Profil médecin introuvable' })
 
-  const { annuaireVisible, annuaireSpecialites, annuaireExperience, pays, ville, quartier, annuairePresentation } = req.body
+  const { annuaireVisible, annuaireSpecialites, annuaireExperience, annuaireAdresse, pays, ville, quartier, annuairePresentation } = req.body
   const paysFinal = pays ?? medecin.pays
 
   // Un médecin non habilité peut préparer sa fiche, mais pas se rendre visible :
@@ -346,6 +350,7 @@ async function mettreAJourAnnuaire(req, res) {
   const data = { annuaireVisible }
   if (annuaireSpecialites !== undefined) data.annuaireSpecialites = annuaireSpecialites
   if (annuaireExperience !== undefined) data.annuaireExperience = annuaireExperience
+  if (annuaireAdresse !== undefined) data.annuaireAdresse = annuaireAdresse
   if (pays !== undefined) data.pays = pays
   if (ville !== undefined) data.ville = ville
   if (quartier !== undefined) data.quartier = quartier

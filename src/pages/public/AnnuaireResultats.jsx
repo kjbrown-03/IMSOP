@@ -65,6 +65,43 @@ function Experience({ fiche, t }) {
   )
 }
 
+/**
+ * Lien vers l'application de carte du patient.
+ *
+ * POURQUOI PAS UNE CARTE INTEGREE
+ *
+ * Afficher une carte dans la page suppose soit une cle Google facturee, soit
+ * 40 Ko de bibliotheque supplementaire — sur une connexion ou chaque kilo-octet
+ * compte, et pour un bouton qu'on touche une fois.
+ *
+ * Ce lien ouvre l'application de navigation DEJA INSTALLEE sur le telephone :
+ * Google Maps sur Android, Plans ou Google Maps sur iPhone. Le patient y trouve
+ * l'itineraire, la navigation vocale et ses trajets habituels. On ne paie rien
+ * et on n'embarque rien.
+ *
+ * L'adresse est passee en toutes lettres plutot qu'en coordonnees : c'est ce
+ * que le medecin a saisi, et les applications de carte savent la resoudre.
+ */
+function LienCarte({ fiche, t }) {
+  const morceaux = [fiche.adresse, fiche.etablissement, fiche.quartier, fiche.ville, fiche.pays]
+    .filter(Boolean)
+  // Sans adresse saisie, on ne propose rien : un lien vers « Douala » tout court
+  // enverrait le patient au centre-ville, ce qui est pire que pas de lien.
+  if (!fiche.adresse) return null
+
+  const requete = encodeURIComponent(morceaux.join(', '))
+  return (
+    <a
+      href={`https://www.google.com/maps/search/?api=1&query=${requete}`}
+      target="_blank"
+      rel="noreferrer"
+      className="inline-flex items-center gap-1.5 rounded-full border border-[var(--color-border)] px-4 py-2 text-sm font-semibold hover:bg-[var(--color-surface-container-low)]"
+    >
+      <MapPin className="w-4 h-4" /> {t('annuaire.resultats.voirCarte')}
+    </a>
+  )
+}
+
 function FicheComplete({ fiche, t }) {
   return (
     <article className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5">
@@ -84,6 +121,11 @@ function FicheComplete({ fiche, t }) {
               <Building2 className="w-3.5 h-3.5 shrink-0" /> {fiche.etablissement}
             </p>
           )}
+          {fiche.adresse && (
+            <p className="text-sm text-[var(--color-text-secondary)] flex items-start gap-1.5">
+              <MapPin className="w-3.5 h-3.5 shrink-0 mt-0.5" /> {fiche.adresse}
+            </p>
+          )}
           <Experience fiche={fiche} t={t} />
           {fiche.presentation && <p className="text-sm text-[var(--color-text-main)] mt-1">{fiche.presentation}</p>}
           <div className="flex flex-wrap gap-2 mt-2">
@@ -92,6 +134,7 @@ function FicheComplete({ fiche, t }) {
                 <Phone className="w-4 h-4" /> {fiche.telephone}
               </a>
             )}
+            <LienCarte fiche={fiche} t={t} />
             {fiche.email && (
               <a href={`mailto:${fiche.email}`} className="inline-flex items-center gap-1.5 rounded-full border border-[var(--color-border)] px-4 py-2 text-sm font-semibold hover:bg-[var(--color-surface-container-low)]">
                 <Mail className="w-4 h-4" /> {fiche.email}

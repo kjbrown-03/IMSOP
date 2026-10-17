@@ -36,6 +36,8 @@ const mettreAJourAnnuaire = {
     ville: z.string().trim().max(100).optional().nullable(),
     quartier: z.string().trim().max(120).optional().nullable(),
     // Borne haute a 70 : au-dela, c'est une faute de frappe, pas une carriere.
+    // Adresse du cabinet, telle qu'elle figure sur une ordonnance.
+    annuaireAdresse: z.string().trim().max(300).optional().nullable(),
     annuaireExperience: z.number().int().min(0).max(70).optional().nullable(),
     annuairePresentation: z.string().trim().max(600).optional().nullable(),
   }).strict().refine(

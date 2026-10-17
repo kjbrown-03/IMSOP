@@ -1421,7 +1421,8 @@
       "emailAide": "Aucun compte nécessaire. Cet e-mail sert à votre paiement et à retrouver votre mise en relation.",
       "emailRequis": "Indiquez une adresse e-mail valide pour être mis en relation.",
       "experience_one": "{{count}} an d'expérience",
-      "experience_other": "{{count}} ans d'expérience"
+      "experience_other": "{{count}} ans d'expérience",
+      "voirCarte": "Voir sur la carte"
     },
     "urgence": {
       "titre": "Ce que vous décrivez peut être une urgence",
@@ -1447,7 +1448,9 @@
       "enregistre": "Réglages enregistrés",
       "experienceTitre": "Années d'expérience",
       "experienceAide": "Depuis combien d'années exercez-vous ? Le patient le verra avant de demander la mise en relation. Laissez vide si vous préférez ne pas l'indiquer.",
-      "experienceUnite": "années d'exercice"
+      "experienceUnite": "années d'exercice",
+      "adresseTitre": "Adresse du cabinet",
+      "adresseAide": "Telle que vous l'écririez sur une ordonnance. Le patient qui a payé la mise en relation pourra ouvrir l'itinéraire depuis son téléphone. Laissez vide si vous préférez ne donner que le quartier."
     },
     "choix": {
       "eyebrow": "Médecin spécialiste le plus proche",
