@@ -63,7 +63,18 @@ function authenticateOptional(req, res, next) {
     req.userId = payload.sub
     req.userRole = payload.role
   } catch {
-    // Jeton périmé ou forgé : on ne renvoie pas 401, on traite en anonyme.
+    // Jeton périmé ou forgé : on ne renvoie pas 401 d'office — ces routes
+    // acceptent les anonymes — mais on NOTE que l'appelant a presente un jeton
+    // qui a ete rejete.
+    //
+    // Sans cette marque, un jeton expire etait indiscernable d'une absence de
+    // jeton : la route repondait « pas autorise » au lieu de « reconnecte-toi »,
+    // et le renouvellement automatique du navigateur — qui ne guette que les
+    // 401 — ne se declenchait jamais. L'utilisateur restait bloque sans que rien
+    // n'indique qu'il suffisait de rafraichir sa session.
+    //
+    // Chaque route decide quoi en faire : la plupart continuent en anonyme.
+    req.jetonRejete = true
   }
   next()
 }

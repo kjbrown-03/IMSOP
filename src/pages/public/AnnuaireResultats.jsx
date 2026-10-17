@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { AlertTriangle, Award, Building2, Loader2, Lock, LockOpen, Mail, MapPin, Phone, Search, Stethoscope } from 'lucide-react'
 import Navbar from '../../components/layout/Navbar'
 import { useAuthStore } from '../../store/useAuthStore'
-import { lireSession } from '../../lib/session'
+import { lireSession, roleActif, definirRoleActif } from '../../lib/session'
 import { api } from '../../lib/api'
 
 const ATTENTE_PAIEMENT_MS = 3000
@@ -153,6 +153,36 @@ function FicheComplete({ fiche, t }) {
  * après paiement, les coordonnées. En revenant du fournisseur de paiement,
  * la page interroge l'API jusqu'à voir le déblocage arriver par le webhook.
  */
+/**
+ * Execute un appel en faisant passer `api` pour l'espace indique, puis retablit.
+ *
+ * POURQUOI PAS UN SIMPLE EN-TETE
+ *
+ * Poser `Authorization` a la main contourne tout l'appareillage d'`api` — et
+ * notamment le RENOUVELLEMENT du jeton. Or un jeton d'acces expire vite.
+ *
+ * Et il expire silencieusement ici : la route de simulation accepte les
+ * visiteurs anonymes, donc son authentification est « optionnelle » et avale un
+ * jeton perime sans broncher. Le serveur repondait alors 404 — pas 401 — et
+ * l'intercepteur de renouvellement, qui ne guette que les 401, ne se declenchait
+ * jamais. Le bouton etait visible, le clic echouait indefiniment, et le message
+ * « Introuvable » ne disait rien de la cause.
+ *
+ * En designant le role actif le temps de l'appel, on laisse `api` faire son
+ * travail habituel : il attache le bon jeton, le renouvelle s'il le faut, et
+ * reessaie. Le role precedent est retabli dans tous les cas.
+ */
+async function appelerAvecRole(role, appel) {
+  if (!role) return appel()
+  const precedent = roleActif()
+  definirRoleActif(role)
+  try {
+    return await appel()
+  } finally {
+    definirRoleActif(precedent)
+  }
+}
+
 export default function AnnuaireResultats() {
   const { id } = useParams()
   const { t } = useTranslation()
@@ -174,11 +204,11 @@ export default function AnnuaireResultats() {
    * on envoie son jeton explicitement. Le serveur revalide de toute facon : ceci
    * evite seulement d'afficher un bouton qui echouerait.
    */
-  const sessionSimulation = useMemo(
-    () => ['COORDINATEUR', 'ADMIN'].map((r) => lireSession(r)).find((x) => x?.accessToken) ?? null,
+  const roleSimulation = useMemo(
+    () => ['COORDINATEUR', 'ADMIN'].find((r) => lireSession(r)?.accessToken) ?? null,
     [],
   )
-  const peutSimuler = import.meta.env.DEV || Boolean(sessionSimulation)
+  const peutSimuler = import.meta.env.DEV || Boolean(roleSimulation)
 
   const [recherche, setRecherche] = useState(null)
   const [chargement, setChargement] = useState(true)
@@ -280,12 +310,8 @@ export default function AnnuaireResultats() {
     setPaiementEnCours(true)
     setErreur(null)
     try {
-      const { data: apres } = await api.post(
-        `/annuaire/recherches/${id}/paiement/simulate`,
-        undefined,
-        sessionSimulation
-          ? { headers: { Authorization: `Bearer ${sessionSimulation.accessToken}` } }
-          : undefined,
+      const { data: apres } = await appelerAvecRole(roleSimulation, () =>
+        api.post(`/annuaire/recherches/${id}/paiement/simulate`),
       )
       annulerAttente()
       setRecherche(apres)

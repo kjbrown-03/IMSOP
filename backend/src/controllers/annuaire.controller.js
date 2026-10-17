@@ -290,6 +290,11 @@ async function initierPaiement(req, res) {
 const ROLES_SIMULATION = ['COORDINATEUR', 'ADMIN']
 
 async function simulerPaiement(req, res) {
+  // Jeton presente mais rejete : on repond 401 pour que le navigateur renouvelle
+  // la session et reessaie. Repondre 404 laissait l'appelant bloque alors qu'il
+  // lui suffisait de rafraichir son jeton.
+  if (req.jetonRejete) return res.status(401).json({ message: 'Session expirée' })
+
   const autorise = env.nodeEnv === 'development' || ROLES_SIMULATION.includes(req.userRole)
   // 404 plutot que 403 : pour un appelant sans droit, ce point d'entree n'a pas
   // a exister. Annoncer « interdit » revient a confirmer qu'il y a une porte.
