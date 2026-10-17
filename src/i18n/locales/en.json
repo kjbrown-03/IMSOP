@@ -40,7 +40,7 @@
     "anonymousPatient": "Anonymised patient",
     "yearsOld": "{{age}} years old",
     "backHome": "Back to home",
-    "simulerPaiementDev": "Simulate payment (dev)"
+    "simulerPaiementDev": "Simulate payment (internal test)"
   },
   "public": {
     "home": {

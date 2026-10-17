@@ -158,6 +158,11 @@ export default function AnnuaireResultats() {
   // Aucun compte n'est requis pour être mis en relation. Si la personne est
   // connectée, son e-mail est proposé d'office ; sinon elle le saisit.
   const emailCompte = useAuthStore((s) => s.user?.email)
+  // La coordination et l'administration peuvent derouler le parcours sans payer,
+  // pour le verifier sur les vraies donnees. Le serveur revalide ce droit : cette
+  // condition ne fait qu'eviter d'afficher un bouton qui repondrait 404.
+  const roleCompte = useAuthStore((s) => s.user?.role)
+  const peutSimuler = import.meta.env.DEV || roleCompte === 'COORDINATEUR' || roleCompte === 'ADMIN'
 
   const [recherche, setRecherche] = useState(null)
   const [chargement, setChargement] = useState(true)
@@ -369,7 +374,7 @@ export default function AnnuaireResultats() {
                 </div>
               )}
 
-              {import.meta.env.DEV && recherche.statut === 'FLOUTEE' && recherche.nombre > 0 && (
+              {peutSimuler && recherche.statut === 'FLOUTEE' && recherche.nombre > 0 && (
                 <button
                   type="button"
                   onClick={simulerDev}

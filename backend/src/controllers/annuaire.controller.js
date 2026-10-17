@@ -270,8 +270,30 @@ async function initierPaiement(req, res) {
 
 // Pendant du simulatePaiement des dossiers : en développement seulement, pour
 // dérouler le parcours sans fournisseur réel. Jamais en production.
+/**
+ * Deroule le parcours de deblocage SANS passer par le fournisseur de paiement.
+ *
+ * QUI Y A DROIT
+ *
+ * En developpement, tout le monde. En production, la coordination et
+ * l'administration seulement — elles doivent pouvoir verifier le parcours sur
+ * les vraies donnees, et elles voient deja ces medecins depuis leurs propres
+ * ecrans : rien ne leur est revele qu'elles ne puissent consulter autrement.
+ *
+ * Un patient ne peut pas s'en servir pour contourner le paiement : son role ne
+ * figure pas dans la liste, et la route exige un jeton valide.
+ *
+ * Chaque usage laisse une trace nominative dans le journal d'audit. C'est la
+ * contrepartie d'un point d'entree qui donne acces a des coordonnees sans
+ * paiement : on doit pouvoir dire qui s'en est servi, et quand.
+ */
+const ROLES_SIMULATION = ['COORDINATEUR', 'ADMIN']
+
 async function simulerPaiement(req, res) {
-  if (env.nodeEnv !== 'development') return res.status(404).json({ message: 'Introuvable' })
+  const autorise = env.nodeEnv === 'development' || ROLES_SIMULATION.includes(req.userRole)
+  // 404 plutot que 403 : pour un appelant sans droit, ce point d'entree n'a pas
+  // a exister. Annoncer « interdit » revient a confirmer qu'il y a une porte.
+  if (!autorise) return res.status(404).json({ message: 'Introuvable' })
 
   const { recherche, error, message } = await chargerRecherche(req)
   if (error) return res.status(error).json({ message })
@@ -294,7 +316,14 @@ async function simulerPaiement(req, res) {
   }
 
   await paiements.confirmerPaiement(paiement)
-  await logAction({ userId: req.userId, action: 'PAIEMENT_SIMULE_DEV', entityType: 'Paiement', entityId: paiement.id })
+  await logAction({
+    userId: req.userId,
+    action: 'PAIEMENT_SIMULE',
+    entityType: 'Paiement',
+    entityId: paiement.id,
+    metadata: { rechercheId: recherche.id, role: req.userRole, environnement: env.nodeEnv },
+    ipAddress: req.ip,
+  })
 
   const apres = await prisma.rechercheAnnuaire.findUnique({ where: { id: recherche.id }, include: INCLUDE_RESULTATS })
   res.json(serialiser(apres))
