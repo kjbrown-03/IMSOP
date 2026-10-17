@@ -78,6 +78,73 @@ describe('Webhook de paiement', () => {
     assert.equal(appels[0].body.transaction_id, paiement.cinetpayTransactionId)
   })
 
+  /*
+   * Idempotence : un fournisseur de paiement REJOUE ses notifications.
+   *
+   * Ce n'est pas une anomalie, c'est son fonctionnement : tant qu'il n'a pas recu
+   * un accuse franc, il reessaie. Un reseau coupe au mauvais moment suffit.
+   *
+   * Sans garde, le rejeu renvoyait un second courriel au patient, empilait les
+   * traces d'audit, et — le plus grave — remettait le dossier en
+   * EN_ATTENTE_AFFECTATION alors qu'un coordinateur l'avait peut-etre deja
+   * affecte. Un rejeu tardif faisait RECULER un dossier en cours de traitement.
+   */
+  test('un webhook rejoue ne confirme pas deux fois', async () => {
+    const { dossier, paiement } = await creerPaiementEnAttente()
+    simulerReponseCinetPay('ACCEPTED')
+
+    const corps = { cpm_trans_id: paiement.cinetpayTransactionId, cpm_result: '00' }
+    await api().post('/api/paiements/webhook').send(corps).expect(200)
+
+    // Entre les deux appels, le dossier avance : c'est le cas qui fait mal.
+    await prisma.dossier.update({ where: { id: dossier.id }, data: { status: 'AFFECTE' } })
+
+    const second = await api().post('/api/paiements/webhook').send(corps)
+    assert.equal(second.status, 200)
+
+    const apres = await prisma.dossier.findUnique({ where: { id: dossier.id } })
+    assert.equal(apres.status, 'AFFECTE', "le rejeu ne doit pas faire reculer le dossier")
+
+    const traces = await prisma.auditLog.count({ where: { action: 'PAIEMENT_CONFIRME', entityId: paiement.id } })
+    assert.equal(traces, 1, 'une seule confirmation doit etre tracee')
+
+    const notifs = await prisma.notification.count({ where: { type: 'PAIEMENT_CONFIRME' } })
+    assert.equal(notifs, 1, 'le patient ne doit etre prevenu qu une fois')
+  })
+
+  // Deux rejeux SIMULTANES : la lecture prealable ne les arrete pas, seule
+  // l'ecriture conditionnelle de confirmerPaiement le fait.
+  test('deux webhooks simultanes ne confirment pas deux fois', async () => {
+    const { paiement } = await creerPaiementEnAttente()
+    simulerReponseCinetPay('ACCEPTED')
+
+    const corps = { cpm_trans_id: paiement.cinetpayTransactionId, cpm_result: '00' }
+    await Promise.all([
+      api().post('/api/paiements/webhook').send(corps),
+      api().post('/api/paiements/webhook').send(corps),
+    ])
+
+    const traces = await prisma.auditLog.count({ where: { action: 'PAIEMENT_CONFIRME', entityId: paiement.id } })
+    assert.equal(traces, 1, 'une seule confirmation malgre deux appels concurrents')
+  })
+
+  // Un paiement DEJA CONFIRME ne doit jamais basculer en echec : un webhook
+  // tardif annoncant l'expiration reverrouillerait ce que le patient a paye.
+  test("un echec tardif ne defait pas un paiement confirme", async () => {
+    const { dossier, paiement } = await creerPaiementEnAttente()
+    simulerReponseCinetPay('ACCEPTED')
+    const corps = { cpm_trans_id: paiement.cinetpayTransactionId, cpm_result: '00' }
+    await api().post('/api/paiements/webhook').send(corps).expect(200)
+
+    simulerReponseCinetPay('REFUSED')
+    await api().post('/api/paiements/webhook').send(corps).expect(200)
+
+    const apres = await prisma.paiement.findUnique({ where: { id: paiement.id } })
+    assert.equal(apres.status, 'PAYE', 'le paiement confirme doit le rester')
+    const d = await prisma.dossier.findUnique({ where: { id: dossier.id } })
+    assert.notEqual(d.status, 'EN_ATTENTE_PAIEMENT', 'le dossier ne doit pas etre reverrouille')
+  })
+
   // Le test central : le webhook annonce un succès, CinetPay dit non.
   test("un webhook qui annonce un paiement refusé par CinetPay ne débloque rien", async () => {
     const { dossier, paiement } = await creerPaiementEnAttente()

@@ -48,8 +48,41 @@ function fournisseurPour(dossier) {
  * les deux cas l'audit garde trace. Factorisé pour que les webhooks CinetPay et
  * Fapshi ne divergent jamais.
  */
+/**
+ * Confirme un paiement. IDEMPOTENTE : rejouee, elle ne refait rien.
+ *
+ * POURQUOI C'EST INDISPENSABLE ICI
+ *
+ * Un fournisseur de paiement rejoue ses notifications — c'est leur
+ * fonctionnement normal, pas une anomalie : tant qu'il n'a pas recu un accuse
+ * franc, il reessaie. Un reseau coupe au mauvais moment suffit. La simulation
+ * interne et le retour du navigateur peuvent aussi arriver en meme temps que le
+ * webhook.
+ *
+ * Sans garde, un rejeu renvoyait un SECOND courriel de confirmation au patient,
+ * ecrivait une SECONDE ligne au journal d'audit — et, plus grave, remettait le
+ * dossier en `EN_ATTENTE_AFFECTATION` alors qu'un coordinateur l'avait peut-etre
+ * deja affecte entre-temps. Un rejeu tardif faisait donc RECULER un dossier en
+ * cours de traitement.
+ *
+ * LE GARDE EST ATOMIQUE, PAS UNE SIMPLE LECTURE
+ *
+ * `updateMany` avec `status: { not: 'PAYE' }` lit et ecrit en une seule
+ * operation : la base refuse la seconde. Lire d'abord puis ecrire laisserait
+ * passer deux appels simultanes — tous deux verraient « pas encore paye » avant
+ * que l'un n'ecrive. Le webhook Fapshi avait bien cette lecture prealable ; elle
+ * reste utile pour repondre vite, mais elle ne suffisait pas a elle seule, et le
+ * webhook CinetPay n'en avait aucune.
+ *
+ * `count === 0` signifie donc : quelqu'un d'autre a deja confirme celui-ci. On
+ * sort sans rien refaire.
+ */
 async function confirmerPaiement(paiement) {
-  await prisma.paiement.update({ where: { id: paiement.id }, data: { status: 'PAYE', confirmedAt: new Date() } })
+  const { count } = await prisma.paiement.updateMany({
+    where: { id: paiement.id, status: { not: 'PAYE' } },
+    data: { status: 'PAYE', confirmedAt: new Date() },
+  })
+  if (count === 0) return
 
   if (paiement.rechercheAnnuaireId) {
     await prisma.rechercheAnnuaire.update({
@@ -136,8 +169,20 @@ async function creerPaiementAnnuaire({ recherche, amount, email, customerName })
   }
 }
 
+/**
+ * Marque un paiement en echec. Idempotente, pour la meme raison.
+ *
+ * `status: { not: 'ECHOUE' }` evite d'empiler les traces d'audit sur un rejeu.
+ * Et un paiement DEJA CONFIRME ne doit jamais basculer en echec : un webhook
+ * tardif annonçant l'expiration d'une transaction par ailleurs reussie
+ * reverrouillerait les coordonnees que le patient a payees.
+ */
 async function echouerPaiement(paiement) {
-  await prisma.paiement.update({ where: { id: paiement.id }, data: { status: 'ECHOUE' } })
+  const { count } = await prisma.paiement.updateMany({
+    where: { id: paiement.id, status: { notIn: ['ECHOUE', 'PAYE'] } },
+    data: { status: 'ECHOUE' },
+  })
+  if (count === 0) return
   await logAction({ action: 'PAIEMENT_ECHEC', entityType: 'Paiement', entityId: paiement.id, dossierId: paiement.dossierId })
 }
 
@@ -196,6 +241,15 @@ async function webhook(req, res) {
   if (!paiement) return res.status(404).json({ message: 'Transaction inconnue' })
 
   await prisma.paiement.update({ where: { id: paiement.id }, data: { rawWebhookPayload: req.body } })
+
+  // Un webhook peut etre rejoue : un paiement deja confirme ne doit ni
+  // renotifier le patient ni reecrire le dossier.
+  //
+  // Ce court-circuit evite surtout un aller-retour inutile vers le fournisseur.
+  // Il ne constitue PAS la protection : deux rejeux simultanes passeraient tous
+  // deux ici avant qu'aucun n'ecrive. La garantie est dans `confirmerPaiement`,
+  // qui lit et ecrit en une seule operation.
+  if (paiement.status === 'PAYE') return res.status(200).json({ received: true, status: 'PAYE' })
 
   let verification
   try {
@@ -268,6 +322,10 @@ async function webhookFapshi(req, res) {
 
   // Un webhook peut être rejoué : un paiement déjà confirmé ne doit ni
   // renotifier le patient ni réécrire le dossier.
+  //
+  // Court-circuit de confort : il evite d'interroger le fournisseur pour rien.
+  // La garantie, elle, est dans `confirmerPaiement` — deux rejeux simultanes
+  // passeraient tous deux cette lecture avant qu'aucun n'ecrive.
   if (paiement.status === 'PAYE') return res.status(200).json({ received: true, status: 'PAYE' })
 
   let statut

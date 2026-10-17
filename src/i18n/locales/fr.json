@@ -1422,7 +1422,9 @@
       "emailRequis": "Indiquez une adresse e-mail valide pour être mis en relation.",
       "experience_one": "{{count}} an d'expérience",
       "experience_other": "{{count}} ans d'expérience",
-      "voirCarte": "Voir sur la carte"
+      "voirCarte": "Voir sur la carte",
+      "whatsapp": "WhatsApp",
+      "whatsappMessage": "Bonjour Docteur, j'ai obtenu vos coordonnées via IMSOP et je souhaiterais vous consulter."
     },
     "urgence": {
       "titre": "Ce que vous décrivez peut être une urgence",

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { AlertTriangle, Award, Building2, Loader2, Lock, LockOpen, Mail, MapPin, Phone, Search, Stethoscope } from 'lucide-react'
+import { AlertTriangle, Award, Building2, Loader2, Lock, LockOpen, Mail, MapPin, MessageCircle, Phone, Search, Stethoscope } from 'lucide-react'
 import Navbar from '../../components/layout/Navbar'
 import { useAuthStore } from '../../store/useAuthStore'
 import { lireSession, roleActif, definirRoleActif } from '../../lib/session'
@@ -103,6 +103,49 @@ function LienCarte({ fiche, t }) {
   )
 }
 
+/**
+ * Ouvre une discussion WhatsApp avec le medecin.
+ *
+ * POURQUOI WHATSAPP A COTE DU TELEPHONE
+ *
+ * Au Cameroun, beaucoup de gens ecrivent sur WhatsApp plutot que d'appeler :
+ * c'est moins intrusif pour le medecin, ca laisse une trace ecrite des deux
+ * cotes, et ca ne coute pas de communication. Un patient intimide par l'idee
+ * d'appeler un specialiste osera plus facilement ecrire.
+ *
+ * LE FORMAT DU NUMERO EST LA SEULE DIFFICULTE
+ *
+ * wa.me n'accepte QUE des chiffres, sans « + », sans espace, sans tiret, et avec
+ * l'indicatif pays. Les numeros sont stockes en « +237693904197 » : on retire
+ * donc tout ce qui n'est pas un chiffre.
+ *
+ * Un numero SANS indicatif donnerait un lien qui echoue en silence — WhatsApp
+ * ouvre une page « numero invalide » sans expliquer. On n'affiche donc le bouton
+ * que si le numero commence par « + » : c'est le seul cas ou l'on est sur de
+ * l'indicatif. Mieux vaut pas de bouton qu'un bouton qui mene dans le vide.
+ */
+function LienWhatsApp({ fiche, t }) {
+  const brut = (fiche.telephone || '').trim()
+  if (!brut.startsWith('+')) return null
+
+  const numero = brut.replace(/\D/g, '')
+  if (numero.length < 8) return null
+
+  // Un premier message deja ecrit : le patient n'a pas a se presenter dans le
+  // vide, et le medecin sait d'ou vient le contact.
+  const texte = encodeURIComponent(t('annuaire.resultats.whatsappMessage'))
+  return (
+    <a
+      href={`https://wa.me/${numero}?text=${texte}`}
+      target="_blank"
+      rel="noreferrer"
+      className="inline-flex items-center gap-1.5 rounded-full bg-[#25D366] text-white px-4 py-2 text-sm font-semibold hover:opacity-90"
+    >
+      <MessageCircle className="w-4 h-4" /> {t('annuaire.resultats.whatsapp')}
+    </a>
+  )
+}
+
 function FicheComplete({ fiche, t }) {
   return (
     <article className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5">
@@ -135,6 +178,7 @@ function FicheComplete({ fiche, t }) {
                 <Phone className="w-4 h-4" /> {fiche.telephone}
               </a>
             )}
+            <LienWhatsApp fiche={fiche} t={t} />
             <LienCarte fiche={fiche} t={t} />
             {fiche.email && (
               <a href={`mailto:${fiche.email}`} className="inline-flex items-center gap-1.5 rounded-full border border-[var(--color-border)] px-4 py-2 text-sm font-semibold hover:bg-[var(--color-surface-container-low)]">
