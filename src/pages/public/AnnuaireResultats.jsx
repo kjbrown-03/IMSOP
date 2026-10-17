@@ -1,9 +1,10 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { AlertTriangle, Award, Building2, Loader2, Lock, LockOpen, Mail, MapPin, Phone, Search, Stethoscope } from 'lucide-react'
 import Navbar from '../../components/layout/Navbar'
 import { useAuthStore } from '../../store/useAuthStore'
+import { lireSession } from '../../lib/session'
 import { api } from '../../lib/api'
 
 const ATTENTE_PAIEMENT_MS = 3000
@@ -158,11 +159,26 @@ export default function AnnuaireResultats() {
   // Aucun compte n'est requis pour être mis en relation. Si la personne est
   // connectée, son e-mail est proposé d'office ; sinon elle le saisit.
   const emailCompte = useAuthStore((s) => s.user?.email)
-  // La coordination et l'administration peuvent derouler le parcours sans payer,
-  // pour le verifier sur les vraies donnees. Le serveur revalide ce droit : cette
-  // condition ne fait qu'eviter d'afficher un bouton qui repondrait 404.
-  const roleCompte = useAuthStore((s) => s.user?.role)
-  const peutSimuler = import.meta.env.DEV || roleCompte === 'COORDINATEUR' || roleCompte === 'ADMIN'
+
+  /*
+   * La coordination et l'administration peuvent derouler le parcours sans payer,
+   * pour le verifier sur les vraies donnees.
+   *
+   * On ne se fie PAS a la session « active ». L'application tient une session par
+   * role, et la page d'annuaire n'appartient a aucun espace : le role actif y est
+   * celui du dernier espace visite — typiquement le medecin dont on vient de
+   * renseigner la fiche. L'appel partait alors avec SON jeton, et le serveur
+   * repondait « Introuvable » a juste titre.
+   *
+   * On cherche donc une session COORDINATEUR ou ADMIN parmi celles ouvertes, et
+   * on envoie son jeton explicitement. Le serveur revalide de toute facon : ceci
+   * evite seulement d'afficher un bouton qui echouerait.
+   */
+  const sessionSimulation = useMemo(
+    () => ['COORDINATEUR', 'ADMIN'].map((r) => lireSession(r)).find((x) => x?.accessToken) ?? null,
+    [],
+  )
+  const peutSimuler = import.meta.env.DEV || Boolean(sessionSimulation)
 
   const [recherche, setRecherche] = useState(null)
   const [chargement, setChargement] = useState(true)
@@ -264,7 +280,13 @@ export default function AnnuaireResultats() {
     setPaiementEnCours(true)
     setErreur(null)
     try {
-      const { data: apres } = await api.post(`/annuaire/recherches/${id}/paiement/simulate`)
+      const { data: apres } = await api.post(
+        `/annuaire/recherches/${id}/paiement/simulate`,
+        undefined,
+        sessionSimulation
+          ? { headers: { Authorization: `Bearer ${sessionSimulation.accessToken}` } }
+          : undefined,
+      )
       annulerAttente()
       setRecherche(apres)
     } catch (err) {
