@@ -131,6 +131,9 @@ module.exports = {
       .split(',')
       .map((code) => code.trim().toLowerCase())
       .filter(Boolean),
+    // Fenetre de test limitee pour permettre de verifier l'affichage des fiches
+    // sans compte ni paiement. Vide ou expire = simulation publique desactivee.
+    simulationPubliqueJusqua: process.env.ANNUAIRE_SIMULATION_PUBLIQUE_JUSQUA || '',
   },
 
   // Modèle économique : le demandeur paie en XAF, la plateforme retient une

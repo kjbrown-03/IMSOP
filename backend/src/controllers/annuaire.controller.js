@@ -80,6 +80,7 @@ const INCLUDE_RESULTATS = {
 
 function serialiser(recherche) {
   const debloquee = recherche.statut === 'DEBLOQUEE'
+  const dateFinSimulationPublique = Date.parse(env.annuaire.simulationPubliqueJusqua)
   return {
     id: recherche.id,
     statut: recherche.statut,
@@ -90,6 +91,7 @@ function serialiser(recherche) {
     ville: recherche.ville,
     nombre: recherche.resultats.length,
     tarif: { amount: env.tarifs.ANNUAIRE, currency: env.tarifs.devise },
+    simulationPubliqueActive: Number.isFinite(dateFinSimulationPublique) && Date.now() < dateFinSimulationPublique,
     createdAt: recherche.createdAt,
     debloqueeLe: recherche.debloqueeLe,
     resultats: recherche.resultats.map((r) =>
@@ -295,7 +297,9 @@ async function simulerPaiement(req, res) {
   // lui suffisait de rafraichir son jeton.
   if (req.jetonRejete) return res.status(401).json({ message: 'Session expirée' })
 
-  const autorise = env.nodeEnv === 'development' || ROLES_SIMULATION.includes(req.userRole)
+  const dateFinSimulationPublique = Date.parse(env.annuaire.simulationPubliqueJusqua)
+  const simulationPublique = Number.isFinite(dateFinSimulationPublique) && Date.now() < dateFinSimulationPublique
+  const autorise = env.nodeEnv === 'development' || ROLES_SIMULATION.includes(req.userRole) || simulationPublique
   // 404 plutot que 403 : pour un appelant sans droit, ce point d'entree n'a pas
   // a exister. Annoncer « interdit » revient a confirmer qu'il y a une porte.
   if (!autorise) return res.status(404).json({ message: 'Introuvable' })
@@ -303,6 +307,17 @@ async function simulerPaiement(req, res) {
   const { recherche, error, message } = await chargerRecherche(req)
   if (error) return res.status(error).json({ message })
   if (recherche.statut === 'DEBLOQUEE') return res.json(serialiser(recherche))
+
+  // En mode public de test, ne jamais convertir une tentative réelle de
+  // paiement en paiement simulé : le webhook du fournisseur peut encore aboutir.
+  if (simulationPublique) {
+    const paiementEnAttente = await prisma.paiement.findFirst({
+      where: { rechercheAnnuaireId: recherche.id, status: 'EN_ATTENTE' },
+    })
+    if (paiementEnAttente) {
+      return res.status(409).json({ message: 'Un paiement réel est déjà en cours pour cette recherche' })
+    }
+  }
 
   // S'il n'y a pas encore de paiement (fournisseur injoignable, ou bouton
   // cliqué directement), on en crée un fictif : la simulation sert justement
@@ -326,7 +341,12 @@ async function simulerPaiement(req, res) {
     action: 'PAIEMENT_SIMULE',
     entityType: 'Paiement',
     entityId: paiement.id,
-    metadata: { rechercheId: recherche.id, role: req.userRole, environnement: env.nodeEnv },
+    metadata: {
+      rechercheId: recherche.id,
+      role: req.userRole || (simulationPublique ? 'VISITEUR_TEST' : undefined),
+      environnement: env.nodeEnv,
+      ...(simulationPublique ? { simulationPublique: true } : {}),
+    },
     ipAddress: req.ip,
   })
 

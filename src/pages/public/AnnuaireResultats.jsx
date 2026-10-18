@@ -455,11 +455,11 @@ export default function AnnuaireResultats() {
                         ? t('annuaire.resultats.attenteConfirmation')
                         : t('annuaire.resultats.debloquer', { montant: tarif.amount.toLocaleString('fr-FR'), devise: tarif.currency })}
                     </button>
-                    {peutSimuler && (
+                    {(peutSimuler || recherche.simulationPubliqueActive) && (
                       <button
                         type="button"
                         onClick={simulerDev}
-                        disabled={paiementEnCours}
+                        disabled={paiementEnCours || attenteConfirmation}
                         className="inline-flex items-center justify-center gap-2 rounded-full border border-dashed border-amber-500 px-5 py-3 text-sm font-semibold text-amber-700 hover:bg-amber-50 disabled:cursor-not-allowed disabled:opacity-50 dark:text-amber-400 dark:hover:bg-amber-950/30"
                       >
                         <LockOpen className="w-4 h-4" /> {t('common.simulerPaiementDev')}
