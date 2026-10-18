@@ -455,6 +455,16 @@ export default function AnnuaireResultats() {
                         ? t('annuaire.resultats.attenteConfirmation')
                         : t('annuaire.resultats.debloquer', { montant: tarif.amount.toLocaleString('fr-FR'), devise: tarif.currency })}
                     </button>
+                    {peutSimuler && (
+                      <button
+                        type="button"
+                        onClick={simulerDev}
+                        disabled={paiementEnCours}
+                        className="inline-flex items-center justify-center gap-2 rounded-full border border-dashed border-amber-500 px-5 py-3 text-sm font-semibold text-amber-700 hover:bg-amber-50 disabled:cursor-not-allowed disabled:opacity-50 dark:text-amber-400 dark:hover:bg-amber-950/30"
+                      >
+                        <LockOpen className="w-4 h-4" /> {t('common.simulerPaiementDev')}
+                      </button>
+                    )}
                   </div>
                   {attenteConfirmation ? (
                     <p className="text-xs text-[var(--color-text-secondary)]">
@@ -467,17 +477,6 @@ export default function AnnuaireResultats() {
                     <p className="text-xs text-[var(--color-text-secondary)]">{t('annuaire.resultats.emailAide')}</p>
                   )}
                 </div>
-              )}
-
-              {peutSimuler && recherche.statut === 'FLOUTEE' && recherche.nombre > 0 && (
-                <button
-                  type="button"
-                  onClick={simulerDev}
-                  disabled={paiementEnCours}
-                  className="self-start rounded-full border border-dashed border-amber-500 text-amber-700 dark:text-amber-400 px-4 py-2 text-xs font-semibold hover:bg-amber-50 dark:hover:bg-amber-950/30 transition-colors disabled:opacity-50"
-                >
-                  {t('common.simulerPaiementDev')}
-                </button>
               )}
 
               {erreur && recherche && <p className="text-sm font-semibold text-rose-600">{erreur}</p>}
