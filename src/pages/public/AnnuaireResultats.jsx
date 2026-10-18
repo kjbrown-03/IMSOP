@@ -124,7 +124,7 @@ function LienCarte({ fiche, t }) {
  * que si le numero commence par « + » : c'est le seul cas ou l'on est sur de
  * l'indicatif. Mieux vaut pas de bouton qu'un bouton qui mene dans le vide.
  */
-function LienWhatsApp({ fiche, t }) {
+function urlWhatsApp(fiche, t) {
   const brut = (fiche.telephone || '').trim()
   if (!brut.startsWith('+')) return null
 
@@ -134,19 +134,12 @@ function LienWhatsApp({ fiche, t }) {
   // Un premier message deja ecrit : le patient n'a pas a se presenter dans le
   // vide, et le medecin sait d'ou vient le contact.
   const texte = encodeURIComponent(t('annuaire.resultats.whatsappMessage'))
-  return (
-    <a
-      href={`https://wa.me/${numero}?text=${texte}`}
-      target="_blank"
-      rel="noreferrer"
-      className="inline-flex items-center gap-1.5 rounded-full bg-[#25D366] text-white px-4 py-2 text-sm font-semibold hover:opacity-90"
-    >
-      <MessageCircle className="w-4 h-4" /> {t('annuaire.resultats.whatsapp')}
-    </a>
-  )
+  return `https://wa.me/${numero}?text=${texte}`
 }
 
 function FicheComplete({ fiche, t }) {
+  const whatsappUrl = urlWhatsApp(fiche, t)
+
   return (
     <article className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5">
       <div className="flex items-start gap-4">
@@ -174,11 +167,21 @@ function FicheComplete({ fiche, t }) {
           {fiche.presentation && <p className="text-sm text-[var(--color-text-main)] mt-1">{fiche.presentation}</p>}
           <div className="flex flex-wrap gap-2 mt-2">
             {fiche.telephone && (
-              <a href={`tel:${fiche.telephone.replace(/\s+/g, '')}`} className="inline-flex items-center gap-1.5 rounded-full bg-[var(--color-primary)] text-white px-4 py-2 text-sm font-semibold hover:opacity-90">
-                <Phone className="w-4 h-4" /> {fiche.telephone}
+              <a
+                href={whatsappUrl || `tel:${fiche.telephone.replace(/\s+/g, '')}`}
+                target={whatsappUrl ? '_blank' : undefined}
+                rel={whatsappUrl ? 'noreferrer' : undefined}
+                className={`inline-flex items-center gap-1.5 rounded-full ${whatsappUrl ? 'bg-[#25D366] text-white' : 'bg-[var(--color-primary)] text-white'} px-4 py-2 text-sm font-semibold hover:opacity-90`}
+                aria-label={whatsappUrl ? `${t('annuaire.resultats.whatsapp')} ${fiche.telephone}` : fiche.telephone}
+              >
+                {whatsappUrl ? <MessageCircle className="w-4 h-4" /> : <Phone className="w-4 h-4" />} {fiche.telephone}
               </a>
             )}
-            <LienWhatsApp fiche={fiche} t={t} />
+            {fiche.telephone && whatsappUrl && (
+              <a href={`tel:${fiche.telephone.replace(/\s+/g, '')}`} className="inline-flex items-center gap-1.5 rounded-full border border-[var(--color-border)] px-4 py-2 text-sm font-semibold hover:bg-[var(--color-surface-container-low)]">
+                <Phone className="w-4 h-4" /> {t('annuaire.resultats.appeler')}
+              </a>
+            )}
             <LienCarte fiche={fiche} t={t} />
             {fiche.email && (
               <a href={`mailto:${fiche.email}`} className="inline-flex items-center gap-1.5 rounded-full border border-[var(--color-border)] px-4 py-2 text-sm font-semibold hover:bg-[var(--color-surface-container-low)]">

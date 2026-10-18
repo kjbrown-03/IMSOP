@@ -1424,6 +1424,7 @@
       "experience_other": "{{count}} ans d'expérience",
       "voirCarte": "Voir sur la carte",
       "whatsapp": "WhatsApp",
+      "appeler": "Appeler",
       "whatsappMessage": "Bonjour Docteur, j'ai obtenu vos coordonnées via IMSOP et je souhaiterais vous consulter."
     },
     "urgence": {
