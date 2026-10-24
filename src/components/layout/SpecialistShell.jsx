@@ -6,6 +6,7 @@ export default function SpecialistShell({ children }) {
   const { t } = useTranslation()
 
   const links = [
+    { to: '/specialiste/tutoriel', label: t('shell.tutorial'), icon: <BookOpen className="w-5 h-5" /> },
     {
       to: '/specialiste/tableau-de-bord',
       label: t('shell.specialistNav.dossiers'),
@@ -18,7 +19,6 @@ export default function SpecialistShell({ children }) {
     },
     { to: '/professionnel/justificatifs', label: t('shell.specialistNav.justificatifs'), icon: <FileCheck className="w-5 h-5" /> },
     { to: '/specialiste/disponibilites', label: t('shell.specialistNav.compte'), icon: <User className="w-5 h-5" /> },
-    { to: '/specialiste/tutoriel', label: t('shell.tutorial'), icon: <BookOpen className="w-5 h-5" /> },
   ]
 
   return (

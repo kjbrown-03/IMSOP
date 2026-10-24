@@ -154,6 +154,8 @@ export const SidebarLink = ({ link, className, onClick, ...props }) => {
     <NavLink
       to={link.to}
       end={link.end}
+      title={link.label}
+      aria-label={link.label}
       onClick={handleClick}
       className={({ isActive }) =>
         cn(

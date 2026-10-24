@@ -6,6 +6,7 @@ export default function AdminLayout({ children }) {
   const { t } = useTranslation()
 
   const links = [
+    { to: '/admin/tutoriel', label: t('shell.tutorial'), icon: <BookOpen className="w-5 h-5" /> },
     {
       to: '/admin/tableau-de-bord',
       label: t('shell.adminNav.dashboard'),
@@ -31,7 +32,6 @@ export default function AdminLayout({ children }) {
       label: t('shell.adminNav.journal'),
       icon: <ScrollText className="w-5 h-5" />,
     },
-    { to: '/admin/tutoriel', label: t('shell.tutorial'), icon: <BookOpen className="w-5 h-5" /> },
   ]
 
   return (

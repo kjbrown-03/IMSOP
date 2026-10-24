@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
-import { Activity, LogOut, User } from 'lucide-react'
+import { Activity, BookOpen, LogOut, User } from 'lucide-react'
 import { Sidebar, SidebarBody, SidebarLink, SidebarButton } from '@/components/ui/sidebar'
 import NotificationBell from '../ui/NotificationBell'
 import UserProfileDropdown from '../ui/UserProfileDropdown'
@@ -40,6 +40,14 @@ function Avatar({ user }) {
   )
 }
 
+const TUTORIEL_PAR_ROLE = {
+  PATIENT: '/patient/tutoriel',
+  SPECIALISTE: '/specialiste/tutoriel',
+  MEDECIN_LOCAL: '/medecin/tutoriel',
+  COORDINATEUR: '/coordinateur/tutoriel',
+  ADMIN: '/admin/tutoriel',
+}
+
 /**
  * Shared chrome for every role dashboard: a rail that expands on hover on
  * desktop, a slide-in drawer on mobile, and a header carrying the notification
@@ -64,6 +72,7 @@ export default function DashboardShell({
   const user = useAuthStore((s) => s.user)
   const logout = useAuthStore((s) => s.logout)
   const [open, setOpen] = useState(false)
+  const tutorielTo = TUTORIEL_PAR_ROLE[user?.role]
 
   function onLogout() {
     logout()
@@ -112,6 +121,17 @@ export default function DashboardShell({
           topBar={
             <div className="flex items-center gap-2">
               <span className="font-display font-bold tracking-tight text-slate-900 dark:text-white mr-1">{title}</span>
+              {tutorielTo && (
+                <Link
+                  to={tutorielTo}
+                  title={t('shell.tutorial')}
+                  aria-label={t('shell.tutorial')}
+                  className="inline-flex shrink-0 items-center gap-1 rounded-lg bg-primary-50 px-2 py-2 text-xs font-semibold text-primary-700 hover:bg-primary-100 dark:bg-neutral-800 dark:text-white"
+                >
+                  <BookOpen className="h-4 w-4" />
+                  <span>{t('shell.tutorial')}</span>
+                </Link>
+              )}
               <ThemeToggle />
               <NotificationBell />
               <UserProfileDropdown />
@@ -139,6 +159,17 @@ export default function DashboardShell({
             </div>
             <div className="flex items-center gap-2">
               {headerRight}
+              {tutorielTo && (
+                <Link
+                  to={tutorielTo}
+                  title={t('shell.tutorial')}
+                  aria-label={t('shell.tutorial')}
+                  className="inline-flex items-center gap-2 rounded-xl border border-primary-200 bg-primary-50 px-3 py-2 text-sm font-semibold text-primary-700 hover:bg-primary-100 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white"
+                >
+                  <BookOpen className="h-4 w-4" />
+                  {t('shell.tutorial')}
+                </Link>
+              )}
               <ThemeToggle />
               <NotificationBell />
               <UserProfileDropdown />

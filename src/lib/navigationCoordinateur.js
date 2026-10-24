@@ -26,6 +26,7 @@ import {
  * sa taille.
  */
 export const LIENS_COORDINATEUR = [
+  { to: '/coordinateur/tutoriel', cle: 'tutoriel', icone: BookOpen },
   { to: '/coordinateur/tableau-de-bord', cle: 'dashboard', icone: LayoutDashboard },
   // « Dossiers » pointait ici aussi : deux entrees pour une seule adresse, donc
   // deux onglets allumes au meme clic. Et l'ecran n'a jamais liste de dossiers,
@@ -41,5 +42,4 @@ export const LIENS_COORDINATEUR = [
   { to: '/coordinateur/habilitations', cle: 'habilitations', icone: BadgeCheck },
   { to: '/coordinateur/exceptions', cle: 'parametres', icone: Settings },
   { to: '/coordinateur/temoignages', cle: 'temoignages', icone: MessageCircleHeart },
-  { to: '/coordinateur/tutoriel', cle: 'tutoriel', icone: BookOpen },
 ]

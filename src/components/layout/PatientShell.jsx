@@ -7,9 +7,9 @@ export default function PatientShell({ title, left, right, children, fab }) {
   const { t } = useTranslation()
 
   const links = [
+    { to: '/patient/tutoriel', label: t('shell.tutorial'), icon: <BookOpen className="w-5 h-5" /> },
     { to: '/patient/dossiers', label: t('shell.patientNav.dossiers'), icon: <FolderOpen className="w-5 h-5" /> },
     { to: '/patient/profil', label: t('shell.patientNav.profil'), icon: <User className="w-5 h-5" /> },
-    { to: '/patient/tutoriel', label: t('shell.tutorial'), icon: <BookOpen className="w-5 h-5" /> },
   ]
 
   return (
