@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { LayoutDashboard, Stethoscope, ShieldCheck, ScrollText, BarChart3 } from 'lucide-react'
+import { LayoutDashboard, Stethoscope, ShieldCheck, ScrollText, BarChart3, BookOpen } from 'lucide-react'
 import DashboardShell from './DashboardShell'
 
 export default function AdminLayout({ children }) {
@@ -31,6 +31,7 @@ export default function AdminLayout({ children }) {
       label: t('shell.adminNav.journal'),
       icon: <ScrollText className="w-5 h-5" />,
     },
+    { to: '/admin/tutoriel', label: t('shell.tutorial'), icon: <BookOpen className="w-5 h-5" /> },
   ]
 
   return (

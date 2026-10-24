@@ -899,6 +899,7 @@
     }
   },
   "shell": {
+    "tutorial": "Tutorial",
     "adminNav": {
       "dashboard": "Dashboard",
       "specialistes": "Specialists",
@@ -930,7 +931,8 @@
       "candidatures": "Integration requests",
       "specialites": "Specialties",
       "gestionMedecins": "Treating doctors",
-      "habilitations": "Credentials"
+      "habilitations": "Credentials",
+      "tutoriel": "Tutorial"
     },
     "userMenu": {
       "user": "User",
@@ -1381,7 +1383,7 @@
       "optionnel": "optional",
       "villeToutes": "All cities",
       "lancer": "Find a doctor",
-      "tarifNote": "Searching is free. Being connected with the doctors found costs {{montant}} {{devise}}.",
+      "tarifNote": "Searching is free. Being connected costs {{base}} {{devise}} + an estimated {{frais}} {{devise}} payment fee, {{montant}} {{devise}} total.",
       "erreur": "The search failed. Please try again.",
       "tropCourt": "Describe your symptoms a little more (at least {{min}} characters).",
       "retourAccueil": "Back to home",
@@ -1409,6 +1411,7 @@
       "verrouille": "Contact details locked",
       "deblocageTitre": "Get connected with these doctors",
       "deblocageTexte": "We connect you with every doctor in this search: you receive their name, phone, email, practice and neighbourhood.",
+      "tarifDetail": "Your service: {{base}} {{devise}} · estimated payment fee: {{frais}} {{devise}} · total: {{total}} {{devise}}.",
       "comptePatientRequis": "Getting connected requires a patient account.",
       "debloquer": "Connect me — {{montant}} {{devise}}",
       "attenteConfirmation": "Confirming payment…",

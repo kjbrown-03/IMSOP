@@ -177,7 +177,12 @@ export default function AnnuaireRecherche({ typePratique = 'CONVENTIONNEL' }) {
             {referentiels?.tarif && (
               <p className="text-xs text-[var(--color-text-secondary)] flex items-center gap-1.5">
                 <MapPin className="w-3.5 h-3.5" />
-                {t('annuaire.recherche.tarifNote', { montant: referentiels.tarif.amount.toLocaleString('fr-FR'), devise: referentiels.tarif.currency })}
+                {t('annuaire.recherche.tarifNote', {
+                  montant: referentiels.tarif.amount.toLocaleString('fr-FR'),
+                  base: referentiels.tarif.baseAmount.toLocaleString('fr-FR'),
+                  frais: referentiels.tarif.fraisEstimes.toLocaleString('fr-FR'),
+                  devise: referentiels.tarif.currency,
+                })}
               </p>
             )}
           </form>

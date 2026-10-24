@@ -401,6 +401,7 @@ model RechercheAnnuaire {
   urgence      Boolean                 @default(false)
   statut       RechercheAnnuaireStatut @default(FLOUTEE)
   debloqueeLe  DateTime?
+  specialisteChoisiId String?
   createdAt    DateTime                @default(now())
 
   resultats RechercheAnnuaireResultat[]

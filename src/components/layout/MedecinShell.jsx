@@ -1,4 +1,4 @@
-import { LayoutDashboard, User, FileCheck, MapPin } from 'lucide-react'
+import { LayoutDashboard, User, FileCheck, MapPin, BookOpen } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import DashboardShell from './DashboardShell'
 
@@ -9,6 +9,7 @@ export default function MedecinShell({ children }) {
     { to: '/professionnel/justificatifs', label: t('shell.medecinNav.justificatifs'), icon: <FileCheck className="w-5 h-5" /> },
     { to: '/medecin/annuaire', label: t('shell.medecinNav.annuaire'), icon: <MapPin className="w-5 h-5" /> },
     { to: '/medecin/profil', label: t('shell.medecinNav.profil'), icon: <User className="w-5 h-5" /> },
+    { to: '/medecin/tutoriel', label: t('shell.tutorial'), icon: <BookOpen className="w-5 h-5" /> },
   ]
   return (
     <DashboardShell title="IMSOP Médecin" links={links} profileTo="/medecin/profil">

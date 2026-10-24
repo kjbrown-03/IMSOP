@@ -38,6 +38,7 @@ router.post('/recherches', rechercheAnnuaireLimiter, authenticateOptional, valid
 // Lecture d'une recherche : anonyme tant qu'elle n'est rattachée à personne
 // (fiches floutées seulement), réservée à son compte ensuite.
 router.get('/recherches/:id', authenticateOptional, validate(schema.rechercheParId), ctrl.consulter)
+router.post('/recherches/:id/choisir/:resultatId', authenticateOptional, validate(schema.choisirSpecialiste), ctrl.choisirSpecialiste)
 
 // Payer ne demande pas de compte : un e-mail suffit (voir le schéma). Une
 // session, si elle existe, rattache simplement la recherche au compte.

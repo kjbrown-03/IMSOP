@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { FolderOpen, User } from 'lucide-react'
+import { FolderOpen, User, BookOpen } from 'lucide-react'
 import DashboardShell from './DashboardShell'
 import BottomNav from './BottomNav'
 
@@ -9,6 +9,7 @@ export default function PatientShell({ title, left, right, children, fab }) {
   const links = [
     { to: '/patient/dossiers', label: t('shell.patientNav.dossiers'), icon: <FolderOpen className="w-5 h-5" /> },
     { to: '/patient/profil', label: t('shell.patientNav.profil'), icon: <User className="w-5 h-5" /> },
+    { to: '/patient/tutoriel', label: t('shell.tutorial'), icon: <BookOpen className="w-5 h-5" /> },
   ]
 
   return (

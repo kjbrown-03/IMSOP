@@ -899,6 +899,7 @@
     }
   },
   "shell": {
+    "tutorial": "Tutoriel",
     "adminNav": {
       "dashboard": "Tableau de bord",
       "specialistes": "Spécialistes",
@@ -930,7 +931,8 @@
       "candidatures": "Demandes d'intégration",
       "specialites": "Spécialités",
       "gestionMedecins": "Médecins traitants",
-      "habilitations": "Habilitations"
+      "habilitations": "Habilitations",
+      "tutoriel": "Tutoriel"
     },
     "userMenu": {
       "user": "Utilisateur",
@@ -1381,7 +1383,7 @@
       "optionnel": "facultatif",
       "villeToutes": "Toutes les villes",
       "lancer": "Chercher un médecin",
-      "tarifNote": "La recherche est gratuite. La mise en relation avec les médecins trouvés coûte {{montant}} {{devise}}.",
+      "tarifNote": "La recherche est gratuite. La mise en relation coûte {{base}} {{devise}} + {{frais}} {{devise}} de frais de paiement estimés, soit {{montant}} {{devise}} au total.",
       "erreur": "La recherche a échoué. Réessayez.",
       "tropCourt": "Décrivez un peu plus vos symptômes (au moins {{min}} caractères).",
       "retourAccueil": "Retour à l'accueil",
@@ -1409,6 +1411,7 @@
       "verrouille": "Coordonnées verrouillées",
       "deblocageTitre": "Être mis en relation avec ces médecins",
       "deblocageTexte": "Nous vous relions à tous les médecins de cette recherche : vous recevez leur nom, leur téléphone, leur e-mail, leur établissement et leur quartier.",
+      "tarifDetail": "Votre service : {{base}} {{devise}} · frais de paiement estimés : {{frais}} {{devise}} · total : {{total}} {{devise}}.",
       "comptePatientRequis": "La mise en relation se fait depuis un compte patient.",
       "debloquer": "Me mettre en relation — {{montant}} {{devise}}",
       "attenteConfirmation": "Confirmation du paiement…",

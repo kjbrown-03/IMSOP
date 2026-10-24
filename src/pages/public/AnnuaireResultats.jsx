@@ -137,8 +137,14 @@ function urlWhatsApp(fiche, t) {
   return `https://wa.me/${numero}?text=${texte}`
 }
 
-function FicheComplete({ fiche, t }) {
+function FicheComplete({ fiche, t, onContacter }) {
   const whatsappUrl = urlWhatsApp(fiche, t)
+
+  function contactAuClic(event, lien) {
+    if (!onContacter) return
+    event.preventDefault()
+    onContacter(fiche.id, lien)
+  }
 
   return (
     <article className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5">
@@ -171,6 +177,7 @@ function FicheComplete({ fiche, t }) {
                 href={whatsappUrl || `tel:${fiche.telephone.replace(/\s+/g, '')}`}
                 target={whatsappUrl ? '_blank' : undefined}
                 rel={whatsappUrl ? 'noreferrer' : undefined}
+                onClick={(event) => contactAuClic(event, whatsappUrl || `tel:${fiche.telephone.replace(/\s+/g, '')}`)}
                 className={`inline-flex items-center gap-1.5 rounded-full ${whatsappUrl ? 'bg-[#25D366] text-white' : 'bg-[var(--color-primary)] text-white'} px-4 py-2 text-sm font-semibold hover:opacity-90`}
                 aria-label={whatsappUrl ? `${t('annuaire.resultats.whatsapp')} ${fiche.telephone}` : fiche.telephone}
               >
@@ -178,13 +185,13 @@ function FicheComplete({ fiche, t }) {
               </a>
             )}
             {fiche.telephone && whatsappUrl && (
-              <a href={`tel:${fiche.telephone.replace(/\s+/g, '')}`} className="inline-flex items-center gap-1.5 rounded-full border border-[var(--color-border)] px-4 py-2 text-sm font-semibold hover:bg-[var(--color-surface-container-low)]">
+              <a href={`tel:${fiche.telephone.replace(/\s+/g, '')}`} onClick={(event) => contactAuClic(event, `tel:${fiche.telephone.replace(/\s+/g, '')}`)} className="inline-flex items-center gap-1.5 rounded-full border border-[var(--color-border)] px-4 py-2 text-sm font-semibold hover:bg-[var(--color-surface-container-low)]">
                 <Phone className="w-4 h-4" /> {t('annuaire.resultats.appeler')}
               </a>
             )}
             <LienCarte fiche={fiche} t={t} />
             {fiche.email && (
-              <a href={`mailto:${fiche.email}`} className="inline-flex items-center gap-1.5 rounded-full border border-[var(--color-border)] px-4 py-2 text-sm font-semibold hover:bg-[var(--color-surface-container-low)]">
+              <a href={`mailto:${fiche.email}`} onClick={(event) => contactAuClic(event, `mailto:${fiche.email}`)} className="inline-flex items-center gap-1.5 rounded-full border border-[var(--color-border)] px-4 py-2 text-sm font-semibold hover:bg-[var(--color-surface-container-low)]">
                 <Mail className="w-4 h-4" /> {fiche.email}
               </a>
             )}
@@ -263,6 +270,7 @@ export default function AnnuaireResultats() {
   const [email, setEmail] = useState('')
   const [paiementEnCours, setPaiementEnCours] = useState(false)
   const [attenteConfirmation, setAttenteConfirmation] = useState(false)
+  const [contactEnCours, setContactEnCours] = useState(false)
   const debutAttente = useRef(null)
 
   useEffect(() => {
@@ -369,6 +377,25 @@ export default function AnnuaireResultats() {
     }
   }
 
+  async function contacterSpecialiste(resultatId, lien) {
+    setContactEnCours(true)
+    setErreur(null)
+    const nouvelOnglet = lien.startsWith('https://') ? window.open('about:blank', '_blank') : null
+    if (nouvelOnglet) nouvelOnglet.opener = null
+    try {
+      const { data } = await api.post(`/annuaire/recherches/${id}/choisir/${resultatId}`)
+      setRecherche(data)
+      if (nouvelOnglet) nouvelOnglet.location.href = lien
+      else window.location.href = lien
+    } catch (err) {
+      nouvelOnglet?.close()
+      setErreur(err.response?.data?.message || t('annuaire.resultats.erreurPaiement'))
+      await charger()
+    } finally {
+      setContactEnCours(false)
+    }
+  }
+
   const tarif = recherche?.tarif
 
   return (
@@ -431,6 +458,14 @@ export default function AnnuaireResultats() {
                   <div>
                     <p className="font-semibold text-[var(--color-text-main)]">{t('annuaire.resultats.deblocageTitre')}</p>
                     <p className="text-sm text-[var(--color-text-secondary)]">{t('annuaire.resultats.deblocageTexte')}</p>
+                    <p className="text-xs text-[var(--color-text-secondary)]">
+                      {t('annuaire.resultats.tarifDetail', {
+                        base: tarif.baseAmount.toLocaleString('fr-FR'),
+                        frais: tarif.fraisEstimes.toLocaleString('fr-FR'),
+                        total: tarif.amount.toLocaleString('fr-FR'),
+                        devise: tarif.currency,
+                      })}
+                    </p>
                   </div>
                   <div className="flex flex-col sm:flex-row sm:items-end gap-3">
                     <label className="flex-1 flex flex-col gap-1.5">
@@ -483,14 +518,18 @@ export default function AnnuaireResultats() {
 
               <div className="grid grid-cols-1 gap-4">
                 {recherche.resultats.map((fiche) =>
-                  recherche.statut === 'DEBLOQUEE'
-                    ? <FicheComplete key={fiche.id} fiche={fiche} t={t} />
+                  recherche.statut === 'DEBLOQUEE' && (!recherche.specialisteChoisiId || recherche.specialisteChoisiId === fiche.id)
+                    ? <FicheComplete key={fiche.id} fiche={fiche} t={t} onContacter={contacterSpecialiste} />
                     : <FicheFloutee key={fiche.id} fiche={fiche} t={t} />,
                 )}
               </div>
 
               {recherche.statut === 'DEBLOQUEE' && (
-                <p className="text-xs text-[var(--color-text-secondary)]">{t('annuaire.resultats.rappelDebloque')}</p>
+                <p className="text-xs text-[var(--color-text-secondary)]">
+                  {contactEnCours ? 'Enregistrement de votre choix…' : recherche.specialisteChoisiId
+                    ? 'Vous avez choisi ce spécialiste. Les autres fiches restent masquées pour cette recherche.'
+                    : 'Choisissez un spécialiste en le contactant par WhatsApp, téléphone ou e-mail ; les autres fiches seront alors masquées.'}
+                </p>
               )}
             </>
           )}

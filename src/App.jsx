@@ -81,6 +81,7 @@ const AdminStatistiques = lazy(() => import('./pages/admin/AdminStatistiques'))
 const MessagerieSpecialiste = lazy(() => import('./pages/specialiste/MessagerieSpecialiste'))
 const MessagerieCoordinateur = lazy(() => import('./pages/coordinateur/MessagerieCoordinateur'))
 const CoordinateurTemoignages = lazy(() => import('./pages/coordinateur/CoordinateurTemoignages'))
+const TutorielRole = lazy(() => import('./pages/TutorielRole'))
 
 import Accueil from './pages/public/Accueil'
 
@@ -235,6 +236,7 @@ export default function App() {
           </ProtectedRoute>
         }
       />
+      <Route path="/patient/tutoriel" element={<ProtectedRoute role="PATIENT"><TutorielRole role="PATIENT" /></ProtectedRoute>} />
       <Route
         path="/medecin/nouvelle-demande"
         element={
@@ -347,6 +349,7 @@ export default function App() {
           </ProtectedRoute>
         }
       />
+      <Route path="/medecin/tutoriel" element={<ProtectedRoute role="MEDECIN_LOCAL"><TutorielRole role="MEDECIN_LOCAL" /></ProtectedRoute>} />
       <Route
         path="/patient/dossiers/:id"
         element={
@@ -429,6 +432,7 @@ export default function App() {
           </ProtectedRoute>
         }
       />
+      <Route path="/coordinateur/tutoriel" element={<ProtectedRoute role="COORDINATEUR"><TutorielRole role="COORDINATEUR" /></ProtectedRoute>} />
 
       {/* Spécialiste */}
       <Route
@@ -471,6 +475,7 @@ export default function App() {
           </ProtectedRoute>
         }
       />
+      <Route path="/specialiste/tutoriel" element={<ProtectedRoute role="SPECIALISTE"><TutorielRole role="SPECIALISTE" /></ProtectedRoute>} />
 
       {/* Admin */}
       <Route
@@ -513,6 +518,7 @@ export default function App() {
           </ProtectedRoute>
         }
       />
+      <Route path="/admin/tutoriel" element={<ProtectedRoute role="ADMIN"><TutorielRole role="ADMIN" /></ProtectedRoute>} />
 
       <Route path="*" element={<NotFound />} />
       </Routes>

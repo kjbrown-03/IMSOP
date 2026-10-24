@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { LayoutDashboard, MessageCircle, User, FileCheck } from 'lucide-react'
+import { LayoutDashboard, MessageCircle, User, FileCheck, BookOpen } from 'lucide-react'
 import DashboardShell from './DashboardShell'
 
 export default function SpecialistShell({ children }) {
@@ -18,6 +18,7 @@ export default function SpecialistShell({ children }) {
     },
     { to: '/professionnel/justificatifs', label: t('shell.specialistNav.justificatifs'), icon: <FileCheck className="w-5 h-5" /> },
     { to: '/specialiste/disponibilites', label: t('shell.specialistNav.compte'), icon: <User className="w-5 h-5" /> },
+    { to: '/specialiste/tutoriel', label: t('shell.tutorial'), icon: <BookOpen className="w-5 h-5" /> },
   ]
 
   return (

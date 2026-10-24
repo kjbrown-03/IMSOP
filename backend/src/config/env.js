@@ -30,6 +30,12 @@ function secretFort(name, nodeEnv) {
 }
 
 const nodeEnv = process.env.NODE_ENV || 'development'
+const TARIF_ANNUAIRE_BASE = parseInt(process.env.TARIF_ANNUAIRE_BASE_XAF || '1000', 10)
+const FRAIS_PAIEMENT_ANNUAIRE_POURCENT = parseFloat(process.env.ANNUAIRE_FRAIS_PAIEMENT_POURCENT || '3')
+const TARIF_ANNUAIRE = parseInt(
+  process.env.TARIF_ANNUAIRE_XAF || String(Math.ceil(TARIF_ANNUAIRE_BASE / (1 - FRAIS_PAIEMENT_ANNUAIRE_POURCENT / 100))),
+  10,
+)
 
 // Adresse d'écoute du backend. En production il vit DERRIÈRE nginx sur le même
 // VPS : il n'écoute que la boucle locale (127.0.0.1), donc rien sur Internet ni
@@ -111,11 +117,11 @@ module.exports = {
     STANDARD: parseInt(process.env.TARIF_STANDARD_XAF || '115000', 10),
     PRIORITAIRE: parseInt(process.env.TARIF_PRIORITAIRE_XAF || '165000', 10),
     URGENT: parseInt(process.env.TARIF_URGENT_XAF || '230000', 10),
-    // Commission de mise en relation « Trouver un médecin » : ce que le
-    // patient paie pour que la plateforme le relie aux médecins vérifiés de sa
-    // zone qui peuvent le recevoir. Entièrement conservée par la plateforme
-    // (aucun reversement au médecin). Prix arrêté par la direction : 3000 XAF.
-    ANNUAIRE: parseInt(process.env.TARIF_ANNUAIRE_XAF || '2000', 10),
+    // Le montant est grossi pour couvrir le frais de collecte : à 3 %, 1031
+    // XAF encaissés laissent environ 1000 XAF après le prélèvement du fournisseur.
+    ANNUAIRE_BASE: TARIF_ANNUAIRE_BASE,
+    ANNUAIRE_FRAIS_PAIEMENT_POURCENT: FRAIS_PAIEMENT_ANNUAIRE_POURCENT,
+    ANNUAIRE: TARIF_ANNUAIRE,
     devise: 'XAF',
   },
 

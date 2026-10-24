@@ -33,6 +33,16 @@ const transcription = require('../services/transcriptionService')
 
 const MAX_RESULTATS = 20
 
+function tarifAnnuaire() {
+  return {
+    amount: env.tarifs.ANNUAIRE,
+    baseAmount: env.tarifs.ANNUAIRE_BASE,
+    fraisEstimes: Math.max(0, env.tarifs.ANNUAIRE - env.tarifs.ANNUAIRE_BASE),
+    fraisPourcent: env.tarifs.ANNUAIRE_FRAIS_PAIEMENT_POURCENT,
+    currency: env.tarifs.devise,
+  }
+}
+
 // Ce qu'on montre AVANT paiement : de quoi juger que ça vaut le coup (la
 // spécialité, la ville) sans rien qui permette de retrouver la personne. Ni
 // nom, ni établissement, ni quartier, ni identifiant du médecin - on expose
@@ -90,12 +100,15 @@ function serialiser(recherche) {
     pays: recherche.pays,
     ville: recherche.ville,
     nombre: recherche.resultats.length,
-    tarif: { amount: env.tarifs.ANNUAIRE, currency: env.tarifs.devise },
+    tarif: tarifAnnuaire(),
     simulationPubliqueActive: Number.isFinite(dateFinSimulationPublique) && Date.now() < dateFinSimulationPublique,
     createdAt: recherche.createdAt,
     debloqueeLe: recherche.debloqueeLe,
+    specialisteChoisiId: debloquee ? recherche.specialisteChoisiId : null,
     resultats: recherche.resultats.map((r) =>
-      debloquee ? ficheComplete(r, recherche.specialites) : ficheFloutee(r, recherche.specialites),
+      debloquee && (!recherche.specialisteChoisiId || recherche.specialisteChoisiId === r.id)
+        ? ficheComplete(r, recherche.specialites)
+        : ficheFloutee(r, recherche.specialites),
     ),
   }
 }
@@ -113,7 +126,7 @@ async function referentiels(req, res) {
       .filter(([code]) => paysOuvert(code))
       .map(([code, p]) => ({ code, nom: p.nom, villes: p.villes })),
     specialites: SPECIALITES_LOCALES,
-    tarif: { amount: env.tarifs.ANNUAIRE, currency: env.tarifs.devise },
+    tarif: tarifAnnuaire(),
   })
 }
 
@@ -217,6 +230,43 @@ async function consulter(req, res) {
   const { recherche, error, message } = await chargerRecherche(req)
   if (error) return res.status(error).json({ message })
   res.json(serialiser(recherche))
+}
+
+async function choisirSpecialiste(req, res) {
+  const { recherche, error, message } = await chargerRecherche(req)
+  if (error) return res.status(error).json({ message })
+  if (recherche.statut !== 'DEBLOQUEE') return res.status(403).json({ message: 'La recherche doit être payée avant de choisir un spécialiste' })
+
+  const resultat = recherche.resultats.find((r) => r.id === req.params.resultatId)
+  if (!resultat) return res.status(404).json({ message: 'Ce spécialiste ne fait pas partie de cette recherche' })
+  if (recherche.specialisteChoisiId && recherche.specialisteChoisiId !== resultat.id) {
+    return res.status(409).json({ message: 'Un spécialiste a déjà été choisi pour cette recherche' })
+  }
+
+  if (!recherche.specialisteChoisiId) {
+    const maj = await prisma.rechercheAnnuaire.updateMany({
+      where: { id: recherche.id, statut: 'DEBLOQUEE', specialisteChoisiId: null },
+      data: { specialisteChoisiId: resultat.id },
+    })
+    if (maj.count === 0) {
+      const actuelle = await prisma.rechercheAnnuaire.findUnique({ where: { id: recherche.id }, include: INCLUDE_RESULTATS })
+      if (actuelle?.specialisteChoisiId !== resultat.id) {
+        return res.status(409).json({ message: 'Un autre spécialiste a déjà été choisi pour cette recherche' })
+      }
+      return res.json(serialiser(actuelle))
+    }
+  }
+
+  const actuelle = await prisma.rechercheAnnuaire.findUnique({ where: { id: recherche.id }, include: INCLUDE_RESULTATS })
+  await logAction({
+    userId: req.userId,
+    action: 'ANNUAIRE_SPECIALISTE_CHOISI',
+    entityType: 'RechercheAnnuaire',
+    entityId: recherche.id,
+    metadata: { resultatId: resultat.id },
+    ipAddress: req.ip,
+  })
+  return res.json(serialiser(actuelle))
 }
 
 async function initierPaiement(req, res) {
@@ -464,4 +514,4 @@ async function transcrireSymptomes(req, res, next) {
   }
 }
 
-module.exports = { referentiels, rechercher, consulter, initierPaiement, simulerPaiement, monAnnuaire, mettreAJourAnnuaire, transcrireSymptomes }
+module.exports = { referentiels, rechercher, consulter, choisirSpecialiste, initierPaiement, simulerPaiement, monAnnuaire, mettreAJourAnnuaire, transcrireSymptomes }

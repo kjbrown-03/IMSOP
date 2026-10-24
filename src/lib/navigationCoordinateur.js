@@ -3,6 +3,7 @@ import {
   ClipboardList,
   HeartPulse,
   BarChart3,
+  BookOpen,
   BadgeCheck,
   LayoutDashboard,
   ListChecks,
@@ -40,4 +41,5 @@ export const LIENS_COORDINATEUR = [
   { to: '/coordinateur/habilitations', cle: 'habilitations', icone: BadgeCheck },
   { to: '/coordinateur/exceptions', cle: 'parametres', icone: Settings },
   { to: '/coordinateur/temoignages', cle: 'temoignages', icone: MessageCircleHeart },
+  { to: '/coordinateur/tutoriel', cle: 'tutoriel', icone: BookOpen },
 ]

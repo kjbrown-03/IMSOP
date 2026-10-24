@@ -15,6 +15,9 @@ const rechercher = {
 }
 
 const rechercheParId = { params: paramsWithId('id') }
+const choisirSpecialiste = {
+  params: z.object({ id: z.string().uuid(), resultatId: z.string().uuid() }),
+}
 
 // Aucun compte requis pour payer : l'e-mail est ce que le fournisseur de
 // paiement exige et ce qui identifie la personne mise en relation. Facultatif
@@ -48,4 +51,4 @@ const mettreAJourAnnuaire = {
   ),
 }
 
-module.exports = { rechercher, rechercheParId, initierPaiement, mettreAJourAnnuaire }
+module.exports = { rechercher, rechercheParId, choisirSpecialiste, initierPaiement, mettreAJourAnnuaire }
