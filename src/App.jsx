@@ -71,6 +71,7 @@ const AccueilV2 = lazy(() => import('./pages/public/AccueilV2'))
 const PourMedecins = lazy(() => import('./pages/public/PourMedecins'))
 const AnnuaireRecherche = lazy(() => import('./pages/public/AnnuaireRecherche'))
 const AnnuaireChoix = lazy(() => import('./pages/public/AnnuaireChoix'))
+const AvisChoix = lazy(() => import('./pages/public/AvisChoix'))
 const AnnuaireResultats = lazy(() => import('./pages/public/AnnuaireResultats'))
 const AnnuaireMedecin = lazy(() => import('./pages/medecin/AnnuaireMedecin'))
 const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'))
@@ -157,6 +158,10 @@ export default function App() {
           publics (les résultats restent floutés tant que rien n'est payé). */}
       {/* L'annuaire commence par un choix : conventionnel ou traditionnel. Les
           deux pratiques ne se mélangent pas dans une liste de résultats. */}
+      {/* « Demander un avis » commence par un choix : un praticien a aller
+          voir pres de chez soi, ou un deuxieme avis international sur dossier.
+          Les deux parcours n'ont ni le meme delai ni le meme resultat. */}
+      <Route path="/avis" element={<AvisChoix />} />
       <Route path="/annuaire" element={<AnnuaireChoix />} />
       <Route path="/annuaire/conventionnel" element={<AnnuaireRecherche typePratique="CONVENTIONNEL" />} />
       <Route path="/annuaire/traditionnel" element={<AnnuaireRecherche typePratique="TRADITIONNEL" />} />

@@ -1767,5 +1767,25 @@
     "occupe": "The service is busy right now. Try again shortly, or type your description.",
     "echec": "The transcription failed. You can try again or type your description.",
     "tropCourt": "The recording is too short. Keep recording while you describe your problem, then stop."
+  },
+  "avis": {
+    "choix": {
+      "eyebrow": "Request an opinion",
+      "titre": "Which opinion are you looking for?",
+      "intro": "The two paths are not alike. Pick the one that matches your situation, so you do not fill in a file that would not suit you.",
+      "note": "In both cases your medical documents stay encrypted and are read only by the people you authorise.",
+      "LOCAL": {
+        "titre": "A doctor near me",
+        "description": "You want to see someone in person. Describe your problem, we work out the speciality and show you the nearest practitioners — conventional or traditional medicine.",
+        "delai": "You get a name, a phone number and an address, straight away.",
+        "action": "Find a practitioner"
+      },
+      "INTERNATIONAL": {
+        "titre": "An international second opinion",
+        "description": "A specialist abroad studies your full file — tests, imaging, reports — and writes an opinion on your situation.",
+        "delai": "You submit a file and receive a written report within a few days.",
+        "action": "Submit a file"
+      }
+    }
   }
 }

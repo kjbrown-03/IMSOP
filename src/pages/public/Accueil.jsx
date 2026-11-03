@@ -195,23 +195,25 @@ export default function Accueil() {
                 <span className="italic text-[#3E8C81] dark:text-[#8FC4BA]">{t('public.home.heroTitlePart2')}</span>
               </h1>
 
-              {/* Deux portes, pas une : le second avis international (le cœur
-                  d'IMSOP) et l'annuaire de proximité pour qui cherche
-                  simplement un médecin dans la zone CEMAC. */}
+              {/* Deux portes, pas une.
+                  L'annuaire de proximite passe en premier : c'est le besoin le
+                  plus immediat — trouver quelqu'un a aller voir — et le parcours
+                  le plus court. Le second avis international, qui demande de
+                  deposer un dossier et d'attendre, vient apres. */}
               <div className="flex flex-col sm:flex-row gap-3">
                 <Link
-                  to="/inscription"
-                  className="inline-flex items-center justify-center gap-2 bg-[#163A52] dark:bg-[#8FC4BA] text-white dark:text-[#0F2C38] rounded-full px-7 py-4 font-bold text-sm tracking-wide shadow-[0_10px_24px_-10px_rgba(22,58,82,0.6)] hover:opacity-90 transition-opacity"
-                >
-                  {t('public.home.heroPrimaryCta')}
-                  <ArrowRight className="w-[18px] h-[18px]" />
-                </Link>
-                <Link
                   to="/annuaire"
-                  className="btn-remplissage [--remplissage:#163A52] dark:[--remplissage:#8FC4BA] inline-flex items-center justify-center gap-2 border-2 border-[#163A52] dark:border-[#8FC4BA] text-[#163A52] dark:text-[#8FC4BA] hover:text-white dark:hover:text-[#0F2C38] rounded-full px-7 py-4 font-bold text-sm tracking-wide transition-colors duration-300"
+                  className="inline-flex items-center justify-center gap-2 bg-[#163A52] dark:bg-[#8FC4BA] text-white dark:text-[#0F2C38] rounded-full px-7 py-4 font-bold text-sm tracking-wide shadow-[0_10px_24px_-10px_rgba(22,58,82,0.6)] hover:opacity-90 transition-opacity"
                 >
                   <MapPin className="w-[18px] h-[18px]" />
                   {t('public.home.heroSecondaryCta')}
+                </Link>
+                <Link
+                  to="/avis"
+                  className="btn-remplissage [--remplissage:#163A52] dark:[--remplissage:#8FC4BA] inline-flex items-center justify-center gap-2 border-2 border-[#163A52] dark:border-[#8FC4BA] text-[#163A52] dark:text-[#8FC4BA] hover:text-white dark:hover:text-[#0F2C38] rounded-full px-7 py-4 font-bold text-sm tracking-wide transition-colors duration-300"
+                >
+                  {t('public.home.heroPrimaryCta')}
+                  <ArrowRight className="w-[18px] h-[18px]" />
                 </Link>
               </div>
 
@@ -399,7 +401,7 @@ export default function Accueil() {
             </p>
           </div>
           <Link
-            to="/inscription"
+            to="/avis"
             className="shrink-0 inline-flex items-center gap-2 bg-[#163A52] dark:bg-[#8FC4BA] text-white dark:text-[#0F2C38] rounded-full px-8 py-[18px] font-bold text-sm tracking-wide shadow-[0_12px_26px_-12px_rgba(22,58,82,0.6)] hover:opacity-90 transition-opacity"
           >
             {t('public.home.heroPrimaryCta')}

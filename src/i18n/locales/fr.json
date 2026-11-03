@@ -1767,5 +1767,25 @@
     "occupe": "Le service est occupé en ce moment. Réessayez dans quelques instants, ou écrivez votre description.",
     "echec": "La transcription n'a pas abouti. Vous pouvez réessayer ou écrire votre description.",
     "tropCourt": "L'enregistrement est trop court. Maintenez le bouton le temps de décrire votre mal, puis arrêtez."
+  },
+  "avis": {
+    "choix": {
+      "eyebrow": "Demander un avis",
+      "titre": "Quel avis cherchez-vous ?",
+      "intro": "Les deux voies ne se ressemblent pas. Choisissez celle qui correspond à votre situation, pour ne pas remplir un dossier qui ne vous conviendrait pas.",
+      "note": "Dans les deux cas, vos documents médicaux restent chiffrés et ne sont lus que par les personnes que vous autorisez.",
+      "LOCAL": {
+        "titre": "Un médecin près de chez moi",
+        "description": "Vous voulez voir quelqu'un, en vrai. Décrivez votre mal, nous en déduisons la spécialité et vous proposons les praticiens les plus proches — médecine conventionnelle ou traditionnelle.",
+        "delai": "Vous obtenez un nom, un numéro et une adresse, immédiatement.",
+        "action": "Trouver un praticien"
+      },
+      "INTERNATIONAL": {
+        "titre": "Un deuxième avis international",
+        "description": "Un spécialiste étranger étudie votre dossier complet — analyses, imageries, comptes rendus — et rédige un avis écrit sur votre situation.",
+        "delai": "Vous déposez un dossier et recevez un rapport écrit sous quelques jours.",
+        "action": "Déposer un dossier"
+      }
+    }
   }
 }
