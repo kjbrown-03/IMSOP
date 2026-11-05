@@ -407,7 +407,7 @@ async function simulerPaiement(req, res) {
 // --- Côté médecin ------------------------------------------------------------
 
 const SELECT_ANNUAIRE_MEDECIN = {
-  annuaireVisible: true, annuaireSpecialites: true, annuaireExperience: true, annuaireAdresse: true, pays: true, ville: true, quartier: true,
+  annuaireVisible: true, annuaireSpecialites: true, annuaireExperience: true, annuaireAdresse: true, avisLocalActif: true, pays: true, ville: true, quartier: true,
   annuairePresentation: true, verificationStatus: true,
 }
 
@@ -421,7 +421,7 @@ async function mettreAJourAnnuaire(req, res) {
   const medecin = await prisma.medecinLocal.findUnique({ where: { userId: req.userId } })
   if (!medecin) return res.status(404).json({ message: 'Profil médecin introuvable' })
 
-  const { annuaireVisible, annuaireSpecialites, annuaireExperience, annuaireAdresse, pays, ville, quartier, annuairePresentation } = req.body
+  const { annuaireVisible, annuaireSpecialites, annuaireExperience, annuaireAdresse, avisLocalActif, pays, ville, quartier, annuairePresentation } = req.body
   const paysFinal = pays ?? medecin.pays
 
   // Un médecin non habilité peut préparer sa fiche, mais pas se rendre visible :
@@ -455,6 +455,7 @@ async function mettreAJourAnnuaire(req, res) {
   if (annuaireSpecialites !== undefined) data.annuaireSpecialites = annuaireSpecialites
   if (annuaireExperience !== undefined) data.annuaireExperience = annuaireExperience
   if (annuaireAdresse !== undefined) data.annuaireAdresse = annuaireAdresse
+  if (avisLocalActif !== undefined) data.avisLocalActif = avisLocalActif
   if (pays !== undefined) data.pays = pays
   if (ville !== undefined) data.ville = ville
   if (quartier !== undefined) data.quartier = quartier

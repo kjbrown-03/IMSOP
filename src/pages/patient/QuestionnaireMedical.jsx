@@ -32,6 +32,9 @@ export default function QuestionnaireMedical() {
   const [specialiteKey, setSpecialiteKey] = useState('')
   const [motif, setMotif] = useState('')
   const [symptomes, setSymptomes] = useState('')
+  // Par defaut international : c'est l'offre d'origine d'IMSOP, et un patient
+  // qui ne tranche pas obtient ce qu'il venait chercher.
+  const [portee, setPortee] = useState('INTERNATIONAL')
   const [antecedents, setAntecedents] = useState('non')
   const [allergies, setAllergies] = useState('')
   const [traitement, setTraitement] = useState('')
@@ -50,6 +53,7 @@ export default function QuestionnaireMedical() {
         antecedents: antecedents === 'oui' ? 'Antécédents médicaux déclarés par le patient' : 'Aucun antécédent déclaré',
         allergies: allergies.trim() || undefined,
         traitementEnCours: traitement || undefined,
+        portee,
       })
       navigate('/patient/nouvelle-demande/documents', { state: { dossierId: dossier.id } })
     } catch (err) {
@@ -139,6 +143,43 @@ export default function QuestionnaireMedical() {
             )}
 
             <form className="flex flex-col gap-8" onSubmit={onSubmit} id="questionnaire-form">
+              {/* Le choix de la portee vient EN PREMIER.
+
+                  Il change le prix et le delai — 15 000 XAF sous quelques jours
+                  contre 115 000 et davantage de delai. Le demander a la fin
+                  reviendrait a faire remplir tout un questionnaire pour
+                  annoncer le prix au moment de payer. */}
+              <fieldset className="flex flex-col gap-2.5">
+                <legend className="font-bold text-sm text-slate-900 dark:text-white mb-2.5">
+                  {t('patient.questionnaire.porteeLabel')} <span className="text-rose-500 dark:text-rose-400">*</span>
+                </legend>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {['LOCAL', 'INTERNATIONAL'].map((valeur) => (
+                    <button
+                      key={valeur}
+                      type="button"
+                      onClick={() => setPortee(valeur)}
+                      aria-pressed={portee === valeur}
+                      className={`text-left rounded-2xl border-2 p-4 transition-colors ${
+                        portee === valeur
+                          ? 'border-primary-600 bg-primary-50 dark:bg-primary-950/30 dark:border-primary-400'
+                          : 'border-slate-200 dark:border-neutral-700 hover:border-slate-300 dark:hover:border-neutral-600'
+                      }`}
+                    >
+                      <span className="block font-bold text-sm text-slate-900 dark:text-white">
+                        {t(`patient.questionnaire.portee.${valeur}.titre`)}
+                      </span>
+                      <span className="block text-sm text-slate-500 dark:text-neutral-400 mt-1">
+                        {t(`patient.questionnaire.portee.${valeur}.description`)}
+                      </span>
+                      <span className="block text-sm font-semibold text-primary-700 dark:text-primary-300 mt-2">
+                        {t(`patient.questionnaire.portee.${valeur}.tarif`)}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </fieldset>
+
               <div className="flex flex-col gap-2.5">
                 <label className="font-bold text-sm text-slate-900 dark:text-white" htmlFor="specialite">
                   {t('patient.questionnaire.specialiteLabel')} <span className="text-rose-500 dark:text-rose-400">*</span>

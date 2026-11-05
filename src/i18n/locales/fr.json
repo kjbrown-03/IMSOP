@@ -426,7 +426,20 @@
       "traitementPlaceholder": "Ex: Paracétamol 1g, 3 fois par jour...",
       "back": "Retour",
       "submitting": "Envoi en cours...",
-      "next": "Étape suivante"
+      "next": "Étape suivante",
+      "porteeLabel": "Quel type d’avis souhaitez-vous ?",
+      "portee": {
+        "LOCAL": {
+          "titre": "Avis local",
+          "description": "Un médecin de votre région étudie votre dossier et rédige un avis écrit.",
+          "tarif": "15 000 XAF"
+        },
+        "INTERNATIONAL": {
+          "titre": "Avis international",
+          "description": "Un spécialiste étranger étudie votre dossier et rédige un avis écrit.",
+          "tarif": "À partir de 115 000 XAF"
+        }
+      }
     },
     "documents": {
       "stepMobile": "Étape 3 : Documents",
@@ -1456,7 +1469,9 @@
       "experienceAide": "Depuis combien d'années exercez-vous ? Le patient le verra avant de demander la mise en relation. Laissez vide si vous préférez ne pas l'indiquer.",
       "experienceUnite": "années d'exercice",
       "adresseTitre": "Adresse du cabinet",
-      "adresseAide": "Telle que vous l'écririez sur une ordonnance. Le patient qui a payé la mise en relation pourra ouvrir l'itinéraire depuis son téléphone. Laissez vide si vous préférez ne donner que le quartier."
+      "adresseAide": "Telle que vous l'écririez sur une ordonnance. Le patient qui a payé la mise en relation pourra ouvrir l'itinéraire depuis son téléphone. Laissez vide si vous préférez ne donner que le quartier.",
+      "avisLocalLabel": "J'accepte de rédiger des avis sur dossier",
+      "avisLocalAide": "Un patient dépose son dossier — analyses, imageries, comptes rendus — et vous rédigez un avis écrit, sans le rencontrer. C'est distinct de la consultation : vous engagez votre signature sur un document. Rémunéré par dossier."
     },
     "choix": {
       "eyebrow": "Médecin spécialiste le plus proche",

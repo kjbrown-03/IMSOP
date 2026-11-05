@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { CheckCircle2, Eye, EyeOff, Loader2, MapPin, ShieldAlert } from 'lucide-react'
+import { CheckCircle2, Eye, EyeOff, FileSignature, Loader2, MapPin, ShieldAlert } from 'lucide-react'
 import MedecinShell from '../../components/layout/MedecinShell'
 import { api } from '../../lib/api'
 import ReglageNotifications from '../../components/ui/ReglageNotifications'
@@ -39,6 +39,7 @@ export default function AnnuaireMedecin() {
           pays: codes.includes(paysBrut) ? paysBrut : '',
           ville: m.data.ville || '',
           quartier: m.data.quartier || '',
+          avisLocalActif: Boolean(m.data.avisLocalActif),
           annuaireAdresse: m.data.annuaireAdresse || '',
           annuaireExperience: m.data.annuaireExperience ?? '',
           annuairePresentation: m.data.annuairePresentation || '',
@@ -89,11 +90,12 @@ export default function AnnuaireMedecin() {
         ville: reglages.ville || null,
         quartier: reglages.quartier || null,
         // Chaine vide = « non renseigne », pas « zero an ».
+        avisLocalActif: reglages.avisLocalActif,
         annuaireAdresse: reglages.annuaireAdresse || null,
         annuaireExperience: reglages.annuaireExperience === '' ? null : Number(reglages.annuaireExperience),
         annuairePresentation: reglages.annuairePresentation || null,
       })
-      setReglages((r) => ({ ...r, ...data, pays: data.pays || r.pays, ville: data.ville || '', quartier: data.quartier || '', annuairePresentation: data.annuairePresentation || '', annuaireExperience: data.annuaireExperience ?? '', annuaireAdresse: data.annuaireAdresse || '' }))
+      setReglages((r) => ({ ...r, ...data, pays: data.pays || r.pays, ville: data.ville || '', quartier: data.quartier || '', annuairePresentation: data.annuairePresentation || '', annuaireExperience: data.annuaireExperience ?? '', annuaireAdresse: data.annuaireAdresse || '', avisLocalActif: Boolean(data.avisLocalActif) }))
       setEnregistre(true)
     } catch (err) {
       setErreur(err.response?.data?.message || t('annuaire.medecin.erreurEnregistrement'))
@@ -156,6 +158,36 @@ export default function AnnuaireMedecin() {
               `ReglageNotifications` ne s'affiche de lui-meme que si l'appareil
               sait recevoir des notifications et qu'elles ne sont pas deja
               actives. */}
+          {/* Rediger des avis : un engagement DISTINCT de la presence dans
+              l'annuaire, et c'est pourquoi il a sa propre case.
+
+              Figurer dans l'annuaire, c'est accepter qu'un patient vienne vous
+              voir. Rediger un avis, c'est etudier un dossier a distance et
+              engager sa signature sur un ecrit — un autre metier, un autre
+              temps, une autre responsabilite.
+
+              Ne s'affiche que pour un medecin deja dans l'annuaire : on ne
+              propose pas de rediger des avis a quelqu'un qui n'a pas encore
+              accepte d'etre propose aux patients. */}
+          {reglages.annuaireVisible && (
+            <label className={`glass-card rounded-2xl p-5 flex items-start gap-4 cursor-pointer ${!habilite ? 'opacity-60' : ''}`}>
+              <input
+                type="checkbox"
+                checked={reglages.avisLocalActif}
+                disabled={!habilite}
+                onChange={(e) => modifier('avisLocalActif', e.target.checked)}
+                className="mt-1 h-5 w-5 rounded border-slate-300 text-primary-600 focus:ring-primary-500"
+              />
+              <span className="flex flex-col gap-1">
+                <span className="font-semibold text-slate-900 dark:text-white flex items-center gap-2">
+                  <FileSignature className="w-4 h-4 text-primary-600 dark:text-primary-400" />
+                  {t('annuaire.medecin.avisLocalLabel')}
+                </span>
+                <span className="text-sm text-slate-500 dark:text-neutral-400">{t('annuaire.medecin.avisLocalAide')}</span>
+              </span>
+            </label>
+          )}
+
           {reglages.annuaireVisible && <ReglageNotifications />}
 
 

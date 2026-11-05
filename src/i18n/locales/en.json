@@ -426,7 +426,20 @@
       "traitementPlaceholder": "E.g. Paracetamol 1g, 3 times a day...",
       "back": "Back",
       "submitting": "Sending...",
-      "next": "Next step"
+      "next": "Next step",
+      "porteeLabel": "What kind of opinion do you want?",
+      "portee": {
+        "LOCAL": {
+          "titre": "Local opinion",
+          "description": "A doctor in your region studies your file and writes an opinion.",
+          "tarif": "XAF 15,000"
+        },
+        "INTERNATIONAL": {
+          "titre": "International opinion",
+          "description": "A specialist abroad studies your file and writes an opinion.",
+          "tarif": "From XAF 115,000"
+        }
+      }
     },
     "documents": {
       "stepMobile": "Step 3: Documents",
@@ -1456,7 +1469,9 @@
       "experienceAide": "How long have you been practising? Patients see this before requesting an introduction. Leave blank to omit it.",
       "experienceUnite": "years in practice",
       "adresseTitre": "Practice address",
-      "adresseAide": "As you would write it on a prescription. Patients who paid for the introduction can open directions from their phone. Leave blank to give only the neighbourhood."
+      "adresseAide": "As you would write it on a prescription. Patients who paid for the introduction can open directions from their phone. Leave blank to give only the neighbourhood.",
+      "avisLocalLabel": "I am willing to write written opinions on case files",
+      "avisLocalAide": "A patient submits their file — tests, imaging, reports — and you write an opinion without meeting them. This differs from a consultation: you put your signature on a document. Paid per file."
     },
     "choix": {
       "eyebrow": "Nearest specialist doctor",

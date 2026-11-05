@@ -363,6 +363,16 @@ model MedecinLocal {
   //
   // Donnee APRES paiement seulement, comme le telephone : c'est precisement ce
   // que la mise en relation achete.
+  /// Le medecin accepte-t-il de rediger des avis ecrits sur dossier ?
+  ///
+  /// DISTINCT de `annuaireVisible`, et c'est important : figurer dans
+  /// l'annuaire, c'est accepter qu'un patient vienne vous voir en consultation.
+  /// Rediger un avis, c'est etudier un dossier a distance et engager sa
+  /// signature sur un ecrit — un autre metier, un autre temps, une autre
+  /// responsabilite. Beaucoup accepteront le premier sans vouloir du second.
+  ///
+  /// Faux par defaut : on ne presume pas qu'un medecin veut ce travail.
+  avisLocalActif          Boolean   @default(false)
   annuaireAdresse         String?
   annuaireExperience      Int?
   annuairePresentation    String?
