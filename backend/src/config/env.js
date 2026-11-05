@@ -114,6 +114,13 @@ module.exports = {
   // XAF) et arrondies. Le CDC §40 prévoit une grille par spécialité et type de
   // prestation ; d'ici là, trois montants réglables sans redéploiement.
   tarifs: {
+    // Avis rendu par un medecin de la zone CEMAC. Nettement moins cher que
+    // l'international : le praticien exerce dans le meme pays, sans les frais
+    // de change ni le niveau de remuneration d'un specialiste etranger.
+    //
+    // Un seul montant pour l'instant, sans distinction d'urgence : on ne
+    // fabrique pas une grille a trois niveaux avant de savoir si elle sert.
+    AVIS_LOCAL: parseInt(process.env.TARIF_AVIS_LOCAL_XAF || '15000', 10),
     STANDARD: parseInt(process.env.TARIF_STANDARD_XAF || '115000', 10),
     PRIORITAIRE: parseInt(process.env.TARIF_PRIORITAIRE_XAF || '165000', 10),
     URGENT: parseInt(process.env.TARIF_URGENT_XAF || '230000', 10),

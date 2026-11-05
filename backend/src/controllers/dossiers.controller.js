@@ -48,7 +48,7 @@ async function createDossier(req, res) {
   const patient = await prisma.patient.findUnique({ where: { userId: req.userId } })
   if (!patient) return res.status(403).json({ message: 'Seuls les patients peuvent créer un dossier' })
 
-  const { specialiteRequise, motif, questionMedicale, symptomes, antecedents, allergies, traitementEnCours, urgence } = req.body
+  const { specialiteRequise, motif, questionMedicale, symptomes, antecedents, allergies, traitementEnCours, urgence, portee } = req.body
 
   const reference = await genererReferenceDossier(patient.country)
 
@@ -64,6 +64,10 @@ async function createDossier(req, res) {
       allergies,
       traitementEnCours,
       urgence: urgence || 'NORMAL',
+      // Absente = international, comme tous les dossiers anterieurs. La portee
+      // se fixe au depot et ne bouge plus : la changer apres coup changerait le
+      // prix d'un dossier peut-etre deja paye.
+      ...(portee ? { portee } : {}),
       status: 'BROUILLON',
     },
   })

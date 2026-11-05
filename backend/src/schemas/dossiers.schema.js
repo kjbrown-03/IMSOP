@@ -28,6 +28,7 @@ const createDossier = {
     antecedents: longText(2000).optional(),
     allergies: longText(2000).optional(),
     traitementEnCours: longText(2000).optional(),
+    portee: z.enum(['LOCAL', 'INTERNATIONAL']).optional(),
     urgence: z.enum(URGENCE).optional(),
   }).strict(),
 }

@@ -48,6 +48,20 @@ enum DossierStatus {
   REFUSE
 }
 
+/// Portee d'une demande de deuxieme avis.
+///
+/// INTERNATIONAL : un specialiste etranger etudie le dossier. C'est l'offre
+/// d'origine d'IMSOP, et la valeur par defaut — tous les dossiers anterieurs le
+/// sont.
+///
+/// LOCAL : un medecin de la zone CEMAC, deja valide par le comite et volontaire
+/// pour cela, rend l'avis. Moins cher, plus rapide, dans le meme systeme de
+/// sante que le patient — ce qui compte pour la suite de sa prise en charge.
+enum ParcoursAvis {
+  LOCAL
+  INTERNATIONAL
+}
+
 enum Urgence {
   NORMAL
   PRIORITAIRE
@@ -458,6 +472,9 @@ model Dossier {
   antecedents       String?
   allergies         String?
   traitementEnCours String?
+  /// Local ou international. Par defaut international : c'est l'offre d'origine,
+  /// et les dossiers deja deposes le sont tous.
+  portee            ParcoursAvis  @default(INTERNATIONAL)
   urgence           Urgence       @default(NORMAL)
   status            DossierStatus @default(BROUILLON)
 

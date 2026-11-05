@@ -12,10 +12,18 @@ const TARIFS = env.tarifs
 
 /** Montant dû pour un dossier, selon son urgence. */
 function tarifPour(dossier) {
+  // Un avis local a son propre prix, quelle que soit l'urgence declaree : le
+  // medecin exerce dans le meme pays, et la grille a trois niveaux de
+  // l'international n'a pas de sens a cette echelle. On ne fabrique pas une
+  // seconde grille avant de savoir si elle sert.
+  if (dossier.portee === 'LOCAL') {
+    return { amount: TARIFS.AVIS_LOCAL, currency: TARIFS.devise, urgence: dossier.urgence || 'NORMAL', portee: 'LOCAL' }
+  }
   return {
     amount: TARIFS[dossier.urgence] || TARIFS.STANDARD,
     currency: TARIFS.devise,
     urgence: dossier.urgence || 'NORMAL',
+    portee: 'INTERNATIONAL',
   }
 }
 
