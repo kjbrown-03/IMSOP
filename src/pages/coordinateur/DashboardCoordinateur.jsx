@@ -7,6 +7,7 @@ import { api } from '../../lib/api'
 import { nomPatient } from '../../lib/dossier'
 import SuiviDelais from '../../components/coordinateur/SuiviDelais'
 import { Bell, ChevronRight, ShieldAlert, FileText, FileSearch, ArrowRight, CheckCircle2, ClipboardCheck } from 'lucide-react'
+import { auteurAvis } from '../../lib/dossier'
 
 export default function DashboardCoordinateur() {
   const { t, i18n } = useTranslation()
@@ -123,8 +124,13 @@ export default function DashboardCoordinateur() {
               </div>
               <div>
                 <h4 className="text-lg font-bold text-slate-900 dark:text-white">{nomPatient(d, t)}</h4>
-                <div className="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-1.5 mt-0.5">
+                <div className="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-1.5 mt-0.5 flex-wrap">
                   <FileText className="w-4 h-4" /> {d.specialiteRequise}
+                  {d.portee === 'LOCAL' && (
+                    <span className="text-[11px] font-bold uppercase tracking-wider rounded-md px-2 py-0.5 bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">
+                      {t('coordinateur.assign.localBadge')}
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
@@ -168,7 +174,7 @@ export default function DashboardCoordinateur() {
               <div>
                 <h4 className="text-lg font-bold text-slate-900 dark:text-white">{nomPatient(d, t)}</h4>
                 <div className="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-1.5 mt-0.5">
-                  <FileText className="w-4 h-4" /> {d.specialiteRequise} — Dr. {d.specialiste?.user?.fullName}
+                  <FileText className="w-4 h-4" /> {d.specialiteRequise} — Dr. {auteurAvis(d)?.user?.fullName}
                 </div>
               </div>
             </div>

@@ -373,7 +373,7 @@
       "EN_VERIFICATION": "En vérification",
       "COMPLET": "Dossier complet",
       "EN_ATTENTE_AFFECTATION": "En attente d'affectation",
-      "AFFECTE": "Spécialiste affecté",
+      "AFFECTE": "Médecin affecté",
       "EN_ANALYSE": "En analyse",
       "RAPPORT_EN_PREPARATION": "Rapport en préparation",
       "RAPPORT_SOUMIS": "Rapport soumis",
@@ -501,7 +501,7 @@
     },
     "matching": {
       "confirmedTitle": "Paiement confirmé, dossier transmis à la coordination médicale",
-      "confirmedText": "Notre équipe vérifie votre dossier et vous attribuera un spécialiste adapté à votre pathologie sous peu. Vous serez notifié à chaque étape."
+      "confirmedText": "Notre équipe vérifie votre dossier et vous attribuera un médecin adapté à votre pathologie sous peu. Vous serez notifié à chaque étape."
     },
     "messages": {
       "title": "Messages Sécurisés",
@@ -619,7 +619,18 @@
       "noneAvailable": "Aucun spécialiste disponible pour cette spécialité pour le moment.",
       "assigning": "Affectation...",
       "assignThis": "Affecter ce spécialiste",
-      "assignFailed": "L'affectation a échoué"
+      "assignFailed": "L'affectation a échoué",
+      "localBadge": "Avis local",
+      "localTitle": "Médecins disponibles pour cet avis local",
+      "localSub": "Médecins de la zone CEMAC retenus par le comité, qui ont accepté de rédiger des avis. Le médecin traitant du patient et ceux qui se sont récusés sont écartés.",
+      "localCurrent": "Actuellement confié à : Dr {{nom}}. Choisir un autre médecin lui retire le dossier et supprime son brouillon.",
+      "localNone": "Aucun médecin ne peut recevoir ce dossier pour le moment. Le patient a déjà payé : il faut recruter ou relancer un médecin de la zone.",
+      "localAssign": "Confier à ce médecin",
+      "localUnconfirmed": "Spécialité demandée non confirmée sur sa fiche : à vérifier avant de confier le dossier.",
+      "localLoad_one": "{{count}} avis en cours",
+      "localLoad_other": "{{count}} avis en cours",
+      "localExperience_one": "{{count}} an d'exercice",
+      "localExperience_other": "{{count}} ans d'exercice"
     },
     "search": {
       "title": "Annuaire des Spécialistes",
@@ -956,7 +967,8 @@
       "dossiers": "Mes demandes",
       "profil": "Mon compte",
       "justificatifs": "Mes justificatifs",
-      "annuaire": "Annuaire"
+      "annuaire": "Annuaire",
+      "avis": "Avis à rédiger"
     },
     "coordinateurNav": {
       "habilitations": "Habilitations"
@@ -995,7 +1007,8 @@
       "COMMUNICATION_MEDECIN": "Communication à mon médecin traitant",
       "TELECONSULTATION": "Téléconsultation",
       "UTILISATION_ANONYMISEE_RECHERCHE": "Utilisation anonymisée à des fins de recherche"
-    }
+    },
+    "checkboxLabelLocal": "J'ai lu et j'accepte que mes données de santé soient transmises par la plateforme IMSOP au médecin de la zone CEMAC chargé de rédiger l'avis, à la coordination médicale et, si désigné, à mon médecin traitant."
   },
   "temoignage": {
     "title": "Laisser un commentaire",
@@ -1094,6 +1107,18 @@
       "INSCRIPTION_EXISTANTE": {
         "title": "Compte déjà existant",
         "preview": "Une inscription a été tentée avec votre adresse."
+      },
+      "AVIS_LOCAL_A_REDIGER": {
+        "title": "Dossier à étudier",
+        "preview": "Le dossier {{reference}} vous est confié pour avis."
+      },
+      "AVIS_LOCAL_RETIRE": {
+        "title": "Dossier réaffecté",
+        "preview": "Le dossier {{reference}} a été confié à un autre médecin."
+      },
+      "AVIS_LOCAL_AFFECTE": {
+        "title": "Médecin affecté",
+        "preview": "Un médecin a pris en charge le dossier {{reference}}."
       }
     },
     "activer": "Activer les notifications",
@@ -1280,6 +1305,15 @@
       "manquantConsentement": "Cocher l'acceptation du consentement",
       "manquantSignature": "Saisir votre nom complet en signature, tel qu'il figure sur votre compte",
       "manquantCode": "Confirmer la signature avec le code reçu par e-mail"
+    },
+    "avis": {
+      "title": "Avis à rédiger",
+      "subtitle": "Les dossiers que la coordination vous confie. Ils sont distincts de vos propres patients.",
+      "empty": "Aucun dossier ne vous est confié pour le moment. Pour en recevoir, activez « J'accepte de rédiger des avis sur dossier » dans la rubrique Annuaire.",
+      "actionFailed": "L'action n'a pas abouti. Réessayez.",
+      "refuserAide": "Motif du refus (facultatif). Le dossier retournera à la coordination et votre brouillon sera supprimé.",
+      "complementAide": "Précisez ce qui vous manque. Le patient recevra ce message.",
+      "conflitAide": "Expliquez le conflit d'intérêts (10 caractères minimum). Le dossier sera confié à un autre médecin et votre brouillon sera supprimé."
     }
   },
   "patientMedecin": {
@@ -1306,8 +1340,8 @@
     "EN_VERIFICATION": "En vérification",
     "COMPLET": "Dossier complet",
     "EN_ATTENTE_AFFECTATION": "En attente d'affectation",
-    "AFFECTE": "Spécialiste affecté",
-    "ACCEPTE_PAR_SPECIALISTE": "Accepté par le spécialiste",
+    "AFFECTE": "Médecin affecté",
+    "ACCEPTE_PAR_SPECIALISTE": "Accepté par le médecin",
     "EN_ANALYSE": "En analyse",
     "INFORMATION_COMPLEMENTAIRE_DEMANDEE": "Information complémentaire demandée",
     "RAPPORT_EN_PREPARATION": "Rapport en préparation",

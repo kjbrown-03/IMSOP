@@ -80,6 +80,11 @@ const assignerSpecialiste = {
   body: z.object({ specialisteId: uuid }).strict(),
 }
 
+const assignerMedecinLocal = {
+  params: paramsWithId('id'),
+  body: z.object({ medecinLocalId: uuid }).strict(),
+}
+
 const demanderComplement = {
   params: paramsWithId('id'),
   body: z.object({ precisions: z.string().trim().min(1).max(2000) }).strict(),
@@ -122,6 +127,7 @@ module.exports = {
   idParam,
   listDossiers,
   assignerSpecialiste,
+  assignerMedecinLocal,
   refuserDossier,
   declarerConflitInterets,
   demanderComplement,

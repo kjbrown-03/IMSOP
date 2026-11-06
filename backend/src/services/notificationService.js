@@ -22,11 +22,26 @@ const TEMPLATES = {
   RAPPORT_DISPONIBLE: {
     sms: (ctx) => `IMSOP : le rapport de second avis pour le dossier ${ctx.reference} est disponible. Connectez-vous pour le consulter.`,
     subject: 'Votre rapport de deuxième avis est disponible',
-    body: (ctx) => `Bonjour ${ctx.name},\n\nLe rapport du spécialiste pour votre dossier ${ctx.reference} est maintenant disponible dans votre espace patient.\n\nL'équipe IMSOP`,
+    body: (ctx) => `Bonjour ${ctx.name},\n\nLe rapport de deuxième avis pour votre dossier ${ctx.reference} est maintenant disponible dans votre espace patient.\n\nL'équipe IMSOP`,
   },
   PAIEMENT_CONFIRME: {
     subject: 'Paiement confirmé',
     body: (ctx) => `Bonjour ${ctx.name},\n\nVotre paiement pour le dossier ${ctx.reference} a été confirmé. Votre dossier va être transmis à notre équipe de coordination.\n\nL'équipe IMSOP`,
+  },
+  // Ni motif ni specialite : une notification se lit sur un ecran verrouille.
+  AVIS_LOCAL_A_REDIGER: {
+    sms: (ctx) => `IMSOP : un dossier ${ctx.reference} vous est confie pour avis. Connectez-vous pour l'accepter ou le refuser.`,
+    subject: 'Un dossier vous est confié pour avis',
+    body: (ctx) => `Bonjour ${ctx.name},\n\nLe dossier ${ctx.reference} vous est confié pour un avis écrit. Merci de l'accepter ou de le refuser rapidement depuis votre espace, rubrique « Avis à rédiger ».\n\nL'équipe IMSOP`,
+  },
+  AVIS_LOCAL_RETIRE: {
+    subject: "Un dossier d'avis ne vous est plus confié",
+    body: (ctx) => `Bonjour ${ctx.name},\n\nLe dossier ${ctx.reference} a été confié à un autre médecin par la coordination. Vous n'avez plus d'action à mener et n'y avez plus accès.\n\nL'équipe IMSOP`,
+  },
+  AVIS_LOCAL_AFFECTE: {
+    sms: (ctx) => `IMSOP : un medecin a ete affecte a votre dossier ${ctx.reference}.`,
+    subject: 'Un médecin a été affecté à votre dossier',
+    body: (ctx) => `Bonjour ${ctx.name},\n\nUn médecin a été affecté à votre dossier ${ctx.reference}. Vous serez notifié dès que son avis sera disponible.\n\nL'équipe IMSOP`,
   },
   NOUVEAU_DOSSIER_SPECIALISTE: {
     subject: 'Nouveau dossier assigné',
@@ -55,9 +70,9 @@ const TEMPLATES = {
     body: (ctx) => `Bonjour ${ctx.name},\n\n${ctx.senderName} a déposé un document (${ctx.filename}) dans la conversation du dossier ${ctx.reference}.\n\nL'équipe IMSOP`,
   },
   COMPLEMENT_DEMANDE: {
-    sms: (ctx) => `IMSOP : le specialiste demande une information complementaire sur le dossier ${ctx.reference}. Connectez-vous pour repondre.`,
+    sms: (ctx) => `IMSOP : le medecin demande une information complementaire sur le dossier ${ctx.reference}. Connectez-vous pour repondre.`,
     subject: 'Information complémentaire demandée sur votre dossier',
-    body: (ctx) => `Bonjour ${ctx.name},\n\nLe spécialiste a besoin d'un complément pour poursuivre l'analyse du dossier ${ctx.reference} :\n\n${ctx.precisions}\n\nVous pouvez répondre et déposer les pièces demandées depuis la messagerie sécurisée.\n\nL'équipe IMSOP`,
+    body: (ctx) => `Bonjour ${ctx.name},\n\nLe médecin chargé de votre avis a besoin d'un complément pour poursuivre l'analyse du dossier ${ctx.reference} :\n\n${ctx.precisions}\n\nVous pouvez répondre et déposer les pièces demandées depuis la messagerie sécurisée.\n\nL'équipe IMSOP`,
   },
   COMPLEMENT_FOURNI: {
     subject: 'Le complément demandé a été déposé',
@@ -134,7 +149,7 @@ L'équipe IMSOP`,
   CONFLIT_INTERETS: {
     subject: "Conflit d'intérêts déclaré — dossier à réaffecter",
     body: (ctx) =>
-      `Bonjour ${ctx.name},\n\nLe spécialiste affecté au dossier ${ctx.reference} a déclaré un conflit d'intérêts. Le dossier est revenu en attente d'affectation.\n\nMotif indiqué : ${ctx.motif}\n\nCe spécialiste ne sera plus proposé sur ce dossier.\n\nL'équipe IMSOP`,
+      `Bonjour ${ctx.name},\n\nLe praticien affecté au dossier ${ctx.reference} a déclaré un conflit d'intérêts. Le dossier est revenu en attente d'affectation.\n\nMotif indiqué : ${ctx.motif}\n\nCe spécialiste ne sera plus proposé sur ce dossier.\n\nL'équipe IMSOP`,
   },
   IDENTITE_VALIDEE: {
     subject: 'Votre identité a été vérifiée',
@@ -184,6 +199,9 @@ const PUSH_PAR_TYPE = {
 
   DOSSIER_SOUMIS: 'DOSSIER',
   DOSSIER_AFFECTE: 'DOSSIER',
+  AVIS_LOCAL_AFFECTE: 'DOSSIER',
+  AVIS_LOCAL_A_REDIGER: 'DOSSIER',
+  AVIS_LOCAL_RETIRE: 'DOSSIER',
   RAPPORT_DISPONIBLE: 'DOSSIER',
   PAIEMENT_CONFIRME: 'DOSSIER',
   MEDECIN_LOCAL_RATTACHE: 'DOSSIER',

@@ -14,3 +14,10 @@ export function nomPatient(dossier, t) {
   const anonyme = t('common.anonymousPatient')
   return details.length ? `${anonyme} · ${details.join(', ')}` : anonyme
 }
+
+// L'auteur d'un avis est un specialiste (international) ou un medecin redacteur
+// (local). Lire seulement `specialiste` laissait un nom vide sur le rapport du
+// patient et sur le tableau de bord de la coordination.
+export function auteurAvis(dossier) {
+  return dossier?.specialiste ?? dossier?.medecinRedacteur ?? null
+}

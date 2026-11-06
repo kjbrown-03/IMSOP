@@ -441,6 +441,14 @@ async function mettreAJourAnnuaire(req, res) {
       message: "L'annuaire est réservé aux médecins retenus par le comité scientifique. Déposez une candidature pour le rejoindre.",
     })
   }
+  // Meme confiance engagee que l'annuaire : la plateforme designe ce medecin a un
+  // patient qui ne le connait pas. L'accepter ici lui ferait croire qu'il recevra
+  // des dossiers, alors que l'affectation l'ecarterait sans jamais le lui dire.
+  if (avisLocalActif && (medecin.verificationStatus !== 'VALIDE' || !medecin.valideParComite)) {
+    return res.status(403).json({
+      message: 'Rédiger des avis est réservé aux médecins habilités et retenus par le comité scientifique.',
+    })
+  }
   // Le pays doit être un code CEMAC connu, sinon la recherche géographique ne
   // trouverait jamais ce médecin : « Cameroun » ou « CM » saisis à l'inscription
   // ne suffisent pas, il faut choisir dans la liste.

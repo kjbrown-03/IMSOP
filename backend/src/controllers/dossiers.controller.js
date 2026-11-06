@@ -4,9 +4,21 @@ const { notify } = require('../services/notificationService')
 const { safeUserSelect } = require('../lib/selectors')
 const { genererReferenceDossier } = require('../services/referenceService')
 const { dossiersEnCours } = require('../services/delaiReponseService')
+const {
+  STATUTS_RECUSABLES,
+  STATUTS_AFFECTABLES,
+  motifIneligibilite,
+  candidatsRedacteurs,
+  vueDuDossier,
+} = require('../services/avisLocalService')
 const env = require('../config/env')
 
-async function loadDossierWithAccessCheck(req, dossierId) {
+// `autoriserRedacteur` est un choix explicite de chaque route, faux par defaut.
+// Un medecin redacteur reçoit un dossier pour y repondre, pas pour le modifier :
+// sans cela, toutes les routes ecrites pour le medecin traitant (televerser une
+// piece, confirmer un complement, payer, modifier le dossier) lui auraient ete
+// ouvertes d'office, et toute future route aussi.
+async function loadDossierWithAccessCheck(req, dossierId, { autoriserRedacteur = false } = {}) {
   const dossier = await prisma.dossier.findUnique({
     where: { id: dossierId },
     include: {
@@ -14,6 +26,7 @@ async function loadDossierWithAccessCheck(req, dossierId) {
       specialiste: { include: { user: { select: safeUserSelect } } },
       medecinLocal: { include: { user: { select: safeUserSelect } } },
       demandeurMedecin: { include: { user: { select: safeUserSelect } } },
+      medecinRedacteur: { include: { user: { select: safeUserSelect } } },
     },
   })
   if (!dossier) return { error: 404, message: 'Dossier introuvable' }
@@ -36,13 +49,32 @@ async function loadDossierWithAccessCheck(req, dossierId) {
     const estDemandeur = medecin && dossier.demandeurMedecinId === medecin.id
     const estMedecinTraitant = medecin && dossier.medecinLocalId === medecin.id
     if (!estDemandeur && !estMedecinTraitant) {
-      return { error: 403, message: 'Ce dossier ne vous est pas rattaché' }
+      // Une habilitation retiree coupe l'acces au dossier sur-le-champ : ce
+      // medecin n'a plus a lire un dossier medical qui ne le concerne qu'a ce titre.
+      const estRedacteur =
+        autoriserRedacteur &&
+        medecin &&
+        dossier.medecinRedacteurId === medecin.id &&
+        medecin.verificationStatus === 'VALIDE'
+      if (!estRedacteur) {
+        return { error: 403, message: 'Ce dossier ne vous est pas rattaché' }
+      }
+      return { dossier, estRedacteur: true }
     }
   }
   // COORDINATEUR and ADMIN can access any dossier
 
-  return { dossier }
+  return { dossier, estRedacteur: false }
 }
+
+// Les actions du praticien qui rend l'avis. Le chargement a deja verifie que le
+// dossier est le sien ; le role seul ne suffit pas, car un medecin traitant
+// arrive jusqu'ici avec le meme role qu'un medecin redacteur.
+function estAuteurDuDossier(req, estRedacteur) {
+  return req.userRole === 'SPECIALISTE' || estRedacteur === true
+}
+
+const CHARGEMENT_AUTEUR = { autoriserRedacteur: true }
 
 async function createDossier(req, res) {
   const patient = await prisma.patient.findUnique({ where: { userId: req.userId } })
@@ -191,6 +223,10 @@ async function listDossiers(req, res) {
   } else if (req.userRole === 'MEDECIN_LOCAL') {
     const medecin = await prisma.medecinLocal.findUnique({ where: { userId: req.userId } })
     const id = medecin?.id ?? '__none__'
+    // Sans `medecinRedacteurId`, volontairement : ces dossiers ont leur propre
+    // liste (`listAvisARediger`) et leurs propres ecrans. Les melanger ici les
+    // ferait ouvrir dans la page du medecin traitant, qui propose de deposer des
+    // pieces et de poser une question.
     where = { OR: [{ demandeurMedecinId: id }, { medecinLocalId: id }] }
   } else if (req.query.status) {
     where = { status: req.query.status }
@@ -214,13 +250,35 @@ async function listDossiers(req, res) {
         patient: { include: { user: { select: safeUserSelect } } },
         specialiste: { include: { user: { select: safeUserSelect } } },
         medecinLocal: { include: { user: { select: safeUserSelect } } },
+        medecinRedacteur: { include: { user: { select: safeUserSelect } } },
         ...(pourCoordination ? { rapport: { select: { id: true, status: true } } } : {}),
       },
     }),
     prisma.dossier.count({ where }),
   ])
 
-  res.json({ items: dossiers, total, page, pageSize })
+  const items = dossiers.map((d) => vueDuDossier(d, { role: req.userRole }))
+  res.json({ items, total, page, pageSize })
+}
+
+// Les avis que ce medecin doit rediger, distincts de ses propres patients.
+async function listAvisARediger(req, res) {
+  const medecin = await prisma.medecinLocal.findUnique({ where: { userId: req.userId } })
+  if (!medecin) return res.status(403).json({ message: 'Profil medecin introuvable' })
+  // Meme regle qu'a l'ouverture d'un dossier : pas d'habilitation, pas d'acces.
+  if (medecin.verificationStatus !== 'VALIDE') return res.json({ items: [] })
+
+  const dossiers = await prisma.dossier.findMany({
+    where: { medecinRedacteurId: medecin.id },
+    orderBy: { assignedAt: 'desc' },
+    take: 100,
+    include: {
+      patient: { include: { user: { select: safeUserSelect } } },
+      rapport: { select: { id: true, status: true } },
+    },
+  })
+
+  res.json({ items: dossiers.map((d) => vueDuDossier(d, { role: req.userRole, estRedacteur: true })) })
 }
 
 // File suivie par la coordination : les dossiers confiés à un spécialiste dont
@@ -232,7 +290,7 @@ async function listDossiersEnCours(req, res) {
 }
 
 async function getDossier(req, res) {
-  const { dossier, error, message } = await loadDossierWithAccessCheck(req, req.params.id)
+  const { dossier, estRedacteur, error, message } = await loadDossierWithAccessCheck(req, req.params.id, CHARGEMENT_AUTEUR)
   if (error) return res.status(error).json({ message })
 
   await logAction({
@@ -244,7 +302,7 @@ async function getDossier(req, res) {
     ipAddress: req.ip,
   })
 
-  res.json(dossier)
+  res.json(vueDuDossier(dossier, { role: req.userRole, estRedacteur }))
 }
 
 async function updateDossier(req, res) {
@@ -300,6 +358,12 @@ async function assignerSpecialiste(req, res) {
   })
   if (!dossier) return res.status(404).json({ message: 'Dossier introuvable' })
 
+  // Le patient a paye 15 000 XAF pour un medecin de sa region. Rien n'empechait
+  // de confier son dossier a un expert international, payable au tarif local.
+  if (dossier.portee === 'LOCAL') {
+    return res.status(409).json({ message: 'Ce dossier demande un avis local : il doit être confié à un médecin de la zone CEMAC' })
+  }
+
   const { specialisteId } = req.body
   const specialiste = await prisma.specialiste.findUnique({
     where: { id: specialisteId },
@@ -348,10 +412,109 @@ async function assignerSpecialiste(req, res) {
   res.json(updated)
 }
 
+// Propose au coordinateur les medecins a qui confier un avis local.
+async function listRedacteursPossibles(req, res) {
+  const dossier = await prisma.dossier.findUnique({ where: { id: req.params.id }, include: { patient: true } })
+  if (!dossier) return res.status(404).json({ message: 'Dossier introuvable' })
+  if (dossier.portee !== 'LOCAL') return res.status(409).json({ message: "Ce dossier ne demande pas d'avis local" })
+  res.json(await candidatsRedacteurs(dossier))
+}
+
+async function assignerMedecinLocal(req, res) {
+  const dossier = await prisma.dossier.findUnique({
+    where: { id: req.params.id },
+    include: {
+      patient: { include: { user: { select: safeUserSelect } } },
+      medecinRedacteur: { include: { user: { select: safeUserSelect } } },
+    },
+  })
+  if (!dossier) return res.status(404).json({ message: 'Dossier introuvable' })
+  if (dossier.portee !== 'LOCAL') {
+    return res.status(409).json({ message: "Ce dossier demande un avis international : il doit être confié à un spécialiste" })
+  }
+  if (!STATUTS_AFFECTABLES.includes(dossier.status)) {
+    return res.status(409).json({ message: "Ce dossier ne peut pas être affecté dans son état actuel" })
+  }
+
+  const { medecinLocalId } = req.body
+  const medecin = await prisma.medecinLocal.findUnique({
+    where: { id: medecinLocalId },
+    include: { user: { select: { ...safeUserSelect, active: true } } },
+  })
+  if (!medecin) return res.status(404).json({ message: 'Médecin introuvable' })
+  if (dossier.medecinRedacteurId === medecin.id) {
+    return res.status(409).json({ message: 'Ce dossier lui est déjà confié' })
+  }
+
+  const motif = motifIneligibilite(medecin, dossier)
+  if (motif) return res.status(409).json({ message: motif })
+
+  const recusation = await prisma.recusationMedecinLocal.findUnique({
+    where: { dossierId_medecinLocalId: { dossierId: dossier.id, medecinLocalId: medecin.id } },
+  })
+  if (recusation) {
+    return res.status(409).json({
+      message: "Ce médecin s'est récusé sur ce dossier pour conflit d'intérêts",
+      motif: recusation.motif,
+    })
+  }
+
+  // Ecriture conditionnelle : entre la lecture et ici, le medecin en place a pu
+  // remettre son rapport, et on ne doit pas le lui retirer des mains. Le brouillon
+  // part dans la meme transaction : il n'appartient qu'a son auteur, et le suivant
+  // le signerait de son nom sans l'avoir ecrit.
+  const [{ count }] = await prisma.$transaction([
+    prisma.dossier.updateMany({
+      where: { id: dossier.id, status: { in: STATUTS_AFFECTABLES } },
+      data: {
+        medecinRedacteurId: medecin.id,
+        specialisteId: null,
+        status: 'AFFECTE',
+        assignedAt: new Date(),
+        // Le chrono repart : l'alerte du precedent ne vaut pas pour celui-ci.
+        alerteDelaiEnvoyeeLe: null,
+      },
+    }),
+    prisma.rapport.deleteMany({ where: { dossierId: dossier.id, status: 'BROUILLON' } }),
+  ])
+  if (count === 0) {
+    return res.status(409).json({ message: "Ce dossier ne peut plus être affecté : son rapport vient d'être remis" })
+  }
+
+  await logAction({
+    userId: req.userId,
+    action: 'DOSSIER_ASSIGNE',
+    entityType: 'Dossier',
+    entityId: dossier.id,
+    dossierId: dossier.id,
+    metadata: { medecinLocalId: medecin.id, precedent: dossier.medecinRedacteurId },
+  })
+
+  await notify(medecin.user.id, medecin.user.email, 'AVIS_LOCAL_A_REDIGER', {
+    name: medecin.user.fullName,
+    reference: dossier.reference,
+  }, { dossierId: dossier.id })
+  // Sans cela, le dossier disparaitrait de sa liste sans explication.
+  if (dossier.medecinRedacteur) {
+    await notify(dossier.medecinRedacteur.user.id, dossier.medecinRedacteur.user.email, 'AVIS_LOCAL_RETIRE', {
+      name: dossier.medecinRedacteur.user.fullName,
+      reference: dossier.reference,
+    })
+  }
+  if (dossier.patient && !dossier.medecinRedacteurId) {
+    await notify(dossier.patient.userId, dossier.patient.user.email, 'AVIS_LOCAL_AFFECTE', {
+      name: dossier.patient.user.fullName,
+      reference: dossier.reference,
+    }, { dossierId: dossier.id })
+  }
+
+  res.json(await prisma.dossier.findUnique({ where: { id: dossier.id } }))
+}
+
 async function accepterDossier(req, res) {
-  const { dossier, error, message } = await loadDossierWithAccessCheck(req, req.params.id)
+  const { dossier, estRedacteur, error, message } = await loadDossierWithAccessCheck(req, req.params.id, CHARGEMENT_AUTEUR)
   if (error) return res.status(error).json({ message })
-  if (req.userRole !== 'SPECIALISTE') return res.status(403).json({ message: 'Réservé au spécialiste assigné' })
+  if (!estAuteurDuDossier(req, estRedacteur)) return res.status(403).json({ message: 'Réservé au praticien assigné' })
   if (dossier.status !== 'AFFECTE') return res.status(400).json({ message: 'Ce dossier ne peut pas être accepté dans son état actuel' })
 
   const updated = await prisma.dossier.update({ where: { id: dossier.id }, data: { status: 'ACCEPTE_PAR_SPECIALISTE' } })
@@ -360,9 +523,9 @@ async function accepterDossier(req, res) {
 }
 
 async function demarrerAnalyse(req, res) {
-  const { dossier, error, message } = await loadDossierWithAccessCheck(req, req.params.id)
+  const { dossier, estRedacteur, error, message } = await loadDossierWithAccessCheck(req, req.params.id, CHARGEMENT_AUTEUR)
   if (error) return res.status(error).json({ message })
-  if (req.userRole !== 'SPECIALISTE') return res.status(403).json({ message: 'Réservé au spécialiste assigné' })
+  if (!estAuteurDuDossier(req, estRedacteur)) return res.status(403).json({ message: 'Réservé au praticien assigné' })
   if (!['ACCEPTE_PAR_SPECIALISTE', 'INFORMATION_COMPLEMENTAIRE_DEMANDEE'].includes(dossier.status)) {
     return res.status(400).json({ message: "L'analyse ne peut pas démarrer dans l'état actuel du dossier" })
   }
@@ -377,9 +540,9 @@ async function demarrerAnalyse(req, res) {
 // La demande est postee dans la messagerie du dossier pour que le destinataire
 // sache ce qui manque, et pas seulement que quelque chose manque.
 async function demanderComplement(req, res) {
-  const { dossier, error, message: err } = await loadDossierWithAccessCheck(req, req.params.id)
+  const { dossier, estRedacteur, error, message: err } = await loadDossierWithAccessCheck(req, req.params.id, CHARGEMENT_AUTEUR)
   if (error) return res.status(error).json({ message: err })
-  if (req.userRole !== 'SPECIALISTE') return res.status(403).json({ message: 'Réservé au spécialiste assigné' })
+  if (!estAuteurDuDossier(req, estRedacteur)) return res.status(403).json({ message: 'Réservé au praticien assigné' })
   if (!['ACCEPTE_PAR_SPECIALISTE', 'EN_ANALYSE', 'RAPPORT_EN_PREPARATION'].includes(dossier.status)) {
     return res.status(400).json({ message: "Aucune information complémentaire ne peut être demandée dans l'état actuel" })
   }
@@ -430,9 +593,10 @@ async function complementFourni(req, res) {
   const updated = await prisma.dossier.update({ where: { id: dossier.id }, data: { status: 'EN_ANALYSE' } })
   await logAction({ userId: req.userId, action: 'DOSSIER_COMPLEMENT_FOURNI', entityType: 'Dossier', entityId: dossier.id, dossierId: dossier.id })
 
-  if (dossier.specialiste?.user) {
-    await notify(dossier.specialiste.user.id, dossier.specialiste.user.email, 'COMPLEMENT_FOURNI', {
-      name: dossier.specialiste.user.fullName,
+  const auteur = dossier.specialiste?.user ?? dossier.medecinRedacteur?.user
+  if (auteur) {
+    await notify(auteur.id, auteur.email, 'COMPLEMENT_FOURNI', {
+      name: auteur.fullName,
       reference: dossier.reference,
     }, { dossierId: dossier.id })
   }
@@ -481,15 +645,23 @@ async function changerStatut(req, res) {
 }
 
 async function refuserDossier(req, res) {
-  const { dossier, error, message } = await loadDossierWithAccessCheck(req, req.params.id)
+  const { dossier, estRedacteur, error, message } = await loadDossierWithAccessCheck(req, req.params.id, CHARGEMENT_AUTEUR)
   if (error) return res.status(error).json({ message })
-  if (req.userRole !== 'SPECIALISTE') return res.status(403).json({ message: 'Réservé au spécialiste assigné' })
+  if (!estAuteurDuDossier(req, estRedacteur)) return res.status(403).json({ message: 'Réservé au praticien assigné' })
+  // Sans cette garde, un dossier deja rendu au patient repartirait en affectation.
+  if (estRedacteur && !STATUTS_RECUSABLES.includes(dossier.status)) {
+    return res.status(400).json({ message: 'Ce dossier ne peut plus être refusé dans son état actuel' })
+  }
 
   const { motif } = req.body
-  const updated = await prisma.dossier.update({
-    where: { id: dossier.id },
-    data: { status: 'EN_ATTENTE_AFFECTATION', specialisteId: null },
-  })
+  // Le brouillon ne suit pas le dossier chez le medecin suivant (voir assignerMedecinLocal).
+  const [updated] = await prisma.$transaction([
+    prisma.dossier.update({
+      where: { id: dossier.id },
+      data: { status: 'EN_ATTENTE_AFFECTATION', specialisteId: null, medecinRedacteurId: null },
+    }),
+    ...(estRedacteur ? [prisma.rapport.deleteMany({ where: { dossierId: dossier.id, status: 'BROUILLON' } })] : []),
+  ])
 
   await logAction({
     userId: req.userId,
@@ -508,29 +680,42 @@ async function refuserDossier(req, res) {
 // n'empêche pas de reproposer l'expert plus tard, une récusation déontologique
 // si. C'est pourquoi elle laisse une trace, là où le refus n'en laisse pas.
 async function declarerConflitInterets(req, res) {
-  const { dossier, error, message } = await loadDossierWithAccessCheck(req, req.params.id)
+  const { dossier, estRedacteur, error, message } = await loadDossierWithAccessCheck(req, req.params.id, CHARGEMENT_AUTEUR)
   if (error) return res.status(error).json({ message })
-  if (req.userRole !== 'SPECIALISTE') return res.status(403).json({ message: 'Réservé au spécialiste assigné' })
+  if (!estAuteurDuDossier(req, estRedacteur)) return res.status(403).json({ message: 'Réservé au praticien assigné' })
+  if (estRedacteur && !STATUTS_RECUSABLES.includes(dossier.status)) {
+    return res.status(400).json({ message: "Un conflit d'intérêts ne peut plus être déclaré dans l'état actuel du dossier" })
+  }
 
-  const specialiste = await prisma.specialiste.findUnique({ where: { userId: req.userId } })
-  if (!specialiste || dossier.specialisteId !== specialiste.id) {
+  const specialiste = estRedacteur ? null : await prisma.specialiste.findUnique({ where: { userId: req.userId } })
+  if (!estRedacteur && (!specialiste || dossier.specialisteId !== specialiste.id)) {
     return res.status(403).json({ message: 'Réservé au spécialiste assigné à ce dossier' })
   }
 
   const { motif } = req.body
 
+  // upsert plutôt que create : redéclarer sur le même dossier ne doit pas
+  // échouer sur la contrainte d'unicité.
+  const recusation = estRedacteur
+    ? prisma.recusationMedecinLocal.upsert({
+        where: { dossierId_medecinLocalId: { dossierId: dossier.id, medecinLocalId: dossier.medecinRedacteurId } },
+        update: { motif },
+        create: { dossierId: dossier.id, medecinLocalId: dossier.medecinRedacteurId, motif },
+      })
+    : prisma.recusationSpecialiste.upsert({
+        where: { dossierId_specialisteId: { dossierId: dossier.id, specialisteId: specialiste.id } },
+        update: { motif },
+        create: { dossierId: dossier.id, specialisteId: specialiste.id, motif },
+      })
+
   const [, updated] = await prisma.$transaction([
-    // upsert plutôt que create : redéclarer sur le même dossier ne doit pas
-    // échouer sur la contrainte d'unicité.
-    prisma.recusationSpecialiste.upsert({
-      where: { dossierId_specialisteId: { dossierId: dossier.id, specialisteId: specialiste.id } },
-      update: { motif },
-      create: { dossierId: dossier.id, specialisteId: specialiste.id, motif },
-    }),
+    recusation,
     prisma.dossier.update({
       where: { id: dossier.id },
-      data: { status: 'EN_ATTENTE_AFFECTATION', specialisteId: null },
+      data: { status: 'EN_ATTENTE_AFFECTATION', specialisteId: null, medecinRedacteurId: null },
     }),
+    // Le brouillon ne suit pas le dossier chez le medecin suivant.
+    ...(estRedacteur ? [prisma.rapport.deleteMany({ where: { dossierId: dossier.id, status: 'BROUILLON' } })] : []),
   ])
 
   await logAction({
@@ -539,7 +724,7 @@ async function declarerConflitInterets(req, res) {
     entityType: 'Dossier',
     entityId: dossier.id,
     dossierId: dossier.id,
-    metadata: { motif, specialisteId: specialiste.id },
+    metadata: { motif, ...(estRedacteur ? { medecinLocalId: dossier.medecinRedacteurId } : { specialisteId: specialiste.id }) },
   })
 
   // Le dossier retombe dans la file d'affectation : la coordination doit le
@@ -586,6 +771,10 @@ async function designerMedecinLocal(req, res) {
     return res.status(400).json({
       message: "L'habilitation de ce médecin n'est plus active sur la plateforme",
     })
+  }
+  // Il deviendrait juge de son propre suivi : l'avis perdrait sa raison d'etre.
+  if (dossier.medecinRedacteurId === user.medecinLocal.id) {
+    return res.status(409).json({ message: "Ce médecin rédige l'avis de ce dossier : il ne peut pas en être aussi le médecin traitant" })
   }
 
   const [updated] = await prisma.$transaction([
@@ -698,6 +887,9 @@ module.exports = {
   createDossier,
   listDossiers,
   listDossiersEnCours,
+  listAvisARediger,
+  listRedacteursPossibles,
+  assignerMedecinLocal,
   getDossier,
   updateDossier,
   soumettreDossier,

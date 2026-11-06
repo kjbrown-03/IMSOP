@@ -6,6 +6,7 @@ import { api } from '../../lib/api'
 import ConsentementsCourants from '../../components/ui/ConsentementsCourants'
 import { ArrowLeft, CheckCircle, Download, Stethoscope, Activity, FileText, ClipboardList, Clock } from 'lucide-react'
 import { ouvrirFichier } from '../../lib/fichiers'
+import { auteurAvis } from '../../lib/dossier'
 
 export default function RapportExpertFinal() {
   const { id } = useParams()
@@ -150,12 +151,12 @@ export default function RapportExpertFinal() {
             </div>
             <div className="flex-1">
               <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
-                <h3 className="text-xl font-bold text-slate-900 dark:text-white">{dossier?.specialiste?.user?.fullName}</h3>
+                <h3 className="text-xl font-bold text-slate-900 dark:text-white">{auteurAvis(dossier)?.user?.fullName}</h3>
                 <span className="inline-flex self-center items-center gap-1.5 px-3 py-1 rounded-full bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 text-xs font-bold uppercase tracking-wider border border-primary-100 dark:border-primary-800">
-                  <Stethoscope className="w-3.5 h-3.5" /> {dossier?.specialiste?.specialite}
+                  <Stethoscope className="w-3.5 h-3.5" /> {auteurAvis(dossier)?.specialite}
                 </span>
               </div>
-              <p className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">{dossier?.specialiste?.etablissement}</p>
+              <p className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">{auteurAvis(dossier)?.etablissement}</p>
             </div>
           </section>
 

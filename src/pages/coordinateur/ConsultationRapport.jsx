@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import CoordinatorLayout from '../../components/layout/CoordinatorLayout'
 import { api } from '../../lib/api'
 import { ArrowLeft, CheckCircle2, FileText, Stethoscope } from 'lucide-react'
+import { auteurAvis } from '../../lib/dossier'
 
 // Coordinator-facing report view: read-only by design (no textarea, no save
 // endpoint reachable by this role) — validation here is administrative
@@ -141,9 +142,9 @@ export default function ConsultationRapport() {
             <Stethoscope className="w-10 h-10 text-primary-600 dark:text-primary-400" />
           </div>
           <div className="flex-1">
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white">{dossier?.specialiste?.user?.fullName}</h3>
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white">{auteurAvis(dossier)?.user?.fullName}</h3>
             <span className="inline-flex self-center items-center gap-1.5 px-3 py-1 mt-2 rounded-full bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 text-xs font-bold uppercase tracking-wider border border-primary-100 dark:border-primary-800">
-              <Stethoscope className="w-3.5 h-3.5" /> {dossier?.specialiste?.specialite}
+              <Stethoscope className="w-3.5 h-3.5" /> {auteurAvis(dossier)?.specialite}
             </span>
           </div>
         </section>

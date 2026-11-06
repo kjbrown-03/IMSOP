@@ -1,6 +1,6 @@
 const PDFDocument = require('pdfkit')
 
-function buildRapportPdf({ dossier, rapport, patientName, specialisteName }) {
+function buildRapportPdf({ dossier, rapport, patientName, specialisteName, libelleAuteur = 'Spécialiste' }) {
   return new Promise((resolve, reject) => {
     const doc = new PDFDocument({ margin: 50 })
     const chunks = []
@@ -15,7 +15,7 @@ function buildRapportPdf({ dossier, rapport, patientName, specialisteName }) {
     doc.moveDown()
 
     doc.fontSize(12).fillColor('#191c21').text(`Patient : ${patientName}`)
-    doc.text(`Spécialiste : ${specialisteName}`)
+    doc.text(`${libelleAuteur} : ${specialisteName}`)
     doc.moveDown()
 
     doc.fontSize(14).fillColor('#003f87').text('Synthèse du cas')

@@ -56,6 +56,14 @@ interrupteurs indépendants dans son espace, à ne pas confondre :
 - `avisLocalActif` — « j'accepte de rédiger des avis sur dossier »
 - `valideParComite` — posé par la coordination, jamais par le médecin
 
+Un médecin peut tenir trois places sur un dossier, à ne pas confondre non plus :
+`medecinLocalId` (traitant, choisi par le patient), `demandeurMedecinId` (il pose
+la question), `medecinRedacteurId` (il rédige l'avis local, affecté par la
+coordination). `loadDossierWithAccessCheck` n'admet le rédacteur que sur les
+routes qui passent `{ autoriserRedacteur: true }` : refus par défaut, sinon il
+hériterait de tout ce qui a été écrit pour le médecin traitant. Patient et
+rédacteur ne reçoivent jamais les coordonnées l'un de l'autre (`vueDuDossier`).
+
 ---
 
 ## Architecture
@@ -216,11 +224,10 @@ qu'on le réintroduise.
 
 ## Ce qui reste à faire
 
-- **Avis local, étapes 4 et 5** : affectation d'un dossier local, et espace de
-  rédaction. `Rapport.specialisteId` est obligatoire et pointe vers
-  `Specialiste` : un médecin de l'annuaire ne peut pas encore être auteur. Un
-  patient peut déjà demander et payer un avis local, mais **personne ne peut y
-  répondre**.
+- **Avis local, reste à trancher** : le texte de consentement local doit être
+  validé juridiquement, et les patients ayant déjà signé le texte international
+  sur un dossier local n'ont pas consenti à cette transmission. Le rédacteur n'a
+  ni messagerie ni appel avec la coordination.
 - **SMS absents**, prévus au cahier des charges. Le manque le plus sensible
   pour un public camerounais.
 - **Mentions légales incomplètes** : huit `[À COMPLÉTER]` dans

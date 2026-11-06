@@ -4,7 +4,15 @@ const { reverserParFapshi, marquerReverse } = require('../services/honorairesSer
 
 const inclusions = {
   specialiste: { select: { id: true, pays: true, specialite: true, user: { select: safeUserSelect } } },
+  medecinRedacteur: { select: { id: true, pays: true, specialite: true, user: { select: safeUserSelect } } },
   dossier: { select: { id: true, reference: true, specialiteRequise: true } },
+}
+
+// Le releve presente tout beneficiaire sous la meme forme : pour la comptabilite,
+// un medecin local et un specialiste sont deux praticiens a regler, et l'ecran
+// n'a pas a connaitre la difference pour faire ses totaux.
+function avecBeneficiaire({ medecinRedacteur, ...honoraire }) {
+  return { ...honoraire, specialiste: honoraire.specialiste ?? medecinRedacteur }
 }
 
 // Relevé, du plus ancien au plus récent : ce qui attend depuis longtemps passe
@@ -16,7 +24,7 @@ async function lister(req, res) {
     orderBy: { createdAt: 'asc' },
     include: inclusions,
   })
-  res.json(honoraires)
+  res.json(honoraires.map(avecBeneficiaire))
 }
 
 // Totaux à reverser par spécialiste et par devise : c'est ce que le comptable
@@ -29,10 +37,10 @@ async function synthese(req, res) {
 
   const parSpecialiste = new Map()
   for (const h of enAttente) {
-    const cle = h.specialisteId
+    const cle = h.specialisteId ?? h.medecinRedacteurId
     if (!parSpecialiste.has(cle)) {
       parSpecialiste.set(cle, {
-        specialiste: h.specialiste,
+        specialiste: h.specialiste ?? h.medecinRedacteur,
         canal: h.canal,
         devise: h.deviseNet,
         dossiers: 0,

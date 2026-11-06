@@ -381,6 +381,11 @@ model MedecinLocal {
   dossiers          Dossier[]                   @relation("DossierMedecinTraitant")
   // Dossiers qu'il a lui-meme ouverts pour obtenir un second avis.
   demandes          Dossier[]                   @relation("DossierDemandeur")
+  // Dossiers d'avis local dont il est charge de rediger l'avis.
+  avisARediger      Dossier[]                   @relation("DossierRedacteur")
+  rapports          Rapport[]                   @relation("RapportRedacteur")
+  honoraires        Honoraire[]                 @relation("HonoraireRedacteur")
+  recusations       RecusationMedecinLocal[]
   // Apparitions dans des recherches d'annuaire.
   resultatsAnnuaire RechercheAnnuaireResultat[]
 
@@ -475,6 +480,13 @@ model Dossier {
   medecinLocalId String?
   medecinLocal   MedecinLocal? @relation("DossierMedecinTraitant", fields: [medecinLocalId], references: [id])
 
+  // Le medecin charge de REDIGER l'avis d'un dossier de portee LOCAL. Affecte
+  // par la coordination. A ne confondre ni avec `medecinLocal` (choisi par le
+  // patient, il le suit) ni avec `demandeurMedecin` (il pose la question) : un
+  // avis n'a de valeur que si son auteur n'est pas deja dans le parcours.
+  medecinRedacteurId String?
+  medecinRedacteur   MedecinLocal? @relation("DossierRedacteur", fields: [medecinRedacteurId], references: [id])
+
   specialiteRequise String
   motif             String
   questionMedicale  String?
@@ -508,6 +520,7 @@ model Dossier {
   documents     Document[]
   consentements Consentement[]
   recusations   RecusationSpecialiste[]
+  recusationsMedecins RecusationMedecinLocal[]
   paiements     Paiement[]
   honoraires    Honoraire[]
   messages      Message[]
@@ -518,6 +531,7 @@ model Dossier {
   @@index([patientId])
   @@index([specialisteId])
   @@index([medecinLocalId])
+  @@index([medecinRedacteurId])
   @@index([demandeurMedecinId])
   @@index([status])
 }
@@ -647,8 +661,15 @@ model Rapport {
   id            String      @id @default(uuid())
   dossierId     String      @unique
   dossier       Dossier     @relation(fields: [dossierId], references: [id], onDelete: Cascade)
-  specialisteId String
-  specialiste   Specialiste @relation(fields: [specialisteId], references: [id])
+
+  // Exactement un auteur : un specialiste (avis international) OU un medecin de
+  // la zone CEMAC (avis local). Une contrainte CHECK le garantit en base, voir
+  // la migration avis_local_redaction. `Restrict` conserve le comportement
+  // d'origine : on ne perd pas la signature d'un avis en supprimant un compte.
+  specialisteId      String?
+  specialiste        Specialiste?  @relation(fields: [specialisteId], references: [id], onDelete: Restrict)
+  medecinRedacteurId String?
+  medecinRedacteur   MedecinLocal? @relation("RapportRedacteur", fields: [medecinRedacteurId], references: [id], onDelete: Restrict)
 
   synthese              String?
   diagnostic            String?
@@ -822,12 +843,32 @@ model RecusationSpecialiste {
 // relevé qui recalculerait ces valeurs à la volée changerait de montant chaque
 // fois qu'un réglage bouge, et un spécialiste payé en janvier ne doit pas voir
 // son relevé de janvier changer en mars.
+// Pendant de RecusationSpecialiste pour l'avis local. Table distincte plutot
+// qu'une colonne de plus : les deux tiennent chacune leur contrainte d'unicite
+// sur une cle etrangere obligatoire, et une recusation sans auteur n'a aucun sens.
+model RecusationMedecinLocal {
+  id             String       @id @default(uuid())
+  dossierId      String
+  dossier        Dossier      @relation(fields: [dossierId], references: [id], onDelete: Cascade)
+  medecinLocalId String
+  medecinLocal   MedecinLocal @relation(fields: [medecinLocalId], references: [id], onDelete: Cascade)
+  motif          String
+  createdAt      DateTime     @default(now())
+
+  @@unique([dossierId, medecinLocalId])
+  @@index([dossierId])
+}
+
 model Honoraire {
   id            String      @id @default(uuid())
   dossierId     String
   dossier       Dossier     @relation(fields: [dossierId], references: [id], onDelete: Cascade)
-  specialisteId String
-  specialiste   Specialiste @relation(fields: [specialisteId], references: [id])
+
+  // Le beneficiaire : meme regle d'auteur unique que `Rapport`.
+  specialisteId      String?
+  specialiste        Specialiste?  @relation(fields: [specialisteId], references: [id], onDelete: Restrict)
+  medecinRedacteurId String?
+  medecinRedacteur   MedecinLocal? @relation("HonoraireRedacteur", fields: [medecinRedacteurId], references: [id], onDelete: Restrict)
 
   // Ce que le demandeur a payé, dans la devise d'encaissement.
   montantBrut      Decimal @db.Decimal(12, 2)
@@ -855,6 +896,7 @@ model Honoraire {
   // Un seul honoraire par dossier : un avis n'est payé qu'une fois.
   @@unique([dossierId])
   @@index([specialisteId])
+  @@index([medecinRedacteurId])
   @@index([statut])
 }
 

@@ -37,6 +37,7 @@ export default function DocumentsUpload() {
   // Preuve que le code envoye par e-mail a bien ete verifie.
   const [otpToken, setOtpToken] = useState(null)
   const [nomSignataire, setNomSignataire] = useState('')
+  const [portee, setPortee] = useState('INTERNATIONAL')
 
   useEffect(() => {
     if (!dossierId) {
@@ -44,6 +45,10 @@ export default function DocumentsUpload() {
       return
     }
     let cancelled = false
+    // Le formulaire a signer depend de la portee. En cas d'echec, le serveur
+    // genere de toute facon le PDF signe d'apres le dossier, pas d'apres cet ecran.
+    api.get(`/dossiers/${dossierId}`).then(({ data }) => setPortee(data.portee)).catch(() => {})
+
     api
       .get(`/dossiers/${dossierId}/documents`)
       .then(({ data }) => {
@@ -315,6 +320,7 @@ export default function DocumentsUpload() {
             otpToken={otpToken}
             onOtpTokenChange={setOtpToken}
             disabled={submitting}
+            portee={portee}
           />
         </div>
 

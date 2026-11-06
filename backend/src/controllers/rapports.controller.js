@@ -7,13 +7,28 @@ const { buildRapportPdf } = require('../lib/pdf')
 const { loadDossierWithAccessCheck } = require('./dossiers.controller')
 const { safeUserSelect } = require('../lib/selectors')
 const { creerHonorairePourDossier } = require('../services/honorairesService')
+const { STATUTS_REDACTION, STATUTS_SOUMISSION } = require('../services/avisLocalService')
 
 const DESTINATAIRES_RAPPORT_FINAL = new Set(['PATIENT', 'MEDECIN_LOCAL'])
 
+const CHARGEMENT_AUTEUR = { autoriserRedacteur: true }
+
 async function upsertBrouillon(req, res) {
-  const { dossier, error, message } = await loadDossierWithAccessCheck(req, req.params.dossierId)
+  const { dossier, estRedacteur, error, message } = await loadDossierWithAccessCheck(req, req.params.dossierId, CHARGEMENT_AUTEUR)
   if (error) return res.status(error).json({ message })
-  if (req.userRole !== 'SPECIALISTE') return res.status(403).json({ message: 'Réservé au spécialiste assigné' })
+  // Le role ne suffit pas : un medecin traitant a le meme que le redacteur.
+  if (req.userRole !== 'SPECIALISTE' && !estRedacteur) return res.status(403).json({ message: 'Réservé au praticien assigné' })
+  if (estRedacteur && !STATUTS_REDACTION.includes(dossier.status)) {
+    return res.status(409).json({ message: 'Acceptez le dossier avant de rédiger votre avis' })
+  }
+
+  // L'ecran passe en lecture seule une fois le rapport remis, mais l'API acceptait
+  // encore d'ecrire : un avis deja valide et lu par le patient pouvait etre
+  // reecrit, sans que son PDF ne change.
+  const existant = await prisma.rapport.findUnique({ where: { dossierId: dossier.id }, select: { status: true } })
+  if (existant && existant.status !== 'BROUILLON') {
+    return res.status(409).json({ message: 'Ce rapport a déjà été remis : il ne peut plus être modifié' })
+  }
 
   const { synthese, diagnostic, optionsTherapeutiques } = req.body
 
@@ -22,7 +37,7 @@ async function upsertBrouillon(req, res) {
     update: { synthese, diagnostic, optionsTherapeutiques },
     create: {
       dossierId: dossier.id,
-      specialisteId: dossier.specialisteId,
+      ...(estRedacteur ? { medecinRedacteurId: dossier.medecinRedacteurId } : { specialisteId: dossier.specialisteId }),
       synthese,
       diagnostic,
       optionsTherapeutiques,
@@ -38,9 +53,12 @@ async function upsertBrouillon(req, res) {
 }
 
 async function soumettreRapport(req, res) {
-  const { dossier, error, message } = await loadDossierWithAccessCheck(req, req.params.dossierId)
+  const { dossier, estRedacteur, error, message } = await loadDossierWithAccessCheck(req, req.params.dossierId, CHARGEMENT_AUTEUR)
   if (error) return res.status(error).json({ message })
-  if (req.userRole !== 'SPECIALISTE') return res.status(403).json({ message: 'Réservé au spécialiste assigné' })
+  if (req.userRole !== 'SPECIALISTE' && !estRedacteur) return res.status(403).json({ message: 'Réservé au praticien assigné' })
+  if (estRedacteur && !STATUTS_SOUMISSION.includes(dossier.status)) {
+    return res.status(409).json({ message: "Ce rapport ne peut pas être remis dans l'état actuel du dossier" })
+  }
 
   const rapport = await prisma.rapport.findUnique({ where: { dossierId: dossier.id } })
   if (!rapport) return res.status(400).json({ message: 'Aucun brouillon à soumettre' })
@@ -48,10 +66,14 @@ async function soumettreRapport(req, res) {
     return res.status(400).json({ message: 'La synthèse et le diagnostic sont requis avant soumission' })
   }
 
-  const updated = await prisma.rapport.update({
-    where: { id: rapport.id },
+  // Ecriture conditionnelle, comme pour les paiements : resoumettre un rapport
+  // deja valide le faisait redevenir SOUMIS et reculer le dossier du patient.
+  const { count } = await prisma.rapport.updateMany({
+    where: { id: rapport.id, status: 'BROUILLON' },
     data: { status: 'SOUMIS', submittedAt: new Date() },
   })
+  if (count === 0) return res.status(409).json({ message: 'Ce rapport a déjà été remis' })
+  const updated = await prisma.rapport.findUnique({ where: { id: rapport.id } })
   await prisma.dossier.update({ where: { id: dossier.id }, data: { status: 'RAPPORT_SOUMIS' } })
 
   await logAction({ userId: req.userId, action: 'RAPPORT_SOUMIS', entityType: 'Rapport', entityId: rapport.id, dossierId: dossier.id })
@@ -74,6 +96,7 @@ async function validerRapport(req, res) {
         },
       },
       specialiste: { include: { user: { select: safeUserSelect } } },
+      medecinRedacteur: { include: { user: { select: safeUserSelect } } },
     },
   })
   if (!rapport) return res.status(404).json({ message: 'Rapport introuvable' })
@@ -91,7 +114,9 @@ async function validerRapport(req, res) {
       (rapport.dossier.patientAge != null
         ? `Patient anonymisé, ${rapport.dossier.patientAge} ans`
         : 'Patient anonymisé'),
-    specialisteName: rapport.specialiste.user.fullName,
+    specialisteName: (rapport.specialiste ?? rapport.medecinRedacteur).user.fullName,
+    // Un document que le patient conserve : il doit nommer ce qu'est son auteur.
+    libelleAuteur: rapport.medecinRedacteur ? 'Médecin' : 'Spécialiste',
   })
   const key = `rapports/${rapport.dossierId}/rapport-${rapport.id}.pdf`
   await putObject(key, pdfBuffer, 'application/pdf')
@@ -126,13 +151,15 @@ async function validerRapport(req, res) {
 }
 
 async function getRapport(req, res) {
-  const { dossier, error, message } = await loadDossierWithAccessCheck(req, req.params.dossierId)
+  const { dossier, estRedacteur, error, message } = await loadDossierWithAccessCheck(req, req.params.dossierId, CHARGEMENT_AUTEUR)
   if (error) return res.status(error).json({ message })
 
   const rapport = await prisma.rapport.findUnique({ where: { dossierId: dossier.id } })
   if (!rapport) return res.status(404).json({ message: 'Aucun rapport pour ce dossier' })
 
-  if (DESTINATAIRES_RAPPORT_FINAL.has(req.userRole) && rapport.status !== 'VALIDE') {
+  // Le redacteur a le meme role qu'un destinataire, mais c'est son propre texte :
+  // sans cette exception, il ne pouvait pas rouvrir son brouillon.
+  if (!estRedacteur && DESTINATAIRES_RAPPORT_FINAL.has(req.userRole) && rapport.status !== 'VALIDE') {
     return res.status(403).json({ message: "Le rapport n'est pas encore disponible" })
   }
 
@@ -143,9 +170,9 @@ async function downloadRapportPdf(req, res) {
   const rapport = await prisma.rapport.findUnique({ where: { id: req.params.id } })
   if (!rapport || !rapport.pdfStorageKey) return res.status(404).json({ message: 'PDF non disponible' })
 
-  const { error, message } = await loadDossierWithAccessCheck(req, rapport.dossierId)
+  const { estRedacteur, error, message } = await loadDossierWithAccessCheck(req, rapport.dossierId, CHARGEMENT_AUTEUR)
   if (error) return res.status(error).json({ message })
-  if (DESTINATAIRES_RAPPORT_FINAL.has(req.userRole) && rapport.status !== 'VALIDE') {
+  if (!estRedacteur && DESTINATAIRES_RAPPORT_FINAL.has(req.userRole) && rapport.status !== 'VALIDE') {
     return res.status(403).json({ message: "Le rapport n'est pas encore disponible" })
   }
 

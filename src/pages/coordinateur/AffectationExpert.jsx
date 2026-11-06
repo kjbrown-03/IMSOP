@@ -11,6 +11,7 @@ export default function AffectationExpert() {
   const { t } = useTranslation()
   const [dossier, setDossier] = useState(null)
   const [specialistes, setSpecialistes] = useState([])
+  const [medecins, setMedecins] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [assigningId, setAssigningId] = useState(null)
@@ -22,13 +23,16 @@ export default function AffectationExpert() {
     async function load() {
       setLoading(true)
       try {
-        const [{ data: dossierData }, { data: recommandations }] = await Promise.all([
-          api.get(`/dossiers/${id}`),
-          api.get(`/specialistes/recommandations/${id}`),
-        ])
+        const { data: dossierData } = await api.get(`/dossiers/${id}`)
+        // Deux viviers qui ne se melangent pas : la portee a ete choisie et payee
+        // par le patient, c'est elle qui decide a qui le dossier peut aller.
+        const { data: recommandations } = await api.get(
+          dossierData.portee === 'LOCAL' ? `/dossiers/${id}/redacteurs-possibles` : `/specialistes/recommandations/${id}`,
+        )
         if (cancelled) return
         setDossier(dossierData)
-        setSpecialistes(recommandations)
+        if (dossierData.portee === 'LOCAL') setMedecins(recommandations)
+        else setSpecialistes(recommandations)
       } catch (err) {
         if (!cancelled) setError(err.response?.data?.message || t('errors.caseNotFound'))
       } finally {
@@ -45,6 +49,17 @@ export default function AffectationExpert() {
     setAssigningId(specialisteId)
     try {
       await api.post(`/dossiers/${id}/assigner`, { specialisteId })
+      navigate('/coordinateur/tableau-de-bord')
+    } catch (err) {
+      setError(err.response?.data?.message || t('coordinateur.assign.assignFailed'))
+      setAssigningId(null)
+    }
+  }
+
+  async function assignMedecin(medecinLocalId) {
+    setAssigningId(medecinLocalId)
+    try {
+      await api.post(`/dossiers/${id}/assigner-medecin-local`, { medecinLocalId })
       navigate('/coordinateur/tableau-de-bord')
     } catch (err) {
       setError(err.response?.data?.message || t('coordinateur.assign.assignFailed'))
@@ -121,6 +136,55 @@ export default function AffectationExpert() {
                 </div>
               </section>
 
+              {dossier.portee === 'LOCAL' && (
+                <section className="flex flex-col gap-stack-md pb-12">
+                  <h3 className="font-headline-md text-headline-md text-on-surface flex items-center gap-2">
+                    <span className="material-symbols-outlined text-primary">medical_services</span> {t('coordinateur.assign.localTitle')}
+                  </h3>
+                  <p className="font-body-md text-body-md text-on-surface-variant -mt-2">{t('coordinateur.assign.localSub')}</p>
+                  {dossier.medecinRedacteur?.user?.fullName && (
+                    <p className="font-body-md text-body-md text-on-surface">
+                      {t('coordinateur.assign.localCurrent', { nom: dossier.medecinRedacteur.user.fullName })}
+                    </p>
+                  )}
+
+                  {medecins.length === 0 ? (
+                    <div className="bg-surface-container-lowest rounded-xl border border-outline-variant p-8 text-center text-on-surface-variant">
+                      {t('coordinateur.assign.localNone')}
+                    </div>
+                  ) : (
+                    medecins.map((m) => (
+                      <div key={m.id} className="bg-surface-container-lowest rounded-xl border-2 border-primary/20 p-stack-md flex flex-col md:flex-row gap-stack-md items-start md:items-center shadow-sm">
+                        <div className="flex flex-col flex-grow gap-1 min-w-0">
+                          <h4 className="font-headline-md text-headline-md text-on-surface">{m.fullName}</h4>
+                          {m.specialite && <p className="font-body-md text-body-md font-medium text-primary">{m.specialite}</p>}
+                          <p className="font-label-sm text-label-sm text-on-surface-variant">
+                            {[m.ville, m.pays?.toUpperCase(), m.etablissement].filter(Boolean).join(' · ')}
+                          </p>
+                          <p className="font-label-sm text-label-sm text-on-surface-variant">
+                            {t('coordinateur.assign.localLoad', { count: m.chargeEnCours })}
+                            {m.annuaireExperience != null && ` · ${t('coordinateur.assign.localExperience', { count: m.annuaireExperience })}`}
+                          </p>
+                          {/* Dire ce qui n'est pas verifie plutot que de le taire : la
+                              decision reste au coordinateur, mais en connaissance de cause. */}
+                          {!m.specialiteConfirmee && (
+                            <p className="font-label-sm text-label-sm text-error">{t('coordinateur.assign.localUnconfirmed')}</p>
+                          )}
+                        </div>
+                        <button
+                          onClick={() => assignMedecin(m.id)}
+                          disabled={assigningId === m.id}
+                          className="w-full md:w-auto bg-primary text-on-primary font-label-md text-label-md px-6 py-3 rounded-full hover:bg-primary-container hover:text-on-primary-container transition-colors duration-200 shrink-0 shadow-sm disabled:opacity-60"
+                        >
+                          {assigningId === m.id ? t('coordinateur.assign.assigning') : t('coordinateur.assign.localAssign')}
+                        </button>
+                      </div>
+                    ))
+                  )}
+                </section>
+              )}
+
+              {dossier.portee !== 'LOCAL' && (
               <section className="flex flex-col gap-stack-md pb-12">
                 <h3 className="font-headline-md text-headline-md text-on-surface flex items-center gap-2">
                   <span className="material-symbols-outlined text-primary">medical_services</span> {t('coordinateur.assign.recommendedTitle')}
@@ -178,6 +242,7 @@ export default function AffectationExpert() {
                   </div>
                 )}
               </section>
+              )}
             </>
           )}
         </div>

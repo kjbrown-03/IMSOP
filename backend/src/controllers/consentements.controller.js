@@ -96,6 +96,7 @@ async function createConsentement(req, res) {
           }
         : { fullName: dossier.patientAge ? `Patient anonymisé, ${dossier.patientAge} ans` : null },
       dossier: { reference: dossier.reference, specialiteRequise: dossier.specialiteRequise },
+      portee: dossier.portee,
       medecinLocal: dossier.medecinLocal?.user
         ? { fullName: dossier.medecinLocal.user.fullName, numeroOrdre: dossier.medecinLocal.numeroOrdre }
         : dossier.demandeurMedecin?.user
@@ -195,7 +196,8 @@ async function listConsentements(req, res) {
 // Formulaire vierge, à lire avant d'accepter et de signer électroniquement -
 // aucune donnée de dossier n'y figure, donc aucun contrôle d'accès requis.
 async function downloadBlankConsentementPdf(req, res) {
-  const pdfBuffer = await buildConsentementPdf({})
+  // Le formulaire lu avant de signer doit etre celui qui sera signe.
+  const pdfBuffer = await buildConsentementPdf({ portee: req.query.portee === 'LOCAL' ? 'LOCAL' : 'INTERNATIONAL' })
   res.setHeader('Content-Type', 'application/pdf')
   res.setHeader('Content-Disposition', 'inline; filename="Consentement-IMSOP.pdf"')
   res.send(pdfBuffer)

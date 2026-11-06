@@ -26,6 +26,7 @@ export default function ConsentementGate({
   otpToken,
   onOtpTokenChange,
   disabled,
+  portee = 'INTERNATIONAL',
 }) {
   const { t } = useTranslation()
   const titulaire = useAuthStore((s) => s.user?.fullName)
@@ -64,7 +65,7 @@ export default function ConsentementGate({
     setTelechargement(true)
     setErreurTelechargement(null)
     try {
-      const { data } = await api.get('/consentement-pdf', { responseType: 'blob' })
+      const { data } = await api.get('/consentement-pdf', { responseType: 'blob', params: portee === 'LOCAL' ? { portee } : undefined })
       const url = window.URL.createObjectURL(data)
       window.open(url, '_blank', 'noopener,noreferrer')
       setTimeout(() => window.URL.revokeObjectURL(url), 60_000)
@@ -134,7 +135,7 @@ export default function ConsentementGate({
           disabled={disabled}
           className="mt-0.5 h-4 w-4 rounded border-slate-300 text-primary-600 focus:ring-primary-500"
         />
-        <span className="text-sm text-slate-700 dark:text-neutral-200">{t('consentement.checkboxLabel')}</span>
+        <span className="text-sm text-slate-700 dark:text-neutral-200">{t(portee === 'LOCAL' ? 'consentement.checkboxLabelLocal' : 'consentement.checkboxLabel')}</span>
       </label>
 
       <label className="flex flex-col gap-1.5">

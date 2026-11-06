@@ -5,7 +5,7 @@ import { Timer, ChevronRight, FileText } from 'lucide-react'
 import { api } from '../../lib/api'
 import { useLiveRefresh } from '../hooks/useLiveRefresh'
 import CompteARebours from '../ui/CompteARebours'
-import { nomPatient } from '../../lib/dossier'
+import { auteurAvis, nomPatient } from '../../lib/dossier'
 
 /**
  * File des dossiers confiés à un spécialiste dont la réponse n'est pas encore
@@ -103,7 +103,7 @@ export default function SuiviDelais() {
                 <div className="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-1.5 mt-0.5 truncate">
                   <FileText className="w-4 h-4 shrink-0" />
                   {d.specialiteRequise}
-                  {d.specialiste?.user?.fullName && <span>— Dr. {d.specialiste.user.fullName}</span>}
+                  {auteurAvis(d)?.user?.fullName && <span>— Dr. {auteurAvis(d).user.fullName}</span>}
                 </div>
               </div>
             </div>

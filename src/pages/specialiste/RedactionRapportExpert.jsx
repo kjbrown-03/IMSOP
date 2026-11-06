@@ -11,7 +11,9 @@ function computeAge(dob) {
   return Math.floor(diff / (365.25 * 24 * 60 * 60 * 1000))
 }
 
-export default function RedactionRapportExpert() {
+// `retour` : le medecin redacteur d'un avis local utilise ce meme ecran depuis son
+// propre espace. Le renvoyer vers /specialiste le deconnecterait de sa session.
+export default function RedactionRapportExpert({ retour = '/specialiste/tableau-de-bord' }) {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { id } = useParams()
@@ -82,7 +84,7 @@ export default function RedactionRapportExpert() {
     try {
       await api.put(`/dossiers/${id}/rapport`, { synthese, diagnostic, optionsTherapeutiques: therapeutique })
       await api.post(`/dossiers/${id}/rapport/soumettre`)
-      navigate('/specialiste/tableau-de-bord')
+      navigate(retour)
     } catch (err) {
       setError(err.response?.data?.message || t('specialiste.report.submitFailed'))
       setSubmitting(false)
@@ -105,7 +107,7 @@ export default function RedactionRapportExpert() {
     return (
       <div className="bg-background min-h-screen flex flex-col items-center justify-center gap-4 p-6 text-center">
         <p className="text-on-surface-variant">{error}</p>
-        <button onClick={() => navigate('/specialiste/tableau-de-bord')} className="text-primary font-label-md">
+        <button onClick={() => navigate(retour)} className="text-primary font-label-md">
           {t('specialiste.report.backToDashboard')}
         </button>
       </div>
@@ -118,7 +120,7 @@ export default function RedactionRapportExpert() {
     <div className="bg-background text-on-background font-body-md min-h-screen flex flex-col pt-12 pb-24 md:pb-0">
       <header className="fixed top-0 flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop h-12 z-50 bg-surface border-b border-outline-variant">
         <div className="flex items-center gap-2">
-          <button onClick={() => navigate('/specialiste/tableau-de-bord')}>
+          <button onClick={() => navigate(retour)}>
             <span className="material-symbols-outlined text-on-surface-variant hover:bg-surface-container transition-colors cursor-pointer rounded-full p-1">
               close
             </span>

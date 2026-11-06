@@ -46,8 +46,11 @@ async function uploadDocument(req, res) {
   res.status(201).json(document)
 }
 
+// Lecture ouverte au medecin redacteur : c'est sur ces pieces qu'il rend son avis.
+// Le depot (`uploadDocument`) ne l'est pas : un auteur d'avis ne complete pas lui-
+// meme le dossier qu'il juge, il demande un complement.
 async function listDocuments(req, res) {
-  const { dossier, error, message } = await loadDossierWithAccessCheck(req, req.params.dossierId)
+  const { dossier, error, message } = await loadDossierWithAccessCheck(req, req.params.dossierId, { autoriserRedacteur: true })
   if (error) return res.status(error).json({ message })
 
   const documents = await prisma.document.findMany({ where: { dossierId: dossier.id }, orderBy: { createdAt: 'desc' } })
@@ -58,7 +61,7 @@ async function downloadDocument(req, res) {
   const document = await prisma.document.findUnique({ where: { id: req.params.id } })
   if (!document) return res.status(404).json({ message: 'Document introuvable' })
 
-  const { error, message } = await loadDossierWithAccessCheck(req, document.dossierId)
+  const { error, message } = await loadDossierWithAccessCheck(req, document.dossierId, { autoriserRedacteur: true })
   if (error) return res.status(error).json({ message })
 
   await logAction({

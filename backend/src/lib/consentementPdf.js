@@ -113,7 +113,12 @@ function blocSignature(doc, titre, mentions = [], signe = null) {
 // bloc de signature (patient ou médecin traitant) reçoit le nom et la date -
 // une demande ouverte par le médecin traitant lui-même (patient anonymisé,
 // sans compte) est signée par lui, pas par un patient qui n'existe pas ici.
-function buildConsentementPdf({ patient = {}, dossier = {}, medecinLocal = null, signature = null } = {}) {
+//
+// `portee` : le texte d'origine promet un spécialiste « dans un autre pays » et
+// un transfert international. Faire signer cela au patient d'un avis local, c'est
+// recueillir un consentement à autre chose que ce qui va se passer.
+function buildConsentementPdf({ patient = {}, dossier = {}, medecinLocal = null, signature = null, portee = 'INTERNATIONAL' } = {}) {
+  const local = portee === 'LOCAL'
   return new Promise((resolve, reject) => {
     const doc = new PDFDocument({ margin: 50, size: 'A4' })
     const chunks = []
@@ -150,10 +155,14 @@ function buildConsentementPdf({ patient = {}, dossier = {}, medecinLocal = null,
     // ---------- Objet ----------
     titreSection(doc, '2. Objet du présent consentement')
     paragraphe(doc,
-      "Vous demandez un deuxième avis médical. Pour l'obtenir, votre dossier médical doit être " +
-      "transmis à un médecin spécialiste exerçant dans un autre pays. Cette transmission s'effectue " +
-      "par l'intermédiaire de la plateforme IMSOP, qui sert de canal sécurisé entre vous, votre " +
-      "médecin traitant, la coordination médicale et ce spécialiste.")
+      (local
+        ? "Vous demandez un deuxième avis médical local. Pour l'obtenir, votre dossier médical doit être " +
+          "transmis à un médecin exerçant dans la zone CEMAC, retenu par le comité scientifique d'IMSOP. "
+        : "Vous demandez un deuxième avis médical. Pour l'obtenir, votre dossier médical doit être " +
+          "transmis à un médecin spécialiste exerçant dans un autre pays. ") +
+      "Cette transmission s'effectue par l'intermédiaire de la plateforme IMSOP, qui sert de canal " +
+      "sécurisé entre vous, votre médecin traitant, la coordination médicale et " +
+      (local ? "ce médecin." : "ce spécialiste."))
     paragraphe(doc,
       "Le présent document ne porte que sur ce point : votre accord pour que vos données de santé " +
       "circulent par la plateforme et soient communiquées aux personnes énumérées à l'article 4.")
@@ -164,7 +173,7 @@ function buildConsentementPdf({ patient = {}, dossier = {}, medecinLocal = null,
     const donnees = [
       "votre identité et vos informations administratives ;",
       "vos antécédents médicaux et chirurgicaux, vos allergies et vos traitements en cours ;",
-      "votre diagnostic initial, vos symptômes et la question posée au spécialiste ;",
+      `votre diagnostic initial, vos symptômes et la question posée au ${local ? 'médecin' : 'spécialiste'} ;`,
       "vos examens : analyses biologiques, imagerie (radiographie, scanner, IRM, échographie, ECG), anatomopathologie, comptes rendus ;",
       "les documents que vous ou votre médecin traitant déposez sur la plateforme ;",
       "les échanges de la messagerie sécurisée rattachés à ce dossier.",
@@ -177,8 +186,12 @@ function buildConsentementPdf({ patient = {}, dossier = {}, medecinLocal = null,
     // ---------- Destinataires ----------
     titreSection(doc, '4. Destinataires')
     paragraphe(doc,
-      "Le spécialiste international auquel votre dossier est affecté, et lui seul parmi les " +
-      "spécialistes, y a accès. La coordination médicale IMSOP y accède pour vérifier que le dossier " +
+      (local
+        ? "Le médecin auquel votre dossier est affecté pour rédiger l'avis, et lui seul parmi les " +
+          "médecins de la plateforme, y a accès. Il ne reçoit pas vos coordonnées. "
+        : "Le spécialiste international auquel votre dossier est affecté, et lui seul parmi les " +
+          "spécialistes, y a accès. ") +
+      "La coordination médicale IMSOP y accède pour vérifier que le dossier " +
       "est complet et en assurer le suivi. Votre médecin traitant n'y accède que si vous l'avez " +
       "expressément désigné. L'administration technique de la plateforme n'a, elle, aucun accès au " +
       "contenu médical.")
@@ -189,8 +202,12 @@ function buildConsentementPdf({ patient = {}, dossier = {}, medecinLocal = null,
     // ---------- Transfert international ----------
     titreSection(doc, '5. Transfert hors du pays de résidence')
     paragraphe(doc,
-      "Le spécialiste exerçant hors du Cameroun, notamment en Europe, vos données franchiront une " +
-      "frontière. Ce transfert est soumis au droit camerounais ainsi qu'à celui du pays de destination.")
+      local
+        ? "Le médecin peut exercer dans un autre pays de la zone CEMAC que le vôtre : vos données " +
+          "franchiraient alors une frontière. Ce transfert est soumis au droit de votre pays de " +
+          "résidence ainsi qu'à celui du pays d'exercice du médecin."
+        : "Le spécialiste exerçant hors du Cameroun, notamment en Europe, vos données franchiront une " +
+          "frontière. Ce transfert est soumis au droit camerounais ainsi qu'à celui du pays de destination.")
     doc.fontSize(9).fillColor('#8a5a00').font('Helvetica-Oblique')
       .text("[À compléter par le conseil juridique : base légale du transfert, garanties encadrant " +
             "celui-ci, autorité de contrôle compétente et voies de recours.]", { align: 'justify' })
@@ -199,7 +216,8 @@ function buildConsentementPdf({ patient = {}, dossier = {}, medecinLocal = null,
     // ---------- Limites ----------
     titreSection(doc, '6. Ce que le deuxième avis ne remplace pas')
     paragraphe(doc,
-      "Le spécialiste international n'intervient pas à la place de votre médecin traitant : il " +
+      (local ? "Le médecin qui rédige cet avis" : "Le spécialiste international") +
+      " n'intervient pas à la place de votre médecin traitant : il " +
       "l'accompagne. Votre médecin traitant reste l'acteur central de votre parcours de soins et " +
       "demeure seul responsable des décisions thérapeutiques vous concernant.")
     paragraphe(doc,

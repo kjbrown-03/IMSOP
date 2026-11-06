@@ -16,6 +16,9 @@ const TYPE_META = {
   RAPPORT_DISPONIBLE: { icon: FileCheck, tone: 'bg-emerald-50 text-emerald-600' },
   PAIEMENT_CONFIRME: { icon: CreditCard, tone: 'bg-emerald-50 text-emerald-600' },
   NOUVEAU_DOSSIER_SPECIALISTE: { icon: FileText, tone: 'bg-primary-50 text-primary-600' },
+  AVIS_LOCAL_A_REDIGER: { icon: FileText, tone: 'bg-primary-50 text-primary-600' },
+  AVIS_LOCAL_RETIRE: { icon: FileText, tone: 'bg-slate-100 text-slate-600' },
+  AVIS_LOCAL_AFFECTE: { icon: UserCheck, tone: 'bg-primary-50 text-primary-600' },
   VERIFICATION_EMAIL: { icon: Mail, tone: 'bg-amber-50 text-amber-600' },
   MOT_DE_PASSE_RESET: { icon: KeyRound, tone: 'bg-amber-50 text-amber-600' },
   IDENTITE_VALIDEE: { icon: ShieldCheck, tone: 'bg-emerald-50 text-emerald-600' },
@@ -58,6 +61,7 @@ function linkFor(notification, role) {
     return base ? `${base}/${notification.dossierId}` : null
   }
   if (role === 'PATIENT') return `/patient/dossiers/${notification.dossierId}`
+  if (notification.type === 'AVIS_LOCAL_A_REDIGER') return '/medecin/avis'
   return null
 }
 

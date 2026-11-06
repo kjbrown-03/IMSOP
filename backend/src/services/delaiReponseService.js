@@ -63,6 +63,7 @@ async function dossiersEnCours() {
     include: {
       patient: { include: { user: { select: safeUserSelect } } },
       specialiste: { include: { user: { select: safeUserSelect } } },
+      medecinRedacteur: { include: { user: { select: safeUserSelect } } },
       demandeurMedecin: { include: { user: { select: safeUserSelect } } },
       rapport: { select: { id: true, status: true, submittedAt: true } },
     },
@@ -102,7 +103,10 @@ async function envoyerAlertesDelai(maintenant = new Date()) {
       assignedAt: { not: null, lte: seuil },
       alerteDelaiEnvoyeeLe: null,
     },
-    include: { specialiste: { include: { user: { select: safeUserSelect } } } },
+    include: {
+      specialiste: { include: { user: { select: safeUserSelect } } },
+      medecinRedacteur: { include: { user: { select: safeUserSelect } } },
+    },
   })
 
   if (enRetard.length === 0) return { alertes: 0 }
@@ -126,7 +130,7 @@ async function envoyerAlertesDelai(maintenant = new Date()) {
         {
           name: membre.fullName,
           reference: dossier.reference,
-          specialiste: dossier.specialiste?.user.fullName ?? 'non assigné',
+          specialiste: dossier.specialiste?.user.fullName ?? dossier.medecinRedacteur?.user.fullName ?? 'non assigné',
           heuresRestantes,
         },
         { dossierId: dossier.id },

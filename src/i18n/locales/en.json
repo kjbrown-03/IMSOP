@@ -373,7 +373,7 @@
       "EN_VERIFICATION": "Under review",
       "COMPLET": "Case complete",
       "EN_ATTENTE_AFFECTATION": "Awaiting assignment",
-      "AFFECTE": "Specialist assigned",
+      "AFFECTE": "Doctor assigned",
       "EN_ANALYSE": "Under analysis",
       "RAPPORT_EN_PREPARATION": "Report in progress",
       "RAPPORT_SOUMIS": "Report submitted",
@@ -501,7 +501,7 @@
     },
     "matching": {
       "confirmedTitle": "Payment confirmed, case sent to medical coordination",
-      "confirmedText": "Our team is reviewing your case and will assign you a suitable specialist shortly. You'll be notified at every step."
+      "confirmedText": "Our team is reviewing your case and will assign you a suitable doctor shortly. You'll be notified at every step."
     },
     "messages": {
       "title": "Secure Messages",
@@ -619,7 +619,18 @@
       "noneAvailable": "No specialist currently available for this specialty.",
       "assigning": "Assigning...",
       "assignThis": "Assign this specialist",
-      "assignFailed": "Assignment failed"
+      "assignFailed": "Assignment failed",
+      "localBadge": "Local opinion",
+      "localTitle": "Doctors available for this local opinion",
+      "localSub": "CEMAC doctors selected by the committee who agreed to write opinions. The patient's treating doctor and doctors who recused themselves are left out.",
+      "localCurrent": "Currently with: Dr {{nom}}. Choosing another doctor removes the file from them and deletes their draft.",
+      "localNone": "No doctor can receive this file at the moment. The patient has already paid: a doctor in the region needs to be recruited or contacted.",
+      "localAssign": "Entrust to this doctor",
+      "localUnconfirmed": "Requested specialty not confirmed on their profile: check before entrusting the file.",
+      "localLoad_one": "{{count}} opinion in progress",
+      "localLoad_other": "{{count}} opinions in progress",
+      "localExperience_one": "{{count}} year in practice",
+      "localExperience_other": "{{count}} years in practice"
     },
     "search": {
       "title": "Specialist Directory",
@@ -956,7 +967,8 @@
       "dossiers": "My requests",
       "profil": "My account",
       "justificatifs": "My credentials",
-      "annuaire": "Directory"
+      "annuaire": "Directory",
+      "avis": "Opinions to write"
     },
     "coordinateurNav": {
       "habilitations": "Credentials"
@@ -995,7 +1007,8 @@
       "COMMUNICATION_MEDECIN": "Sharing with my treating doctor",
       "TELECONSULTATION": "Teleconsultation",
       "UTILISATION_ANONYMISEE_RECHERCHE": "Anonymised use for research purposes"
-    }
+    },
+    "checkboxLabelLocal": "I have read and I accept that my health data will be transmitted by the IMSOP platform to the CEMAC doctor in charge of writing the opinion, the medical coordination team and, if designated, my treating doctor."
   },
   "temoignage": {
     "title": "Leave a comment",
@@ -1094,6 +1107,18 @@
       "INSCRIPTION_EXISTANTE": {
         "title": "Account already exists",
         "preview": "Someone tried to register with your address."
+      },
+      "AVIS_LOCAL_A_REDIGER": {
+        "title": "Case file to review",
+        "preview": "Case {{reference}} has been entrusted to you for an opinion."
+      },
+      "AVIS_LOCAL_RETIRE": {
+        "title": "Case file reassigned",
+        "preview": "Case {{reference}} has been entrusted to another doctor."
+      },
+      "AVIS_LOCAL_AFFECTE": {
+        "title": "Doctor assigned",
+        "preview": "A doctor has taken on case {{reference}}."
       }
     },
     "activer": "Turn on notifications",
@@ -1280,6 +1305,15 @@
       "manquantConsentement": "Tick the consent acceptance box",
       "manquantSignature": "Type your full name as signature, exactly as it appears on your account",
       "manquantCode": "Confirm the signature with the code sent by email"
+    },
+    "avis": {
+      "title": "Opinions to write",
+      "subtitle": "Case files the coordination team has entrusted to you. They are separate from your own patients.",
+      "empty": "No case file is entrusted to you at the moment. To receive some, turn on “I am willing to write written opinions on case files” in the Directory section.",
+      "actionFailed": "The action failed. Please try again.",
+      "refuserAide": "Reason for refusal (optional). The file will go back to the coordination team and your draft will be deleted.",
+      "complementAide": "Say what is missing. The patient will receive this message.",
+      "conflitAide": "Explain the conflict of interest (at least 10 characters). The file will go to another doctor and your draft will be deleted."
     }
   },
   "patientMedecin": {
@@ -1306,8 +1340,8 @@
     "EN_VERIFICATION": "Under review",
     "COMPLET": "Complete",
     "EN_ATTENTE_AFFECTATION": "Awaiting assignment",
-    "AFFECTE": "Specialist assigned",
-    "ACCEPTE_PAR_SPECIALISTE": "Accepted by specialist",
+    "AFFECTE": "Doctor assigned",
+    "ACCEPTE_PAR_SPECIALISTE": "Accepted by doctor",
     "EN_ANALYSE": "Under analysis",
     "INFORMATION_COMPLEMENTAIRE_DEMANDEE": "Further information requested",
     "RAPPORT_EN_PREPARATION": "Report in preparation",

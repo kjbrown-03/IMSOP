@@ -24,6 +24,9 @@ const { normaliserNumero } = require('../lib/sms')
 const DEVISE_PAR_PAYS = {
   cameroun: 'XAF', cm: 'XAF',
   gabon: 'XAF', congo: 'XAF', tchad: 'XAF', centrafrique: 'XAF', 'guinee equatoriale': 'XAF',
+  // Les medecins de l'annuaire portent un code ISO : sans ces lignes, un medecin
+  // de Libreville etait compte en euros, la devise des pays inconnus.
+  ga: 'XAF', cg: 'XAF', td: 'XAF', cf: 'XAF', gq: 'XAF',
   senegal: 'XOF', sn: 'XOF', 'cote d ivoire': 'XOF', ci: 'XOF', mali: 'XOF', 'burkina faso': 'XOF',
   benin: 'XOF', togo: 'XOF', niger: 'XOF',
   france: 'EUR', fr: 'EUR', belgique: 'EUR', be: 'EUR', portugal: 'EUR', espagne: 'EUR',
@@ -107,13 +110,29 @@ async function creerHonorairePourDossier(dossierId) {
     where: { id: dossierId },
     include: {
       specialiste: true,
+      medecinRedacteur: true,
       paiements: { where: { status: 'PAYE' }, orderBy: { confirmedAt: 'desc' }, take: 1 },
     },
   })
-  if (!dossier?.specialiste) return null
-  const paiement = dossier.paiements[0]
+  const paiement = dossier?.paiements[0]
   if (!paiement) return null
 
+  if (dossier.medecinRedacteur) {
+    const medecin = dossier.medecinRedacteur
+    const ventilation = calculerVentilation(Number(paiement.amount), medecin)
+    return prisma.honoraire.create({
+      data: {
+        dossierId,
+        medecinRedacteurId: medecin.id,
+        ...ventilation,
+        // Fapshi ne sert que le Cameroun : un medecin de Libreville est en XAF lui
+        // aussi, mais son reversement ne peut pas partir en Mobile Money par ce canal.
+        canal: String(medecin.pays || '').toLowerCase() === 'cm' ? 'FAPSHI' : 'VIREMENT',
+      },
+    })
+  }
+
+  if (!dossier.specialiste) return null
   const ventilation = calculerVentilation(Number(paiement.amount), dossier.specialiste)
 
   return prisma.honoraire.create({
@@ -136,12 +155,12 @@ async function reverserParFapshi(honoraire, { userId }) {
   // laisser la même trace qu'une passerelle injoignable, sinon l'échec est
   // invisible sur le relevé.
   try {
-    const specialiste = await prisma.specialiste.findUnique({
-      where: { id: honoraire.specialisteId },
-      include: { user: { select: { fullName: true, email: true, phone: true } } },
-    })
+    const selection = { include: { user: { select: { fullName: true, email: true, phone: true } } } }
+    const specialiste = honoraire.medecinRedacteurId
+      ? await prisma.medecinLocal.findUnique({ where: { id: honoraire.medecinRedacteurId }, ...selection })
+      : await prisma.specialiste.findUnique({ where: { id: honoraire.specialisteId }, ...selection })
     const numero = normaliserNumero(specialiste?.user?.phone)
-    if (!numero) throw new Error("Le spécialiste n'a pas de numéro de téléphone : impossible de reverser en Mobile Money")
+    if (!numero) throw new Error("Le praticien n'a pas de numéro de téléphone : impossible de reverser en Mobile Money")
 
     const resultat = await fapshi.decaisser({
       amount: Number(honoraire.montantNetDevise),

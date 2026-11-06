@@ -46,6 +46,7 @@ const RapportExpertFinal = lazy(() => import('./pages/patient/RapportExpertFinal
 const DashboardMedecinLocal = lazy(() => import('./pages/medecin/DashboardMedecinLocal'))
 const NouvelleDemandeMedecin = lazy(() => import('./pages/medecin/NouvelleDemandeMedecin'))
 const DossierMedecinLocal = lazy(() => import('./pages/medecin/DossierMedecinLocal'))
+const AvisARediger = lazy(() => import('./pages/medecin/AvisARediger'))
 const MesJustificatifs = lazy(() => import('./pages/professionnel/MesJustificatifs'))
 const RevueHabilitations = lazy(() => import('./pages/coordinateur/RevueHabilitations'))
 const CoordinateurSpecialistes = lazy(() => import('./pages/coordinateur/CoordinateurSpecialistes'))
@@ -255,6 +256,22 @@ export default function App() {
         element={
           <ProtectedRoute role="MEDECIN_LOCAL">
             <DashboardMedecinLocal />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/medecin/avis"
+        element={
+          <ProtectedRoute role="MEDECIN_LOCAL">
+            <AvisARediger />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/medecin/avis/:id"
+        element={
+          <ProtectedRoute role="MEDECIN_LOCAL">
+            <RedactionRapportExpert retour="/medecin/avis" />
           </ProtectedRoute>
         }
       />
