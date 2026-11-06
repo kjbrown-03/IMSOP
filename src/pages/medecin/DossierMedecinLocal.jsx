@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { ArrowLeft, Upload, Send, Loader2, FileText, HelpCircle } from 'lucide-react'
 import MedecinShell from '../../components/layout/MedecinShell'
 import MessageAttachment from '../../components/ui/MessageAttachment'
+import ComplementDemande from '../../components/ui/ComplementDemande'
 import { api } from '../../lib/api'
 
 // Mirrors backend/src/middleware/upload.js.
@@ -126,6 +127,9 @@ export default function DossierMedecinLocal() {
 
       {dossier && (
         <>
+          {dossier.status === 'INFORMATION_COMPLEMENTAIRE_DEMANDEE' && (
+            <ComplementDemande dossier={dossier} onRepondu={(maj) => setDossier((d) => ({ ...d, ...maj }))} />
+          )}
           <section className="glass-card rounded-2xl p-5 sm:p-6 flex flex-col gap-3">
             <div className="flex items-start justify-between gap-4 flex-wrap">
               <div className="min-w-0">

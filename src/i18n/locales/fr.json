@@ -776,7 +776,7 @@
       "startAnalysis": "Commencer l'analyse",
       "askComplement": "Demander un complément",
       "complementPlaceholder": "Précisez les pièces ou informations manquantes...",
-      "awaitingComplement": "En attente du complément demandé au patient.",
+      "awaitingComplement": "En attente du complément demandé.",
       "openReport": "Rapport",
       "declareConflict": "Déclarer un conflit d'intérêts",
       "conflictHelp": "Le dossier repartira en affectation et ne vous sera plus proposé.",
@@ -888,7 +888,7 @@
       "qualite": "Qualité",
       "specialitesDemandees": "Spécialités les plus demandées",
       "paysPatients": "Pays des patients",
-      "delaiParSpecialiste": "Délai moyen par spécialiste",
+      "delaiParSpecialiste": "Délai moyen par praticien",
       "revenusParSpecialite": "Revenus par spécialité",
       "periodes": {
         "tout": "Tout",
@@ -1091,7 +1091,7 @@
       },
       "COMPLEMENT_DEMANDE": {
         "title": "Information complémentaire demandée",
-        "preview": "Le spécialiste attend des précisions sur le dossier {{reference}}."
+        "preview": "Le médecin attend des précisions sur le dossier {{reference}}. Ouvrez-le pour répondre."
       },
       "COMPLEMENT_FOURNI": {
         "title": "Complément fourni",
@@ -1836,6 +1836,15 @@
     "occupe": "Le service est occupé en ce moment. Réessayez dans quelques instants, ou écrivez votre description.",
     "echec": "La transcription n'a pas abouti. Vous pouvez réessayer ou écrire votre description.",
     "tropCourt": "L'enregistrement est trop court. Maintenez le bouton le temps de décrire votre mal, puis arrêtez."
+  },
+  "complement": {
+    "titre": "Le médecin a besoin d'un complément",
+    "reponse": "Votre réponse",
+    "joindre": "Joindre un document",
+    "envoyer": "Envoyer ma réponse",
+    "envoiEchoue": "L'envoi a échoué. Réessayez.",
+    "fichierRefuse": "{{nom}} n'a pas été déposé : PDF, JPEG, PNG ou DICOM, 25 Mo maximum.",
+    "reponseRecue": "Réponse reçue au complément demandé"
   },
   "avis": {
     "choix": {

@@ -114,7 +114,10 @@ export default function RedactionRapportExpert({ retour = '/specialiste/tableau-
     )
   }
 
-  const age = computeAge(dossier.patient.dob)
+  // Une demande ouverte par un médecin décrit un patient anonymisé, sans compte :
+  // lire `patient.dob` y faisait planter tout l'écran de rédaction.
+  const age = dossier.patient ? computeAge(dossier.patient.dob) : dossier.patientAge
+  const sexe = dossier.patient?.gender ?? dossier.patientSexe
 
   return (
     <div className="bg-background text-on-background font-body-md min-h-screen flex flex-col pt-12 pb-24 md:pb-0">
@@ -140,9 +143,9 @@ export default function RedactionRapportExpert({ retour = '/specialiste/tableau-
                   <span className="text-outline-variant">•</span>
                 </>
               )}
-              {dossier.patient.gender && (
+              {sexe && (
                 <>
-                  <span className="capitalize">{dossier.patient.gender}</span>
+                  <span className="capitalize">{sexe}</span>
                   <span className="text-outline-variant">•</span>
                 </>
               )}

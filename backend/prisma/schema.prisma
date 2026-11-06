@@ -507,6 +507,11 @@ model Dossier {
   alerteDelaiEnvoyeeLe DateTime?
   messagingClosesAt    DateTime?
 
+  // Dernière demande de complément et sa réponse. Lues à l'écran, derrière la
+  // connexion : une notification se lit sur un écran verrouillé et n'en porte rien.
+  complementPrecisions String?
+  complementReponse    String?
+
   // Le médecin traitant n'a pas de messagerie libre avec le spécialiste : il
   // pose une seule question au moment où il transmet le dossier à la
   // coordination, qui l'affecte ensuite avec le reste du dossier. Une fois

@@ -72,7 +72,7 @@ const TEMPLATES = {
   COMPLEMENT_DEMANDE: {
     sms: (ctx) => `IMSOP : le medecin demande une information complementaire sur le dossier ${ctx.reference}. Connectez-vous pour repondre.`,
     subject: 'Information complémentaire demandée sur votre dossier',
-    body: (ctx) => `Bonjour ${ctx.name},\n\nLe médecin chargé de votre avis a besoin d'un complément pour poursuivre l'analyse du dossier ${ctx.reference} :\n\n${ctx.precisions}\n\nVous pouvez répondre et déposer les pièces demandées depuis la messagerie sécurisée.\n\nL'équipe IMSOP`,
+    body: (ctx) => `Bonjour ${ctx.name},\n\nLe médecin chargé de votre avis a besoin d'un complément pour poursuivre l'analyse du dossier ${ctx.reference}.\n\nConnectez-vous à votre espace IMSOP et ouvrez ce dossier : vous y lirez ce qui est demandé, et vous pourrez répondre et déposer vos documents.\n\nL'équipe IMSOP`,
   },
   COMPLEMENT_FOURNI: {
     subject: 'Le complément demandé a été déposé',

@@ -7,6 +7,7 @@ import ConsentementsCourants from '../../components/ui/ConsentementsCourants'
 import { ArrowLeft, CheckCircle, Download, Stethoscope, Activity, FileText, ClipboardList, Clock } from 'lucide-react'
 import { ouvrirFichier } from '../../lib/fichiers'
 import { auteurAvis } from '../../lib/dossier'
+import ComplementDemande from '../../components/ui/ComplementDemande'
 
 export default function RapportExpertFinal() {
   const { id } = useParams()
@@ -79,6 +80,9 @@ export default function RapportExpertFinal() {
         </Link>
       }
     >
+      {dossier?.status === 'INFORMATION_COMPLEMENTAIRE_DEMANDEE' && (
+        <ComplementDemande dossier={dossier} onRepondu={(maj) => setDossier((d) => ({ ...d, ...maj }))} />
+      )}
       <div className="mb-6 flex flex-col md:flex-row md:items-end justify-between gap-6 animate-fade-in-up">
         <div>
           <h2 className="text-3xl font-display font-bold text-slate-900 dark:text-white">{t('patient.report.heading')}</h2>

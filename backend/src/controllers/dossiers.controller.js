@@ -354,7 +354,10 @@ async function soumettreDossier(req, res) {
 async function assignerSpecialiste(req, res) {
   const dossier = await prisma.dossier.findUnique({
     where: { id: req.params.id },
-    include: { patient: { include: { user: { select: safeUserSelect } } } },
+    include: {
+      patient: { include: { user: { select: safeUserSelect } } },
+      demandeurMedecin: { include: { user: { select: safeUserSelect } } },
+    },
   })
   if (!dossier) return res.status(404).json({ message: 'Dossier introuvable' })
 
@@ -404,10 +407,16 @@ async function assignerSpecialiste(req, res) {
     name: specialiste.user.fullName,
     reference: dossier.reference,
   })
-  await notify(dossier.patient.userId, dossier.patient.user.email, 'DOSSIER_AFFECTE', {
-    name: dossier.patient.user.fullName,
-    reference: dossier.reference,
-  })
+  // Une demande ouverte par un médecin n'a pas de patient : lire `patient.user`
+  // renvoyait une erreur 500 APRÈS l'affectation, et le coordinateur la croyait
+  // ratée. C'est le médecin demandeur qui attend la nouvelle.
+  const demandeur = dossier.patient?.user ?? dossier.demandeurMedecin?.user
+  if (demandeur) {
+    await notify(demandeur.id, demandeur.email, 'DOSSIER_AFFECTE', {
+      name: demandeur.fullName,
+      reference: dossier.reference,
+    })
+  }
 
   res.json(updated)
 }
@@ -552,7 +561,7 @@ async function demanderComplement(req, res) {
   const [updated] = await prisma.$transaction([
     prisma.dossier.update({
       where: { id: dossier.id },
-      data: { status: 'INFORMATION_COMPLEMENTAIRE_DEMANDEE' },
+      data: { status: 'INFORMATION_COMPLEMENTAIRE_DEMANDEE', complementPrecisions: precisions, complementReponse: null },
     }),
     prisma.message.create({
       data: { dossierId: dossier.id, senderId: req.userId, body: precisions },
@@ -565,15 +574,20 @@ async function demanderComplement(req, res) {
     entityType: 'Dossier',
     entityId: dossier.id,
     dossierId: dossier.id,
-    metadata: { precisions },
   })
 
-  const destinataires = [dossier.patient?.user, dossier.medecinLocal?.user].filter(Boolean)
-  for (const destinataire of destinataires) {
+  // Les précisions restent hors de la notification : leur texte est médical, et
+  // se lirait sur un écran verrouillé. Le médecin demandeur figure ici parce
+  // qu'une demande sans patient ne prévenait personne, et restait bloquée.
+  const destinataires = new Map(
+    [dossier.patient?.user, dossier.medecinLocal?.user, dossier.demandeurMedecin?.user]
+      .filter(Boolean)
+      .map((u) => [u.id, u]),
+  )
+  for (const destinataire of destinataires.values()) {
     await notify(destinataire.id, destinataire.email, 'COMPLEMENT_DEMANDE', {
       name: destinataire.fullName,
       reference: dossier.reference,
-      precisions,
     }, { dossierId: dossier.id })
   }
 
@@ -590,7 +604,10 @@ async function complementFourni(req, res) {
     return res.status(400).json({ message: "Aucune information complémentaire n'est attendue sur ce dossier" })
   }
 
-  const updated = await prisma.dossier.update({ where: { id: dossier.id }, data: { status: 'EN_ANALYSE' } })
+  const updated = await prisma.dossier.update({
+    where: { id: dossier.id },
+    data: { status: 'EN_ANALYSE', complementReponse: req.body?.reponse ?? null },
+  })
   await logAction({ userId: req.userId, action: 'DOSSIER_COMPLEMENT_FOURNI', entityType: 'Dossier', entityId: dossier.id, dossierId: dossier.id })
 
   const auteur = dossier.specialiste?.user ?? dossier.medecinRedacteur?.user
@@ -649,7 +666,7 @@ async function refuserDossier(req, res) {
   if (error) return res.status(error).json({ message })
   if (!estAuteurDuDossier(req, estRedacteur)) return res.status(403).json({ message: 'Réservé au praticien assigné' })
   // Sans cette garde, un dossier deja rendu au patient repartirait en affectation.
-  if (estRedacteur && !STATUTS_RECUSABLES.includes(dossier.status)) {
+  if (!STATUTS_RECUSABLES.includes(dossier.status)) {
     return res.status(400).json({ message: 'Ce dossier ne peut plus être refusé dans son état actuel' })
   }
 
@@ -683,7 +700,7 @@ async function declarerConflitInterets(req, res) {
   const { dossier, estRedacteur, error, message } = await loadDossierWithAccessCheck(req, req.params.id, CHARGEMENT_AUTEUR)
   if (error) return res.status(error).json({ message })
   if (!estAuteurDuDossier(req, estRedacteur)) return res.status(403).json({ message: 'Réservé au praticien assigné' })
-  if (estRedacteur && !STATUTS_RECUSABLES.includes(dossier.status)) {
+  if (!STATUTS_RECUSABLES.includes(dossier.status)) {
     return res.status(400).json({ message: "Un conflit d'intérêts ne peut plus être déclaré dans l'état actuel du dossier" })
   }
 

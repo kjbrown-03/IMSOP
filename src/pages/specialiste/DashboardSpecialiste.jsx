@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import SpecialistShell from '../../components/layout/SpecialistShell'
+import { ReponseComplement } from '../../components/ui/ComplementDemande'
 import { api } from '../../lib/api'
 import { useAuthStore } from '../../store/useAuthStore'
 import {
@@ -251,6 +252,7 @@ export default function DashboardSpecialiste({ showAvailabilityToggle = false })
               className="glass-card dark:bg-neutral-900 rounded-3xl p-6 flex flex-col group hover:-translate-y-1 hover:shadow-xl hover:shadow-primary-900/10 dark:hover:shadow-black/40 transition-all duration-300 animate-fade-in-up"
               style={{ animationDelay: `${0.2 + idx * 0.1}s` }}
             >
+              <ReponseComplement dossier={d} />
               <div className="flex justify-between items-start mb-5">
                 <div className="flex items-center gap-3">
                   <div className={`p-2.5 rounded-xl ${bg} ${color}`}>

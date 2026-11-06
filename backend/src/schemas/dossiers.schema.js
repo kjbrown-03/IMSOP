@@ -90,6 +90,12 @@ const demanderComplement = {
   body: z.object({ precisions: z.string().trim().min(1).max(2000) }).strict(),
 }
 
+// La réponse est facultative : le complément peut n'être qu'un document déposé.
+const complementFourni = {
+  params: paramsWithId('id'),
+  body: z.object({ reponse: z.string().trim().min(1).max(4000).optional() }).strict().optional(),
+}
+
 const changerStatut = {
   params: paramsWithId('id'),
   body: z.object({
@@ -131,6 +137,7 @@ module.exports = {
   refuserDossier,
   declarerConflitInterets,
   demanderComplement,
+  complementFourni,
   changerStatut,
   designerMedecinLocal,
   poserQuestionMedecinLocal,

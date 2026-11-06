@@ -108,7 +108,7 @@ test("Conflit d'intérêts — déclaration", async (t) => {
       .expect(200)
 
     // Le dossier n'est plus assigné : on le réaffecte pour pouvoir redéclarer.
-    await prisma.dossier.update({ where: { id: dossier.id }, data: { specialisteId: specialiste.id } })
+    await prisma.dossier.update({ where: { id: dossier.id }, data: { specialisteId: specialiste.id, status: 'AFFECTE' } })
 
     await api()
       .post(`/api/dossiers/${dossier.id}/conflit-interets`)

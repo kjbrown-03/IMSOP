@@ -126,13 +126,6 @@ export default function NotificationBell() {
       }
     }
 
-    if (type === 'COMPLEMENT_DEMANDE' && payload?.precisions) {
-      return {
-        title: t('notifications.types.COMPLEMENT_DEMANDE.title'),
-        preview: payload.precisions,
-      }
-    }
-
     if (type === 'HABILITATION_STATUT') {
       return {
         title: t('notifications.types.HABILITATION_STATUT.title'),

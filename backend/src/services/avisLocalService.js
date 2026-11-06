@@ -152,11 +152,26 @@ function vuePubliqueRedacteur(medecin) {
   }
 }
 
+function sansCoordonnees(fiche) {
+  if (!fiche?.user) return fiche
+  const { email, phone, ...user } = fiche.user
+  return { ...fiche, user }
+}
+
 function vueDuDossier(dossier, { role, estRedacteur = false } = {}) {
   if (role === 'COORDINATEUR' || role === 'ADMIN') return dossier
 
-  const vue = { ...dossier, medecinRedacteur: vuePubliqueRedacteur(dossier.medecinRedacteur) }
-  if (!estRedacteur) return vue
+  // Le patient n'a pas de ligne directe avec l'expert : tout passe par la
+  // coordination. Lui donner son téléphone contredisait cette règle.
+  const vue = {
+    ...dossier,
+    medecinRedacteur: vuePubliqueRedacteur(dossier.medecinRedacteur),
+    specialiste: role === 'SPECIALISTE' ? dossier.specialiste : sansCoordonnees(dossier.specialiste),
+  }
+
+  // Celui qui rend l'avis lit un dossier ; il n'a pas à joindre le patient. Le
+  // spécialiste recevait son téléphone et son e-mail sans qu'aucun écran s'en serve.
+  if (!estRedacteur && role !== 'SPECIALISTE') return vue
 
   if (dossier.patient) {
     vue.patient = {
@@ -173,6 +188,9 @@ function vueDuDossier(dossier, { role, estRedacteur = false } = {}) {
   // a passer d'un medecin a l'autre par notre intermediaire.
   if (dossier.medecinLocal) {
     vue.medecinLocal = { id: dossier.medecinLocal.id, user: { fullName: dossier.medecinLocal.user?.fullName } }
+  }
+  if (dossier.demandeurMedecin) {
+    vue.demandeurMedecin = { id: dossier.demandeurMedecin.id, user: { fullName: dossier.demandeurMedecin.user?.fullName } }
   }
   return vue
 }

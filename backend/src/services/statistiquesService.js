@@ -106,6 +106,7 @@ async function calculerStatistiques({ depuis = null, jusquA = null } = {}) {
         specialiteRequise: true,
         rapport: { select: { validatedAt: true } },
         specialiste: { select: { id: true, pays: true, user: { select: { fullName: true } } } },
+        medecinRedacteur: { select: { id: true, user: { select: { fullName: true } } } },
       },
     }),
     // Le §62 demande le chiffre d'affaires ET les remboursements : on charge les
@@ -163,10 +164,13 @@ async function calculerStatistiques({ depuis = null, jusquA = null } = {}) {
   // Délai par spécialiste (§62 Performance).
   const parSpecialiste = new Map()
   for (const d of dossiersAvecRapport) {
-    if (!d.specialiste) continue
-    const cle = d.specialiste.id
+    // L'auteur de l'avis est l'un ou l'autre : sans le rédacteur, tous les avis
+    // locaux disparaissaient de ce classement.
+    const auteur = d.specialiste ?? d.medecinRedacteur
+    if (!auteur) continue
+    const cle = auteur.id
     if (!parSpecialiste.has(cle)) {
-      parSpecialiste.set(cle, { nom: d.specialiste.user.fullName, durees: [] })
+      parSpecialiste.set(cle, { nom: auteur.user.fullName, durees: [] })
     }
     parSpecialiste.get(cle).durees.push(d.rapport.validatedAt - d.createdAt)
   }

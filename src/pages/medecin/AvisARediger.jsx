@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Check, FileSignature, HelpCircle, Play, ShieldAlert, X } from 'lucide-react'
 import MedecinShell from '../../components/layout/MedecinShell'
+import { ReponseComplement } from '../../components/ui/ComplementDemande'
 import { api } from '../../lib/api'
 
 // Tant que le rapport n'est pas remis, le medecin peut encore se retirer. Passe ce
@@ -130,6 +131,7 @@ export default function AvisARediger() {
                   <HelpCircle className="w-4 h-4 shrink-0" /> {t('specialiste.dashboard.awaitingComplement')}
                 </p>
               )}
+              <ReponseComplement dossier={d} />
 
               {formulaire ? (
                 <div className="flex flex-col gap-2 mt-1">

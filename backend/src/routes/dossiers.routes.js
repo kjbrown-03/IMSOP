@@ -31,7 +31,7 @@ router.post('/:id/refuser', requireRole('SPECIALISTE', 'MEDECIN_LOCAL'), validat
 router.post('/:id/conflit-interets', requireRole('SPECIALISTE', 'MEDECIN_LOCAL'), validate(schema.declarerConflitInterets), ctrl.declarerConflitInterets)
 router.post('/:id/analyser', requireRole('SPECIALISTE', 'MEDECIN_LOCAL'), validate(schema.idParam), ctrl.demarrerAnalyse)
 router.post('/:id/demander-complement', requireRole('SPECIALISTE', 'MEDECIN_LOCAL'), validate(schema.demanderComplement), ctrl.demanderComplement)
-router.post('/:id/complement-fourni', requireRole('PATIENT', 'MEDECIN_LOCAL', 'COORDINATEUR', 'ADMIN'), validate(schema.idParam), ctrl.complementFourni)
+router.post('/:id/complement-fourni', requireRole('PATIENT', 'MEDECIN_LOCAL', 'COORDINATEUR', 'ADMIN'), validate(schema.complementFourni), ctrl.complementFourni)
 router.post('/:id/statut', requireRole('COORDINATEUR', 'ADMIN'), validate(schema.changerStatut), ctrl.changerStatut)
 router.post('/:id/medecin-local', requireRole('PATIENT'), validate(schema.designerMedecinLocal), ctrl.designerMedecinLocal)
 router.delete('/:id/medecin-local', requireRole('PATIENT'), validate(schema.idParam), ctrl.retirerMedecinLocal)

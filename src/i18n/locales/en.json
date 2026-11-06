@@ -776,7 +776,7 @@
       "startAnalysis": "Start analysis",
       "askComplement": "Request more information",
       "complementPlaceholder": "Specify the missing documents or information...",
-      "awaitingComplement": "Waiting for the information requested from the patient.",
+      "awaitingComplement": "Waiting for the information requested.",
       "openReport": "Report",
       "declareConflict": "Declare a conflict of interest",
       "conflictHelp": "The case will go back for reassignment and will no longer be offered to you.",
@@ -888,7 +888,7 @@
       "qualite": "Quality",
       "specialitesDemandees": "Most requested specialties",
       "paysPatients": "Patient countries",
-      "delaiParSpecialiste": "Average turnaround per specialist",
+      "delaiParSpecialiste": "Average turnaround per practitioner",
       "revenusParSpecialite": "Revenue by specialty",
       "periodes": {
         "tout": "All time",
@@ -1091,7 +1091,7 @@
       },
       "COMPLEMENT_DEMANDE": {
         "title": "Further information requested",
-        "preview": "The specialist is waiting for details on case {{reference}}."
+        "preview": "The doctor is waiting for details on case {{reference}}. Open it to answer."
       },
       "COMPLEMENT_FOURNI": {
         "title": "Information provided",
@@ -1836,6 +1836,15 @@
     "occupe": "The service is busy right now. Try again shortly, or type your description.",
     "echec": "The transcription failed. You can try again or type your description.",
     "tropCourt": "The recording is too short. Keep recording while you describe your problem, then stop."
+  },
+  "complement": {
+    "titre": "The doctor needs further information",
+    "reponse": "Your answer",
+    "joindre": "Attach a document",
+    "envoyer": "Send my answer",
+    "envoiEchoue": "Sending failed. Please try again.",
+    "fichierRefuse": "{{nom}} was not uploaded: PDF, JPEG, PNG or DICOM, 25 MB maximum.",
+    "reponseRecue": "Answer received to the information requested"
   },
   "avis": {
     "choix": {
