@@ -935,7 +935,13 @@ model Candidature {
   // Structure d'exercice du medecin traitant, avec de quoi la joindre : le
   // comite verifie l'exercice reel en appelant l'etablissement, et un nom seul
   // ne permet pas de le faire. Nul pour un specialiste international.
+  // CLINIQUE vaut « formation sanitaire privée », HOPITAL « publique » : les
+  // valeurs d'origine restent pour ne pas réécrire les candidatures déjà déposées.
   typeStructure TypeStructure?
+  // Clé de lib/formationsSanitaires.js. En texte : la liste peut être corrigée
+  // après relecture du comité sans migration.
+  categoriePublique String?
+  categoriePrivee   String?
   // Choisi par le candidat dans le formulaire d'enrolement.
   typePratique  TypePratique   @default(CONVENTIONNEL)
   nomClinique   String?

@@ -32,9 +32,10 @@ export default function QuestionnaireMedical() {
   const [specialiteKey, setSpecialiteKey] = useState('')
   const [motif, setMotif] = useState('')
   const [symptomes, setSymptomes] = useState('')
-  // Par defaut international : c'est l'offre d'origine d'IMSOP, et un patient
-  // qui ne tranche pas obtient ce qu'il venait chercher.
-  const [portee, setPortee] = useState('INTERNATIONAL')
+  // Rien de présélectionné : la portée fixe le prix et ne change plus après le
+  // dépôt. Une valeur par défaut ferait payer 115 000 XAF à un patient qui
+  // n'aurait simplement pas vu qu'il existe un avis à 15 000 XAF.
+  const [portee, setPortee] = useState('')
   const [antecedents, setAntecedents] = useState('non')
   const [allergies, setAllergies] = useState('')
   const [traitement, setTraitement] = useState('')
@@ -44,6 +45,10 @@ export default function QuestionnaireMedical() {
   async function onSubmit(e) {
     e.preventDefault()
     setError(null)
+    if (!portee) {
+      setError(t('patient.questionnaire.porteeRequise'))
+      return
+    }
     setSubmitting(true)
     try {
       const { data: dossier } = await api.post('/dossiers', {

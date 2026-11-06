@@ -1,13 +1,15 @@
 const { z } = require('zod')
 const { paramsWithId } = require('./common.schema')
+const { CLES_PUBLIQUES, CLES_PRIVEES } = require('../lib/formationsSanitaires')
 
 // Formulaire public : multipart, la photo passe par multer et le reste arrive
 // en chaînes. Les champs vides sont retirés côté écran, on tolère donc
 // l'absence mais pas la chaîne vide.
 const champTexte = (max) => z.string().trim().min(1).max(max).optional()
 
-// Le médecin traitant exerce en clinique, à l'hôpital, ou dans les deux. Le
-// comité appelle la structure pour vérifier l'exercice, d'où le contact.
+// Le médecin traitant exerce dans une formation sanitaire privée (CLINIQUE),
+// publique (HOPITAL), ou les deux. Le comité appelle la structure pour vérifier
+// l'exercice, d'où le contact.
 const TYPES_STRUCTURE = ['CLINIQUE', 'HOPITAL', 'LES_DEUX']
 const emailStructure = z.string().trim().toLowerCase().email().max(254).optional()
 
@@ -27,6 +29,8 @@ const deposer = {
     // Borne a 70 ans — au-dela c'est une faute de frappe, pas une carriere.
     anneesExperience: z.coerce.number().int().min(0).max(70).optional(),
     typeStructure: z.enum(TYPES_STRUCTURE).optional(),
+    categoriePublique: z.enum(CLES_PUBLIQUES).optional(),
+    categoriePrivee: z.enum(CLES_PRIVEES).optional(),
     // Médecine conventionnelle ou traditionnelle. Facultatif ici, par défaut
     // conventionnel : seul le formulaire médecin l'affiche.
     typePratique: z.enum(['CONVENTIONNEL', 'TRADITIONNEL']).optional(),
@@ -47,15 +51,50 @@ const deposer = {
     }
 
     if (val.type === 'MEDECIN_LOCAL') {
+      const traditionnel = val.typePratique === 'TRADITIONNEL'
+
+      // Le comité doit pouvoir joindre le candidat et vérifier son inscription.
+      // Le test passe par `=== undefined` pour les années : 0 est une réponse
+      // valable, celle d'un jeune médecin.
+      exige('phone', 'Le téléphone est obligatoire')
+      if (val.anneesExperience === undefined) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['anneesExperience'],
+          message: "Le nombre d'années d'expérience est obligatoire",
+        })
+      }
+      // Pas d'ordre professionnel pour la médecine traditionnelle : exiger le
+      // numéro fermerait cette voie à tous ses candidats.
+      if (!traditionnel) exige('numeroOrdre', "Le numéro d'inscription à l'ordre est obligatoire")
+
       if (!val.typeStructure) {
         return ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ['typeStructure'],
-          message: "Indiquez si vous exercez en clinique, à l'hôpital, ou dans les deux",
+          message: 'Indiquez si vous exercez en formation sanitaire publique, privée, ou les deux',
         })
       }
-      if (val.typeStructure !== 'HOPITAL') exige('nomClinique', 'Le nom de la clinique est obligatoire')
-      if (val.typeStructure !== 'CLINIQUE') exige('nomHopital', "Le nom de l'hôpital est obligatoire")
+      const prive = val.typeStructure !== 'HOPITAL'
+      const public_ = val.typeStructure !== 'CLINIQUE'
+      if (prive) exige('nomClinique', 'Le nom de la formation sanitaire privée est obligatoire')
+      if (public_) exige('nomHopital', 'Le nom de la formation sanitaire publique est obligatoire')
+
+      // Une catégorie sans la structure correspondante ferait lire au comité une
+      // affectation que le candidat n'a pas déclarée.
+      const refuse = (champ, message) => {
+        if (val[champ] !== undefined) ctx.addIssue({ code: z.ZodIssueCode.custom, path: [champ], message })
+      }
+      if (traditionnel) {
+        const message = 'Les catégories de formation sanitaire ne concernent pas la médecine traditionnelle'
+        refuse('categoriePublique', message)
+        refuse('categoriePrivee', message)
+        return
+      }
+      if (prive) exige('categoriePrivee', 'Choisissez la catégorie de votre formation sanitaire privée')
+      else refuse('categoriePrivee', "Vous n'avez pas déclaré de formation sanitaire privée")
+      if (public_) exige('categoriePublique', 'Choisissez la catégorie de votre formation sanitaire publique')
+      else refuse('categoriePublique', "Vous n'avez pas déclaré de formation sanitaire publique")
       return
     }
 
@@ -63,7 +102,7 @@ const deposer = {
     // accepter ces champs laisserait croire qu'ils comptent, et ils
     // ressortiraient dans le courriel du comité sans que personne les ait
     // remplis sciemment.
-    for (const champ of ['typeStructure', 'typePratique', 'nomClinique', 'telClinique', 'emailClinique', 'nomHopital', 'telHopital', 'emailHopital']) {
+    for (const champ of ['typeStructure', 'categoriePublique', 'categoriePrivee', 'typePratique', 'nomClinique', 'telClinique', 'emailClinique', 'nomHopital', 'telHopital', 'emailHopital']) {
       if (val[champ] !== undefined) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,

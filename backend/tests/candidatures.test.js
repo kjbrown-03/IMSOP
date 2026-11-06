@@ -42,14 +42,23 @@ const emailUnique = () => `candidat-${process.pid}-${++compteur}@imsop.test`
 
 // Un médecin traitant doit déclarer où il exerce : ce raccourci évite de
 // répéter le bloc dans chaque cas de test qui ne s'y intéresse pas.
-const medecin = (champs = {}) => ({
-  type: 'MEDECIN_LOCAL',
-  specialite: 'Médecine générale',
-  pays: 'Cameroun',
-  typeStructure: 'CLINIQUE',
-  nomClinique: 'Clinique du Littoral',
-  ...champs,
-})
+const medecin = (champs = {}) => {
+  const structure = champs.typeStructure || 'CLINIQUE'
+  const traditionnel = champs.typePratique === 'TRADITIONNEL'
+  return {
+    type: 'MEDECIN_LOCAL',
+    specialite: 'Médecine générale',
+    pays: 'cm',
+    phone: '+237 699 00 00 00',
+    anneesExperience: 8,
+    numeroOrdre: traditionnel ? undefined : 'ONMC-1234',
+    typeStructure: structure,
+    categoriePrivee: !traditionnel && structure !== 'HOPITAL' ? 'CLINIQUE' : undefined,
+    categoriePublique: !traditionnel && structure !== 'CLINIQUE' ? 'HOPITAL_DISTRICT' : undefined,
+    nomClinique: 'Clinique du Littoral',
+    ...champs,
+  }
+}
 
 function deposer(champs = {}) {
   const req = api().post('/api/candidatures')
@@ -185,6 +194,88 @@ test('Candidatures — dépôt public', async (t) => {
   await t.test("une adresse de structure invalide est refusée", async () => {
     const res = await deposer(medecin({ emailClinique: 'pas-une-adresse' })).expect(400)
     assert.ok(res.body.errors.some((e) => e.field === 'emailClinique'))
+  })
+
+  // --- Champs obligatoires du médecin ---------------------------------------
+
+  for (const champ of ['phone', 'numeroOrdre', 'anneesExperience']) {
+    await t.test(`une candidature de médecin sans ${champ} est refusée`, async () => {
+      const res = await deposer(medecin({ [champ]: undefined })).expect(400)
+      assert.ok(res.body.errors.some((e) => e.field === champ))
+      assert.equal(await prisma.candidature.count(), 0)
+    })
+  }
+
+  await t.test("zéro année d'expérience est une réponse valable", async () => {
+    const res = await deposer(medecin({ anneesExperience: 0 })).expect(201)
+    const c = await prisma.candidature.findUnique({ where: { id: res.body.id } })
+    assert.equal(c.anneesExperience, 0)
+  })
+
+  await t.test("le tradipraticien n'a ni numéro d'ordre ni catégorie à donner", async () => {
+    const res = await deposer(medecin({ typePratique: 'TRADITIONNEL' })).expect(201)
+    const c = await prisma.candidature.findUnique({ where: { id: res.body.id } })
+    assert.equal(c.numeroOrdre, null)
+    assert.equal(c.categoriePrivee, null)
+  })
+
+  await t.test('un tradipraticien ne peut pas déclarer une catégorie', async () => {
+    const res = await deposer(medecin({ typePratique: 'TRADITIONNEL', categoriePrivee: 'CLINIQUE' })).expect(400)
+    assert.ok(res.body.errors.some((e) => e.field === 'categoriePrivee'))
+  })
+
+  await t.test("l'inscription autonome du médecin exige aussi téléphone, numéro d'ordre et expérience", async () => {
+    const base = {
+      fullName: 'Dr. Kamga',
+      email: emailUnique(),
+      password: 'motdepasse-solide-1',
+      phone: '+237 699 00 00 00',
+      numeroOrdre: 'ONMC-99',
+      anneesExperience: 5,
+    }
+    for (const champ of ['phone', 'numeroOrdre', 'anneesExperience']) {
+      const { [champ]: _retire, ...sans } = base
+      const res = await api().post('/api/auth/register/medecin-local').send(sans).expect(400)
+      assert.ok(res.body.errors.some((e) => e.field === champ))
+    }
+    await api().post('/api/auth/register/medecin-local').send(base).expect(202)
+    const fiche = await prisma.medecinLocal.findFirst({ where: { user: { email: base.email } } })
+    assert.equal(fiche.annuaireExperience, 5, "l'expérience alimente la fiche d'annuaire")
+    assert.equal(fiche.numeroOrdre, 'ONMC-99')
+  })
+
+  // --- Catégorie de la formation sanitaire ---------------------------------
+
+  await t.test('la catégorie choisie est enregistrée pour chaque structure', async () => {
+    const res = await deposer(medecin({
+      typeStructure: 'LES_DEUX',
+      nomHopital: 'Hôpital Laquintinie',
+      categoriePublique: 'HOPITAL_CENTRAL',
+      categoriePrivee: 'CABINET_MEDICAL',
+    })).expect(201)
+    const c = await prisma.candidature.findUnique({ where: { id: res.body.id } })
+    assert.equal(c.categoriePublique, 'HOPITAL_CENTRAL')
+    assert.equal(c.categoriePrivee, 'CABINET_MEDICAL')
+  })
+
+  await t.test('sans catégorie pour la structure déclarée, la candidature est refusée', async () => {
+    const res = await deposer(medecin({ typeStructure: 'HOPITAL', nomHopital: 'CSI de Bali', categoriePublique: undefined })).expect(400)
+    assert.ok(res.body.errors.some((e) => e.field === 'categoriePublique'))
+  })
+
+  await t.test("une catégorie privée sur une structure publique seule est refusée", async () => {
+    const res = await deposer(medecin({ typeStructure: 'HOPITAL', nomHopital: 'CSI de Bali', categoriePrivee: 'CLINIQUE' })).expect(400)
+    assert.ok(res.body.errors.some((e) => e.field === 'categoriePrivee'))
+  })
+
+  await t.test('une catégorie publique ne passe pas pour une catégorie privée', async () => {
+    const res = await deposer(medecin({ categoriePrivee: 'CSI' })).expect(400)
+    assert.ok(res.body.errors.some((e) => e.field === 'categoriePrivee'))
+  })
+
+  await t.test("une structure paramédicale n'est pas une catégorie proposée", async () => {
+    const res = await deposer(medecin({ categoriePrivee: 'CABINET_SOINS_INFIRMIERS' })).expect(400)
+    assert.ok(res.body.errors.some((e) => e.field === 'categoriePrivee'))
   })
 
   await t.test("la structure alimente l'établissement, repris ensuite par le profil", async () => {
@@ -567,10 +658,22 @@ test('Candidatures — envoi au comité scientifique', async (t) => {
     })).expect(201)
 
     const auComite = courriels.find((m) => m.to === 'comite@imsop.test')
-    assert.match(auComite.text, /Lieu d'exercice : Clinique et hôpital/)
-    assert.match(auComite.text, /Clinique : Clinique du Littoral/)
-    assert.match(auComite.text, /Téléphone clinique : \+237 233 42 00 00/)
-    assert.match(auComite.text, /Hôpital : Hôpital Laquintinie/)
+    assert.match(auComite.text, /Lieu d'exercice : Formations sanitaires publique et privée/)
+    assert.match(auComite.text, /Structure privée : Clinique du Littoral/)
+    assert.match(auComite.text, /Téléphone : \+237 233 42 00 00/)
+    assert.match(auComite.text, /Structure publique : Hôpital Laquintinie/)
+    assert.match(auComite.text, /Catégorie : 4e catégorie — Hôpital de district/)
+    assert.match(auComite.text, /Catégorie : Clinique/)
+    assert.match(auComite.text, /Années d'exercice : 8 an\(s\)/, 'le comité voit les années déclarées')
+  })
+
+  await t.test("hors Cameroun, le courriel n'annonce pas un rang qui n'existe pas dans ce pays", async () => {
+    env.comite.emails = ['comite@imsop.test']
+    await deposer(medecin({ pays: 'ga', typeStructure: 'HOPITAL', nomHopital: 'CHU de Libreville' })).expect(201)
+
+    const auComite = courriels.find((m) => m.to === 'comite@imsop.test')
+    assert.match(auComite.text, /Catégorie : Hôpital de district/)
+    assert.doesNotMatch(auComite.text, /4e catégorie/)
   })
 
   await t.test("le courriel d'un spécialiste ne porte pas de lieu d'exercice", async () => {

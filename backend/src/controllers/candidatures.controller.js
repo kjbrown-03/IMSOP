@@ -12,6 +12,7 @@ const mailer = require('../lib/mailer')
 const { safeUserSelect } = require('../lib/selectors')
 const env = require('../config/env')
 const { PAYS_CEMAC } = require('../lib/cemac')
+const { libelleCategorie } = require('../lib/formationsSanitaires')
 const { estSpecialiteLocale } = require('../lib/specialitesLocales')
 
 /**
@@ -49,7 +50,7 @@ async function deposer(req, res) {
 
   const {
     type, fullName, email, phone, specialite, etablissement, pays, ville, langues, numeroOrdre, anneesExperience, presentation,
-    typeStructure, typePratique, nomClinique, telClinique, emailClinique, nomHopital, telHopital, emailHopital,
+    typeStructure, categoriePublique, categoriePrivee, typePratique, nomClinique, telClinique, emailClinique, nomHopital, telHopital, emailHopital,
   } = req.body
 
   // Un compte existant avec cet e-mail n'a rien à candidater ; une candidature
@@ -87,6 +88,8 @@ async function deposer(req, res) {
       presentation,
       anneesExperience,
       typeStructure,
+      categoriePublique,
+      categoriePrivee,
       ...(typePratique ? { typePratique } : {}),
       nomClinique,
       telClinique,
@@ -129,9 +132,11 @@ async function deposer(req, res) {
       to: destinataire,
       subject: `IMSOP — candidature ${type === 'SPECIALISTE' ? 'spécialiste' : 'médecin traitant'} : ${fullName}`,
       text: formulaireEnTexte({
-        type, fullName, email, phone, specialite, pays, ville, langues, numeroOrdre, presentation,
+        // Les années étaient lues par le courriel sans jamais lui être passées :
+        // le comité ne les voyait pas, alors qu'elles sont maintenant obligatoires.
+        type, fullName, email, phone, specialite, pays, ville, langues, numeroOrdre, anneesExperience, presentation,
         etablissement: candidature.etablissement,
-        typePratique, typeStructure, nomClinique, telClinique, emailClinique, nomHopital, telHopital, emailHopital,
+        typePratique, typeStructure, categoriePublique, categoriePrivee, nomClinique, telClinique, emailClinique, nomHopital, telHopital, emailHopital,
         cvJoint: Boolean(cvFichier),
       }),
       // Photo et CV joints : le comité lit tout dans son courriel, sans avoir
@@ -160,17 +165,26 @@ async function deposer(req, res) {
  */
 function blocStructure(c) {
   if (!c.typeStructure) return []
-  const LIBELLES = { CLINIQUE: 'Clinique', HOPITAL: 'Hôpital', LES_DEUX: 'Clinique et hôpital' }
-  const lignes = ['', `Lieu d'exercice : ${LIBELLES[c.typeStructure] || c.typeStructure}`]
-  if (c.typeStructure !== 'HOPITAL') {
-    lignes.push(`  Clinique : ${c.nomClinique || '—'}`)
-    if (c.telClinique) lignes.push(`  Téléphone clinique : ${c.telClinique}`)
-    if (c.emailClinique) lignes.push(`  E-mail clinique : ${c.emailClinique}`)
+  // Un tradipraticien reçoit dans sa clinique : le vocabulaire des formations
+  // sanitaires ne le concerne pas.
+  const traditionnel = c.typePratique === 'TRADITIONNEL'
+  const LIBELLES = {
+    CLINIQUE: traditionnel ? 'Clinique' : 'Formation sanitaire privée',
+    HOPITAL: 'Formation sanitaire publique',
+    LES_DEUX: 'Formations sanitaires publique et privée',
   }
+  const lignes = ['', `Lieu d'exercice : ${LIBELLES[c.typeStructure] || c.typeStructure}`]
   if (c.typeStructure !== 'CLINIQUE') {
-    lignes.push(`  Hôpital : ${c.nomHopital || '—'}`)
-    if (c.telHopital) lignes.push(`  Téléphone hôpital : ${c.telHopital}`)
-    if (c.emailHopital) lignes.push(`  E-mail hôpital : ${c.emailHopital}`)
+    lignes.push(`  Structure publique : ${c.nomHopital || '—'}`)
+    if (c.categoriePublique) lignes.push(`  Catégorie : ${libelleCategorie(c.categoriePublique, c.pays)}`)
+    if (c.telHopital) lignes.push(`  Téléphone : ${c.telHopital}`)
+    if (c.emailHopital) lignes.push(`  E-mail : ${c.emailHopital}`)
+  }
+  if (c.typeStructure !== 'HOPITAL') {
+    lignes.push(`  ${traditionnel ? 'Clinique' : 'Structure privée'} : ${c.nomClinique || '—'}`)
+    if (c.categoriePrivee) lignes.push(`  Catégorie : ${libelleCategorie(c.categoriePrivee, c.pays)}`)
+    if (c.telClinique) lignes.push(`  Téléphone : ${c.telClinique}`)
+    if (c.emailClinique) lignes.push(`  E-mail : ${c.emailClinique}`)
   }
   return lignes
 }

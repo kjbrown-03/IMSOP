@@ -225,9 +225,12 @@ qu'on le réintroduise.
 ## Ce qui reste à faire
 
 - **Avis local, reste à trancher** : le texte de consentement local doit être
-  validé juridiquement, et les patients ayant déjà signé le texte international
-  sur un dossier local n'ont pas consenti à cette transmission. Le rédacteur n'a
-  ni messagerie ni appel avec la coordination.
+  validé juridiquement. Le rédacteur n'a ni messagerie ni appel avec la
+  coordination.
+- **Catégories de formations sanitaires** (`lib/formationsSanitaires.js`) : la
+  numérotation publique de 1 à 6 vient de documents du ministère qui ne concordent
+  pas tous, et la liste privée ne s'appuie sur aucun texte de classement lu
+  (arrêté n° 631-CAB-PR de 1987, introuvable en ligne). À faire relire par le comité.
 - **SMS absents**, prévus au cahier des charges. Le manque le plus sensible
   pour un public camerounais.
 - **Mentions légales incomplètes** : huit `[À COMPLÉTER]` dans

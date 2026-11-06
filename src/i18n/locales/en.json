@@ -47,7 +47,7 @@
       "heroTitlePart1": "Second",
       "heroTitlePart2": "Medical Opinion",
       "heroPrimaryCta": "GET A SECOND OPINION",
-      "heroNetworkCaption": "A network of verified specialists<br/>across Europe and internationally",
+      "heroNetworkCaption": "A network of verified specialists<br/>locally and internationally",
       "badgeIso": "ISO CERTIFIED",
       "badgeGdpr": "GDPR COMPLIANT",
       "badgeDoctors": "1000+ EU DOCTORS",
@@ -62,7 +62,7 @@
       "step1Title": "Case Creation",
       "step1Text": "Submit your request and upload your medical documents (lab results, imaging) through our highly secure platform.",
       "step2Title": "Expert Review",
-      "step2Text": "A qualified European specialist is assigned to your case and reviews your file thoroughly and confidentially.",
+      "step2Text": "A qualified specialist, local or international as you choose, is assigned to your case and reviews your file thoroughly and confidentially.",
       "step2Quote": "An African patient, a local doctor, international expertise when it's needed.",
       "step3Title": "Detailed Medical Report",
       "step3Text": "Receive a complete report with a confirmed diagnosis and clear treatment recommendations in under 72 hours.",
@@ -105,7 +105,7 @@
       "testimonial4Meta": "Bafoussam · Neurology",
       "testimonial5Quote": "An external, documented opinion let me explain the options to my patient with more confidence.",
       "testimonial5Meta": "Treating doctor · Yaoundé",
-      "heroSecondaryCta": "Nearest specialist doctor"
+      "heroSecondaryCta": "Nearest doctor (specialist/GP)"
     },
     "footer": {
       "tagline": "International Medical Second Opinion Platform. An African program for second medical opinions and international tele-expertise. Pilot country: Cameroon.",
@@ -157,7 +157,7 @@
     },
     "loginPatient": {
       "heading": "Your Health,<br/>Our Priority.",
-      "tagline": "Access your secure medical file and connect with European specialists from Africa.",
+      "tagline": "Access your secure medical file and connect with local and international specialists.",
       "badgeSecure": "Secure Data",
       "badgeExperts": "Medical Experts",
       "subtitle": "Secure Patient Space",
@@ -428,6 +428,7 @@
       "submitting": "Sending...",
       "next": "Next step",
       "porteeLabel": "What kind of opinion do you want?",
+      "porteeRequise": "Please choose a local or an international opinion first.",
       "portee": {
         "LOCAL": {
           "titre": "Local opinion",
@@ -1179,6 +1180,7 @@
       "etablissement": "Institution",
       "pays": "Country of practice",
       "numeroOrdre": "Medical council number",
+      "anneesExperience": "Years of experience",
       "submit": "Create my account",
       "hasAccount": "Already have an account?",
       "login": "Sign in",
@@ -1436,7 +1438,7 @@
       "retourAccueil": "Back to home",
       "CONVENTIONNEL": {
         "eyebrow": "Conventional medicine",
-        "titre": "The nearest specialist to you",
+        "titre": "The nearest doctor (specialist/GP) to you",
         "intro": "Describe your symptoms in a few words. We work out the relevant speciality, then look for the doctors closest to you."
       },
       "TRADITIONNEL": {
@@ -1508,7 +1510,7 @@
       "avisLocalAide": "A patient submits their file — tests, imaging, reports — and you write an opinion without meeting them. This differs from a consultation: you put your signature on a document. Paid per file."
     },
     "choix": {
-      "eyebrow": "Nearest specialist doctor",
+      "eyebrow": "Nearest doctor (specialist/GP)",
       "titre": "Which doctor are you looking for?",
       "intro": "Both practices exist near you. Choose the one you wish to consult: the next search will only offer doctors from that path.",
       "CONVENTIONNEL": {
@@ -1567,14 +1569,32 @@
     "lieuExercice": "Place of practice",
     "lieuExerciceAide": "Where do you currently practise? The scientific committee contacts the facility to confirm your practice.",
     "structure": {
-      "CLINIQUE": "Clinic",
-      "HOPITAL": "Hospital",
+      "CLINIQUE": "Private health facility",
+      "HOPITAL": "Public health facility",
       "LES_DEUX": "Both"
     },
     "blocClinique": "Clinic",
-    "blocHopital": "Hospital",
+    "blocPrive": "Private health facility",
+    "blocHopital": "Public health facility",
     "nomClinique": "Clinic name",
-    "nomHopital": "Hospital name",
+    "nomStructurePrivee": "Private health facility name",
+    "nomHopital": "Public health facility name",
+    "categoriePublique": "Public health facility category",
+    "categoriePrivee": "Private health facility category",
+    "categories": {
+      "HOPITAL_GENERAL": { "rang": "Category 1", "nom": "General or university teaching hospital" },
+      "HOPITAL_CENTRAL": { "rang": "Category 2", "nom": "Central hospital or regional hospital centre" },
+      "HOPITAL_REGIONAL": { "rang": "Category 3", "nom": "Regional hospital" },
+      "HOPITAL_DISTRICT": { "rang": "Category 4", "nom": "District hospital" },
+      "CMA": { "rang": "Category 5", "nom": "Sub-divisional medical centre (CMA)" },
+      "CSI": { "rang": "Category 6", "nom": "Integrated health centre (CSI)" },
+      "HOPITAL_PRIVE": { "nom": "Private hospital" },
+      "POLYCLINIQUE": { "nom": "Polyclinic" },
+      "CLINIQUE": { "nom": "Clinic" },
+      "CENTRE_MEDICAL_PRIVE": { "nom": "Private medical centre" },
+      "CABINET_MEDICAL": { "nom": "Doctor's practice" },
+      "CONFESSIONNELLE": { "nom": "Faith-based or non-profit health facility" }
+    },
     "telStructure": "Facility phone",
     "emailStructure": "Facility email",
     "photoIllisible": "This file cannot be read as an image. If it comes from an iPhone, open it and save it as JPEG, or pick another photo.",
@@ -1616,9 +1636,9 @@
     "cvAucun": "No CV provided",
     "lieuExercice": "Place of practice",
     "structure": {
-      "CLINIQUE": "Clinic",
-      "HOPITAL": "Hospital",
-      "LES_DEUX": "Clinic and hospital"
+      "CLINIQUE": "Private health facility",
+      "HOPITAL": "Public health facility",
+      "LES_DEUX": "Public and private health facilities"
     },
     "telStructure": "Phone",
     "emailStructure": "Email",
@@ -1830,8 +1850,8 @@
         "action": "Find a practitioner"
       },
       "INTERNATIONAL": {
-        "titre": "An international second opinion",
-        "description": "A specialist abroad studies your full file — tests, imaging, reports — and writes an opinion on your situation.",
+        "titre": "A second opinion on your file",
+        "description": "A specialist studies your full file — tests, imaging, reports — and writes an opinion. You choose: a local doctor or an international specialist.",
         "delai": "You submit a file and receive a written report within a few days.",
         "action": "Submit a file"
       }

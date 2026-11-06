@@ -8,12 +8,13 @@ import ListeDeroulante from '../../components/ui/ListeDeroulante'
 import { api } from '../../lib/api'
 import { OPTIONS_PAYS, villesDe } from '../../lib/cemac'
 import { PhotoIllisible, preparerPhoto } from '../../lib/photo'
+import { CATEGORIES_PRIVEES, CATEGORIES_PUBLIQUES, optionsCategories } from '../../lib/formationsSanitaires'
 
 const CHAMP =
   'w-full bg-surface-container-low border border-outline-variant rounded-xl px-4 py-3 font-body-md text-body-md text-on-surface outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all'
 
 const CHAMPS_STRUCTURE = [
-  'typePratique', 'typeStructure', 'nomClinique', 'telClinique', 'emailClinique', 'nomHopital', 'telHopital', 'emailHopital',
+  'typePratique', 'typeStructure', 'categoriePublique', 'categoriePrivee', 'nomClinique', 'telClinique', 'emailClinique', 'nomHopital', 'telHopital', 'emailHopital',
 ]
 
 // Plafond sur le fichier d'origine. Large : la photo est réencodée avant
@@ -56,7 +57,7 @@ export default function Candidature({ type = 'SPECIALISTE' }) {
     // Médecine conventionnelle par défaut : c'est le cas de la majorité, et
     // un champ sans réponse possible ne doit pas bloquer l'envoi.
     typePratique: 'CONVENTIONNEL',
-    typeStructure: '', nomClinique: '', telClinique: '', emailClinique: '',
+    typeStructure: '', categoriePublique: '', categoriePrivee: '', nomClinique: '', telClinique: '', emailClinique: '',
     nomHopital: '', telHopital: '', emailHopital: '',
   })
   const [photo, setPhoto] = useState(null)
@@ -78,7 +79,7 @@ export default function Candidature({ type = 'SPECIALISTE' }) {
   function choisirPratique(valeur) {
     setForm((f) =>
       valeur === 'TRADITIONNEL'
-        ? { ...f, typePratique: valeur, typeStructure: 'CLINIQUE',
+        ? { ...f, typePratique: valeur, typeStructure: 'CLINIQUE', categoriePublique: '', categoriePrivee: '',
             nomHopital: '', telHopital: '', emailHopital: '', numeroOrdre: '' }
         : { ...f, typePratique: valeur },
     )
@@ -114,8 +115,8 @@ export default function Candidature({ type = 'SPECIALISTE' }) {
     setForm((f) => ({
       ...f,
       typeStructure: valeur,
-      ...(valeur === 'HOPITAL' ? { nomClinique: '', telClinique: '', emailClinique: '' } : {}),
-      ...(valeur === 'CLINIQUE' ? { nomHopital: '', telHopital: '', emailHopital: '' } : {}),
+      ...(valeur === 'HOPITAL' ? { categoriePrivee: '', nomClinique: '', telClinique: '', emailClinique: '' } : {}),
+      ...(valeur === 'CLINIQUE' ? { categoriePublique: '', nomHopital: '', telHopital: '', emailHopital: '' } : {}),
     }))
   }
 
@@ -179,11 +180,18 @@ export default function Candidature({ type = 'SPECIALISTE' }) {
     if (estMedecin && !form.pays) manquants.push(t('candidature.pays'))
     if (estMedecin && !form.ville) manquants.push(t('candidature.ville'))
     if (estMedecin) {
+      if (!form.phone.trim()) manquants.push(t('candidature.phone'))
+      if (form.anneesExperience === '') manquants.push(t('candidature.anneesExperience'))
+      if (!estTraditionnel && !form.numeroOrdre.trim()) manquants.push(t('candidature.numeroOrdre'))
       if (!form.typeStructure) manquants.push(t('candidature.lieuExercice'))
       // Le comité vérifie l'exercice en appelant la structure : sans son nom,
-      // il n'a rien à vérifier. Le téléphone, lui, reste facultatif.
-      if (aClinique && !form.nomClinique.trim()) manquants.push(t('candidature.nomClinique'))
+      // il n'a rien à vérifier. Le téléphone de la structure reste facultatif.
+      if (aHopital && !form.categoriePublique) manquants.push(t('candidature.categoriePublique'))
       if (aHopital && !form.nomHopital.trim()) manquants.push(t('candidature.nomHopital'))
+      if (aClinique && !estTraditionnel && !form.categoriePrivee) manquants.push(t('candidature.categoriePrivee'))
+      if (aClinique && !form.nomClinique.trim()) {
+        manquants.push(t(estTraditionnel ? 'candidature.nomClinique' : 'candidature.nomStructurePrivee'))
+      }
     }
     return manquants
   }
@@ -303,8 +311,9 @@ export default function Candidature({ type = 'SPECIALISTE' }) {
             <Champ label={t('candidature.email')} obligatoire>
               <input required type="email" className={CHAMP} value={form.email} onChange={modifier('email')} autoComplete="email" />
             </Champ>
-            <Champ label={t('candidature.phone')}>
-              <input type="tel" className={CHAMP} value={form.phone} onChange={modifier('phone')} autoComplete="tel" />
+            {/* Obligatoire pour le médecin : le comité doit pouvoir l'appeler. */}
+            <Champ label={t('candidature.phone')} obligatoire={estMedecin}>
+              <input required={estMedecin} type="tel" className={CHAMP} value={form.phone} onChange={modifier('phone')} autoComplete="tel" />
             </Champ>
 
             {/* Le spécialiste reste sur une liste fermée : c'est elle que le
@@ -381,8 +390,8 @@ export default function Candidature({ type = 'SPECIALISTE' }) {
                     <legend className="font-label-md text-label-md text-on-surface mb-2">
                       {t('candidature.lieuExercice')} <span className="text-error">*</span>
                     </legend>
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                      {['CLINIQUE', 'HOPITAL', 'LES_DEUX'].map((valeur) => (
+                    <div className="grid grid-cols-1 gap-2">
+                      {['HOPITAL', 'CLINIQUE', 'LES_DEUX'].map((valeur) => (
                         <OptionRadio
                           key={valeur}
                           nom="typeStructure"
@@ -397,22 +406,16 @@ export default function Candidature({ type = 'SPECIALISTE' }) {
                   </fieldset>
                 )}
 
-                {aClinique && (
-                  <GroupeStructure titre={t('candidature.blocClinique')}>
-                    <Champ label={t('candidature.nomClinique')} obligatoire>
-                      <input required className={CHAMP} value={form.nomClinique} onChange={modifier('nomClinique')} />
-                    </Champ>
-                    <Champ label={t('candidature.telStructure')}>
-                      <input type="tel" className={CHAMP} value={form.telClinique} onChange={modifier('telClinique')} />
-                    </Champ>
-                    <Champ label={t('candidature.emailStructure')}>
-                      <input type="email" className={CHAMP} value={form.emailClinique} onChange={modifier('emailClinique')} />
-                    </Champ>
-                  </GroupeStructure>
-                )}
-
                 {aHopital && (
                   <GroupeStructure titre={t('candidature.blocHopital')}>
+                    <Champ label={t('candidature.categoriePublique')} obligatoire liste>
+                      <ListeDeroulante
+                        value={form.categoriePublique}
+                        onChange={choisir('categoriePublique')}
+                        options={optionsCategories(t, CATEGORIES_PUBLIQUES, form.pays)}
+                        videLabel={t('candidature.aucunResultat')}
+                      />
+                    </Champ>
                     <Champ label={t('candidature.nomHopital')} obligatoire>
                       <input required className={CHAMP} value={form.nomHopital} onChange={modifier('nomHopital')} />
                     </Champ>
@@ -425,19 +428,47 @@ export default function Candidature({ type = 'SPECIALISTE' }) {
                   </GroupeStructure>
                 )}
 
+                {/* Un tradipraticien garde son vocabulaire : les catégories de
+                    formations sanitaires décrivent des structures de médecine
+                    conventionnelle. */}
+                {aClinique && (
+                  <GroupeStructure titre={t(estTraditionnel ? 'candidature.blocClinique' : 'candidature.blocPrive')}>
+                    {!estTraditionnel && (
+                      <Champ label={t('candidature.categoriePrivee')} obligatoire liste>
+                        <ListeDeroulante
+                          value={form.categoriePrivee}
+                          onChange={choisir('categoriePrivee')}
+                          options={optionsCategories(t, CATEGORIES_PRIVEES, form.pays)}
+                          videLabel={t('candidature.aucunResultat')}
+                        />
+                      </Champ>
+                    )}
+                    <Champ label={t(estTraditionnel ? 'candidature.nomClinique' : 'candidature.nomStructurePrivee')} obligatoire>
+                      <input required className={CHAMP} value={form.nomClinique} onChange={modifier('nomClinique')} />
+                    </Champ>
+                    <Champ label={t('candidature.telStructure')}>
+                      <input type="tel" className={CHAMP} value={form.telClinique} onChange={modifier('telClinique')} />
+                    </Champ>
+                    <Champ label={t('candidature.emailStructure')}>
+                      <input type="email" className={CHAMP} value={form.emailClinique} onChange={modifier('emailClinique')} />
+                    </Champ>
+                  </GroupeStructure>
+                )}
+
                 {/* Il n'existe pas encore d'ordre professionnel pour la medecine
                     traditionnelle : demander un numero qui ne peut pas exister
                     ne ferait que semer le doute chez le candidat. */}
                 {!estTraditionnel && (
-                  <Champ label={t('candidature.numeroOrdre')}>
-                    <input className={CHAMP} value={form.numeroOrdre} onChange={modifier('numeroOrdre')} />
+                  <Champ label={t('candidature.numeroOrdre')} obligatoire>
+                    <input required className={CHAMP} value={form.numeroOrdre} onChange={modifier('numeroOrdre')} />
                   </Champ>
                 )}
 
                 {/* L'experience concerne les deux voies : un tradipraticien
                     exerce depuis un certain nombre d'annees comme un autre. */}
-                <Champ label={t('candidature.anneesExperience')} aide={t('candidature.anneesExperienceAide')}>
+                <Champ label={t('candidature.anneesExperience')} aide={t('candidature.anneesExperienceAide')} obligatoire>
                   <input
+                    required
                     type="number"
                     min={0}
                     max={70}

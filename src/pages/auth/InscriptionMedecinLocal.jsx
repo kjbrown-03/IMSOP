@@ -11,12 +11,13 @@ const FIELDS = [
   { name: 'fullName', type: 'text', required: true, autoComplete: 'name' },
   { name: 'email', type: 'email', required: true, autoComplete: 'email' },
   { name: 'password', type: 'password', required: true, autoComplete: 'new-password', minLength: 8 },
-  { name: 'phone', type: 'tel', autoComplete: 'tel' },
+  { name: 'phone', type: 'tel', required: true, autoComplete: 'tel' },
   { name: 'specialite', type: 'text' },
   { name: 'etablissement', type: 'text' },
   { name: 'pays', type: 'text' },
   { name: 'ville', type: 'select', options: VILLES_CAMEROUN },
-  { name: 'numeroOrdre', type: 'text' },
+  { name: 'numeroOrdre', type: 'text', required: true },
+  { name: 'anneesExperience', type: 'number', required: true, min: 0, max: 70 },
 ]
 
 export default function InscriptionMedecinLocal() {
@@ -118,6 +119,8 @@ export default function InscriptionMedecinLocal() {
                 type={field.type}
                 required={field.required}
                 minLength={field.minLength}
+                min={field.min}
+                max={field.max}
                 autoComplete={field.autoComplete}
                 value={form[field.name]}
                 onChange={(e) => update(field.name, e.target.value)}

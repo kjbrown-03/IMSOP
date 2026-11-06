@@ -76,12 +76,13 @@ const registerMedecinLocal = {
     fullName: z.string().trim().min(2).max(200),
     email: z.string().trim().toLowerCase().email(),
     password: z.string().min(8).max(128),
-    phone: z.string().trim().max(40).optional(),
+    phone: z.string().trim().min(1).max(40),
     specialite: z.string().trim().max(200).optional(),
     etablissement: z.string().trim().max(200).optional(),
     pays: z.string().trim().max(100).optional(),
     ville: z.string().trim().max(100).optional(),
-    numeroOrdre: z.string().trim().max(100).optional(),
+    numeroOrdre: z.string().trim().min(1).max(100),
+    anneesExperience: z.coerce.number().int().min(0).max(70),
   }).strict(),
 }
 

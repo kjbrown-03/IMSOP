@@ -295,7 +295,7 @@ async function registerPatient(req, res) {
 // checks the numéro d'ordre. A patient can designate it either way - the
 // consent that grants record access is the patient's, not the platform's.
 async function registerMedecinLocal(req, res) {
-  const { fullName, email, password, phone, specialite, etablissement, pays, ville, numeroOrdre } = req.body
+  const { fullName, email, password, phone, specialite, etablissement, pays, ville, numeroOrdre, anneesExperience } = req.body
 
   const existing = await prisma.user.findUnique({ where: { email } })
   if (existing) return res.status(409).json({ message: 'Un compte existe déjà avec cet email' })
@@ -310,7 +310,7 @@ async function registerMedecinLocal(req, res) {
       phone,
       role: 'MEDECIN_LOCAL',
       twoFactorEnabled: true,
-      medecinLocal: { create: { specialite, etablissement, pays, ville, numeroOrdre } },
+      medecinLocal: { create: { specialite, etablissement, pays, ville, numeroOrdre, annuaireExperience: anneesExperience } },
     },
     include: { medecinLocal: true },
   })

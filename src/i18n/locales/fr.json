@@ -47,7 +47,7 @@
       "heroTitlePart1": "Deuxième",
       "heroTitlePart2": "Avis Médical",
       "heroPrimaryCta": "DEMANDER UN AVIS",
-      "heroNetworkCaption": "Un réseau de spécialistes vérifiés<br/>en Europe et à l'international",
+      "heroNetworkCaption": "Un réseau de spécialistes vérifiés<br/>au niveau local et à l'international",
       "badgeIso": "CERTIFIÉ ISO",
       "badgeGdpr": "CONFORME RGPD",
       "badgeDoctors": "+1000 MÉDECINS EU",
@@ -62,7 +62,7 @@
       "step1Title": "Création du Dossier",
       "step1Text": "Soumettez votre demande et téléversez vos documents médicaux (analyses, imageries) via notre plateforme hautement sécurisée.",
       "step2Title": "Analyse par l'Expert",
-      "step2Text": "Un spécialiste européen qualifié est assigné à votre cas. Il étudie minutieusement votre dossier de manière confidentielle.",
+      "step2Text": "Un spécialiste qualifié, local ou international selon votre choix, est assigné à votre cas. Il étudie minutieusement votre dossier de manière confidentielle.",
       "step2Quote": "Un patient africain, un médecin local, une expertise internationale lorsque cela est nécessaire.",
       "step3Title": "Rapport Médical Détaillé",
       "step3Text": "Recevez un rapport complet avec un diagnostic confirmé et des recommandations de traitement claires en moins de 72h.",
@@ -105,7 +105,7 @@
       "testimonial4Meta": "Bafoussam · Neurologie",
       "testimonial5Quote": "Recevoir un avis extérieur documenté m'a permis d'expliquer plus sereinement les options à ma patiente.",
       "testimonial5Meta": "Médecin traitant · Yaoundé",
-      "heroSecondaryCta": "Médecin spécialiste le plus proche"
+      "heroSecondaryCta": "Médecin (spécialiste/généraliste) le plus proche"
     },
     "footer": {
       "tagline": "International Medical Second Opinion Platform. Programme africain de deuxième avis médical et de télé-expertise médicale internationale. Pays pilote : Cameroun.",
@@ -157,7 +157,7 @@
     },
     "loginPatient": {
       "heading": "Votre Santé,<br/>Notre Priorité.",
-      "tagline": "Accédez à votre dossier médical sécurisé et connectez-vous avec des spécialistes européens depuis l'Afrique.",
+      "tagline": "Accédez à votre dossier médical sécurisé et connectez-vous avec des spécialistes locaux et internationaux.",
       "badgeSecure": "Données Sécurisées",
       "badgeExperts": "Experts Médicaux",
       "subtitle": "Espace Patient Sécurisé",
@@ -428,6 +428,7 @@
       "submitting": "Envoi en cours...",
       "next": "Étape suivante",
       "porteeLabel": "Quel type d’avis souhaitez-vous ?",
+      "porteeRequise": "Choisissez d’abord un avis local ou un avis international.",
       "portee": {
         "LOCAL": {
           "titre": "Avis local",
@@ -1179,6 +1180,7 @@
       "etablissement": "Établissement",
       "pays": "Pays d’exercice",
       "numeroOrdre": "Numéro d'ordre des médecins",
+      "anneesExperience": "Années d'expérience",
       "submit": "Créer mon compte",
       "hasAccount": "Vous avez déjà un compte ?",
       "login": "Se connecter",
@@ -1436,7 +1438,7 @@
       "retourAccueil": "Retour à l'accueil",
       "CONVENTIONNEL": {
         "eyebrow": "Médecine conventionnelle",
-        "titre": "Le spécialiste le plus proche de vous",
+        "titre": "Le médecin (spécialiste/généraliste) le plus proche de vous",
         "intro": "Décrivez vos symptômes en quelques mots. Nous en déduisons la ou les spécialités concernées, puis nous cherchons les médecins les plus proches de chez vous."
       },
       "TRADITIONNEL": {
@@ -1508,7 +1510,7 @@
       "avisLocalAide": "Un patient dépose son dossier — analyses, imageries, comptes rendus — et vous rédigez un avis écrit, sans le rencontrer. C'est distinct de la consultation : vous engagez votre signature sur un document. Rémunéré par dossier."
     },
     "choix": {
-      "eyebrow": "Médecin spécialiste le plus proche",
+      "eyebrow": "Médecin (spécialiste/généraliste) le plus proche",
       "titre": "Quel médecin cherchez-vous ?",
       "intro": "Les deux pratiques existent près de chez vous. Choisissez celle que vous souhaitez consulter : la recherche suivante ne vous proposera que des médecins de cette voie.",
       "CONVENTIONNEL": {
@@ -1567,14 +1569,32 @@
     "lieuExercice": "Lieu d'exercice",
     "lieuExerciceAide": "Où exercez-vous aujourd'hui ? Le comité scientifique contacte la structure pour vérifier votre exercice.",
     "structure": {
-      "CLINIQUE": "Clinique",
-      "HOPITAL": "Hôpital",
+      "CLINIQUE": "Formation sanitaire privée",
+      "HOPITAL": "Formation sanitaire publique",
       "LES_DEUX": "Les deux"
     },
     "blocClinique": "Clinique",
-    "blocHopital": "Hôpital",
+    "blocPrive": "Formation sanitaire privée",
+    "blocHopital": "Formation sanitaire publique",
     "nomClinique": "Nom de la clinique",
-    "nomHopital": "Nom de l'hôpital",
+    "nomStructurePrivee": "Nom de la formation sanitaire privée",
+    "nomHopital": "Nom de la formation sanitaire publique",
+    "categoriePublique": "Catégorie de la formation sanitaire publique",
+    "categoriePrivee": "Catégorie de la formation sanitaire privée",
+    "categories": {
+      "HOPITAL_GENERAL": { "rang": "1re catégorie", "nom": "Hôpital général ou CHU" },
+      "HOPITAL_CENTRAL": { "rang": "2e catégorie", "nom": "Hôpital central ou centre hospitalier régional" },
+      "HOPITAL_REGIONAL": { "rang": "3e catégorie", "nom": "Hôpital régional" },
+      "HOPITAL_DISTRICT": { "rang": "4e catégorie", "nom": "Hôpital de district" },
+      "CMA": { "rang": "5e catégorie", "nom": "Centre médical d'arrondissement (CMA)" },
+      "CSI": { "rang": "6e catégorie", "nom": "Centre de santé intégré (CSI)" },
+      "HOPITAL_PRIVE": { "nom": "Hôpital privé" },
+      "POLYCLINIQUE": { "nom": "Polyclinique" },
+      "CLINIQUE": { "nom": "Clinique" },
+      "CENTRE_MEDICAL_PRIVE": { "nom": "Centre médical privé" },
+      "CABINET_MEDICAL": { "nom": "Cabinet médical" },
+      "CONFESSIONNELLE": { "nom": "Formation sanitaire confessionnelle ou associative" }
+    },
     "telStructure": "Téléphone de la structure",
     "emailStructure": "E-mail de la structure",
     "photoIllisible": "Ce fichier ne peut pas être lu comme une image. Si elle vient d'un iPhone, ouvrez-la puis enregistrez-la en JPEG, ou choisissez une autre photo.",
@@ -1616,9 +1636,9 @@
     "cvAucun": "Aucun CV fourni",
     "lieuExercice": "Lieu d'exercice",
     "structure": {
-      "CLINIQUE": "Clinique",
-      "HOPITAL": "Hôpital",
-      "LES_DEUX": "Clinique et hôpital"
+      "CLINIQUE": "Formation sanitaire privée",
+      "HOPITAL": "Formation sanitaire publique",
+      "LES_DEUX": "Formations sanitaires publique et privée"
     },
     "telStructure": "Téléphone",
     "emailStructure": "E-mail",
@@ -1830,8 +1850,8 @@
         "action": "Trouver un praticien"
       },
       "INTERNATIONAL": {
-        "titre": "Un deuxième avis international",
-        "description": "Un spécialiste étranger étudie votre dossier complet — analyses, imageries, comptes rendus — et rédige un avis écrit sur votre situation.",
+        "titre": "Un deuxième avis sur dossier",
+        "description": "Un spécialiste étudie votre dossier complet — analyses, imageries, comptes rendus — et rédige un avis écrit. Vous choisissez : un médecin local ou un spécialiste international.",
         "delai": "Vous déposez un dossier et recevez un rapport écrit sous quelques jours.",
         "action": "Déposer un dossier"
       }

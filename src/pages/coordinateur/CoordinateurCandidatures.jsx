@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { ClipboardList, FileText, Hospital, Loader2, Mail, MapPin, Building2, Phone, Send, UserPlus, X, Languages, BadgeCheck } from 'lucide-react'
 import CoordinatorLayout from '../../components/layout/CoordinatorLayout'
 import { api } from '../../lib/api'
+import { libelleCategorie } from '../../lib/formationsSanitaires'
 
 // Le comité décide hors de la plateforme : il n'y a pas d'étape d'examen à
 // refaire ici. Restent deux files — ce qu'il faut créer, ce qui est créé — et
@@ -257,11 +258,11 @@ function LieuExercice({ candidature: c }) {
   if (!c.typeStructure) return null
 
   const structures = []
-  if (c.typeStructure !== 'HOPITAL') {
-    structures.push({ cle: 'clinique', nom: c.nomClinique, tel: c.telClinique, email: c.emailClinique })
-  }
   if (c.typeStructure !== 'CLINIQUE') {
-    structures.push({ cle: 'hopital', nom: c.nomHopital, tel: c.telHopital, email: c.emailHopital })
+    structures.push({ cle: 'hopital', nom: c.nomHopital, categorie: c.categoriePublique, tel: c.telHopital, email: c.emailHopital })
+  }
+  if (c.typeStructure !== 'HOPITAL') {
+    structures.push({ cle: 'clinique', nom: c.nomClinique, categorie: c.categoriePrivee, tel: c.telClinique, email: c.emailClinique })
   }
 
   return (
@@ -275,6 +276,8 @@ function LieuExercice({ candidature: c }) {
             <span className="flex items-center gap-1.5 font-semibold">
               <Hospital className="w-3.5 h-3.5 text-slate-400" /> {s.nom}
             </span>
+            {/* Absente des candidatures déposées avant l'ajout de ce champ. */}
+            {s.categorie && <span className="text-slate-500 dark:text-slate-400">{libelleCategorie(t, s.categorie, c.pays)}</span>}
             {s.tel && <span className="flex items-center gap-1 text-slate-500 dark:text-slate-400"><Phone className="w-3.5 h-3.5" /> {s.tel}</span>}
             {s.email && <span className="flex items-center gap-1 text-slate-500 dark:text-slate-400"><Mail className="w-3.5 h-3.5" /> {s.email}</span>}
           </div>
