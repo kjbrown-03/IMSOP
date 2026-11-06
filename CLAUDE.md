@@ -8,6 +8,14 @@ La langue de travail est le **français** : code, commentaires, messages de
 commit, échanges. Les identifiants techniques existants restent en anglais là
 où ils le sont déjà — on ne renomme pas pour renommer.
 
+Les notes accumulées au fil des sessions sont dans **`docs/memoire-projet/`** :
+décisions de produit, pièges déjà payés, raisons derrière des choix qui
+paraîtraient arbitraires. Elles ne sont pas chargées automatiquement — à lire
+quand une question précise se pose.
+
+Cinq fiches de sécurité en sont volontairement absentes, ce dépôt étant public.
+Elles restent sur la machine de l'auteur.
+
 ---
 
 ## Les deux offres, à ne pas confondre
