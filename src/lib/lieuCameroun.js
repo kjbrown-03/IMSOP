@@ -12,12 +12,54 @@ export function libelleLieu({ arrondissement, departement, region, ville } = {})
   return departement || ville || region || ''
 }
 
-function distanceKm(a, b) {
+export function distanceKm(a, b) {
   const rad = (x) => (x * Math.PI) / 180
   const dLat = rad(b.lat - a.lat)
   const dLng = rad(b.lng - a.lng)
   const h = Math.sin(dLat / 2) ** 2 + Math.cos(rad(a.lat)) * Math.cos(rad(b.lat)) * Math.sin(dLng / 2) ** 2
   return 2 * 6371 * Math.asin(Math.sqrt(h))
+}
+
+/**
+ * Point d'un lieu : l'arrondissement s'il est connu, sinon le centre du
+ * département. Sert à estimer une distance, jamais à guider : le chemin réel,
+ * c'est l'application de carte qui le donne.
+ */
+export function pointDe(regions, { arrondissement, departement } = {}) {
+  for (const r of regions || []) {
+    for (const d of r.departements) {
+      if (arrondissement) {
+        const a = d.arrondissements.find((x) => x.nom === arrondissement)
+        if (a) return { lat: a.lat, lng: a.lng }
+      }
+      if (!arrondissement && departement && d.nom === departement) {
+        const pts = d.arrondissements
+        return {
+          lat: pts.reduce((s, x) => s + x.lat, 0) / pts.length,
+          lng: pts.reduce((s, x) => s + x.lng, 0) / pts.length,
+        }
+      }
+    }
+  }
+  return null
+}
+
+// La position partagée par le patient est gardée dans CE navigateur, le temps
+// de l'onglet, pour afficher sur les résultats la distance qui le sépare de
+// chaque praticien. Elle n'est jamais envoyée au serveur.
+const CLE_POSITION = 'imsop.annuaire.position'
+
+export function memoriserPosition(lat, lng) {
+  try { sessionStorage.setItem(CLE_POSITION, JSON.stringify({ lat, lng })) } catch { /* stockage indisponible */ }
+}
+
+export function lirePosition() {
+  try {
+    const p = JSON.parse(sessionStorage.getItem(CLE_POSITION) || 'null')
+    return p && Number.isFinite(p.lat) && Number.isFinite(p.lng) ? p : null
+  } catch {
+    return null
+  }
 }
 
 // Au-delà, la personne n'est vraisemblablement pas au Cameroun : mieux vaut ne

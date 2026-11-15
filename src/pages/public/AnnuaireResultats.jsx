@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { AlertTriangle, ArrowLeft, Award, Building2, Leaf, Loader2, Lock, LockOpen, Mail, MapPin, MessageCircle, Phone, Stethoscope } from 'lucide-react'
+import { AlertTriangle, ArrowLeft, Award, Building2, Leaf, Loader2, Lock, LockOpen, Mail, MapPin, MessageCircle, Navigation, Phone, Stethoscope } from 'lucide-react'
 import Navbar from '../../components/layout/Navbar'
 import { useAuthStore } from '../../store/useAuthStore'
 import { lireSession, roleActif, definirRoleActif } from '../../lib/session'
 import { api } from '../../lib/api'
-import { libelleLieu } from '../../lib/lieuCameroun'
+import { distanceKm, libelleLieu, lirePosition, pointDe } from '../../lib/lieuCameroun'
 
 const ATTENTE_PAIEMENT_MS = 3000
 const ATTENTE_PAIEMENT_MAX_MS = 3 * 60 * 1000
@@ -31,7 +31,7 @@ function Specialites({ cles, t, tradi }) {
 // Avant paiement : ce que l'API rend est déjà sans nom ni contact. Le flou ici
 // n'est qu'une mise en scène de cette absence - il ne cache rien qui soit
 // réellement transmis au navigateur.
-function FicheFloutee({ fiche, t, tradi, onChoisir, choixEnCours }) {
+function FicheFloutee({ fiche, t, tradi, onChoisir, choixEnCours, distance }) {
   return (
     <article className="relative rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5 overflow-hidden">
       <div className="flex items-start gap-4">
@@ -43,6 +43,7 @@ function FicheFloutee({ fiche, t, tradi, onChoisir, choixEnCours }) {
             <MapPin className="w-3.5 h-3.5" /> {libelleLieu(fiche) || t('annuaire.resultats.villeInconnue')}
             <span className="inline-block h-3 w-20 rounded bg-[var(--color-surface-container-high)] blur-[3px] ml-1" aria-hidden="true" />
           </p>
+          <Distance distance={distance} t={t} />
           <Experience fiche={fiche} t={t} />
           <div className="flex gap-3 mt-1">
             <span className="inline-block h-3 w-28 rounded bg-[var(--color-surface-container-high)] blur-[3px]" aria-hidden="true" />
@@ -101,22 +102,42 @@ function Experience({ fiche, t }) {
  * que le medecin a saisi, et les applications de carte savent la resoudre.
  */
 function LienCarte({ fiche, t }) {
-  const morceaux = [fiche.adresse, fiche.etablissement, fiche.quartier, fiche.ville || fiche.arrondissement, fiche.pays]
-    .filter(Boolean)
-  // Sans adresse saisie, on ne propose rien : un lien vers « Douala » tout court
-  // enverrait le patient au centre-ville, ce qui est pire que pas de lien.
-  if (!fiche.adresse) return null
+  // L'adresse du cabinet quand le praticien l'a saisie ; sinon sa localité, son
+  // arrondissement et son département — c'est tout ce que la cartographie des
+  // tradipraticiens donne, et c'est assez pour que l'application de carte
+  // trace un itinéraire et en dise la longueur.
+  const pays = fiche.pays ? t(`annuaire.pays.${fiche.pays}`, { defaultValue: fiche.pays }) : null
+  const morceaux = fiche.adresse
+    ? [fiche.adresse, fiche.etablissement, fiche.quartier, fiche.ville || fiche.arrondissement, pays]
+    : [fiche.quartier, fiche.arrondissement || fiche.ville, fiche.departement, pays]
+  const utiles = morceaux.filter(Boolean)
+  // Le pays seul enverrait le patient au centre du pays : pas de lien.
+  if (utiles.length < 2) return null
 
-  const requete = encodeURIComponent(morceaux.join(', '))
+  // `dir` plutôt que `search` : la carte s'ouvre directement sur l'itinéraire
+  // depuis la position du téléphone, avec la distance et la durée du trajet.
+  const destination = encodeURIComponent(utiles.join(', '))
   return (
     <a
-      href={`https://www.google.com/maps/search/?api=1&query=${requete}`}
+      href={`https://www.google.com/maps/dir/?api=1&destination=${destination}`}
       target="_blank"
       rel="noreferrer"
       className="inline-flex items-center gap-1.5 rounded-full border border-[var(--color-border)] px-4 py-2 text-sm font-semibold hover:bg-[var(--color-surface-container-low)]"
     >
-      <MapPin className="w-4 h-4" /> {t('annuaire.resultats.voirCarte')}
+      <Navigation className="w-4 h-4" /> {t('annuaire.resultats.itineraire')}
     </a>
+  )
+}
+
+function Distance({ distance, t }) {
+  if (!distance) return null
+  return (
+    <p className="text-sm font-semibold text-[var(--color-primary)] flex items-center gap-1.5">
+      <Navigation className="w-3.5 h-3.5 shrink-0" />
+      {distance.memeArrondissement
+        ? t('annuaire.resultats.distanceMemeArrondissement')
+        : t(distance.depuisPosition ? 'annuaire.resultats.distanceVous' : 'annuaire.resultats.distanceLieu', { km: distance.km, lieu: distance.lieu })}
+    </p>
   )
 }
 
@@ -154,7 +175,7 @@ function urlWhatsApp(fiche, t) {
   return `https://wa.me/${numero}?text=${texte}`
 }
 
-function FicheComplete({ fiche, t, onContacter, tradi }) {
+function FicheComplete({ fiche, t, onContacter, tradi, distance }) {
   const whatsappUrl = urlWhatsApp(fiche, t)
 
   function contactAuClic(event, lien) {
@@ -176,6 +197,7 @@ function FicheComplete({ fiche, t, onContacter, tradi }) {
             <MapPin className="w-3.5 h-3.5 shrink-0" />
             {[t(`annuaire.pays.${fiche.pays}`, { defaultValue: fiche.pays }), libelleLieu(fiche), fiche.quartier].filter(Boolean).join(' · ')}
           </p>
+          <Distance distance={distance} t={t} />
           {fiche.etablissement && (
             <p className="text-sm text-[var(--color-text-secondary)] flex items-center gap-1.5">
               <Building2 className="w-3.5 h-3.5 shrink-0" /> {fiche.etablissement}
@@ -413,6 +435,31 @@ export default function AnnuaireResultats() {
 
   const tarif = recherche?.tarif
 
+  // Distance indicative à chaque praticien. Depuis la position du téléphone si
+  // le patient l'a partagée (gardée dans ce navigateur seulement), sinon depuis
+  // le lieu choisi dans le formulaire. Calculée entre centres d'arrondissement :
+  // le trajet réel, c'est le bouton « Itinéraire » qui le donne.
+  const [regions, setRegions] = useState([])
+  useEffect(() => {
+    api.get('/annuaire/referentiels').then(({ data }) => setRegions(data.decoupage?.cm ?? [])).catch(() => {})
+  }, [])
+  const origine = useMemo(() => {
+    if (recherche?.pays !== 'cm') return null
+    const position = lirePosition()
+    if (position) return { ...position, depuisPosition: true }
+    const point = pointDe(regions, recherche)
+    return point ? { ...point, depuisPosition: false, lieu: libelleLieu(recherche) } : null
+  }, [regions, recherche])
+  function distanceVers(fiche) {
+    if (!origine) return null
+    if (!origine.depuisPosition && recherche.arrondissement && fiche.arrondissement === recherche.arrondissement) {
+      return { memeArrondissement: true }
+    }
+    const point = pointDe(regions, fiche)
+    if (!point) return null
+    return { km: Math.max(1, Math.round(distanceKm(origine, point))), depuisPosition: origine.depuisPosition, lieu: origine.lieu }
+  }
+
   return (
     <div className="bg-[var(--color-bg)] text-[var(--color-text-main)] antialiased font-body-md min-h-screen transition-colors duration-300">
       <Navbar />
@@ -550,7 +597,7 @@ export default function AnnuaireResultats() {
               <div className="grid grid-cols-1 gap-4">
                 {recherche.resultats.map((fiche) =>
                   recherche.contactsChoisis.includes(fiche.id)
-                    ? <FicheComplete key={fiche.id} fiche={fiche} t={t} tradi={recherche.typePratique === 'TRADITIONNEL'} />
+                    ? <FicheComplete key={fiche.id} fiche={fiche} t={t} tradi={recherche.typePratique === 'TRADITIONNEL'} distance={distanceVers(fiche)} />
                     : (
                       <FicheFloutee
                         key={fiche.id}
@@ -559,6 +606,7 @@ export default function AnnuaireResultats() {
                         tradi={recherche.typePratique === 'TRADITIONNEL'}
                         onChoisir={recherche.contactsDisponibles > 0 ? choisir : null}
                         choixEnCours={contactEnCours}
+                        distance={distanceVers(fiche)}
                       />
                     ),
                 )}
