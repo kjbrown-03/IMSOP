@@ -1560,7 +1560,7 @@
     "choix": {
       "eyebrow": "Nearest doctor (specialist/GP) or traditional practitioner",
       "titre": "Which practitioner are you looking for?",
-      "intro": "Both practices exist near you. Choose the one you wish to consult: the next search will only offer practitioners from the identified setting.",
+      "intro": "Both practices exist near you. Choose the one you wish to consult: the next search will only offer practitioners from the declared setting.",
       "CONVENTIONNEL": {
         "titre": "Conventional medicine",
         "description": "A qualified doctor registered with the medical council of their country of practice: general practitioner or specialist, in a surgery, clinic or hospital.",

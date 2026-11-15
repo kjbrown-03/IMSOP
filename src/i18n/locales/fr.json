@@ -1560,7 +1560,7 @@
     "choix": {
       "eyebrow": "Médecin (spécialiste/généraliste) ou tradipraticien le plus proche",
       "titre": "Quel praticien cherchez-vous ?",
-      "intro": "Les deux pratiques existent près de chez vous. Choisissez celle que vous souhaitez consulter : la recherche suivante ne vous proposera que des praticiens de l'environnement identifié.",
+      "intro": "Les deux pratiques existent près de chez vous. Choisissez celle que vous souhaitez consulter : la recherche suivante ne vous proposera que des praticiens de l'environnement déclaré.",
       "CONVENTIONNEL": {
         "titre": "Médecine conventionnelle",
         "description": "Un médecin diplômé, inscrit à l'ordre de son pays d'exercice : généraliste ou spécialiste, en cabinet, en clinique ou à l'hôpital.",
