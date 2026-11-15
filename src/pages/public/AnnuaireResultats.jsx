@@ -410,7 +410,6 @@ export default function AnnuaireResultats() {
       setContactEnCours(false)
     }
   }
-  }
 
   const tarif = recherche?.tarif
 
