@@ -429,7 +429,10 @@ model RechercheAnnuaire {
   // Le patient choisit conventionnel ou traditionnel AVANT de decrire ses
   // symptomes : les deux ne se melangent pas dans une liste de resultats.
   typePratique TypePratique            @default(CONVENTIONNEL)
-  pays         String
+  // Pays où le patient cherche un praticien. `paysResidence` est celui où il
+  // vit : un patient du Gabon peut consulter au Cameroun.
+  pays           String
+  paysResidence  String?
   ville        String?
   region         String?
   departement    String?

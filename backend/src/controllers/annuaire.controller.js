@@ -112,6 +112,7 @@ function serialiser(recherche) {
     specialites: recherche.specialites,
     typePratique: recherche.typePratique,
     pays: recherche.pays,
+    paysResidence: recherche.paysResidence,
     ville: recherche.ville,
     region: recherche.region,
     departement: recherche.departement,
@@ -159,6 +160,7 @@ async function referentiels(req, res) {
 
 async function rechercher(req, res) {
   const { symptomes, pays, ville, typePratique } = req.body
+  const paysResidence = req.body.paysResidence || null
   // Le découpage n'existe que pour le Cameroun : ailleurs on l'ignore plutôt
   // que d'enregistrer une région qui ne veut rien dire.
   const lieu = pays === 'cm'
@@ -185,7 +187,7 @@ async function rechercher(req, res) {
   // appeler les secours.
   if (urgence) {
     const recherche = await prisma.rechercheAnnuaire.create({
-      data: { userId: req.userId ?? null, symptomes, specialites, typePratique, pays, ville: ville || null, ...lieu, urgence: true },
+      data: { userId: req.userId ?? null, symptomes, specialites, typePratique, pays, paysResidence, ville: ville || null, ...lieu, urgence: true },
       include: INCLUDE_RESULTATS,
     })
     await logAction({ userId: req.userId, action: 'ANNUAIRE_URGENCE_DETECTEE', entityType: 'RechercheAnnuaire', entityId: recherche.id, ipAddress: req.ip })
@@ -239,6 +241,7 @@ async function rechercher(req, res) {
       specialites,
       typePratique,
       pays,
+      paysResidence,
       ville: ville || null,
       ...lieu,
       resultats: { create: classes },
@@ -251,7 +254,7 @@ async function rechercher(req, res) {
     action: 'ANNUAIRE_RECHERCHE',
     entityType: 'RechercheAnnuaire',
     entityId: recherche.id,
-    metadata: { pays, ville: ville || null, ...lieu, specialites, typePratique, nombre: classes.length },
+    metadata: { pays, paysResidence, ville: ville || null, ...lieu, specialites, typePratique, nombre: classes.length },
     ipAddress: req.ip,
   })
 

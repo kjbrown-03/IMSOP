@@ -7,6 +7,8 @@ const rechercher = {
   body: z.object({
     symptomes: z.string().trim().min(10, 'Décrivez vos symptômes en quelques mots').max(2000),
     pays: z.enum(CODES_PAYS),
+    // Où vit le patient ; `pays` est celui où il veut consulter.
+    paysResidence: z.enum(CODES_PAYS).optional(),
     ville: z.string().trim().max(100).optional(),
     // Cameroun seulement ; la cohérence entre niveaux se vérifie dans le
     // contrôleur, contre le découpage (lib/cemac.js).

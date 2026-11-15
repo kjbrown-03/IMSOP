@@ -17,8 +17,14 @@ import { lieuLePlusProche, memoriserPosition } from '../../lib/lieuCameroun'
  * Avec `geolocalisation`, un bouton demande la position au navigateur et
  * remplit les listes. La position ne quitte pas le téléphone : seul le nom de
  * l'arrondissement part avec la recherche (voir lieuLePlusProche).
+ *
+ * Avec `residence` (formulaire du patient), on sépare le pays où il VIT du pays
+ * où il veut CONSULTER : un patient de Libreville peut chercher un praticien
+ * au Cameroun. La destination ne propose que les pays où la mise en relation
+ * est ouverte, puisque c'est là qu'on sait encaisser. `valeur.paysResidence`
+ * porte la résidence, `valeur.pays` la destination.
  */
-export default function ChoixLieu({ referentiels, valeur, onChange, classeChamp, classeLibelle, geolocalisation = false, requis = false }) {
+export default function ChoixLieu({ referentiels, valeur, onChange, classeChamp, classeLibelle, geolocalisation = false, requis = false, residence = false }) {
   const { t } = useTranslation()
   const [geo, setGeo] = useState({ etat: 'repos' })
 
@@ -35,10 +41,20 @@ export default function ChoixLieu({ referentiels, valeur, onChange, classeChamp,
     [departements, valeur.departement],
   )
   const villes = pays.find((p) => p.code === valeur.pays)?.villes ?? []
+  const destinations = pays.filter((p) => p.ouvert)
+  // Qui vit au Cameroun cherche au Cameroun : inutile de lui demander deux fois.
+  const demanderDestination = residence && valeur.paysResidence && valeur.paysResidence !== 'cm'
 
   const VIDE_CM = { region: '', departement: '', arrondissement: '' }
 
   function changer(champ, v) {
+    if (champ === 'paysResidence') {
+      // Résidence au Cameroun : la destination suit. Ailleurs, on garde la
+      // destination déjà choisie, ou la première ouverte.
+      const destination = v === 'cm' ? 'cm' : (destinations.some((p) => p.code === valeur.pays) ? valeur.pays : destinations[0]?.code || '')
+      if (destination === valeur.pays) return onChange({ ...valeur, paysResidence: v })
+      return onChange({ ...valeur, paysResidence: v, pays: destination, ville: '', ...VIDE_CM })
+    }
     if (champ === 'pays') return onChange({ ...valeur, pays: v, ville: '', ...VIDE_CM })
     if (champ === 'region') return onChange({ ...valeur, region: v, departement: '', arrondissement: '' })
     if (champ === 'departement') return onChange({ ...valeur, departement: v, arrondissement: '' })
@@ -53,7 +69,7 @@ export default function ChoixLieu({ referentiels, valeur, onChange, classeChamp,
         const lieu = lieuLePlusProche(regions, coords.latitude, coords.longitude)
         if (!lieu) return setGeo({ etat: 'erreur', message: t('annuaire.lieu.geoHorsCameroun') })
         memoriserPosition(coords.latitude, coords.longitude)
-        onChange({ ...valeur, pays: 'cm', ville: '', ...lieu })
+        onChange({ ...valeur, ...(residence ? { paysResidence: 'cm' } : {}), pays: 'cm', ville: '', ...lieu })
         setGeo({ etat: 'ok' })
       },
       (err) => setGeo({
@@ -93,17 +109,46 @@ export default function ChoixLieu({ referentiels, valeur, onChange, classeChamp,
       )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="flex flex-col gap-2">
-          <span className={libelle}>{t('annuaire.lieu.pays')}</span>
-          <ListeDeroulante
-            {...commun}
-            ariaLabel={t('annuaire.lieu.pays')}
-            value={valeur.pays}
-            onChange={(v) => changer('pays', v)}
-            options={pays.map((p) => ({ valeur: p.code, label: p.nom }))}
-            disabled={!referentiels}
-          />
-        </div>
+        {residence ? (
+          <>
+            <div className="flex flex-col gap-2">
+              <span className={libelle}>{t('annuaire.lieu.paysResidence')}</span>
+              <ListeDeroulante
+                {...commun}
+                ariaLabel={t('annuaire.lieu.paysResidence')}
+                value={valeur.paysResidence}
+                onChange={(v) => changer('paysResidence', v)}
+                options={pays.map((p) => ({ valeur: p.code, label: p.nom }))}
+                disabled={!referentiels}
+              />
+            </div>
+            {demanderDestination && (
+              <div className="flex flex-col gap-2">
+                <span className={libelle}>{t('annuaire.lieu.paysDestination')}</span>
+                <ListeDeroulante
+                  {...commun}
+                  ariaLabel={t('annuaire.lieu.paysDestination')}
+                  value={valeur.pays}
+                  onChange={(v) => changer('pays', v)}
+                  options={destinations.map((p) => ({ valeur: p.code, label: p.nom }))}
+                />
+                <span className="text-xs text-[var(--color-text-secondary)]">{t('annuaire.lieu.paysDestinationAide')}</span>
+              </div>
+            )}
+          </>
+        ) : (
+          <div className="flex flex-col gap-2">
+            <span className={libelle}>{t('annuaire.lieu.paysExercice')}</span>
+            <ListeDeroulante
+              {...commun}
+              ariaLabel={t('annuaire.lieu.paysExercice')}
+              value={valeur.pays}
+              onChange={(v) => changer('pays', v)}
+              options={pays.map((p) => ({ valeur: p.code, label: p.nom }))}
+              disabled={!referentiels}
+            />
+          </div>
+        )}
 
         {auCameroun ? (
           <>

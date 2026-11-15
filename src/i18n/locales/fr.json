@@ -1526,6 +1526,10 @@
     },
     "lieu": {
       "pays": "Pays / Résidence",
+      "paysResidence": "Pays de résidence",
+      "paysDestination": "Pays de destination",
+      "paysDestinationAide": "Le pays où vous souhaitez consulter. La mise en relation est ouverte au Cameroun pour l'instant.",
+      "paysExercice": "Pays d'exercice",
       "region": "Région",
       "departement": "Département",
       "arrondissement": "Arrondissement",

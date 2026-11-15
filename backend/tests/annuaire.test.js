@@ -364,6 +364,16 @@ describe('Annuaire — découpage du Cameroun et proximité', () => {
     assert.ok(douala.medecin.id)
   })
 
+  test('un patient du Gabon peut chercher un praticien au Cameroun', async () => {
+    await medecinVisible({ specialites: ['dermatologie'] })
+    const res = await api().post('/api/annuaire/recherches')
+      .send({ symptomes: SYMPTOMES_DERMATO, paysResidence: 'ga', pays: 'cm', region: 'Littoral', departement: 'Wouri' })
+      .expect(201)
+    assert.equal(res.body.paysResidence, 'ga')
+    assert.equal(res.body.pays, 'cm')
+    assert.equal(res.body.nombre, 1)
+  })
+
   test('hors Cameroun, un découpage envoyé est ignoré plutôt qu\'enregistré', async () => {
     const ancien = [...env.annuaire.paysOuverts]
     env.annuaire.paysOuverts.push('ga')

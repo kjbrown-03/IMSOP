@@ -1526,6 +1526,10 @@
     },
     "lieu": {
       "pays": "Country / Residence",
+      "paysResidence": "Country of residence",
+      "paysDestination": "Destination country",
+      "paysDestinationAide": "The country where you wish to consult. Connections are open in Cameroon for now.",
+      "paysExercice": "Country of practice",
       "region": "Region",
       "departement": "Division",
       "arrondissement": "Subdivision",

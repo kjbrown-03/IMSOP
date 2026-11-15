@@ -38,7 +38,7 @@ export default function AnnuaireRecherche({ typePratique = 'CONVENTIONNEL' }) {
 
   const [referentiels, setReferentiels] = useState(null)
   const [symptomes, setSymptomes] = useState('')
-  const [lieu, setLieu] = useState({ pays: 'cm', ville: '', region: '', departement: '', arrondissement: '' })
+  const [lieu, setLieu] = useState({ paysResidence: 'cm', pays: 'cm', ville: '', region: '', departement: '', arrondissement: '' })
   const [envoi, setEnvoi] = useState(false)
   const [erreur, setErreur] = useState(null)
 
@@ -46,11 +46,11 @@ export default function AnnuaireRecherche({ typePratique = 'CONVENTIONNEL' }) {
     api.get('/annuaire/referentiels').then(({ data }) => setReferentiels(data)).catch(() => setReferentiels({ pays: [] }))
   }, [])
 
-  // Toute la zone CEMAC est proposée, mais la mise en relation ne se paie
-  // aujourd'hui qu'au Cameroun. Ailleurs on le dit, et on n'affiche pas un
-  // bouton de recherche qui aboutirait à un paiement impossible.
+  // La destination ne propose que les pays ouverts ; si par extraordinaire elle
+  // n'en était pas un (aucun pays ouvert), on n'affiche pas un bouton qui
+  // aboutirait à un paiement impossible.
   const paysChoisi = referentiels?.pays.find((p) => p.code === lieu.pays)
-  const paysFerme = Boolean(paysChoisi) && !paysChoisi.ouvert
+  const paysFerme = !paysChoisi?.ouvert && Boolean(referentiels?.pays?.length)
 
   const SYMPTOMES_MIN = 10
   const tropCourt = symptomes.trim().length > 0 && symptomes.trim().length < SYMPTOMES_MIN
@@ -76,6 +76,7 @@ export default function AnnuaireRecherche({ typePratique = 'CONVENTIONNEL' }) {
       const { data } = await api.post('/annuaire/recherches', {
         symptomes: symptomes.trim(),
         pays: lieu.pays,
+        paysResidence: lieu.paysResidence,
         typePratique,
         ...(lieu.pays === 'cm'
           ? Object.fromEntries(['region', 'departement', 'arrondissement'].filter((k) => lieu[k]).map((k) => [k, lieu[k]]))
@@ -151,12 +152,12 @@ export default function AnnuaireRecherche({ typePratique = 'CONVENTIONNEL' }) {
               }
             />
 
-            <ChoixLieu referentiels={referentiels} valeur={lieu} onChange={setLieu} classeChamp={CHAMP} geolocalisation />
+            <ChoixLieu referentiels={referentiels} valeur={lieu} onChange={setLieu} classeChamp={CHAMP} geolocalisation residence />
 
             {paysFerme && (
               <p className="flex items-start gap-2 rounded-xl bg-amber-50 dark:bg-amber-950/30 text-amber-800 dark:text-amber-200 text-sm px-4 py-3">
                 <Info className="w-4 h-4 mt-0.5 shrink-0" />
-                {t('annuaire.lieu.paysFerme', { pays: paysChoisi.nom })}
+                {t('annuaire.lieu.paysFerme', { pays: paysChoisi?.nom || lieu.pays })}
               </p>
             )}
 
