@@ -54,8 +54,8 @@
       "badgeTrust": "CONFIANCE MONDIALE",
       "badgeSecure": "SÉCURISÉ & CHIFFRÉ",
       "processEyebrow": "Comment ça marche",
-      "processTitle": "Dix étapes, trois moments simples",
-      "processSub": "Votre médecin reste au centre du parcours. IMSOP organise l'accès à une expertise complémentaire lorsque c'est médicalement pertinent.",
+      "processTitle": "Deux services, chacun en trois temps",
+      "processSub": "Trouvez le médecin ou le tradipraticien le plus proche de chez vous, ou faites étudier votre dossier par un spécialiste. Dans les deux cas, IMSOP vous met en relation : votre médecin reste au centre du parcours.",
       "phase1Label": "1 · Votre dossier",
       "phase2Label": "2 · L'expertise",
       "phase3Label": "3 · Votre réponse",
@@ -105,7 +105,31 @@
       "testimonial4Meta": "Bafoussam · Neurologie",
       "testimonial5Quote": "Recevoir un avis extérieur documenté m'a permis d'expliquer plus sereinement les options à ma patiente.",
       "testimonial5Meta": "Médecin traitant · Yaoundé",
-      "heroSecondaryCta": "Médecin (spécialiste/généraliste) le plus proche"
+      "heroSecondaryCta": "Médecin Spécialiste / Tradipraticien le plus proche",
+      "heroNetworkOrdres": "Un réseau de spécialistes et de tradipraticiens reconnus par l'État, appartenant à l'Ordre des médecins et à l'Ordre des tradipraticiens.",
+      "proximiteTitre": "Trouver le médecin ou le tradipraticien le plus proche",
+      "proximiteNote": "La recherche est gratuite : vous ne payez la mise en relation que si un praticien peut vous recevoir. Les deux médecines ne se mélangent jamais dans une même liste. IMSOP ne prend pas de rendez-vous et ne pose aucun diagnostic ; en cas d'urgence, appelez les secours.",
+      "avisTitre": "Demander un deuxième avis médical",
+      "proximite": {
+        "medecin": {
+          "titre": "Médecin spécialiste / généraliste",
+          "etape1Titre": "Décrivez vos symptômes",
+          "etape1Texte": "Choisissez la médecine conventionnelle, puis dites ce qui ne va pas, par écrit ou à voix haute. Nous en déduisons la ou les spécialités concernées.",
+          "etape2Titre": "Dites où vous êtes",
+          "etape2Texte": "Activez votre localisation, ou choisissez votre région, votre département et votre arrondissement. Les médecins sont classés du plus proche au plus éloigné.",
+          "etape3Titre": "Soyez mis en relation",
+          "etape3Texte": "Vous payez la mise en relation et recevez le nom, le téléphone et l'adresse des médecins retenus, pour les contacter directement."
+        },
+        "tradi": {
+          "titre": "Tradipraticien",
+          "etape1Titre": "Dites ce que vous ressentez",
+          "etape1Texte": "Choisissez la médecine traditionnelle, puis décrivez votre mal avec vos mots, par écrit ou à voix haute.",
+          "etape2Titre": "Dites où vous êtes",
+          "etape2Texte": "Activez votre localisation, ou choisissez votre région, votre département et votre arrondissement. Nous cherchons les tradipraticiens retenus par le comité scientifique près de chez vous.",
+          "etape3Titre": "Soyez mis en relation",
+          "etape3Texte": "Vous payez la mise en relation et recevez les coordonnées des tradipraticiens retenus, pour les contacter directement."
+        }
+      }
     },
     "footer": {
       "tagline": "International Medical Second Opinion Platform. Programme africain de deuxième avis médical et de télé-expertise médicale internationale. Pays pilote : Cameroun.",
@@ -1427,7 +1451,7 @@
       "intro": "Décrivez ce que vous ressentez : nous vous mettons en relation avec les médecins inscrits et vérifiés de votre zone qui peuvent vous recevoir.",
       "symptomes": "Vos symptômes",
       "symptomesPlaceholder": "Ex. : des boutons qui grattent sur les bras depuis une semaine, sans fièvre",
-      "pays": "Pays",
+      "pays": "Pays / Résidence",
       "ville": "Ville",
       "optionnel": "facultatif",
       "villeToutes": "Toutes les villes",
@@ -1439,12 +1463,14 @@
       "CONVENTIONNEL": {
         "eyebrow": "Médecine conventionnelle",
         "titre": "Le médecin (spécialiste/généraliste) le plus proche de vous",
-        "intro": "Décrivez vos symptômes en quelques mots. Nous en déduisons la ou les spécialités concernées, puis nous cherchons les médecins les plus proches de chez vous."
+        "intro": "Décrivez vos symptômes en quelques mots. Nous en déduisons la ou les spécialités concernées, puis nous cherchons les médecins les plus proches de chez vous.",
+        "lancer": "Chercher un médecin"
       },
       "TRADITIONNEL": {
         "eyebrow": "Médecine traditionnelle",
         "titre": "Le tradipraticien le plus proche de vous",
-        "intro": "Décrivez ce que vous ressentez, avec vos mots. Nous cherchons parmi les tradipraticiens retenus par le comité scientifique ceux qui exercent près de chez vous."
+        "intro": "Décrivez ce que vous ressentez, avec vos mots. Nous cherchons parmi les tradipraticiens retenus par le comité scientifique ceux qui exercent près de chez vous.",
+        "lancer": "Chercher un tradipraticien"
       }
     },
     "resultats": {
@@ -1455,7 +1481,10 @@
       "titre_one": "{{count}} médecin peut vous prendre en charge",
       "titre_other": "{{count}} médecins peuvent vous prendre en charge",
       "aucun": "Aucun médecin disponible pour cette recherche",
-      "aucunAide": "Aucun médecin inscrit dans cette zone ne couvre ces symptômes pour le moment. Essayez sans préciser de ville, ou revenez plus tard : de nouveaux médecins rejoignent l'annuaire régulièrement. Rien ne vous est facturé.",
+      "aucunTradi": "Aucun tradipraticien disponible pour cette recherche",
+      "titreTradi_one": "{{count}} tradipraticien peut vous recevoir",
+      "titreTradi_other": "{{count}} tradipraticiens peuvent vous recevoir",
+      "aucunAide": "Aucun praticien inscrit ne couvre ces symptômes pour le moment. Revenez plus tard : de nouveaux praticiens rejoignent l'annuaire régulièrement. Rien ne vous est facturé.",
       "villeInconnue": "Ville non renseignée",
       "verrouille": "Coordonnées verrouillées",
       "deblocageTitre": "Être mis en relation avec ces médecins",
@@ -1484,6 +1513,24 @@
       "texte": "Ne cherchez pas de médecin en ligne : appelez immédiatement les services d'urgence ou rendez-vous aux urgences les plus proches.",
       "rappel": "Aucun paiement ne vous est demandé. Cette page n'est pas un avis médical : en cas de doute, considérez qu'il s'agit d'une urgence."
     },
+    "lieu": {
+      "pays": "Pays / Résidence",
+      "region": "Région",
+      "departement": "Département",
+      "arrondissement": "Arrondissement",
+      "taper": "Tapez pour chercher…",
+      "aucun": "Aucun résultat",
+      "regionRequise": "Choisissez au moins votre région : c'est elle qui permet de trouver les praticiens les plus proches de vous.",
+      "paysFerme": "La mise en relation n'est pas encore ouverte dans ce pays ({{pays}}) : le paiement n'y est pas encore disponible. Elle est ouverte au Cameroun.",
+      "geoBouton": "Activer ma localisation",
+      "geoAide": "Pour trouver le praticien le plus proche, autorisez la localisation. Votre position reste sur votre téléphone : elle sert seulement à remplir les listes ci-dessous, et seul le nom de votre arrondissement accompagne la recherche.",
+      "geoOk": "Région, département et arrondissement remplis d'après votre position. Vérifiez-les avant de chercher.",
+      "geoPartiel": "Région et département remplis d'après votre position. Choisissez votre arrondissement.",
+      "geoRefusee": "La localisation a été refusée. Choisissez votre région dans la liste, ou autorisez la localisation dans les réglages du navigateur.",
+      "geoEchec": "Votre position n'a pas pu être obtenue. Choisissez votre région dans la liste.",
+      "geoHorsCameroun": "Votre position semble hors du Cameroun. Choisissez votre pays et votre lieu dans les listes.",
+      "geoIndisponible": "Ce navigateur ne permet pas la localisation. Choisissez votre région dans la liste."
+    },
     "medecin": {
       "titre": "Annuaire « Trouver un médecin »",
       "sousTitre": "Choisissez d'être mis en relation, ou non, avec les patients de la zone CEMAC qui cherchent un médecin près de chez eux.",
@@ -1510,9 +1557,9 @@
       "avisLocalAide": "Un patient dépose son dossier — analyses, imageries, comptes rendus — et vous rédigez un avis écrit, sans le rencontrer. C'est distinct de la consultation : vous engagez votre signature sur un document. Rémunéré par dossier."
     },
     "choix": {
-      "eyebrow": "Médecin (spécialiste/généraliste) le plus proche",
-      "titre": "Quel médecin cherchez-vous ?",
-      "intro": "Les deux pratiques existent près de chez vous. Choisissez celle que vous souhaitez consulter : la recherche suivante ne vous proposera que des médecins de cette voie.",
+      "eyebrow": "Médecin (spécialiste/généraliste) ou tradipraticien le plus proche",
+      "titre": "Quel praticien cherchez-vous ?",
+      "intro": "Les deux pratiques existent près de chez vous. Choisissez celle que vous souhaitez consulter : la recherche suivante ne vous proposera que des praticiens de l'environnement identifié.",
       "CONVENTIONNEL": {
         "titre": "Médecine conventionnelle",
         "description": "Un médecin diplômé, inscrit à l'ordre de son pays d'exercice : généraliste ou spécialiste, en cabinet, en clinique ou à l'hôpital.",

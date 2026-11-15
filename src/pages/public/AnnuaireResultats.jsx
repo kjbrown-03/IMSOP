@@ -6,6 +6,7 @@ import Navbar from '../../components/layout/Navbar'
 import { useAuthStore } from '../../store/useAuthStore'
 import { lireSession, roleActif, definirRoleActif } from '../../lib/session'
 import { api } from '../../lib/api'
+import { libelleLieu } from '../../lib/lieuCameroun'
 
 const ATTENTE_PAIEMENT_MS = 3000
 const ATTENTE_PAIEMENT_MAX_MS = 3 * 60 * 1000
@@ -34,7 +35,7 @@ function FicheFloutee({ fiche, t }) {
           <div className="h-4 w-40 max-w-full rounded bg-[var(--color-surface-container-high)] blur-[3px]" aria-hidden="true" />
           <Specialites cles={fiche.specialites} t={t} />
           <p className="text-sm text-[var(--color-text-secondary)] flex items-center gap-1.5">
-            <MapPin className="w-3.5 h-3.5" /> {fiche.ville || t('annuaire.resultats.villeInconnue')}
+            <MapPin className="w-3.5 h-3.5" /> {libelleLieu(fiche) || t('annuaire.resultats.villeInconnue')}
             <span className="inline-block h-3 w-20 rounded bg-[var(--color-surface-container-high)] blur-[3px] ml-1" aria-hidden="true" />
           </p>
           <Experience fiche={fiche} t={t} />
@@ -84,7 +85,7 @@ function Experience({ fiche, t }) {
  * que le medecin a saisi, et les applications de carte savent la resoudre.
  */
 function LienCarte({ fiche, t }) {
-  const morceaux = [fiche.adresse, fiche.etablissement, fiche.quartier, fiche.ville, fiche.pays]
+  const morceaux = [fiche.adresse, fiche.etablissement, fiche.quartier, fiche.ville || fiche.arrondissement, fiche.pays]
     .filter(Boolean)
   // Sans adresse saisie, on ne propose rien : un lien vers « Douala » tout court
   // enverrait le patient au centre-ville, ce qui est pire que pas de lien.
@@ -157,7 +158,7 @@ function FicheComplete({ fiche, t, onContacter }) {
           <Specialites cles={fiche.toutesSpecialites || fiche.specialites} t={t} />
           <p className="text-sm text-[var(--color-text-secondary)] flex items-center gap-1.5">
             <MapPin className="w-3.5 h-3.5 shrink-0" />
-            {[t(`annuaire.pays.${fiche.pays}`, { defaultValue: fiche.pays }), fiche.ville, fiche.quartier].filter(Boolean).join(' · ')}
+            {[t(`annuaire.pays.${fiche.pays}`, { defaultValue: fiche.pays }), libelleLieu(fiche), fiche.quartier].filter(Boolean).join(' · ')}
           </p>
           {fiche.etablissement && (
             <p className="text-sm text-[var(--color-text-secondary)] flex items-center gap-1.5">
@@ -436,12 +437,12 @@ export default function AnnuaireResultats() {
                 </span>
                 <h1 className="font-headline-md text-headline-md text-[var(--color-text-main)]">
                   {recherche.nombre === 0
-                    ? t('annuaire.resultats.aucun')
-                    : t('annuaire.resultats.titre', { count: recherche.nombre })}
+                    ? t(recherche.typePratique === 'TRADITIONNEL' ? 'annuaire.resultats.aucunTradi' : 'annuaire.resultats.aucun')
+                    : t(recherche.typePratique === 'TRADITIONNEL' ? 'annuaire.resultats.titreTradi' : 'annuaire.resultats.titre', { count: recherche.nombre })}
                 </h1>
                 <p className="text-sm text-[var(--color-text-secondary)] flex items-center gap-1.5">
                   <MapPin className="w-3.5 h-3.5" />
-                  {[t(`annuaire.pays.${recherche.pays}`, { defaultValue: recherche.pays }), recherche.ville].filter(Boolean).join(' · ')}
+                  {[t(`annuaire.pays.${recherche.pays}`, { defaultValue: recherche.pays }), libelleLieu(recherche)].filter(Boolean).join(' · ')}
                   {' — '}
                   {recherche.specialites.map((s) => t(`annuaire.specialites.${s}`)).join(', ')}
                 </p>

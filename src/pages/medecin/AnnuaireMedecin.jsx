@@ -1,9 +1,10 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { CheckCircle2, Eye, EyeOff, FileSignature, Loader2, MapPin, ShieldAlert } from 'lucide-react'
 import MedecinShell from '../../components/layout/MedecinShell'
 import { api } from '../../lib/api'
 import ReglageNotifications from '../../components/ui/ReglageNotifications'
+import ChoixLieu from '../../components/annuaire/ChoixLieu'
 
 const CHAMP =
   'w-full rounded-lg border border-slate-300 dark:border-neutral-700 bg-transparent px-3 py-2 text-slate-900 dark:text-white'
@@ -38,6 +39,9 @@ export default function AnnuaireMedecin() {
           annuaireSpecialites: m.data.annuaireSpecialites || [],
           pays: codes.includes(paysBrut) ? paysBrut : '',
           ville: m.data.ville || '',
+          region: m.data.region || '',
+          departement: m.data.departement || '',
+          arrondissement: m.data.arrondissement || '',
           quartier: m.data.quartier || '',
           avisLocalActif: Boolean(m.data.avisLocalActif),
           annuaireAdresse: m.data.annuaireAdresse || '',
@@ -50,11 +54,6 @@ export default function AnnuaireMedecin() {
       .finally(() => { if (!annule) setChargement(false) })
     return () => { annule = true }
   }, [t])
-
-  const villes = useMemo(
-    () => referentiels?.pays.find((p) => p.code === reglages?.pays)?.villes ?? [],
-    [referentiels, reglages?.pays],
-  )
 
   const habilite = reglages?.verificationStatus === 'VALIDE'
 
@@ -87,7 +86,14 @@ export default function AnnuaireMedecin() {
         annuaireVisible: reglages.annuaireVisible,
         annuaireSpecialites: reglages.annuaireSpecialites,
         ...(reglages.pays ? { pays: reglages.pays } : {}),
-        ville: reglages.ville || null,
+        // Au Cameroun, la ville cède la place au découpage administratif dès
+        // qu'une région est choisie : garder « Douala » à côté de « Mfou »
+        // contredirait l'arrondissement. Sans région, la ville d'une fiche
+        // ancienne reste, faute de mieux : c'est elle qui la classe encore.
+        ville: reglages.pays === 'cm' && reglages.region ? null : reglages.ville || null,
+        ...(reglages.pays === 'cm'
+          ? { region: reglages.region || null, departement: reglages.departement || null, arrondissement: reglages.arrondissement || null }
+          : {}),
         quartier: reglages.quartier || null,
         // Chaine vide = « non renseigne », pas « zero an ».
         avisLocalActif: reglages.avisLocalActif,
@@ -95,7 +101,7 @@ export default function AnnuaireMedecin() {
         annuaireExperience: reglages.annuaireExperience === '' ? null : Number(reglages.annuaireExperience),
         annuairePresentation: reglages.annuairePresentation || null,
       })
-      setReglages((r) => ({ ...r, ...data, pays: data.pays || r.pays, ville: data.ville || '', quartier: data.quartier || '', annuairePresentation: data.annuairePresentation || '', annuaireExperience: data.annuaireExperience ?? '', annuaireAdresse: data.annuaireAdresse || '', avisLocalActif: Boolean(data.avisLocalActif) }))
+      setReglages((r) => ({ ...r, ...data, pays: data.pays || r.pays, ville: data.ville || '', region: data.region || '', departement: data.departement || '', arrondissement: data.arrondissement || '', quartier: data.quartier || '', annuairePresentation: data.annuairePresentation || '', annuaireExperience: data.annuaireExperience ?? '', annuaireAdresse: data.annuaireAdresse || '', avisLocalActif: Boolean(data.avisLocalActif) }))
       setEnregistre(true)
     } catch (err) {
       setErreur(err.response?.data?.message || t('annuaire.medecin.erreurEnregistrement'))
@@ -218,21 +224,17 @@ export default function AnnuaireMedecin() {
 
           <section className="glass-card rounded-2xl p-5 flex flex-col gap-4">
             <h2 className="font-semibold text-slate-900 dark:text-white">{t('annuaire.medecin.localisationTitre')}</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <label className="flex flex-col gap-1.5">
-                <span className="text-xs font-semibold text-slate-600 dark:text-neutral-300">{t('annuaire.recherche.pays')}</span>
-                <select value={reglages.pays} onChange={(e) => modifier('pays', e.target.value)} className={CHAMP}>
-                  <option value="">{t('annuaire.medecin.choisir')}</option>
-                  {referentiels.pays.map((p) => <option key={p.code} value={p.code}>{p.nom}</option>)}
-                </select>
-              </label>
-              <label className="flex flex-col gap-1.5">
-                <span className="text-xs font-semibold text-slate-600 dark:text-neutral-300">{t('annuaire.recherche.ville')}</span>
-                <select value={reglages.ville} onChange={(e) => modifier('ville', e.target.value)} className={CHAMP} disabled={!reglages.pays}>
-                  <option value="">{t('annuaire.medecin.choisir')}</option>
-                  {villes.map((v) => <option key={v} value={v}>{v}</option>)}
-                </select>
-              </label>
+            <ChoixLieu
+              referentiels={referentiels}
+              valeur={reglages}
+              onChange={(lieu) => {
+                setEnregistre(false)
+                setReglages((r) => ({ ...r, ...lieu }))
+              }}
+              classeChamp={CHAMP}
+              classeLibelle="text-xs font-semibold text-slate-600 dark:text-neutral-300"
+            />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <label className="flex flex-col gap-1.5">
                 <span className="text-xs font-semibold text-slate-600 dark:text-neutral-300">{t('annuaire.medecin.quartier')}</span>
                 <input

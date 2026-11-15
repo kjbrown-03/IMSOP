@@ -266,6 +266,77 @@ describe('Annuaire — mise en relation par paiement', () => {
   })
 })
 
+describe('Annuaire — découpage du Cameroun et proximité', () => {
+  beforeEach(viderBase)
+  after(fermerBase)
+
+  test('les référentiels proposent toute la zone CEMAC et disent où le paiement est ouvert', async () => {
+    const res = await api().get('/api/annuaire/referentiels').expect(200)
+    assert.equal(res.body.pays.length, 6, 'le patient doit pouvoir dire où il réside, même hors Cameroun')
+    const ouverts = res.body.pays.filter((p) => p.ouvert).map((p) => p.code)
+    assert.deepEqual(ouverts, env.annuaire.paysOuverts)
+    const regions = res.body.decoupage.cm
+    assert.equal(regions.length, 10)
+    assert.equal(regions.reduce((n, r) => n + r.departements.length, 0), 58)
+    assert.equal(regions.reduce((n, r) => n + r.departements.reduce((m, d) => m + d.arrondissements.length, 0), 0), 360)
+  })
+
+  test('une recherche situee par arrondissement est enregistree avec ses trois niveaux', async () => {
+    await medecinVisible({ specialites: ['dermatologie'] })
+    const res = await api().post('/api/annuaire/recherches')
+      .send({ symptomes: SYMPTOMES_DERMATO, pays: 'cm', region: 'Centre', departement: 'Méfou-et-Afamba', arrondissement: 'Mfou' })
+      .expect(201)
+    assert.equal(res.body.region, 'Centre')
+    assert.equal(res.body.departement, 'Méfou-et-Afamba')
+    assert.equal(res.body.arrondissement, 'Mfou')
+  })
+
+  test('un lieu incoherent est refuse avant tout enregistrement', async () => {
+    // Le Wouri est dans le Littoral : l'accepter sous « Centre » fausserait le classement.
+    await api().post('/api/annuaire/recherches')
+      .send({ symptomes: SYMPTOMES_DERMATO, pays: 'cm', region: 'Centre', departement: 'Wouri' })
+      .expect(400)
+    await api().post('/api/annuaire/recherches')
+      .send({ symptomes: SYMPTOMES_DERMATO, pays: 'cm', region: 'Littoral', departement: 'Wouri', arrondissement: 'Mfou' })
+      .expect(400)
+    assert.equal(await prisma.rechercheAnnuaire.count(), 0)
+  })
+
+  test('le plus proche passe devant, même d\'un autre département', async () => {
+    // Mfou (Méfou-et-Afamba) est à une vingtaine de kilomètres de Yaoundé
+    // (Mfoundi) et à plus de 200 de Douala : la distance doit l'emporter sur
+    // le découpage, et une fiche ancienne (ville seule) rester classable.
+    const douala = await medecinVisible({ specialites: ['dermatologie'], ville: 'Douala' })
+    const yaounde = await medecinVisible({ specialites: ['dermatologie'], ville: null })
+    await prisma.medecinLocal.update({
+      where: { id: yaounde.medecin.id },
+      data: { region: 'Centre', departement: 'Mfoundi', arrondissement: 'Yaoundé IVe' },
+    })
+    const res = await api().post('/api/annuaire/recherches')
+      .send({ symptomes: SYMPTOMES_DERMATO, pays: 'cm', region: 'Centre', departement: 'Méfou-et-Afamba', arrondissement: 'Mfou' })
+      .expect(201)
+    assert.deepEqual(res.body.resultats.map((r) => r.arrondissement ?? r.ville), ['Yaoundé IVe', 'Douala'])
+    assert.ok(res.body.resultats[0].score > res.body.resultats[1].score)
+    assert.equal(res.body.resultats[0].departement, 'Mfoundi', 'le lieu est montré avant paiement, à la finesse de la ville')
+    assert.equal(res.body.resultats[0].quartier, undefined, 'le quartier, lui, reste après paiement')
+    assert.ok(douala.medecin.id)
+  })
+
+  test('hors Cameroun, un découpage envoyé est ignoré plutôt qu\'enregistré', async () => {
+    const ancien = [...env.annuaire.paysOuverts]
+    env.annuaire.paysOuverts.push('ga')
+    try {
+      const res = await api().post('/api/annuaire/recherches')
+        .send({ symptomes: SYMPTOMES_DERMATO, pays: 'ga', ville: 'Libreville', region: 'Centre' })
+        .expect(201)
+      assert.equal(res.body.region, null)
+      assert.equal(res.body.ville, 'Libreville')
+    } finally {
+      env.annuaire.paysOuverts.splice(0, env.annuaire.paysOuverts.length, ...ancien)
+    }
+  })
+})
+
 describe('Annuaire — réglages du médecin', () => {
   beforeEach(viderBase)
   after(fermerBase)
@@ -304,6 +375,26 @@ describe('Annuaire — réglages du médecin', () => {
     const { user } = await f.creerMedecinLocal()
     await api().put('/api/annuaire/medecin/moi').set('Authorization', entete(user))
       .send({ annuaireVisible: true, annuaireSpecialites: ['medecine_generale'], pays: 'ga', ville: 'Douala' }).expect(400)
+  })
+
+  test('le médecin se situe par région, département et arrondissement', async () => {
+    const { user } = await f.creerMedecinLocal()
+    const res = await api().put('/api/annuaire/medecin/moi').set('Authorization', entete(user))
+      .send({ annuaireVisible: true, annuaireSpecialites: ['medecine_generale'], pays: 'cm', ville: null, region: 'Littoral', departement: 'Wouri', arrondissement: 'Douala IIIe' })
+      .expect(200)
+    assert.equal(res.body.arrondissement, 'Douala IIIe')
+    assert.equal(res.body.departement, 'Wouri')
+
+    await api().put('/api/annuaire/medecin/moi').set('Authorization', entete(user))
+      .send({ annuaireVisible: true, annuaireSpecialites: ['medecine_generale'], pays: 'cm', region: 'Ouest', departement: 'Wouri' })
+      .expect(400)
+
+    // Quitter le Cameroun efface un découpage qui n'y aurait plus de sens.
+    const gabon = await api().put('/api/annuaire/medecin/moi').set('Authorization', entete(user))
+      .send({ annuaireVisible: true, annuaireSpecialites: ['medecine_generale'], pays: 'ga', ville: 'Libreville' })
+      .expect(200)
+    assert.equal(gabon.body.region, null)
+    assert.equal(gabon.body.arrondissement, null)
   })
 
   test('un patient ne touche pas aux réglages médecin', async () => {

@@ -346,6 +346,12 @@ model MedecinLocal {
   // Quartier, après pays et ville : « Cameroun · Douala · Logpom ». C'est le
   // niveau où un patient décide s'il peut s'y rendre.
   quartier                String?
+  // Au Cameroun, le lieu d'exercice se dit en région / département /
+  // arrondissement (lib/decoupageCameroun.json) : c'est sur eux que se mesure
+  // la proximité avec le patient. Hors Cameroun, seule `ville` est renseignée.
+  region                  String?
+  departement             String?
+  arrondissement          String?
   // Quelques lignes de présentation, visibles sur la fiche une fois débloquée.
   // Annees d'exercice declarees par le medecin, affichees au patient AVANT le
   // paiement de la mise en relation.
@@ -425,6 +431,9 @@ model RechercheAnnuaire {
   typePratique TypePratique            @default(CONVENTIONNEL)
   pays         String
   ville        String?
+  region         String?
+  departement    String?
+  arrondissement String?
   // Drapeau rouge détecté dans les symptômes : la recherche est enregistrée
   // mais aucune vente n'est proposée, on oriente vers les urgences (§29).
   urgence      Boolean                 @default(false)

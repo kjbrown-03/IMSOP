@@ -38,6 +38,10 @@ export default function ListeDeroulante({
   autrePlaceholder = '',
   videLabel = 'Aucun résultat',
   name,
+  // Les pages publiques n'ont pas les mêmes jetons de couleur que le
+  // formulaire de candidature : elles passent leur propre classe de champ.
+  classeChamp = CHAMP,
+  ariaLabel,
 }) {
   const listeId = useId()
 
@@ -144,7 +148,7 @@ export default function ListeDeroulante({
           name={name}
           required={required}
           disabled={disabled}
-          className={CHAMP}
+          className={classeChamp}
           value={value}
           onChange={(e) => onChange(e.target.value)}
         />
@@ -174,7 +178,9 @@ export default function ListeDeroulante({
           aria-autocomplete="list"
           autoComplete="off"
           disabled={disabled}
-          className={`${CHAMP} pr-10`}
+          aria-label={ariaLabel}
+          placeholder={placeholder || undefined}
+          className={`${classeChamp} pr-10 disabled:opacity-50 disabled:cursor-not-allowed`}
           value={ouvert ? saisie : selection?.label || ''}
           onChange={(e) => {
             setSaisie(e.target.value)

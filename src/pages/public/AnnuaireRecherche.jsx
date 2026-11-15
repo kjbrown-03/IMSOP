@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { ArrowLeft, Loader2, MapPin, Search } from 'lucide-react'
+import { ArrowLeft, Info, Loader2, MapPin, Search } from 'lucide-react'
 import Navbar from '../../components/layout/Navbar'
 import EnregistreurVocal from '../../components/ui/EnregistreurVocal'
 import { api } from '../../lib/api'
+import ChoixLieu from '../../components/annuaire/ChoixLieu'
 
 const CHAMP =
   'w-full rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-[var(--color-text-main)] outline-none focus:border-[var(--color-primary)] transition-colors'
@@ -37,8 +38,7 @@ export default function AnnuaireRecherche({ typePratique = 'CONVENTIONNEL' }) {
 
   const [referentiels, setReferentiels] = useState(null)
   const [symptomes, setSymptomes] = useState('')
-  const [pays, setPays] = useState('cm')
-  const [ville, setVille] = useState('')
+  const [lieu, setLieu] = useState({ pays: 'cm', ville: '', region: '', departement: '', arrondissement: '' })
   const [envoi, setEnvoi] = useState(false)
   const [erreur, setErreur] = useState(null)
 
@@ -46,10 +46,11 @@ export default function AnnuaireRecherche({ typePratique = 'CONVENTIONNEL' }) {
     api.get('/annuaire/referentiels').then(({ data }) => setReferentiels(data)).catch(() => setReferentiels({ pays: [] }))
   }, [])
 
-  const villes = useMemo(() => referentiels?.pays.find((p) => p.code === pays)?.villes ?? [], [referentiels, pays])
-
-  // Changer de pays invalide la ville : « Douala » n'est pas au Gabon.
-  useEffect(() => { setVille('') }, [pays])
+  // Toute la zone CEMAC est proposée, mais la mise en relation ne se paie
+  // aujourd'hui qu'au Cameroun. Ailleurs on le dit, et on n'affiche pas un
+  // bouton de recherche qui aboutirait à un paiement impossible.
+  const paysChoisi = referentiels?.pays.find((p) => p.code === lieu.pays)
+  const paysFerme = Boolean(paysChoisi) && !paysChoisi.ouvert
 
   const SYMPTOMES_MIN = 10
   const tropCourt = symptomes.trim().length > 0 && symptomes.trim().length < SYMPTOMES_MIN
@@ -63,14 +64,22 @@ export default function AnnuaireRecherche({ typePratique = 'CONVENTIONNEL' }) {
       setErreur(t('annuaire.recherche.tropCourt', { min: SYMPTOMES_MIN }))
       return
     }
+    // La région suffit à classer par proximité ; sans elle, « le plus proche »
+    // ne voudrait plus rien dire.
+    if (lieu.pays === 'cm' && !lieu.region) {
+      setErreur(t('annuaire.lieu.regionRequise'))
+      return
+    }
     setEnvoi(true)
     setErreur(null)
     try {
       const { data } = await api.post('/annuaire/recherches', {
         symptomes: symptomes.trim(),
-        pays,
+        pays: lieu.pays,
         typePratique,
-        ...(ville ? { ville } : {}),
+        ...(lieu.pays === 'cm'
+          ? Object.fromEntries(['region', 'departement', 'arrondissement'].filter((k) => lieu[k]).map((k) => [k, lieu[k]]))
+          : lieu.ville ? { ville: lieu.ville } : {}),
       })
       // Retenue localement : la personne n'a peut-être pas de compte, et doit
       // pouvoir retrouver sa recherche après s'être connectée pour payer.
@@ -142,39 +151,29 @@ export default function AnnuaireRecherche({ typePratique = 'CONVENTIONNEL' }) {
               }
             />
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <label className="flex flex-col gap-2">
-                <span className="text-sm font-semibold">{t('annuaire.recherche.pays')}</span>
-                <select value={pays} onChange={(e) => setPays(e.target.value)} className={CHAMP} disabled={!referentiels}>
-                  {(referentiels?.pays ?? []).map((p) => (
-                    <option key={p.code} value={p.code}>{p.nom}</option>
-                  ))}
-                </select>
-              </label>
-              <label className="flex flex-col gap-2">
-                <span className="text-sm font-semibold">
-                  {t('annuaire.recherche.ville')}{' '}
-                  <span className="font-normal text-[var(--color-text-secondary)]">({t('annuaire.recherche.optionnel')})</span>
-                </span>
-                <select value={ville} onChange={(e) => setVille(e.target.value)} className={CHAMP} disabled={!referentiels}>
-                  <option value="">{t('annuaire.recherche.villeToutes')}</option>
-                  {villes.map((v) => <option key={v} value={v}>{v}</option>)}
-                </select>
-              </label>
-            </div>
+            <ChoixLieu referentiels={referentiels} valeur={lieu} onChange={setLieu} classeChamp={CHAMP} geolocalisation />
+
+            {paysFerme && (
+              <p className="flex items-start gap-2 rounded-xl bg-amber-50 dark:bg-amber-950/30 text-amber-800 dark:text-amber-200 text-sm px-4 py-3">
+                <Info className="w-4 h-4 mt-0.5 shrink-0" />
+                {t('annuaire.lieu.paysFerme', { pays: paysChoisi.nom })}
+              </p>
+            )}
 
             {erreur && <p className="text-sm font-semibold text-rose-600">{erreur}</p>}
 
-            <button
-              type="submit"
-              disabled={envoi || symptomes.trim().length === 0}
-              className="self-start inline-flex items-center gap-2 bg-[var(--color-primary)] text-white rounded-full px-7 py-3.5 font-bold text-sm tracking-wide hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {envoi ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
-              {t('annuaire.recherche.lancer')}
-            </button>
+            {!paysFerme && (
+              <button
+                type="submit"
+                disabled={envoi || symptomes.trim().length === 0}
+                className="self-start inline-flex items-center gap-2 bg-[var(--color-primary)] text-white rounded-full px-7 py-3.5 font-bold text-sm tracking-wide hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {envoi ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
+                {t(`${prefixe}.lancer`)}
+              </button>
+            )}
 
-            {referentiels?.tarif && (
+            {referentiels?.tarif && !paysFerme && (
               <p className="text-xs text-[var(--color-text-secondary)] flex items-center gap-1.5">
                 <MapPin className="w-3.5 h-3.5" />
                 {t('annuaire.recherche.tarifNote', {

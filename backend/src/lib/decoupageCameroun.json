@@ -1,0 +1,2171 @@
+{
+ "source": "Institut national de la statistique, Annuaire statistique du Cameroun (2013), via Wikipedia ; coordonnees Wikidata.",
+ "regions": [
+  {
+   "nom": "Adamaoua",
+   "departements": [
+    {
+     "nom": "Djérem",
+     "arrondissements": [
+      {
+       "nom": "Ngaoundal",
+       "lat": 6.4672,
+       "lng": 13.2717
+      },
+      {
+       "nom": "Tibati",
+       "lat": 6.4669,
+       "lng": 12.6158
+      }
+     ]
+    },
+    {
+     "nom": "Faro-et-Déo",
+     "arrondissements": [
+      {
+       "nom": "Galim-Tignère",
+       "lat": 7.0992,
+       "lng": 12.4733
+      },
+      {
+       "nom": "Kontcha",
+       "lat": 7.9733,
+       "lng": 12.2372
+      },
+      {
+       "nom": "Mayo-Baléo",
+       "lat": 7.6622,
+       "lng": 12.3289
+      },
+      {
+       "nom": "Tignère",
+       "lat": 7.3722,
+       "lng": 12.6536
+      }
+     ]
+    },
+    {
+     "nom": "Mayo-Banyo",
+     "arrondissements": [
+      {
+       "nom": "Bankim",
+       "lat": 6.0828,
+       "lng": 11.4875
+      },
+      {
+       "nom": "Banyo",
+       "lat": 6.7481,
+       "lng": 11.8058
+      },
+      {
+       "nom": "Mayo-Darlé",
+       "lat": 6.4697,
+       "lng": 11.5497
+      }
+     ]
+    },
+    {
+     "nom": "Mbéré",
+     "arrondissements": [
+      {
+       "nom": "Dir",
+       "lat": 6.3289,
+       "lng": 13.5375
+      },
+      {
+       "nom": "Djohong",
+       "lat": 6.8367,
+       "lng": 14.6933
+      },
+      {
+       "nom": "Meiganga",
+       "lat": 6.5172,
+       "lng": 14.2947
+      },
+      {
+       "nom": "Ngaoui",
+       "lat": 6.7411,
+       "lng": 14.9531
+      }
+     ]
+    },
+    {
+     "nom": "Vina",
+     "arrondissements": [
+      {
+       "nom": "Belel",
+       "lat": 7.0542,
+       "lng": 14.435
+      },
+      {
+       "nom": "Martap",
+       "lat": 6.9,
+       "lng": 13.05
+      },
+      {
+       "nom": "Mbe",
+       "lat": 7.8606,
+       "lng": 13.595
+      },
+      {
+       "nom": "Ngan-Ha",
+       "lat": 7.4333,
+       "lng": 13.9333
+      },
+      {
+       "nom": "Ngaoundéré Ier",
+       "lat": 7.3214,
+       "lng": 13.5839,
+       "approx": true
+      },
+      {
+       "nom": "Ngaoundéré IIe",
+       "lat": 7.3214,
+       "lng": 13.5839,
+       "approx": true
+      },
+      {
+       "nom": "Ngaoundéré IIIe",
+       "lat": 7.3214,
+       "lng": 13.5839,
+       "approx": true
+      },
+      {
+       "nom": "Nyambaka",
+       "lat": 6.8833,
+       "lng": 14.1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "nom": "Centre",
+   "departements": [
+    {
+     "nom": "Haute-Sanaga",
+     "arrondissements": [
+      {
+       "nom": "Bibey",
+       "lat": 4.8672,
+       "lng": 12.8128
+      },
+      {
+       "nom": "Lembe-Yezoum",
+       "lat": 4.6069,
+       "lng": 12.6706
+      },
+      {
+       "nom": "Mbandjock",
+       "lat": 4.4464,
+       "lng": 11.9053
+      },
+      {
+       "nom": "Minta",
+       "lat": 4.5594,
+       "lng": 12.8311
+      },
+      {
+       "nom": "Nanga-Eboko",
+       "lat": 4.6706,
+       "lng": 12.3731
+      },
+      {
+       "nom": "Nkoteng",
+       "lat": 4.5046,
+       "lng": 12.1184
+      },
+      {
+       "nom": "Nsem",
+       "lat": 4.8919,
+       "lng": 12.9353
+      }
+     ]
+    },
+    {
+     "nom": "Lekié",
+     "arrondissements": [
+      {
+       "nom": "Batchenga",
+       "lat": 4.2833,
+       "lng": 11.65
+      },
+      {
+       "nom": "Ebebda",
+       "lat": 4.3394,
+       "lng": 11.2839
+      },
+      {
+       "nom": "Elig-Mfomo",
+       "lat": 4.16,
+       "lng": 11.3519
+      },
+      {
+       "nom": "Evodoula",
+       "lat": 4.0922,
+       "lng": 11.1992
+      },
+      {
+       "nom": "Lobo",
+       "lat": 3.8947,
+       "lng": 11.2283
+      },
+      {
+       "nom": "Monatélé",
+       "lat": 4.2761,
+       "lng": 11.2631
+      },
+      {
+       "nom": "Obala",
+       "lat": 4.1692,
+       "lng": 11.5358
+      },
+      {
+       "nom": "Okola",
+       "lat": 4.0167,
+       "lng": 11.3833
+      },
+      {
+       "nom": "Sa'a",
+       "lat": 4.3664,
+       "lng": 11.4408
+      }
+     ]
+    },
+    {
+     "nom": "Mbam-et-Inoubou",
+     "arrondissements": [
+      {
+       "nom": "Bafia",
+       "lat": 4.7425,
+       "lng": 11.2247
+      },
+      {
+       "nom": "Bokito",
+       "lat": 4.5744,
+       "lng": 11.1158
+      },
+      {
+       "nom": "Deuk",
+       "lat": 4.9347,
+       "lng": 11.2647
+      },
+      {
+       "nom": "Kiiki",
+       "lat": 4.6667,
+       "lng": 11.1833
+      },
+      {
+       "nom": "Kon-Yambetta",
+       "lat": 4.8333,
+       "lng": 11.0667
+      },
+      {
+       "nom": "Makénéné",
+       "lat": 4.8856,
+       "lng": 10.7947
+      },
+      {
+       "nom": "Ndikiniméki",
+       "lat": 4.7817,
+       "lng": 10.8186
+      },
+      {
+       "nom": "Nitoukou",
+       "lat": 4.6264,
+       "lng": 10.8781
+      },
+      {
+       "nom": "Ombessa",
+       "lat": 4.6028,
+       "lng": 11.2561
+      }
+     ]
+    },
+    {
+     "nom": "Mbam-et-Kim",
+     "arrondissements": [
+      {
+       "nom": "Mbangassina",
+       "lat": 4.5439,
+       "lng": 11.4033
+      },
+      {
+       "nom": "Ngambè-Tikar",
+       "lat": 5.7864,
+       "lng": 11.4936
+      },
+      {
+       "nom": "Ngoro",
+       "lat": 4.95,
+       "lng": 11.3833
+      },
+      {
+       "nom": "Ntui",
+       "lat": 4.4475,
+       "lng": 11.6256
+      },
+      {
+       "nom": "Yoko",
+       "lat": 5.5333,
+       "lng": 12.3167
+      }
+     ]
+    },
+    {
+     "nom": "Méfou-et-Afamba",
+     "arrondissements": [
+      {
+       "nom": "Afanloum",
+       "lat": 4.0067,
+       "lng": 11.9375
+      },
+      {
+       "nom": "Awaé",
+       "lat": 3.9017,
+       "lng": 11.8819
+      },
+      {
+       "nom": "Edzendouan",
+       "lat": 4.2,
+       "lng": 11.75
+      },
+      {
+       "nom": "Esse",
+       "lat": 4.0939,
+       "lng": 11.8842
+      },
+      {
+       "nom": "Mfou",
+       "lat": 3.7186,
+       "lng": 11.6411
+      },
+      {
+       "nom": "Nkolafamba",
+       "lat": 3.8544,
+       "lng": 11.6653
+      },
+      {
+       "nom": "Olanguina",
+       "lat": 3.9559,
+       "lng": 11.9128
+      },
+      {
+       "nom": "Soa",
+       "lat": 3.9781,
+       "lng": 11.5931
+      }
+     ]
+    },
+    {
+     "nom": "Méfou-et-Akono",
+     "arrondissements": [
+      {
+       "nom": "Akono",
+       "lat": 3.5014,
+       "lng": 11.3283
+      },
+      {
+       "nom": "Bikok",
+       "lat": 3.6419,
+       "lng": 11.5325
+      },
+      {
+       "nom": "Mbankomo",
+       "lat": 3.7919,
+       "lng": 11.4036
+      },
+      {
+       "nom": "Ngoumou",
+       "lat": 3.5967,
+       "lng": 11.3056
+      }
+     ]
+    },
+    {
+     "nom": "Mfoundi",
+     "arrondissements": [
+      {
+       "nom": "Yaoundé Ier",
+       "lat": 3.8988,
+       "lng": 11.5236
+      },
+      {
+       "nom": "Yaoundé IIe",
+       "lat": 3.8841,
+       "lng": 11.5041
+      },
+      {
+       "nom": "Yaoundé IIIe",
+       "lat": 3.8427,
+       "lng": 11.5077
+      },
+      {
+       "nom": "Yaoundé IVe",
+       "lat": 3.8499,
+       "lng": 11.5374
+      },
+      {
+       "nom": "Yaoundé Ve",
+       "lat": 3.8946,
+       "lng": 11.5495
+      },
+      {
+       "nom": "Yaoundé VIe",
+       "lat": 3.8441,
+       "lng": 11.4756
+      },
+      {
+       "nom": "Yaoundé VIIe",
+       "lat": 3.8725,
+       "lng": 11.4599
+      }
+     ]
+    },
+    {
+     "nom": "Nyong-et-Kéllé",
+     "arrondissements": [
+      {
+       "nom": "Biyouha",
+       "lat": 3.8297,
+       "lng": 10.7347
+      },
+      {
+       "nom": "Bondjock",
+       "lat": 3.7331,
+       "lng": 11.2094
+      },
+      {
+       "nom": "Bot-Makak",
+       "lat": 3.9969,
+       "lng": 10.9439
+      },
+      {
+       "nom": "Dibang",
+       "lat": 3.9989,
+       "lng": 10.7186
+      },
+      {
+       "nom": "Éséka",
+       "lat": 3.65,
+       "lng": 10.7667
+      },
+      {
+       "nom": "Makak",
+       "lat": 3.5486,
+       "lng": 11.0278
+      },
+      {
+       "nom": "Matomb",
+       "lat": 3.8206,
+       "lng": 11.0631
+      },
+      {
+       "nom": "Messondo",
+       "lat": 3.6944,
+       "lng": 10.4511
+      },
+      {
+       "nom": "Ngog-Mapubi",
+       "lat": 3.9333,
+       "lng": 10.85
+      },
+      {
+       "nom": "Nguibassal",
+       "lat": 3.5817,
+       "lng": 10.8017
+      }
+     ]
+    },
+    {
+     "nom": "Nyong-et-Mfoumou",
+     "arrondissements": [
+      {
+       "nom": "Akonolinga",
+       "lat": 3.7783,
+       "lng": 12.25
+      },
+      {
+       "nom": "Ayos",
+       "lat": 3.905,
+       "lng": 12.5225
+      },
+      {
+       "nom": "Endom",
+       "lat": 4.0844,
+       "lng": 12.55
+      },
+      {
+       "nom": "Kobdombo",
+       "lat": 4.1,
+       "lng": 12.5
+      },
+      {
+       "nom": "Mengang",
+       "lat": 3.8942,
+       "lng": 12.0503
+      }
+     ]
+    },
+    {
+     "nom": "Nyong-et-So'o",
+     "arrondissements": [
+      {
+       "nom": "Akoeman",
+       "lat": 3.1906,
+       "lng": 11.5728
+      },
+      {
+       "nom": "Dzeng",
+       "lat": 3.7608,
+       "lng": 11.885
+      },
+      {
+       "nom": "Mbalmayo",
+       "lat": 3.52,
+       "lng": 11.5122
+      },
+      {
+       "nom": "Mengueme",
+       "lat": 3.2436,
+       "lng": 11.3967
+      },
+      {
+       "nom": "Ngomedzap",
+       "lat": 3.25,
+       "lng": 11.2
+      },
+      {
+       "nom": "Nkolmetet",
+       "lat": 3.4333,
+       "lng": 11.7667
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "nom": "Est",
+   "departements": [
+    {
+     "nom": "Boumba-et-Ngoko",
+     "arrondissements": [
+      {
+       "nom": "Gari-Gombo",
+       "lat": 3.9357,
+       "lng": 15.1091
+      },
+      {
+       "nom": "Moloundou",
+       "lat": 2.05,
+       "lng": 15.1667
+      },
+      {
+       "nom": "Salapoumbé",
+       "lat": 2.6163,
+       "lng": 15.3775
+      },
+      {
+       "nom": "Yokadouma",
+       "lat": 3.5167,
+       "lng": 15.05
+      }
+     ]
+    },
+    {
+     "nom": "Haut-Nyong",
+     "arrondissements": [
+      {
+       "nom": "Abong-Mbang",
+       "lat": 3.9833,
+       "lng": 13.1667
+      },
+      {
+       "nom": "Angossas",
+       "lat": 4.0833,
+       "lng": 12.9833
+      },
+      {
+       "nom": "Atok",
+       "lat": 4.0,
+       "lng": 12.7833
+      },
+      {
+       "nom": "Dimako",
+       "lat": 4.3833,
+       "lng": 13.5667
+      },
+      {
+       "nom": "Doumaintang",
+       "lat": 4.35,
+       "lng": 13.1
+      },
+      {
+       "nom": "Doumé",
+       "lat": 4.24,
+       "lng": 13.4534
+      },
+      {
+       "nom": "Lomié",
+       "lat": 3.1703,
+       "lng": 13.6469
+      },
+      {
+       "nom": "Mboma",
+       "lat": 4.217,
+       "lng": 12.917
+      },
+      {
+       "nom": "Messamena",
+       "lat": 3.7333,
+       "lng": 12.8333
+      },
+      {
+       "nom": "Messok",
+       "lat": 3.0853,
+       "lng": 14.0624
+      },
+      {
+       "nom": "Mindourou",
+       "lat": 3.1667,
+       "lng": 13.6167
+      },
+      {
+       "nom": "Ngoyla",
+       "lat": 2.6167,
+       "lng": 14.0167
+      },
+      {
+       "nom": "Nguelemendouka",
+       "lat": 4.3833,
+       "lng": 12.9167
+      },
+      {
+       "nom": "Somalomo",
+       "lat": 3.3833,
+       "lng": 12.7333
+      }
+     ]
+    },
+    {
+     "nom": "Kadey",
+     "arrondissements": [
+      {
+       "nom": "Batouri",
+       "lat": 4.4333,
+       "lng": 14.3667
+      },
+      {
+       "nom": "Kentzou",
+       "lat": 4.1667,
+       "lng": 15.0333
+      },
+      {
+       "nom": "Kette",
+       "lat": 4.9,
+       "lng": 14.55
+      },
+      {
+       "nom": "Mbang",
+       "lat": 4.58,
+       "lng": 13.33
+      },
+      {
+       "nom": "Ndelele",
+       "lat": 4.0333,
+       "lng": 14.9333
+      },
+      {
+       "nom": "Nguelebok",
+       "lat": 4.2667,
+       "lng": 14.05
+      },
+      {
+       "nom": "Ouli",
+       "lat": 5.2,
+       "lng": 14.55
+      }
+     ]
+    },
+    {
+     "nom": "Lom-et-Djérem",
+     "arrondissements": [
+      {
+       "nom": "Bélabo",
+       "lat": 4.9333,
+       "lng": 13.3
+      },
+      {
+       "nom": "Bertoua Ier",
+       "lat": 4.5833,
+       "lng": 13.6833,
+       "approx": true
+      },
+      {
+       "nom": "Bertoua IIe",
+       "lat": 4.5833,
+       "lng": 13.6833,
+       "approx": true
+      },
+      {
+       "nom": "Bétaré-Oya",
+       "lat": 5.6,
+       "lng": 14.0833
+      },
+      {
+       "nom": "Diang",
+       "lat": 4.5833,
+       "lng": 13.35
+      },
+      {
+       "nom": "Garoua-Boulaï",
+       "lat": 5.8833,
+       "lng": 14.55
+      },
+      {
+       "nom": "Mandjou",
+       "lat": 4.6,
+       "lng": 13.7333
+      },
+      {
+       "nom": "Ngoura",
+       "lat": 4.3977,
+       "lng": 14.5641
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "nom": "Extrême-Nord",
+   "departements": [
+    {
+     "nom": "Diamaré",
+     "arrondissements": [
+      {
+       "nom": "Bogo",
+       "lat": 10.7336,
+       "lng": 14.6092
+      },
+      {
+       "nom": "Dargala",
+       "lat": 10.6316,
+       "lng": 14.6588
+      },
+      {
+       "nom": "Gazawa",
+       "lat": 10.5308,
+       "lng": 14.1404
+      },
+      {
+       "nom": "Maroua Ier",
+       "lat": 10.5909,
+       "lng": 14.3159
+      },
+      {
+       "nom": "Maroua IIe",
+       "lat": 10.6131,
+       "lng": 14.3275
+      },
+      {
+       "nom": "Maroua IIIe",
+       "lat": 10.61,
+       "lng": 14.37
+      },
+      {
+       "nom": "Meri",
+       "lat": 10.7761,
+       "lng": 14.1
+      },
+      {
+       "nom": "Ndoukoula",
+       "lat": 10.2667,
+       "lng": 14.0333
+      },
+      {
+       "nom": "Petté",
+       "lat": 10.9667,
+       "lng": 14.5
+      }
+     ]
+    },
+    {
+     "nom": "Logone-et-Chari",
+     "arrondissements": [
+      {
+       "nom": "Blangoua",
+       "lat": 12.7675,
+       "lng": 14.5758
+      },
+      {
+       "nom": "Darak",
+       "lat": 12.8786,
+       "lng": 14.3003
+      },
+      {
+       "nom": "Fotokol",
+       "lat": 12.3667,
+       "lng": 14.2333
+      },
+      {
+       "nom": "Goulfey",
+       "lat": 12.3833,
+       "lng": 14.9333
+      },
+      {
+       "nom": "Hile-Alifa",
+       "lat": 12.7,
+       "lng": 14.3167
+      },
+      {
+       "nom": "Kousseri",
+       "lat": 12.0833,
+       "lng": 15.0333
+      },
+      {
+       "nom": "Logone-Birni",
+       "lat": 11.7833,
+       "lng": 15.1
+      },
+      {
+       "nom": "Makary",
+       "lat": 12.5742,
+       "lng": 14.4539
+      },
+      {
+       "nom": "Waza",
+       "lat": 11.3988,
+       "lng": 14.5707
+      },
+      {
+       "nom": "Zina",
+       "lat": 11.2623,
+       "lng": 14.9653
+      }
+     ]
+    },
+    {
+     "nom": "Mayo-Danay",
+     "arrondissements": [
+      {
+       "nom": "Datcheka",
+       "lat": 10.1333,
+       "lng": 14.9
+      },
+      {
+       "nom": "Gobo",
+       "lat": 10.0099,
+       "lng": 15.4351
+      },
+      {
+       "nom": "Guémé",
+       "lat": 10.5,
+       "lng": 15.1833
+      },
+      {
+       "nom": "Guéré",
+       "lat": 10.0654,
+       "lng": 15.2891
+      },
+      {
+       "nom": "Kai-Kai",
+       "lat": 10.8578,
+       "lng": 14.8297
+      },
+      {
+       "nom": "Kalfou",
+       "lat": 10.284,
+       "lng": 14.9298
+      },
+      {
+       "nom": "Kar-Hay",
+       "lat": 10.6316,
+       "lng": 14.6588
+      },
+      {
+       "nom": "Maga",
+       "lat": 10.8434,
+       "lng": 14.9396
+      },
+      {
+       "nom": "Tchati-Bali",
+       "lat": 10.0438,
+       "lng": 14.9296
+      },
+      {
+       "nom": "Wina",
+       "lat": 10.1536,
+       "lng": 15.2208
+      },
+      {
+       "nom": "Yagoua",
+       "lat": 10.3428,
+       "lng": 15.2406
+      }
+     ]
+    },
+    {
+     "nom": "Mayo-Kani",
+     "arrondissements": [
+      {
+       "nom": "Dziguilao",
+       "lat": 10.0167,
+       "lng": 14.8
+      },
+      {
+       "nom": "Guidiguis",
+       "lat": 10.1333,
+       "lng": 14.7
+      },
+      {
+       "nom": "Kaélé",
+       "lat": 10.0999,
+       "lng": 14.4499
+      },
+      {
+       "nom": "Mindif",
+       "lat": 10.4,
+       "lng": 14.4333
+      },
+      {
+       "nom": "Moulvoudaye",
+       "lat": 10.4059,
+       "lng": 14.8539
+      },
+      {
+       "nom": "Moutourwa",
+       "lat": 10.199,
+       "lng": 14.1778
+      },
+      {
+       "nom": "Touloum",
+       "lat": 10.1833,
+       "lng": 14.8333
+      }
+     ]
+    },
+    {
+     "nom": "Mayo-Sava",
+     "arrondissements": [
+      {
+       "nom": "Kolofata",
+       "lat": 11.1667,
+       "lng": 14.0167
+      },
+      {
+       "nom": "Mora",
+       "lat": 11.0425,
+       "lng": 14.1447
+      },
+      {
+       "nom": "Tokombéré",
+       "lat": 10.8667,
+       "lng": 14.15
+      }
+     ]
+    },
+    {
+     "nom": "Mayo-Tsanaga",
+     "arrondissements": [
+      {
+       "nom": "Bourha",
+       "lat": 10.6953,
+       "lng": 13.9442,
+       "approx": true
+      },
+      {
+       "nom": "Hina",
+       "lat": 10.3659,
+       "lng": 13.8484
+      },
+      {
+       "nom": "Koza",
+       "lat": 10.8683,
+       "lng": 13.8819
+      },
+      {
+       "nom": "Mogodé",
+       "lat": 10.6,
+       "lng": 13.5667
+      },
+      {
+       "nom": "Mokolo",
+       "lat": 10.7403,
+       "lng": 13.8028
+      },
+      {
+       "nom": "Mozogo",
+       "lat": 10.966,
+       "lng": 13.9068
+      },
+      {
+       "nom": "Soulédé-Roua",
+       "lat": 10.6316,
+       "lng": 14.6588
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "nom": "Littoral",
+   "departements": [
+    {
+     "nom": "Moungo",
+     "arrondissements": [
+      {
+       "nom": "Baré-Bakem",
+       "lat": 5.0191,
+       "lng": 9.9636
+      },
+      {
+       "nom": "Bonaléa",
+       "lat": 4.2,
+       "lng": 9.44
+      },
+      {
+       "nom": "Dibombari",
+       "lat": 4.1833,
+       "lng": 9.65
+      },
+      {
+       "nom": "Eboné",
+       "lat": 4.8833,
+       "lng": 9.9
+      },
+      {
+       "nom": "Loum",
+       "lat": 4.7,
+       "lng": 9.73
+      },
+      {
+       "nom": "Manjo",
+       "lat": 4.85,
+       "lng": 9.8167
+      },
+      {
+       "nom": "Mbanga",
+       "lat": 4.5092,
+       "lng": 9.5681
+      },
+      {
+       "nom": "Melong",
+       "lat": 5.1211,
+       "lng": 9.9528
+      },
+      {
+       "nom": "Mombo",
+       "lat": 4.5667,
+       "lng": 9.6
+      },
+      {
+       "nom": "Njombé-Penja",
+       "lat": 4.6333,
+       "lng": 9.6833
+      },
+      {
+       "nom": "Nkongsamba Ier",
+       "lat": 4.95,
+       "lng": 9.9167,
+       "approx": true
+      },
+      {
+       "nom": "Nkongsamba IIe",
+       "lat": 4.9918,
+       "lng": 9.9274
+      },
+      {
+       "nom": "Nkongsamba IIIe",
+       "lat": 4.9491,
+       "lng": 9.9303
+      }
+     ]
+    },
+    {
+     "nom": "Nkam",
+     "arrondissements": [
+      {
+       "nom": "Nkondjock",
+       "lat": 4.8967,
+       "lng": 10.2592
+      },
+      {
+       "nom": "Nord-Makombé",
+       "lat": 4.9903,
+       "lng": 10.3734
+      },
+      {
+       "nom": "Yabassi",
+       "lat": 4.45,
+       "lng": 9.9667
+      },
+      {
+       "nom": "Yingui",
+       "lat": 4.5333,
+       "lng": 10.3
+      }
+     ]
+    },
+    {
+     "nom": "Sanaga-Maritime",
+     "arrondissements": [
+      {
+       "nom": "Dibamba",
+       "lat": 4.1333,
+       "lng": 10.1
+      },
+      {
+       "nom": "Dizangué",
+       "lat": 3.7667,
+       "lng": 9.9833
+      },
+      {
+       "nom": "Édéa Ier",
+       "lat": 3.7984,
+       "lng": 10.1297
+      },
+      {
+       "nom": "Édéa IIe",
+       "lat": 3.8,
+       "lng": 10.1333,
+       "approx": true
+      },
+      {
+       "nom": "Massock-Songloulou",
+       "lat": 4.1333,
+       "lng": 10.4667
+      },
+      {
+       "nom": "Mouanko",
+       "lat": 3.6333,
+       "lng": 9.7833
+      },
+      {
+       "nom": "Ndom",
+       "lat": 4.4167,
+       "lng": 10.8167
+      },
+      {
+       "nom": "Ngambe",
+       "lat": 4.2334,
+       "lng": 10.6153
+      },
+      {
+       "nom": "Ngwei",
+       "lat": 4.25,
+       "lng": 10.7
+      },
+      {
+       "nom": "Nyanon",
+       "lat": 4.2667,
+       "lng": 10.95
+      },
+      {
+       "nom": "Pouma",
+       "lat": 3.85,
+       "lng": 10.5167
+      }
+     ]
+    },
+    {
+     "nom": "Wouri",
+     "arrondissements": [
+      {
+       "nom": "Douala Ier",
+       "lat": 4.0491,
+       "lng": 9.6902
+      },
+      {
+       "nom": "Douala IIe",
+       "lat": 4.05,
+       "lng": 9.7,
+       "approx": true
+      },
+      {
+       "nom": "Douala IIIe",
+       "lat": 4.05,
+       "lng": 9.7,
+       "approx": true
+      },
+      {
+       "nom": "Douala IVe",
+       "lat": 4.05,
+       "lng": 9.7,
+       "approx": true
+      },
+      {
+       "nom": "Douala Ve",
+       "lat": 4.0964,
+       "lng": 9.7515
+      },
+      {
+       "nom": "Douala VIe",
+       "lat": 4.05,
+       "lng": 9.7,
+       "approx": true
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "nom": "Nord",
+   "departements": [
+    {
+     "nom": "Bénoué",
+     "arrondissements": [
+      {
+       "nom": "Barndaké",
+       "lat": 9.35,
+       "lng": 12.9667
+      },
+      {
+       "nom": "Baschéo",
+       "lat": 9.6667,
+       "lng": 13.3667
+      },
+      {
+       "nom": "Bibemi",
+       "lat": 9.3167,
+       "lng": 13.8833
+      },
+      {
+       "nom": "Dembo",
+       "lat": 9.7106,
+       "lng": 13.5497
+      },
+      {
+       "nom": "Garoua Ier",
+       "lat": 9.3,
+       "lng": 13.4,
+       "approx": true
+      },
+      {
+       "nom": "Garoua IIe",
+       "lat": 9.3,
+       "lng": 13.4,
+       "approx": true
+      },
+      {
+       "nom": "Garoua IIIe",
+       "lat": 9.3,
+       "lng": 13.4,
+       "approx": true
+      },
+      {
+       "nom": "Gashiga",
+       "lat": 9.4333,
+       "lng": 13.3667
+      },
+      {
+       "nom": "Lagdo",
+       "lat": 9.05,
+       "lng": 13.7333
+      },
+      {
+       "nom": "Ngong",
+       "lat": 9.0167,
+       "lng": 13.1833
+      },
+      {
+       "nom": "Pitoa",
+       "lat": 9.3833,
+       "lng": 13.5333
+      },
+      {
+       "nom": "Touroua",
+       "lat": 9.0833,
+       "lng": 12.9667
+      }
+     ]
+    },
+    {
+     "nom": "Faro",
+     "arrondissements": [
+      {
+       "nom": "Beka",
+       "lat": 8.6448,
+       "lng": 13.0303
+      },
+      {
+       "nom": "Poli",
+       "lat": 8.4756,
+       "lng": 13.2408
+      }
+     ]
+    },
+    {
+     "nom": "Mayo-Louti",
+     "arrondissements": [
+      {
+       "nom": "Figuil",
+       "lat": 9.7667,
+       "lng": 13.9667
+      },
+      {
+       "nom": "Guider",
+       "lat": 9.9342,
+       "lng": 13.9486
+      },
+      {
+       "nom": "Mayo-Oulo",
+       "lat": 9.9667,
+       "lng": 13.6167
+      }
+     ]
+    },
+    {
+     "nom": "Mayo-Rey",
+     "arrondissements": [
+      {
+       "nom": "Madingring",
+       "lat": 8.4559,
+       "lng": 15.0071
+      },
+      {
+       "nom": "Rey-Bouba",
+       "lat": 8.6724,
+       "lng": 14.1786
+      },
+      {
+       "nom": "Tcholliré",
+       "lat": 8.4,
+       "lng": 14.1667
+      },
+      {
+       "nom": "Touboro",
+       "lat": 7.7708,
+       "lng": 15.3567
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "nom": "Nord-Ouest",
+   "departements": [
+    {
+     "nom": "Boyo",
+     "arrondissements": [
+      {
+       "nom": "Belo",
+       "lat": 6.1333,
+       "lng": 10.25
+      },
+      {
+       "nom": "Fonfuka",
+       "lat": 6.5167,
+       "lng": 10.4333
+      },
+      {
+       "nom": "Fundong",
+       "lat": 6.25,
+       "lng": 10.2667
+      },
+      {
+       "nom": "Njinikom",
+       "lat": 6.2333,
+       "lng": 10.2833
+      }
+     ]
+    },
+    {
+     "nom": "Bui",
+     "arrondissements": [
+      {
+       "nom": "Elak-Oku",
+       "lat": 6.2378,
+       "lng": 10.5137
+      },
+      {
+       "nom": "Jakiri",
+       "lat": 6.1,
+       "lng": 10.65
+      },
+      {
+       "nom": "Kumbo",
+       "lat": 6.2,
+       "lng": 10.66
+      },
+      {
+       "nom": "Mbiame",
+       "lat": 6.1667,
+       "lng": 10.7833
+      },
+      {
+       "nom": "Nkor",
+       "lat": 6.3966,
+       "lng": 10.5831
+      },
+      {
+       "nom": "Nkum",
+       "lat": 6.2,
+       "lng": 10.7
+      }
+     ]
+    },
+    {
+     "nom": "Donga-Mantung",
+     "arrondissements": [
+      {
+       "nom": "Ako",
+       "lat": 6.8167,
+       "lng": 10.7167
+      },
+      {
+       "nom": "Misaje",
+       "lat": 6.5833,
+       "lng": 10.55
+      },
+      {
+       "nom": "Ndu",
+       "lat": 6.4167,
+       "lng": 10.8
+      },
+      {
+       "nom": "Nkambé",
+       "lat": 6.6333,
+       "lng": 10.6667
+      },
+      {
+       "nom": "Nwa",
+       "lat": 6.5,
+       "lng": 11.0
+      }
+     ]
+    },
+    {
+     "nom": "Menchum",
+     "arrondissements": [
+      {
+       "nom": "Benakuma",
+       "lat": 6.4167,
+       "lng": 9.9167
+      },
+      {
+       "nom": "Furu-Awa",
+       "lat": 6.8667,
+       "lng": 10.0333
+      },
+      {
+       "nom": "Wum",
+       "lat": 6.3833,
+       "lng": 10.0667
+      },
+      {
+       "nom": "Zhoa",
+       "lat": 6.3333,
+       "lng": 10.0667
+      }
+     ]
+    },
+    {
+     "nom": "Mezam",
+     "arrondissements": [
+      {
+       "nom": "Bafut",
+       "lat": 6.0833,
+       "lng": 10.1
+      },
+      {
+       "nom": "Bali",
+       "lat": 5.8833,
+       "lng": 10.0167
+      },
+      {
+       "nom": "Bamenda Ier",
+       "lat": 5.9326,
+       "lng": 10.197
+      },
+      {
+       "nom": "Bamenda IIe",
+       "lat": 6.0057,
+       "lng": 10.1
+      },
+      {
+       "nom": "Bamenda IIIe",
+       "lat": 5.9614,
+       "lng": 10.1517,
+       "approx": true
+      },
+      {
+       "nom": "Santa",
+       "lat": 5.8333,
+       "lng": 10.15
+      },
+      {
+       "nom": "Tubah",
+       "lat": 6.4704,
+       "lng": 10.4397
+      }
+     ]
+    },
+    {
+     "nom": "Momo",
+     "arrondissements": [
+      {
+       "nom": "Andek",
+       "lat": 5.9833,
+       "lng": 9.8333
+      },
+      {
+       "nom": "Batibo",
+       "lat": 5.8333,
+       "lng": 9.8833
+      },
+      {
+       "nom": "Mbengwi",
+       "lat": 6.0167,
+       "lng": 10.0
+      },
+      {
+       "nom": "Njikwa",
+       "lat": 6.0833,
+       "lng": 9.8833
+      },
+      {
+       "nom": "Widikum-Boffe",
+       "lat": 5.8719,
+       "lng": 9.7707
+      }
+     ]
+    },
+    {
+     "nom": "Ngo-Ketunjia",
+     "arrondissements": [
+      {
+       "nom": "Babessi",
+       "lat": 6.0167,
+       "lng": 10.5667
+      },
+      {
+       "nom": "Balikumbat",
+       "lat": 5.9,
+       "lng": 10.3833
+      },
+      {
+       "nom": "Ndop",
+       "lat": 6.0,
+       "lng": 10.4167
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "nom": "Ouest",
+   "departements": [
+    {
+     "nom": "Bamboutos",
+     "arrondissements": [
+      {
+       "nom": "Babadjou",
+       "lat": 5.6667,
+       "lng": 10.2
+      },
+      {
+       "nom": "Batcham",
+       "lat": 5.5333,
+       "lng": 10.2333
+      },
+      {
+       "nom": "Galim",
+       "lat": 5.6911,
+       "lng": 10.3664
+      },
+      {
+       "nom": "Mbouda",
+       "lat": 5.62,
+       "lng": 10.25
+      }
+     ]
+    },
+    {
+     "nom": "Haut-Nkam",
+     "arrondissements": [
+      {
+       "nom": "Bafang",
+       "lat": 5.15,
+       "lng": 10.1833
+      },
+      {
+       "nom": "Bakou",
+       "lat": 5.2,
+       "lng": 10.0
+      },
+      {
+       "nom": "Bana",
+       "lat": 5.15,
+       "lng": 10.2667
+      },
+      {
+       "nom": "Bandja",
+       "lat": 5.45,
+       "lng": 10.2667
+      },
+      {
+       "nom": "Banka",
+       "lat": 5.1667,
+       "lng": 10.2
+      },
+      {
+       "nom": "Banwa",
+       "lat": 5.1025,
+       "lng": 10.0706
+      },
+      {
+       "nom": "Kekem",
+       "lat": 5.1667,
+       "lng": 10.0333
+      }
+     ]
+    },
+    {
+     "nom": "Hauts-Plateaux",
+     "arrondissements": [
+      {
+       "nom": "Baham",
+       "lat": 5.3333,
+       "lng": 10.4
+      },
+      {
+       "nom": "Bamendjou",
+       "lat": 5.4,
+       "lng": 10.3167
+      },
+      {
+       "nom": "Bangou",
+       "lat": 5.2,
+       "lng": 10.3833
+      },
+      {
+       "nom": "Batié",
+       "lat": 5.2833,
+       "lng": 10.2833
+      }
+     ]
+    },
+    {
+     "nom": "Koung-Khi",
+     "arrondissements": [
+      {
+       "nom": "Bayangam",
+       "lat": 5.3,
+       "lng": 10.45
+      },
+      {
+       "nom": "Demdeng",
+       "lat": 5.325,
+       "lng": 10.425,
+       "approx": true
+      },
+      {
+       "nom": "Pète-Bandjoun",
+       "lat": 5.35,
+       "lng": 10.4
+      }
+     ]
+    },
+    {
+     "nom": "Menoua",
+     "arrondissements": [
+      {
+       "nom": "Dschang",
+       "lat": 5.45,
+       "lng": 10.05
+      },
+      {
+       "nom": "Fokoué",
+       "lat": 5.35,
+       "lng": 10.1167
+      },
+      {
+       "nom": "Fongo-Tongo",
+       "lat": 5.1079,
+       "lng": 10.4362
+      },
+      {
+       "nom": "Nkong-Zem",
+       "lat": 5.2392,
+       "lng": 10.6249
+      },
+      {
+       "nom": "Penka-Michel",
+       "lat": 5.4667,
+       "lng": 10.25
+      },
+      {
+       "nom": "Santchou",
+       "lat": 5.2833,
+       "lng": 9.9833
+      }
+     ]
+    },
+    {
+     "nom": "Mifi",
+     "arrondissements": [
+      {
+       "nom": "Bafoussam Ier",
+       "lat": 5.4667,
+       "lng": 10.4167,
+       "approx": true
+      },
+      {
+       "nom": "Bafoussam IIe",
+       "lat": 5.4667,
+       "lng": 10.4167,
+       "approx": true
+      },
+      {
+       "nom": "Bafoussam IIIe",
+       "lat": 5.5103,
+       "lng": 10.35
+      }
+     ]
+    },
+    {
+     "nom": "Ndé",
+     "arrondissements": [
+      {
+       "nom": "Bangangté",
+       "lat": 5.25,
+       "lng": 10.8333
+      },
+      {
+       "nom": "Bassamba",
+       "lat": 5.05,
+       "lng": 10.5667
+      },
+      {
+       "nom": "Bazou",
+       "lat": 5.0667,
+       "lng": 10.4667
+      },
+      {
+       "nom": "Tonga",
+       "lat": 4.9699,
+       "lng": 10.6957
+      }
+     ]
+    },
+    {
+     "nom": "Noun",
+     "arrondissements": [
+      {
+       "nom": "Bangourain",
+       "lat": 5.8723,
+       "lng": 10.675
+      },
+      {
+       "nom": "Foumban",
+       "lat": 5.7167,
+       "lng": 10.9167
+      },
+      {
+       "nom": "Foumbot",
+       "lat": 5.5,
+       "lng": 10.6333
+      },
+      {
+       "nom": "Kouoptamo",
+       "lat": 5.65,
+       "lng": 10.6
+      },
+      {
+       "nom": "Koutaba",
+       "lat": 5.7,
+       "lng": 10.8167
+      },
+      {
+       "nom": "Magba",
+       "lat": 5.95,
+       "lng": 11.2167
+      },
+      {
+       "nom": "Malentouen",
+       "lat": 5.8,
+       "lng": 11.0
+      },
+      {
+       "nom": "Massangam",
+       "lat": 5.4167,
+       "lng": 10.9667
+      },
+      {
+       "nom": "Njimom",
+       "lat": 5.85,
+       "lng": 10.95
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "nom": "Sud",
+   "departements": [
+    {
+     "nom": "Dja-et-Lobo",
+     "arrondissements": [
+      {
+       "nom": "Bengbis",
+       "lat": 3.45,
+       "lng": 12.45
+      },
+      {
+       "nom": "Djoum",
+       "lat": 2.6667,
+       "lng": 12.6667
+      },
+      {
+       "nom": "Meyomessala",
+       "lat": 2.7203,
+       "lng": 11.7068
+      },
+      {
+       "nom": "Meyomessi",
+       "lat": 2.8167,
+       "lng": 12.2
+      },
+      {
+       "nom": "Mintom",
+       "lat": 2.7,
+       "lng": 13.2833
+      },
+      {
+       "nom": "Oveng",
+       "lat": 2.33,
+       "lng": 11.13
+      },
+      {
+       "nom": "Sangmélima",
+       "lat": 2.93,
+       "lng": 11.98
+      },
+      {
+       "nom": "Zoétélé",
+       "lat": 3.25,
+       "lng": 11.8833
+      }
+     ]
+    },
+    {
+     "nom": "Mvila",
+     "arrondissements": [
+      {
+       "nom": "Biwong-Bane",
+       "lat": 3.1833,
+       "lng": 11.2167
+      },
+      {
+       "nom": "Biwong-Bulu",
+       "lat": 3.1333,
+       "lng": 11.15
+      },
+      {
+       "nom": "Ebolowa Ier",
+       "lat": 2.9167,
+       "lng": 11.15,
+       "approx": true
+      },
+      {
+       "nom": "Ebolowa IIe",
+       "lat": 2.9167,
+       "lng": 11.15,
+       "approx": true
+      },
+      {
+       "nom": "Efoulan",
+       "lat": 2.7833,
+       "lng": 10.5333
+      },
+      {
+       "nom": "Mengong",
+       "lat": 2.933,
+       "lng": 11.417
+      },
+      {
+       "nom": "Mvangan",
+       "lat": 2.6333,
+       "lng": 11.7333
+      },
+      {
+       "nom": "Ngoulemakong",
+       "lat": 3.0833,
+       "lng": 11.4333
+      }
+     ]
+    },
+    {
+     "nom": "Océan",
+     "arrondissements": [
+      {
+       "nom": "Akom II",
+       "lat": 2.7833,
+       "lng": 10.5667
+      },
+      {
+       "nom": "Bipindi",
+       "lat": 3.0833,
+       "lng": 10.4167
+      },
+      {
+       "nom": "Campo",
+       "lat": 2.3667,
+       "lng": 9.8167
+      },
+      {
+       "nom": "Kribi Ier",
+       "lat": 2.9301,
+       "lng": 9.911
+      },
+      {
+       "nom": "Kribi IIe",
+       "lat": 2.95,
+       "lng": 9.9167,
+       "approx": true
+      },
+      {
+       "nom": "Lokoundjé",
+       "lat": 3.2167,
+       "lng": 9.9228
+      },
+      {
+       "nom": "Lolodorf",
+       "lat": 3.2375,
+       "lng": 10.7223
+      },
+      {
+       "nom": "Mvengue",
+       "lat": 3.2833,
+       "lng": 11.0167
+      },
+      {
+       "nom": "Niété",
+       "lat": 2.6667,
+       "lng": 10.05
+      }
+     ]
+    },
+    {
+     "nom": "Vallée-du-Ntem",
+     "arrondissements": [
+      {
+       "nom": "Ambam",
+       "lat": 2.3833,
+       "lng": 11.2833
+      },
+      {
+       "nom": "Kyé-Ossi",
+       "lat": 2.1754,
+       "lng": 11.3409
+      },
+      {
+       "nom": "Ma'an",
+       "lat": 2.3722,
+       "lng": 10.6314
+      },
+      {
+       "nom": "Olamze",
+       "lat": 2.2167,
+       "lng": 11.0833
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "nom": "Sud-Ouest",
+   "departements": [
+    {
+     "nom": "Fako",
+     "arrondissements": [
+      {
+       "nom": "Buéa",
+       "lat": 4.1667,
+       "lng": 9.2333
+      },
+      {
+       "nom": "Limbé Ier",
+       "lat": 4.0063,
+       "lng": 9.2085
+      },
+      {
+       "nom": "Limbé IIe",
+       "lat": 4.0172,
+       "lng": 9.1241
+      },
+      {
+       "nom": "Limbé IIIe",
+       "lat": 3.9647,
+       "lng": 9.2528
+      },
+      {
+       "nom": "Muyuka",
+       "lat": 4.2859,
+       "lng": 9.4077
+      },
+      {
+       "nom": "Tiko",
+       "lat": 4.0786,
+       "lng": 9.3681
+      },
+      {
+       "nom": "West Coast",
+       "lat": 4.2405,
+       "lng": 8.9912
+      }
+     ]
+    },
+    {
+     "nom": "Koupé-Manengouba",
+     "arrondissements": [
+      {
+       "nom": "Bangem",
+       "lat": 5.0833,
+       "lng": 9.7667
+      },
+      {
+       "nom": "Nguti",
+       "lat": 5.3299,
+       "lng": 9.4185
+      },
+      {
+       "nom": "Tombel",
+       "lat": 4.7464,
+       "lng": 9.6703
+      }
+     ]
+    },
+    {
+     "nom": "Lebialem",
+     "arrondissements": [
+      {
+       "nom": "Alou",
+       "lat": 5.1573,
+       "lng": 9.3673
+      },
+      {
+       "nom": "Menji",
+       "lat": 5.7131,
+       "lng": 10.065
+      },
+      {
+       "nom": "Wabane",
+       "lat": 5.1573,
+       "lng": 9.3673
+      }
+     ]
+    },
+    {
+     "nom": "Manyu",
+     "arrondissements": [
+      {
+       "nom": "Akwaya",
+       "lat": 6.3667,
+       "lng": 9.5333
+      },
+      {
+       "nom": "Eyumodjock",
+       "lat": 5.7697,
+       "lng": 8.9864
+      },
+      {
+       "nom": "Mamfé",
+       "lat": 5.7667,
+       "lng": 9.2833
+      },
+      {
+       "nom": "Tinto",
+       "lat": 5.5455,
+       "lng": 9.5895
+      }
+     ]
+    },
+    {
+     "nom": "Meme",
+     "arrondissements": [
+      {
+       "nom": "Konye",
+       "lat": 5.1573,
+       "lng": 9.3673
+      },
+      {
+       "nom": "Kumba Ier",
+       "lat": 4.6333,
+       "lng": 9.45,
+       "approx": true
+      },
+      {
+       "nom": "Kumba IIe",
+       "lat": 4.6333,
+       "lng": 9.45,
+       "approx": true
+      },
+      {
+       "nom": "Kumba IIIe",
+       "lat": 4.6333,
+       "lng": 9.45,
+       "approx": true
+      },
+      {
+       "nom": "Mbonge",
+       "lat": 4.5333,
+       "lng": 9.1
+      }
+     ]
+    },
+    {
+     "nom": "Ndian",
+     "arrondissements": [
+      {
+       "nom": "Bamusso",
+       "lat": 4.4667,
+       "lng": 8.9
+      },
+      {
+       "nom": "Dikome-Balue",
+       "lat": 4.9126,
+       "lng": 9.2412
+      },
+      {
+       "nom": "Ekondo-Titi",
+       "lat": 4.6014,
+       "lng": 9.0389
+      },
+      {
+       "nom": "Idabato",
+       "lat": 4.7388,
+       "lng": 8.8887,
+       "approx": true
+      },
+      {
+       "nom": "Isanguele",
+       "lat": 4.7804,
+       "lng": 8.68
+      },
+      {
+       "nom": "Kombo-Abedimo",
+       "lat": 4.6621,
+       "lng": 8.5177
+      },
+      {
+       "nom": "Kombo-Itindi",
+       "lat": 4.6467,
+       "lng": 8.7629
+      },
+      {
+       "nom": "Mundemba",
+       "lat": 4.95,
+       "lng": 8.8667
+      },
+      {
+       "nom": "Toko",
+       "lat": 4.8907,
+       "lng": 9.1025
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

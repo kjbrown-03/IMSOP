@@ -8,6 +8,11 @@ const rechercher = {
     symptomes: z.string().trim().min(10, 'Décrivez vos symptômes en quelques mots').max(2000),
     pays: z.enum(CODES_PAYS),
     ville: z.string().trim().max(100).optional(),
+    // Cameroun seulement ; la cohérence entre niveaux se vérifie dans le
+    // contrôleur, contre le découpage (lib/cemac.js).
+    region: z.string().trim().max(60).optional(),
+    departement: z.string().trim().max(60).optional(),
+    arrondissement: z.string().trim().max(60).optional(),
     // Par défaut conventionnel : un appel qui ne précise rien garde le
     // comportement d'avant l'ouverture à la médecine traditionnelle.
     typePratique: z.enum(['CONVENTIONNEL', 'TRADITIONNEL']).default('CONVENTIONNEL'),
@@ -37,6 +42,9 @@ const mettreAJourAnnuaire = {
     annuaireSpecialites: z.array(z.enum(SPECIALITES_LOCALES)).max(6).optional(),
     pays: z.enum(CODES_PAYS).optional(),
     ville: z.string().trim().max(100).optional().nullable(),
+    region: z.string().trim().max(60).optional().nullable(),
+    departement: z.string().trim().max(60).optional().nullable(),
+    arrondissement: z.string().trim().max(60).optional().nullable(),
     quartier: z.string().trim().max(120).optional().nullable(),
     // Borne haute a 70 : au-dela, c'est une faute de frappe, pas une carriere.
     // Rediger des avis sur dossier : un engagement distinct de la simple

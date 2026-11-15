@@ -15,7 +15,18 @@ import {
   Clock,
   ArrowRight,
   MapPin,
+  Stethoscope,
+  Leaf,
+  BadgeCheck,
 } from 'lucide-react'
+
+// Les deux bandes de « Comment ça marche » côté proximité : même parcours en
+// trois temps, mais les mots diffèrent — on ne décrit pas une visite chez un
+// tradipraticien comme une consultation de cardiologie.
+const BANDES_PROXIMITE = [
+  { cle: 'medecin', icone: Stethoscope, ton: 'text-[#163A52] dark:text-[#8FC4BA]', fond: 'bg-[#163A52]/10 dark:bg-[#8FC4BA]/15' },
+  { cle: 'tradi', icone: Leaf, ton: 'text-emerald-700 dark:text-emerald-400', fond: 'bg-emerald-500/10' },
+]
 
 const SPECIALTIES = [
   { nameKey: 'specOncology', subKey: 'specOncologySub' },
@@ -206,7 +217,7 @@ export default function Accueil() {
                   className="inline-flex items-center justify-center gap-2 bg-[#163A52] dark:bg-[#8FC4BA] text-white dark:text-[#0F2C38] rounded-full px-7 py-4 font-bold text-sm tracking-wide shadow-[0_10px_24px_-10px_rgba(22,58,82,0.6)] hover:opacity-90 transition-opacity"
                 >
                   <MapPin className="w-[18px] h-[18px]" />
-                  {t('public.home.heroSecondaryCta')}
+                  <strong className="font-extrabold">{t('public.home.heroSecondaryCta')}</strong>
                 </Link>
                 <Link
                   to="/avis"
@@ -227,6 +238,10 @@ export default function Accueil() {
                   <Trans i18nKey="public.home.heroNetworkCaption" />
                 </span>
               </div>
+              <p className="m-0 flex items-start gap-2 text-[13.5px] leading-snug text-[#6B7A82] dark:text-[#9FB6BD] max-w-[520px]">
+                <BadgeCheck className="w-[18px] h-[18px] shrink-0 text-[#3E8C81] dark:text-[#8FC4BA]" />
+                <span>{t('public.home.heroNetworkOrdres')}</span>
+              </p>
             </div>
           </div>
         </section>
@@ -262,6 +277,60 @@ export default function Accueil() {
               </div>
             </div>
 
+            {/* Le praticien le plus proche d'abord, comme sur les boutons du
+                haut : c'est la porte que la plupart des visiteurs prennent, et
+                la page ne décrivait que l'autre. */}
+            <div className="flex flex-col gap-5 mb-14">
+              <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+                <h3
+                  className="m-0 text-[24px] md:text-[28px] leading-tight text-[#12303F] dark:text-[#F4F8F8]"
+                  style={{ fontFamily: "Newsreader, Georgia, serif" }}
+                >
+                  {t('public.home.proximiteTitre')}
+                </h3>
+                <Link to="/annuaire" className="inline-flex items-center gap-1.5 text-sm font-bold text-[#163A52] dark:text-[#8FC4BA] hover:underline">
+                  {t('public.home.heroSecondaryCta')} <ArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                {BANDES_PROXIMITE.map(({ cle, icone: Icone, ton, fond }) => (
+                  <div key={cle} className="bg-white dark:bg-[#132530] border border-[#EBE3D9] dark:border-[#22404C] rounded-[20px] p-7 flex flex-col gap-5">
+                    <div className="flex items-center gap-3">
+                      <span className={`w-11 h-11 rounded-xl ${fond} ${ton} flex items-center justify-center`}>
+                        <Icone className="w-[22px] h-[22px]" />
+                      </span>
+                      <b className="text-[17px] text-[#16262F] dark:text-white">{t(`public.home.proximite.${cle}.titre`)}</b>
+                    </div>
+                    <ol className="m-0 p-0 list-none flex flex-col gap-4">
+                      {[1, 2, 3].map((n) => (
+                        <li key={n} className="flex gap-3">
+                          <span className={`w-7 h-7 shrink-0 rounded-full ${fond} ${ton} text-sm font-bold flex items-center justify-center`}>{n}</span>
+                          <div className="flex flex-col gap-1">
+                            <b className="text-[15px] text-[#16262F] dark:text-white">{t(`public.home.proximite.${cle}.etape${n}Titre`)}</b>
+                            <p className="m-0 text-[14.5px] leading-relaxed text-[#5E6E76] dark:text-[#B7C9CF]">
+                              {t(`public.home.proximite.${cle}.etape${n}Texte`)}
+                            </p>
+                          </div>
+                        </li>
+                      ))}
+                    </ol>
+                  </div>
+                ))}
+              </div>
+              <p className="m-0 text-[13.5px] leading-snug text-[#6B7A82] dark:text-[#9FB6BD]">{t('public.home.proximiteNote')}</p>
+            </div>
+
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-5">
+              <h3
+                className="m-0 text-[24px] md:text-[28px] leading-tight text-[#12303F] dark:text-[#F4F8F8]"
+                style={{ fontFamily: "Newsreader, Georgia, serif" }}
+              >
+                {t('public.home.avisTitre')}
+              </h3>
+              <Link to="/avis" className="inline-flex items-center gap-1.5 text-sm font-bold text-[#163A52] dark:text-[#8FC4BA] hover:underline">
+                {t('public.home.heroPrimaryCta')} <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
               {/* Phase 1 */}
               <div className="bg-white dark:bg-[#132530] border border-[#EBE3D9] dark:border-[#22404C] rounded-[20px] p-7 flex flex-col gap-5">

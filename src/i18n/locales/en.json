@@ -54,8 +54,8 @@
       "badgeTrust": "TRUSTED GLOBALLY",
       "badgeSecure": "SECURE & ENCRYPTED",
       "processEyebrow": "How it works",
-      "processTitle": "Ten steps, three simple moments",
-      "processSub": "Your doctor stays at the centre of your care. IMSOP arranges access to complementary expertise when it's medically relevant.",
+      "processTitle": "Two services, three steps each",
+      "processSub": "Find the doctor or traditional practitioner closest to you, or have a specialist review your case. Either way, IMSOP connects you: your own doctor stays at the centre of your care.",
       "phase1Label": "1 · Your case",
       "phase2Label": "2 · The expertise",
       "phase3Label": "3 · Your answer",
@@ -105,7 +105,31 @@
       "testimonial4Meta": "Bafoussam · Neurology",
       "testimonial5Quote": "An external, documented opinion let me explain the options to my patient with more confidence.",
       "testimonial5Meta": "Treating doctor · Yaoundé",
-      "heroSecondaryCta": "Nearest doctor (specialist/GP)"
+      "heroSecondaryCta": "Nearest Specialist Doctor / Traditional Practitioner",
+      "heroNetworkOrdres": "A network of specialists and traditional practitioners recognised by the State, members of the Order of Physicians and the Order of Traditional Practitioners.",
+      "proximiteTitre": "Find the nearest doctor or traditional practitioner",
+      "proximiteNote": "Searching is free: you only pay for the connection if a practitioner can see you. The two kinds of medicine are never mixed in one list. IMSOP does not book appointments or make diagnoses; in an emergency, call emergency services.",
+      "avisTitre": "Request a medical second opinion",
+      "proximite": {
+        "medecin": {
+          "titre": "Specialist doctor / GP",
+          "etape1Titre": "Describe your symptoms",
+          "etape1Texte": "Choose conventional medicine, then say what is wrong, in writing or out loud. We work out the relevant specialities.",
+          "etape2Titre": "Say where you are",
+          "etape2Texte": "Turn on your location, or choose your region, division and subdivision. Doctors are ranked from nearest to farthest.",
+          "etape3Titre": "Get connected",
+          "etape3Texte": "You pay for the connection and receive the name, phone number and address of the selected doctors, so you can contact them directly."
+        },
+        "tradi": {
+          "titre": "Traditional practitioner",
+          "etape1Titre": "Say what you feel",
+          "etape1Texte": "Choose traditional medicine, then describe what ails you in your own words, in writing or out loud.",
+          "etape2Titre": "Say where you are",
+          "etape2Texte": "Turn on your location, or choose your region, division and subdivision. We look for traditional practitioners selected by the scientific committee near you.",
+          "etape3Titre": "Get connected",
+          "etape3Texte": "You pay for the connection and receive the contact details of the selected practitioners, so you can contact them directly."
+        }
+      }
     },
     "footer": {
       "tagline": "International Medical Second Opinion Platform. An African program for second medical opinions and international tele-expertise. Pilot country: Cameroon.",
@@ -1427,7 +1451,7 @@
       "intro": "Describe how you feel: we connect you with the registered, verified doctors in your area who can see you.",
       "symptomes": "Your symptoms",
       "symptomesPlaceholder": "E.g.: itchy spots on my arms for a week, no fever",
-      "pays": "Country",
+      "pays": "Country / Residence",
       "ville": "City",
       "optionnel": "optional",
       "villeToutes": "All cities",
@@ -1439,12 +1463,14 @@
       "CONVENTIONNEL": {
         "eyebrow": "Conventional medicine",
         "titre": "The nearest doctor (specialist/GP) to you",
-        "intro": "Describe your symptoms in a few words. We work out the relevant speciality, then look for the doctors closest to you."
+        "intro": "Describe your symptoms in a few words. We work out the relevant speciality, then look for the doctors closest to you.",
+        "lancer": "Find a doctor"
       },
       "TRADITIONNEL": {
         "eyebrow": "Traditional medicine",
         "titre": "The nearest traditional practitioner",
-        "intro": "Describe what you feel, in your own words. We search among the traditional practitioners selected by the scientific committee for those practising near you."
+        "intro": "Describe what you feel, in your own words. We search among the traditional practitioners selected by the scientific committee for those practising near you.",
+        "lancer": "Find a traditional practitioner"
       }
     },
     "resultats": {
@@ -1455,7 +1481,10 @@
       "titre_one": "{{count}} doctor can take care of you",
       "titre_other": "{{count}} doctors can take care of you",
       "aucun": "No doctor available for this search",
-      "aucunAide": "No registered doctor in this area covers these symptoms yet. Try without a city, or come back later — new doctors join regularly. You are not charged.",
+      "aucunTradi": "No traditional practitioner available for this search",
+      "titreTradi_one": "{{count}} traditional practitioner can see you",
+      "titreTradi_other": "{{count}} traditional practitioners can see you",
+      "aucunAide": "No registered practitioner covers these symptoms yet. Come back later — new practitioners join regularly. You are not charged.",
       "villeInconnue": "City not provided",
       "verrouille": "Contact details locked",
       "deblocageTitre": "Get connected with these doctors",
@@ -1484,6 +1513,24 @@
       "texte": "Do not look for a doctor online: call emergency services immediately or go to the nearest emergency room.",
       "rappel": "No payment is requested. This page is not medical advice: if in doubt, treat it as an emergency."
     },
+    "lieu": {
+      "pays": "Country / Residence",
+      "region": "Region",
+      "departement": "Division",
+      "arrondissement": "Subdivision",
+      "taper": "Type to search…",
+      "aucun": "No results",
+      "regionRequise": "Choose at least your region: it is what lets us find the practitioners closest to you.",
+      "paysFerme": "Connections are not yet open in this country ({{pays}}): payment is not available there yet. They are open in Cameroon.",
+      "geoBouton": "Turn on my location",
+      "geoAide": "To find the nearest practitioner, allow location access. Your position stays on your phone: it only fills in the lists below, and only the name of your subdivision is sent with the search.",
+      "geoOk": "Region, division and subdivision filled in from your position. Check them before searching.",
+      "geoPartiel": "Region and division filled in from your position. Choose your subdivision.",
+      "geoRefusee": "Location access was denied. Choose your region from the list, or allow location in your browser settings.",
+      "geoEchec": "Your position could not be obtained. Choose your region from the list.",
+      "geoHorsCameroun": "Your position seems to be outside Cameroon. Choose your country and location from the lists.",
+      "geoIndisponible": "This browser does not support location. Choose your region from the list."
+    },
     "medecin": {
       "titre": "“Find a doctor” directory",
       "sousTitre": "Choose whether to be connected with CEMAC patients looking for a doctor near them.",
@@ -1510,9 +1557,9 @@
       "avisLocalAide": "A patient submits their file — tests, imaging, reports — and you write an opinion without meeting them. This differs from a consultation: you put your signature on a document. Paid per file."
     },
     "choix": {
-      "eyebrow": "Nearest doctor (specialist/GP)",
-      "titre": "Which doctor are you looking for?",
-      "intro": "Both practices exist near you. Choose the one you wish to consult: the next search will only offer doctors from that path.",
+      "eyebrow": "Nearest doctor (specialist/GP) or traditional practitioner",
+      "titre": "Which practitioner are you looking for?",
+      "intro": "Both practices exist near you. Choose the one you wish to consult: the next search will only offer practitioners from the identified setting.",
       "CONVENTIONNEL": {
         "titre": "Conventional medicine",
         "description": "A qualified doctor registered with the medical council of their country of practice: general practitioner or specialist, in a surgery, clinic or hospital.",

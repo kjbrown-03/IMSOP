@@ -2,7 +2,9 @@ const { prisma } = require('../lib/prisma')
 const { logAction } = require('../services/auditService')
 const { safeUserSelect } = require('../lib/selectors')
 const { trier } = require('../lib/triage')
-const { PAYS_CEMAC, villesDe, estPaysCemac } = require('../lib/cemac')
+const {
+  PAYS_CEMAC, villesDe, estPaysCemac, DECOUPAGE_CAMEROUN, lieuCamerounValide, situerAuCameroun, distanceKm,
+} = require('../lib/cemac')
 const { SPECIALITES_LOCALES } = require('../lib/specialitesLocales')
 const paiements = require('./paiements.controller')
 const env = require('../config/env')
@@ -53,6 +55,11 @@ function ficheFloutee(resultat, specialitesRecherchees) {
     id: resultat.id,
     specialites: m.annuaireSpecialites.filter((s) => specialitesRecherchees.includes(s)),
     ville: m.ville,
+    // Région, département, arrondissement : la même finesse que la ville. Le
+    // quartier, qui permettrait de retrouver le cabinet, reste après paiement.
+    region: m.region,
+    departement: m.departement,
+    arrondissement: m.arrondissement,
     score: resultat.score,
     // Donne avant le paiement : c'est l'un des rares reperes dont dispose un
     // patient qui ne connait personne, et il lui sert a CHOISIR. Le lui cacher
@@ -99,6 +106,9 @@ function serialiser(recherche) {
     typePratique: recherche.typePratique,
     pays: recherche.pays,
     ville: recherche.ville,
+    region: recherche.region,
+    departement: recherche.departement,
+    arrondissement: recherche.arrondissement,
     nombre: recherche.resultats.length,
     tarif: tarifAnnuaire(),
     simulationPubliqueActive: Number.isFinite(dateFinSimulationPublique) && Date.now() < dateFinSimulationPublique,
@@ -122,9 +132,13 @@ async function referentiels(req, res) {
   res.json({
     // Le formulaire ne propose que les pays ouverts : inutile de laisser un
     // patient choisir un pays où sa recherche ne pourra jamais être payée.
+    // Toute la zone est proposée — un patient de Libreville doit pouvoir dire
+    // où il vit — mais `ouvert` dit honnêtement où la mise en relation peut
+    // être payée aujourd'hui. Le formulaire n'offre pas de bouton de recherche
+    // ailleurs : ce bouton échouerait.
     pays: Object.entries(PAYS_CEMAC)
-      .filter(([code]) => paysOuvert(code))
-      .map(([code, p]) => ({ code, nom: p.nom, villes: p.villes })),
+      .map(([code, p]) => ({ code, nom: p.nom, villes: p.villes, ouvert: paysOuvert(code) })),
+    decoupage: { cm: DECOUPAGE_CAMEROUN.regions },
     specialites: SPECIALITES_LOCALES,
     tarif: tarifAnnuaire(),
   })
@@ -132,6 +146,11 @@ async function referentiels(req, res) {
 
 async function rechercher(req, res) {
   const { symptomes, pays, ville, typePratique } = req.body
+  // Le découpage n'existe que pour le Cameroun : ailleurs on l'ignore plutôt
+  // que d'enregistrer une région qui ne veut rien dire.
+  const lieu = pays === 'cm'
+    ? { region: req.body.region || null, departement: req.body.departement || null, arrondissement: req.body.arrondissement || null }
+    : { region: null, departement: null, arrondissement: null }
 
   // Le formulaire ne propose déjà que les pays ouverts, mais rien n'empêche
   // d'appeler l'API directement : on refuse ici aussi, avant d'enregistrer quoi
@@ -142,6 +161,9 @@ async function rechercher(req, res) {
       message: "La mise en relation n'est pas encore disponible dans ce pays.",
     })
   }
+  if (!lieuCamerounValide(lieu)) {
+    return res.status(400).json({ message: "Ce lieu n'existe pas dans le découpage du Cameroun." })
+  }
 
   const { urgence, specialites } = trier(symptomes)
 
@@ -150,7 +172,7 @@ async function rechercher(req, res) {
   // appeler les secours.
   if (urgence) {
     const recherche = await prisma.rechercheAnnuaire.create({
-      data: { userId: req.userId ?? null, symptomes, specialites, typePratique, pays, ville: ville || null, urgence: true },
+      data: { userId: req.userId ?? null, symptomes, specialites, typePratique, pays, ville: ville || null, ...lieu, urgence: true },
       include: INCLUDE_RESULTATS,
     })
     await logAction({ userId: req.userId, action: 'ANNUAIRE_URGENCE_DETECTEE', entityType: 'RechercheAnnuaire', entityId: recherche.id, ipAddress: req.ip })
@@ -172,21 +194,27 @@ async function rechercher(req, res) {
       annuaireSpecialites: { hasSome: specialites },
       user: { active: true },
     },
-    select: { id: true, pays: true, ville: true, annuaireSpecialites: true, annuaireExperience: true },
+    select: { id: true, pays: true, ville: true, region: true, departement: true, arrondissement: true, annuaireSpecialites: true, annuaireExperience: true },
   })
 
   // Score : la spécialité la plus probable pèse le plus ; puis même pays, puis
-  // même ville. Comparaisons insensibles à la casse : l'inscription stocke
+  // la proximité. Comparaisons insensibles à la casse : l'inscription stocke
   // parfois « CM », l'annuaire travaille en « cm ».
   const poids = Object.fromEntries(specialites.map((s, i) => [s, specialites.length - i]))
   const paysCherche = pays.toLowerCase()
   const villeCherchee = (ville || '').toLowerCase()
+  const lieuPatient = paysCherche === 'cm' ? situerAuCameroun({ ...lieu, ville }) : null
   const classes = candidats
     .map((m) => {
       const parSpecialite = m.annuaireSpecialites.reduce((acc, s) => acc + (poids[s] || 0), 0)
       const memePays = (m.pays || '').toLowerCase() === paysCherche
-      const memeVille = memePays && villeCherchee && (m.ville || '').toLowerCase() === villeCherchee
-      return { medecinId: m.id, score: parSpecialite * 2 + (memePays ? 3 : 0) + (memeVille ? 2 : 0) }
+      let proximite = 0
+      if (memePays && lieuPatient) {
+        proximite = proximiteCameroun(lieuPatient, situerAuCameroun(m))
+      } else if (memePays && villeCherchee && (m.ville || '').toLowerCase() === villeCherchee) {
+        proximite = 2
+      }
+      return { medecinId: m.id, score: parSpecialite * 2 + (memePays ? 3 : 0) + proximite }
     })
     .sort((a, b) => b.score - a.score)
     .slice(0, MAX_RESULTATS)
@@ -199,6 +227,7 @@ async function rechercher(req, res) {
       typePratique,
       pays,
       ville: ville || null,
+      ...lieu,
       resultats: { create: classes },
     },
     include: INCLUDE_RESULTATS,
@@ -209,11 +238,35 @@ async function rechercher(req, res) {
     action: 'ANNUAIRE_RECHERCHE',
     entityType: 'RechercheAnnuaire',
     entityId: recherche.id,
-    metadata: { pays, ville: ville || null, specialites, typePratique, nombre: classes.length },
+    metadata: { pays, ville: ville || null, ...lieu, specialites, typePratique, nombre: classes.length },
     ipAddress: req.ip,
   })
 
   res.status(201).json(serialiser(recherche))
+}
+
+/**
+ * Bonus de proximité entre le lieu du patient et celui d'un médecin, au
+ * Cameroun. La distance entre arrondissements fait le gros du travail : deux
+ * arrondissements voisins de départements différents (Mfou et Yaoundé IVe)
+ * sont plus proches que deux bouts du Haut-Nyong. Les niveaux administratifs
+ * ne servent que quand une coordonnée manque.
+ *
+ * Plafonné à 6 : la spécialité doit continuer de primer — un dermatologue à
+ * 30 km répond mieux à un problème de peau qu'un généraliste voisin.
+ */
+function proximiteCameroun(patient, medecin) {
+  if (!patient || !medecin) return 0
+  if (patient.arrondissement && patient.arrondissement === medecin.arrondissement) return 6
+  if (patient.lat != null && medecin.lat != null) {
+    const d = distanceKm(patient, medecin)
+    if (d <= 15) return 5
+    if (d <= 50) return 4
+    if (d <= 150) return 2
+    return patient.region === medecin.region ? 1 : 0
+  }
+  if (patient.departement && patient.departement === medecin.departement) return 3
+  return patient.region === medecin.region ? 1 : 0
 }
 
 async function chargerRecherche(req) {
@@ -408,6 +461,7 @@ async function simulerPaiement(req, res) {
 
 const SELECT_ANNUAIRE_MEDECIN = {
   annuaireVisible: true, annuaireSpecialites: true, annuaireExperience: true, annuaireAdresse: true, avisLocalActif: true, pays: true, ville: true, quartier: true,
+  region: true, departement: true, arrondissement: true,
   annuairePresentation: true, verificationStatus: true,
 }
 
@@ -422,6 +476,7 @@ async function mettreAJourAnnuaire(req, res) {
   if (!medecin) return res.status(404).json({ message: 'Profil médecin introuvable' })
 
   const { annuaireVisible, annuaireSpecialites, annuaireExperience, annuaireAdresse, avisLocalActif, pays, ville, quartier, annuairePresentation } = req.body
+  const { region, departement, arrondissement } = req.body
   const paysFinal = pays ?? medecin.pays
 
   // Un médecin non habilité peut préparer sa fiche, mais pas se rendre visible :
@@ -458,6 +513,10 @@ async function mettreAJourAnnuaire(req, res) {
   if (ville && paysFinal && !villesDe(paysFinal).includes(ville)) {
     return res.status(400).json({ message: 'Cette ville n\'est pas dans la liste du pays choisi' })
   }
+  const lieuCm = { region: region ?? null, departement: departement ?? null, arrondissement: arrondissement ?? null }
+  if ((region || departement || arrondissement) && (String(paysFinal).toLowerCase() !== 'cm' || !lieuCamerounValide(lieuCm))) {
+    return res.status(400).json({ message: "Ce lieu n'existe pas dans le découpage du Cameroun." })
+  }
 
   const data = { annuaireVisible }
   if (annuaireSpecialites !== undefined) data.annuaireSpecialites = annuaireSpecialites
@@ -467,6 +526,11 @@ async function mettreAJourAnnuaire(req, res) {
   if (pays !== undefined) data.pays = pays
   if (ville !== undefined) data.ville = ville
   if (quartier !== undefined) data.quartier = quartier
+  // Les trois niveaux s'écrivent ensemble : garder l'ancien arrondissement
+  // sous un nouveau département donnerait une fiche impossible.
+  if (region !== undefined || departement !== undefined || arrondissement !== undefined) Object.assign(data, lieuCm)
+  // Quitter le Cameroun efface le découpage, qui n'y aurait plus de sens.
+  if (pays !== undefined && String(pays).toLowerCase() !== 'cm') Object.assign(data, { region: null, departement: null, arrondissement: null })
   if (annuairePresentation !== undefined) data.annuairePresentation = annuairePresentation
 
   const maj = await prisma.medecinLocal.update({ where: { id: medecin.id }, data, select: SELECT_ANNUAIRE_MEDECIN })

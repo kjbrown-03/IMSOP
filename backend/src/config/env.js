@@ -30,7 +30,7 @@ function secretFort(name, nodeEnv) {
 }
 
 const nodeEnv = process.env.NODE_ENV || 'development'
-const TARIF_ANNUAIRE_BASE = parseInt(process.env.TARIF_ANNUAIRE_BASE_XAF || '1000', 10)
+const TARIF_ANNUAIRE_BASE = parseInt(process.env.TARIF_ANNUAIRE_BASE_XAF || '2000', 10)
 const FRAIS_PAIEMENT_ANNUAIRE_POURCENT = parseFloat(process.env.ANNUAIRE_FRAIS_PAIEMENT_POURCENT || '3')
 const TARIF_ANNUAIRE = parseInt(
   process.env.TARIF_ANNUAIRE_XAF || String(Math.ceil(TARIF_ANNUAIRE_BASE / (1 - FRAIS_PAIEMENT_ANNUAIRE_POURCENT / 100))),
@@ -124,8 +124,8 @@ module.exports = {
     STANDARD: parseInt(process.env.TARIF_STANDARD_XAF || '115000', 10),
     PRIORITAIRE: parseInt(process.env.TARIF_PRIORITAIRE_XAF || '165000', 10),
     URGENT: parseInt(process.env.TARIF_URGENT_XAF || '230000', 10),
-    // Le montant est grossi pour couvrir le frais de collecte : à 3 %, 1031
-    // XAF encaissés laissent environ 1000 XAF après le prélèvement du fournisseur.
+    // Le montant est grossi pour couvrir le frais de collecte : à 3 %, 2062
+    // XAF encaissés laissent environ 2000 XAF après le prélèvement du fournisseur.
     ANNUAIRE_BASE: TARIF_ANNUAIRE_BASE,
     ANNUAIRE_FRAIS_PAIEMENT_POURCENT: FRAIS_PAIEMENT_ANNUAIRE_POURCENT,
     ANNUAIRE: TARIF_ANNUAIRE,
