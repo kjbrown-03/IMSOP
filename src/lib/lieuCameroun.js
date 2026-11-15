@@ -44,6 +44,24 @@ export function pointDe(regions, { arrondissement, departement } = {}) {
   return null
 }
 
+// La position partagée par le patient est gardée dans CE navigateur, le temps
+// de l'onglet, pour afficher sur les résultats la distance qui le sépare de
+// chaque praticien. Elle n'est jamais envoyée au serveur.
+const CLE_POSITION = 'imsop.annuaire.position'
+
+export function memoriserPosition(lat, lng) {
+  try { sessionStorage.setItem(CLE_POSITION, JSON.stringify({ lat, lng })) } catch { /* stockage indisponible */ }
+}
+
+export function lirePosition() {
+  try {
+    const p = JSON.parse(sessionStorage.getItem(CLE_POSITION) || 'null')
+    return p && Number.isFinite(p.lat) && Number.isFinite(p.lng) ? p : null
+  } catch {
+    return null
+  }
+}
+
 // Au-delà, la personne n'est vraisemblablement pas au Cameroun : mieux vaut ne
 // rien remplir que la placer dans l'arrondissement frontalier le plus proche.
 const DISTANCE_MAX_KM = 60
