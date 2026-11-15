@@ -1511,7 +1511,6 @@
       "experience_one": "{{count}} year of experience",
       "experience_other": "{{count}} years of experience",
       "itineraire": "Directions on Google Maps",
-      "distanceVous": "≈ {{km}} km from you, as the crow flies",
       "distanceLieu": "≈ {{km}} km from {{lieu}}, as the crow flies",
       "distanceMemeArrondissement": "In your subdivision",
       "voirCarte": "View on map",

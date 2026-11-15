@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Loader2, LocateFixed } from 'lucide-react'
 import ListeDeroulante from '../ui/ListeDeroulante'
-import { lieuLePlusProche, memoriserPosition } from '../../lib/lieuCameroun'
+import { lieuLePlusProche } from '../../lib/lieuCameroun'
 
 /**
  * Où se trouve la personne : pays de résidence, puis — au Cameroun — région,
@@ -52,7 +52,6 @@ export default function ChoixLieu({ referentiels, valeur, onChange, classeChamp,
       ({ coords }) => {
         const lieu = lieuLePlusProche(regions, coords.latitude, coords.longitude)
         if (!lieu) return setGeo({ etat: 'erreur', message: t('annuaire.lieu.geoHorsCameroun') })
-        memoriserPosition(coords.latitude, coords.longitude)
         onChange({ ...valeur, pays: 'cm', ville: '', ...lieu })
         setGeo({ etat: 'ok' })
       },

@@ -1511,7 +1511,6 @@
       "experience_one": "{{count}} an d'expérience",
       "experience_other": "{{count}} ans d'expérience",
       "itineraire": "Itinéraire sur Google Maps",
-      "distanceVous": "≈ {{km}} km de vous, à vol d'oiseau",
       "distanceLieu": "≈ {{km}} km de {{lieu}}, à vol d'oiseau",
       "distanceMemeArrondissement": "Dans votre arrondissement",
       "voirCarte": "Voir sur la carte",
