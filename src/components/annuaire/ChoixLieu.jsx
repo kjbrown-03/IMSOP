@@ -53,7 +53,7 @@ export default function ChoixLieu({ referentiels, valeur, onChange, classeChamp,
         const lieu = lieuLePlusProche(regions, coords.latitude, coords.longitude)
         if (!lieu) return setGeo({ etat: 'erreur', message: t('annuaire.lieu.geoHorsCameroun') })
         onChange({ ...valeur, pays: 'cm', ville: '', ...lieu })
-        setGeo({ etat: 'ok', partiel: !lieu.arrondissement })
+        setGeo({ etat: 'ok' })
       },
       (err) => setGeo({
         etat: 'erreur',
@@ -73,7 +73,9 @@ export default function ChoixLieu({ referentiels, valeur, onChange, classeChamp,
 
   return (
     <div className="flex flex-col gap-4">
-      {geolocalisation && regions.length > 0 && (
+      {/* Une fois la position obtenue, le bloc disparaît : les listes remplies
+          suffisent à le montrer, un message de plus n'apprendrait rien. */}
+      {geolocalisation && regions.length > 0 && geo.etat !== 'ok' && (
         <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-primary)]/5 p-4 flex flex-col gap-2">
           <button
             type="button"
@@ -85,11 +87,6 @@ export default function ChoixLieu({ referentiels, valeur, onChange, classeChamp,
             {t('annuaire.lieu.geoBouton')}
           </button>
           <p className="text-xs text-[var(--color-text-secondary)]">{t('annuaire.lieu.geoAide')}</p>
-          {geo.etat === 'ok' && (
-            <p className="text-xs font-semibold text-emerald-700 dark:text-emerald-400">
-              {geo.partiel ? t('annuaire.lieu.geoPartiel') : t('annuaire.lieu.geoOk')}
-            </p>
-          )}
           {geo.etat === 'erreur' && <p className="text-xs font-semibold text-amber-700 dark:text-amber-400">{geo.message}</p>}
         </div>
       )}

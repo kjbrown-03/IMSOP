@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { ArrowRight, Leaf, Stethoscope } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Leaf, Stethoscope } from 'lucide-react'
 import Navbar from '../../components/layout/Navbar'
 
 /**
@@ -41,6 +41,15 @@ export default function AnnuaireChoix() {
       <Navbar />
       <main className="pt-16 pb-28 md:pb-16">
         <section className="w-full py-14 px-margin-mobile md:px-margin-desktop bg-[var(--color-surface)] border-b border-[var(--color-border)]">
+          <div className="max-w-[760px] mx-auto">
+            <Link
+              to="/"
+              className="inline-flex items-center gap-2 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors mb-6"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              {t('annuaire.recherche.retourAccueil')}
+            </Link>
+          </div>
           <div className="max-w-[760px] mx-auto text-center">
             <span className="font-label-sm text-label-sm text-[var(--color-primary)] uppercase tracking-wider">
               {t('annuaire.choix.eyebrow')}

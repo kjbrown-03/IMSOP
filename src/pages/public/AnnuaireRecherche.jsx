@@ -102,7 +102,7 @@ export default function AnnuaireRecherche({ typePratique = 'CONVENTIONNEL' }) {
               className="inline-flex items-center gap-2 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors mb-6"
             >
               <ArrowLeft className="w-4 h-4" />
-              {t('annuaire.recherche.retourAccueil')}
+              {t('annuaire.recherche.retourChoix')}
             </Link>
           </div>
           <div className="max-w-[760px] mx-auto text-center">

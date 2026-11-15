@@ -1460,6 +1460,7 @@
       "erreur": "The search failed. Please try again.",
       "tropCourt": "Describe your symptoms a little more (at least {{min}} characters).",
       "retourAccueil": "Back to home",
+      "retourChoix": "Back",
       "CONVENTIONNEL": {
         "eyebrow": "Conventional medicine",
         "titre": "The nearest doctor (specialist/GP) to you",
@@ -1567,7 +1568,7 @@
       },
       "TRADITIONNEL": {
         "titre": "Traditional medicine",
-        "description": "A recognised traditional practitioner, working with local pharmacopoeia and therapeutic knowledge, selected by the scientific committee on file.",
+        "description": "A recognised traditional practitioner, working with local pharmacopoeia and therapeutic knowledge, approved by the Order of Traditional Practitioners and the State of Cameroon.",
         "action": "Describe what I feel"
       },
       "note": "In both cases, IMSOP connects you: we do not book appointments on your behalf and make no diagnosis. In an emergency, call the emergency services."

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { AlertTriangle, Award, Building2, Loader2, Lock, LockOpen, Mail, MapPin, MessageCircle, Phone, Search, Stethoscope } from 'lucide-react'
+import { AlertTriangle, ArrowLeft, Award, Building2, Leaf, Loader2, Lock, LockOpen, Mail, MapPin, MessageCircle, Phone, Stethoscope } from 'lucide-react'
 import Navbar from '../../components/layout/Navbar'
 import { useAuthStore } from '../../store/useAuthStore'
 import { lireSession, roleActif, definirRoleActif } from '../../lib/session'
@@ -11,7 +11,12 @@ import { libelleLieu } from '../../lib/lieuCameroun'
 const ATTENTE_PAIEMENT_MS = 3000
 const ATTENTE_PAIEMENT_MAX_MS = 3 * 60 * 1000
 
-function Specialites({ cles, t }) {
+// Les spécialités sont déduites des symptômes par le dictionnaire de la
+// médecine conventionnelle. Sur la voie traditionnelle, afficher « Médecine
+// générale » à côté d'un tradipraticien était faux et déroutant : la
+// correspondance sert au classement, elle ne se montre pas.
+function Specialites({ cles, t, tradi }) {
+  if (tradi) return null
   return (
     <div className="flex flex-wrap gap-1.5">
       {cles.map((s) => (
@@ -26,14 +31,14 @@ function Specialites({ cles, t }) {
 // Avant paiement : ce que l'API rend est déjà sans nom ni contact. Le flou ici
 // n'est qu'une mise en scène de cette absence - il ne cache rien qui soit
 // réellement transmis au navigateur.
-function FicheFloutee({ fiche, t }) {
+function FicheFloutee({ fiche, t, tradi }) {
   return (
     <article className="relative rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5 overflow-hidden">
       <div className="flex items-start gap-4">
         <div className="w-12 h-12 rounded-full bg-[var(--color-surface-container)] shrink-0" />
         <div className="flex-1 min-w-0 flex flex-col gap-2">
           <div className="h-4 w-40 max-w-full rounded bg-[var(--color-surface-container-high)] blur-[3px]" aria-hidden="true" />
-          <Specialites cles={fiche.specialites} t={t} />
+          <Specialites cles={fiche.specialites} t={t} tradi={tradi} />
           <p className="text-sm text-[var(--color-text-secondary)] flex items-center gap-1.5">
             <MapPin className="w-3.5 h-3.5" /> {libelleLieu(fiche) || t('annuaire.resultats.villeInconnue')}
             <span className="inline-block h-3 w-20 rounded bg-[var(--color-surface-container-high)] blur-[3px] ml-1" aria-hidden="true" />
@@ -138,7 +143,7 @@ function urlWhatsApp(fiche, t) {
   return `https://wa.me/${numero}?text=${texte}`
 }
 
-function FicheComplete({ fiche, t, onContacter }) {
+function FicheComplete({ fiche, t, onContacter, tradi }) {
   const whatsappUrl = urlWhatsApp(fiche, t)
 
   function contactAuClic(event, lien) {
@@ -151,11 +156,11 @@ function FicheComplete({ fiche, t, onContacter }) {
     <article className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5">
       <div className="flex items-start gap-4">
         <div className="w-12 h-12 rounded-full bg-[var(--color-primary)] text-white flex items-center justify-center shrink-0">
-          <Stethoscope className="w-5 h-5" />
+          {tradi ? <Leaf className="w-5 h-5" /> : <Stethoscope className="w-5 h-5" />}
         </div>
         <div className="flex-1 min-w-0 flex flex-col gap-2">
           <h3 className="font-semibold text-[var(--color-text-main)]">{fiche.nom}</h3>
-          <Specialites cles={fiche.toutesSpecialites || fiche.specialites} t={t} />
+          <Specialites cles={fiche.toutesSpecialites || fiche.specialites} t={t} tradi={tradi} />
           <p className="text-sm text-[var(--color-text-secondary)] flex items-center gap-1.5">
             <MapPin className="w-3.5 h-3.5 shrink-0" />
             {[t(`annuaire.pays.${fiche.pays}`, { defaultValue: fiche.pays }), libelleLieu(fiche), fiche.quartier].filter(Boolean).join(' · ')}
@@ -404,8 +409,13 @@ export default function AnnuaireResultats() {
       <Navbar />
       <main className="pt-16 pb-28 md:pb-16">
         <section className="max-w-[860px] mx-auto px-margin-mobile md:px-margin-desktop py-stack-lg flex flex-col gap-6">
-          <Link to="/annuaire" className="inline-flex items-center gap-1.5 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] self-start">
-            <Search className="w-4 h-4" /> {t('annuaire.resultats.nouvelleRecherche')}
+          {/* Retour au formulaire de la même voie : un patient qui cherchait un
+              tradipraticien ne doit pas retomber sur le choix, ni sur l'autre voie. */}
+          <Link
+            to={recherche?.typePratique === 'TRADITIONNEL' ? '/annuaire/traditionnel' : recherche ? '/annuaire/conventionnel' : '/annuaire'}
+            className="inline-flex items-center gap-2 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors self-start"
+          >
+            <ArrowLeft className="w-4 h-4" /> {t('annuaire.resultats.nouvelleRecherche')}
           </Link>
 
           {chargement && (
@@ -443,8 +453,9 @@ export default function AnnuaireResultats() {
                 <p className="text-sm text-[var(--color-text-secondary)] flex items-center gap-1.5">
                   <MapPin className="w-3.5 h-3.5" />
                   {[t(`annuaire.pays.${recherche.pays}`, { defaultValue: recherche.pays }), libelleLieu(recherche)].filter(Boolean).join(' · ')}
-                  {' — '}
-                  {recherche.specialites.map((s) => t(`annuaire.specialites.${s}`)).join(', ')}
+                  {recherche.typePratique !== 'TRADITIONNEL' && recherche.specialites.length > 0 && (
+                    <>{' — '}{recherche.specialites.map((s) => t(`annuaire.specialites.${s}`)).join(', ')}</>
+                  )}
                 </p>
               </header>
 
@@ -520,8 +531,8 @@ export default function AnnuaireResultats() {
               <div className="grid grid-cols-1 gap-4">
                 {recherche.resultats.map((fiche) =>
                   recherche.statut === 'DEBLOQUEE' && (!recherche.specialisteChoisiId || recherche.specialisteChoisiId === fiche.id)
-                    ? <FicheComplete key={fiche.id} fiche={fiche} t={t} onContacter={contacterSpecialiste} />
-                    : <FicheFloutee key={fiche.id} fiche={fiche} t={t} />,
+                    ? <FicheComplete key={fiche.id} fiche={fiche} t={t} onContacter={contacterSpecialiste} tradi={recherche.typePratique === 'TRADITIONNEL'} />
+                    : <FicheFloutee key={fiche.id} fiche={fiche} t={t} tradi={recherche.typePratique === 'TRADITIONNEL'} />,
                 )}
               </div>
 

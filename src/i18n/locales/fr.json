@@ -1460,6 +1460,7 @@
       "erreur": "La recherche a échoué. Réessayez.",
       "tropCourt": "Décrivez un peu plus vos symptômes (au moins {{min}} caractères).",
       "retourAccueil": "Retour à l'accueil",
+      "retourChoix": "Retour",
       "CONVENTIONNEL": {
         "eyebrow": "Médecine conventionnelle",
         "titre": "Le médecin (spécialiste/généraliste) le plus proche de vous",
@@ -1567,7 +1568,7 @@
       },
       "TRADITIONNEL": {
         "titre": "Médecine traditionnelle",
-        "description": "Un tradipraticien reconnu, exerçant la pharmacopée et les savoirs thérapeutiques locaux, retenu par le comité scientifique sur dossier.",
+        "description": "Un tradipraticien reconnu, exerçant la pharmacopée et les savoirs thérapeutiques locaux, retenu par l'Ordre des tradipraticiens et l'État du Cameroun.",
         "action": "Décrire ce que je ressens"
       },
       "note": "Dans les deux cas, IMSOP vous met en relation : nous ne prenons pas de rendez-vous à votre place et ne posons aucun diagnostic. En cas d'urgence, appelez les secours."
