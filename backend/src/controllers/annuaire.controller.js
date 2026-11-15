@@ -9,6 +9,7 @@ const { SPECIALITES_LOCALES } = require('../lib/specialitesLocales')
 const paiements = require('./paiements.controller')
 const env = require('../config/env')
 const transcription = require('../services/transcriptionService')
+const { estAdresseFictive } = require('../lib/mailer')
 
 /**
  * Annuaire « Trouver un médecin » (zone CEMAC).
@@ -75,7 +76,8 @@ function ficheComplete(resultat, specialitesRecherchees) {
     ...ficheFloutee(resultat, specialitesRecherchees),
     nom: m.user.fullName,
     telephone: m.user.phone,
-    email: m.user.email,
+    // Une adresse d'import (`.invalid`) n'est pas un moyen de contact.
+    email: estAdresseFictive(m.user.email) ? null : m.user.email,
     etablissement: m.etablissement,
     pays: m.pays,
     quartier: m.quartier,
@@ -93,6 +95,11 @@ const INCLUDE_RESULTATS = {
     orderBy: { score: 'desc' },
     include: { medecin: { include: { user: { select: safeUserSelect } } } },
   },
+}
+
+// Nombre de contacts payés qui restent à choisir.
+function contactsDisponibles(recherche) {
+  return Math.max(0, recherche.contactsPayes - recherche.contactsChoisis.length)
 }
 
 function serialiser(recherche) {
@@ -115,8 +122,14 @@ function serialiser(recherche) {
     createdAt: recherche.createdAt,
     debloqueeLe: recherche.debloqueeLe,
     specialisteChoisiId: debloquee ? recherche.specialisteChoisiId : null,
+    contactsPayes: recherche.contactsPayes,
+    contactsChoisis: recherche.contactsChoisis,
+    contactsDisponibles: contactsDisponibles(recherche),
+    // Seuls les contacts choisis partent en clair. Avant, le paiement révélait
+    // toutes les fiches jusqu'au premier choix : le patient lisait tous les
+    // numéros pour le prix d'un seul.
     resultats: recherche.resultats.map((r) =>
-      debloquee && (!recherche.specialisteChoisiId || recherche.specialisteChoisiId === r.id)
+      recherche.contactsChoisis.includes(r.id)
         ? ficheComplete(r, recherche.specialites)
         : ficheFloutee(r, recherche.specialites),
     ),
@@ -288,35 +301,34 @@ async function consulter(req, res) {
 async function choisirSpecialiste(req, res) {
   const { recherche, error, message } = await chargerRecherche(req)
   if (error) return res.status(error).json({ message })
-  if (recherche.statut !== 'DEBLOQUEE') return res.status(403).json({ message: 'La recherche doit être payée avant de choisir un spécialiste' })
+  if (recherche.contactsPayes === 0) return res.status(403).json({ message: 'La mise en relation doit être payée avant de choisir un praticien' })
 
   const resultat = recherche.resultats.find((r) => r.id === req.params.resultatId)
-  if (!resultat) return res.status(404).json({ message: 'Ce spécialiste ne fait pas partie de cette recherche' })
-  if (recherche.specialisteChoisiId && recherche.specialisteChoisiId !== resultat.id) {
-    return res.status(409).json({ message: 'Un spécialiste a déjà été choisi pour cette recherche' })
-  }
+  if (!resultat) return res.status(404).json({ message: 'Ce praticien ne fait pas partie de cette recherche' })
+  // Déjà choisi : rien à faire, et surtout rien à décompter une seconde fois.
+  if (recherche.contactsChoisis.includes(resultat.id)) return res.json(serialiser(recherche))
 
-  if (!recherche.specialisteChoisiId) {
-    const maj = await prisma.rechercheAnnuaire.updateMany({
-      where: { id: recherche.id, statut: 'DEBLOQUEE', specialisteChoisiId: null },
-      data: { specialisteChoisiId: resultat.id },
-    })
-    if (maj.count === 0) {
-      const actuelle = await prisma.rechercheAnnuaire.findUnique({ where: { id: recherche.id }, include: INCLUDE_RESULTATS })
-      if (actuelle?.specialisteChoisiId !== resultat.id) {
-        return res.status(409).json({ message: 'Un autre spécialiste a déjà été choisi pour cette recherche' })
-      }
-      return res.json(serialiser(actuelle))
-    }
-  }
-
+  // Écriture conditionnelle, en une seule requête : deux clics simultanés sur
+  // deux fiches ne doivent pas consommer un même paiement deux fois. Une
+  // lecture suivie d'une écriture laisserait passer les deux.
+  const maj = await prisma.$executeRaw`
+    UPDATE "RechercheAnnuaire"
+    SET "contactsChoisis" = array_append("contactsChoisis", ${resultat.id}),
+        "specialisteChoisiId" = ${resultat.id}
+    WHERE "id" = ${recherche.id}
+      AND NOT (${resultat.id} = ANY("contactsChoisis"))
+      AND cardinality("contactsChoisis") < "contactsPayes"`
   const actuelle = await prisma.rechercheAnnuaire.findUnique({ where: { id: recherche.id }, include: INCLUDE_RESULTATS })
+  if (maj === 0 && !actuelle.contactsChoisis.includes(resultat.id)) {
+    return res.status(402).json({ message: 'Chaque mise en relation donne un seul contact. Payez une nouvelle mise en relation pour obtenir celui-ci.' })
+  }
+
   await logAction({
     userId: req.userId,
     action: 'ANNUAIRE_SPECIALISTE_CHOISI',
     entityType: 'RechercheAnnuaire',
     entityId: recherche.id,
-    metadata: { resultatId: resultat.id },
+    metadata: { resultatId: resultat.id, contactsPayes: actuelle.contactsPayes, contactsChoisis: actuelle.contactsChoisis.length },
     ipAddress: req.ip,
   })
   return res.json(serialiser(actuelle))
@@ -327,8 +339,11 @@ async function initierPaiement(req, res) {
   if (error) return res.status(error).json({ message })
 
   if (recherche.urgence) return res.status(400).json({ message: 'Cette recherche a signalé une urgence : contactez les services d\'urgence, aucun paiement n\'est requis' })
-  if (recherche.statut === 'DEBLOQUEE') return res.status(400).json({ message: 'Cette recherche est déjà débloquée' })
   if (recherche.resultats.length === 0) return res.status(400).json({ message: 'Aucun médecin à relier pour cette recherche' })
+  // On ne fait pas payer un contact de plus tant qu'un contact payé attend
+  // d'être choisi, ni quand il ne reste plus personne à qui être relié.
+  if (contactsDisponibles(recherche) > 0) return res.status(400).json({ message: 'Un contact payé vous attend : choisissez d\'abord votre praticien' })
+  if (recherche.contactsChoisis.length >= recherche.resultats.length) return res.status(400).json({ message: 'Vous avez déjà obtenu tous les contacts de cette recherche' })
 
   // Pas de compte requis. L'e-mail vient du corps, ou du compte si la
   // personne est connectée et n'en a pas donné d'autre.
@@ -409,7 +424,9 @@ async function simulerPaiement(req, res) {
 
   const { recherche, error, message } = await chargerRecherche(req)
   if (error) return res.status(error).json({ message })
-  if (recherche.statut === 'DEBLOQUEE') return res.json(serialiser(recherche))
+  if (contactsDisponibles(recherche) > 0 || recherche.contactsChoisis.length >= recherche.resultats.length) {
+    return res.json(serialiser(recherche))
+  }
 
   // En mode public de test, ne jamais convertir une tentative réelle de
   // paiement en paiement simulé : le webhook du fournisseur peut encore aboutir.
@@ -425,7 +442,9 @@ async function simulerPaiement(req, res) {
   // S'il n'y a pas encore de paiement (fournisseur injoignable, ou bouton
   // cliqué directement), on en crée un fictif : la simulation sert justement
   // à dérouler le parcours sans dépendre du fournisseur.
-  let paiement = await prisma.paiement.findFirst({ where: { rechercheAnnuaireId: recherche.id }, orderBy: { createdAt: 'desc' } })
+  // Le paiement le plus récent encore en attente : un paiement déjà confirmé a
+  // déjà donné son contact, le reconfirmer ne compterait rien.
+  let paiement = await prisma.paiement.findFirst({ where: { rechercheAnnuaireId: recherche.id, status: { not: 'PAYE' } }, orderBy: { createdAt: 'desc' } })
   if (!paiement) {
     paiement = await prisma.paiement.create({
       data: {

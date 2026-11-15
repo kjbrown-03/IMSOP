@@ -199,7 +199,13 @@ describe('Annuaire — mise en relation par paiement', () => {
     const apres = await api().get(`/api/annuaire/recherches/${rechercheId}`).expect(200)
     assert.equal(apres.body.statut, 'DEBLOQUEE')
     assert.ok(apres.body.debloqueeLe)
-    const fiche = apres.body.resultats[0]
+    assert.equal(apres.body.contactsDisponibles, 1)
+    // Payé mais pas encore choisi : aucune coordonnée ne part encore.
+    assert.equal(apres.body.resultats[0].telephone, undefined)
+
+    const choix = await api().post(`/api/annuaire/recherches/${rechercheId}/choisir/${apres.body.resultats[0].id}`).expect(200)
+    assert.equal(choix.body.contactsDisponibles, 0)
+    const fiche = choix.body.resultats[0]
     assert.equal(fiche.nom, medecinUser.fullName)
     assert.equal(fiche.telephone, '+237 6 99 00 00 00')
     assert.equal(fiche.email, medecinUser.email)
@@ -255,6 +261,42 @@ describe('Annuaire — mise en relation par paiement', () => {
     const r = await api().post('/api/annuaire/recherches').send({ symptomes: SYMPTOMES_DERMATO, pays: 'td' }).expect(400)
     assert.match(r.body.message, /pas encore disponible/i)
     assert.equal(await prisma.rechercheAnnuaire.count(), 0, 'rien ne doit être enregistré')
+  })
+
+  test('un paiement donne un seul contact ; un autre contact se paie à nouveau', async () => {
+    await medecinVisible({ specialites: ['dermatologie'] })
+    await medecinVisible({ specialites: ['dermatologie'] })
+    const res = await api().post('/api/annuaire/recherches').send({ symptomes: SYMPTOMES_DERMATO, pays: 'cm' }).expect(201)
+    const id = res.body.id
+    const [a, b] = res.body.resultats.map((r) => r.id)
+
+    // Avant tout paiement, choisir est refusé.
+    await api().post(`/api/annuaire/recherches/${id}/choisir/${a}`).expect(403)
+
+    await api().post(`/api/annuaire/recherches/${id}/paiement`).send({ email: 'p@exemple.cm' }).expect(201)
+    await confirmerParWebhook()
+    const premier = await api().post(`/api/annuaire/recherches/${id}/choisir/${a}`).expect(200)
+    assert.ok(premier.body.resultats.find((r) => r.id === a).telephone)
+    assert.equal(premier.body.resultats.find((r) => r.id === b).telephone, undefined, 'le second reste masqué')
+
+    // Second contact sans payer : refusé. Rechoisir le premier, lui, ne coûte rien.
+    const refus = await api().post(`/api/annuaire/recherches/${id}/choisir/${b}`).expect(402)
+    assert.match(refus.body.message, /nouvelle mise en relation/i)
+    await api().post(`/api/annuaire/recherches/${id}/choisir/${a}`).expect(200)
+
+    // Nouveau paiement, nouveau contact.
+    simulerFapshi({ transId: 'FAPSHI-ANN-2' })
+    await api().post(`/api/annuaire/recherches/${id}/paiement`).send({ email: 'p@exemple.cm' }).expect(201)
+    await confirmerParWebhook('FAPSHI-ANN-2')
+    // Un webhook rejoué ne crédite pas un contact de plus.
+    await confirmerParWebhook('FAPSHI-ANN-2')
+    const second = await api().post(`/api/annuaire/recherches/${id}/choisir/${b}`).expect(200)
+    assert.ok(second.body.resultats.every((r) => r.telephone))
+    assert.equal(second.body.contactsPayes, 2)
+
+    // Plus personne à qui être relié : on ne fait plus payer.
+    const fin = await api().post(`/api/annuaire/recherches/${id}/paiement`).send({ email: 'p@exemple.cm' }).expect(400)
+    assert.match(fin.body.message, /tous les contacts/i)
   })
 
   test('une recherche déjà débloquée ne se paie pas deux fois', async () => {

@@ -16,7 +16,14 @@ const transporter = nodemailer.createTransport({
 // stay reliably readable during local testing.
 const DEV_MAILBOX_PATH = path.join(__dirname, '..', '..', '.dev-mailbox.log')
 
+// Comptes créés par import (tradipraticiens de la cartographie) : ils n'ont
+// pas d'adresse, on leur en donne une sous `.invalid`, domaine réservé qui ne
+// peut appartenir à personne (RFC 2606). Ne rien y envoyer évite des rebonds
+// qui feraient passer le domaine d'envoi pour un expéditeur de spam.
+const estAdresseFictive = (email) => /\.invalid$/i.test(String(email || '').trim())
+
 async function sendMail({ to, subject, html, text, attachments }) {
+  if (estAdresseFictive(to)) return { skipped: true }
   // No SMTP credentials outside production means there is no relay to talk to:
   // attempting the round-trip would hang the caller on a connection timeout.
   // Production is deliberately excluded from this branch - there, a missing
@@ -41,4 +48,4 @@ async function sendMail({ to, subject, html, text, attachments }) {
   return transporter.sendMail({ from: env.smtp.from, to, subject, html, text, attachments })
 }
 
-module.exports = { sendMail }
+module.exports = { sendMail, estAdresseFictive }

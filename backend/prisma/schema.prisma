@@ -440,6 +440,11 @@ model RechercheAnnuaire {
   statut       RechercheAnnuaireStatut @default(FLOUTEE)
   debloqueeLe  DateTime?
   specialisteChoisiId String?
+  // Une mise en relation payée = un contact. `contactsPayes` compte les
+  // paiements confirmés, `contactsChoisis` les résultats dont les coordonnées
+  // ont été révélées. Un nouveau contact exige un nouveau paiement.
+  contactsPayes   Int      @default(0)
+  contactsChoisis String[] @default([])
   createdAt    DateTime                @default(now())
 
   resultats RechercheAnnuaireResultat[]

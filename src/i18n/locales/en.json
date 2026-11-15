@@ -118,7 +118,7 @@
           "etape2Titre": "Say where you are",
           "etape2Texte": "Turn on your location, or choose your region, division and subdivision. Doctors are ranked from nearest to farthest.",
           "etape3Titre": "Get connected",
-          "etape3Texte": "You pay for the connection and receive the name, phone number and address of the selected doctors, so you can contact them directly."
+          "etape3Texte": "You pay for the connection, choose a doctor and receive their name, phone number and address. Another contact means a new payment."
         },
         "tradi": {
           "titre": "Traditional practitioner",
@@ -127,7 +127,7 @@
           "etape2Titre": "Say where you are",
           "etape2Texte": "Turn on your location, or choose your region, division and subdivision. We look for traditional practitioners selected by the scientific committee near you.",
           "etape3Titre": "Get connected",
-          "etape3Texte": "You pay for the connection and receive the contact details of the selected practitioners, so you can contact them directly."
+          "etape3Texte": "You pay for the connection, choose a traditional practitioner and receive their contact details. Another contact means a new payment."
         }
       }
     },
@@ -1488,8 +1488,8 @@
       "aucunAide": "No registered practitioner covers these symptoms yet. Come back later — new practitioners join regularly. You are not charged.",
       "villeInconnue": "City not provided",
       "verrouille": "Contact details locked",
-      "deblocageTitre": "Get connected with these doctors",
-      "deblocageTexte": "We connect you with every doctor in this search: you receive their name, phone, email, practice and neighbourhood.",
+      "deblocageTitre": "Get connected with a practitioner",
+      "deblocageTexte": "After payment, you choose ONE practitioner from this list and receive their name, phone and address. Each connection gives one contact: for another practitioner, you pay for a new connection.",
       "tarifDetail": "Your service: {{base}} {{devise}} · estimated payment fee: {{frais}} {{devise}} · total: {{total}} {{devise}}.",
       "comptePatientRequis": "Getting connected requires a patient account.",
       "debloquer": "Connect me — {{montant}} {{devise}}",
@@ -1497,7 +1497,13 @@
       "attenteAide": "We are waiting for your payment to be confirmed. Did not pay or gave up?",
       "attenteAnnuler": "Try the payment again",
       "erreurPaiement": "The payment could not be started. Please try again.",
-      "rappelDebloque": "You are now connected with these doctors: contact them directly. IMSOP does not book appointments and does not replace a consultation.",
+      "rappelDebloque": "Contact your chosen practitioner directly: their details stay available here. IMSOP does not book appointments and does not replace a consultation.",
+      "choisirMedecin": "Choose this doctor",
+      "choisirTradi": "Choose this traditional practitioner",
+      "choixDisponible": "Payment confirmed. Choose the practitioner you want to contact: this payment gives one contact.",
+      "choixConfirmer": "This payment gives one contact. Do you really want to choose this practitioner? To contact another one, you will need to pay again.",
+      "autreContactTitre": "Get another contact",
+      "autreContactTexte": "Each connection gives one contact. To be connected with another practitioner from this search, pay for a new connection.",
       "emailLabel": "Your email address",
       "emailPlaceholder": "you@example.com",
       "emailAide": "No account needed. This email is used for your payment and to find your connection again.",

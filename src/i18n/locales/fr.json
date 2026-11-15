@@ -118,7 +118,7 @@
           "etape2Titre": "Dites où vous êtes",
           "etape2Texte": "Activez votre localisation, ou choisissez votre région, votre département et votre arrondissement. Les médecins sont classés du plus proche au plus éloigné.",
           "etape3Titre": "Soyez mis en relation",
-          "etape3Texte": "Vous payez la mise en relation et recevez le nom, le téléphone et l'adresse des médecins retenus, pour les contacter directement."
+          "etape3Texte": "Vous payez la mise en relation, choisissez un médecin et recevez son nom, son téléphone et son adresse. Un autre contact se paie à nouveau."
         },
         "tradi": {
           "titre": "Tradipraticien",
@@ -127,7 +127,7 @@
           "etape2Titre": "Dites où vous êtes",
           "etape2Texte": "Activez votre localisation, ou choisissez votre région, votre département et votre arrondissement. Nous cherchons les tradipraticiens retenus par le comité scientifique près de chez vous.",
           "etape3Titre": "Soyez mis en relation",
-          "etape3Texte": "Vous payez la mise en relation et recevez les coordonnées des tradipraticiens retenus, pour les contacter directement."
+          "etape3Texte": "Vous payez la mise en relation, choisissez un tradipraticien et recevez ses coordonnées. Un autre contact se paie à nouveau."
         }
       }
     },
@@ -1488,8 +1488,8 @@
       "aucunAide": "Aucun praticien inscrit ne couvre ces symptômes pour le moment. Revenez plus tard : de nouveaux praticiens rejoignent l'annuaire régulièrement. Rien ne vous est facturé.",
       "villeInconnue": "Ville non renseignée",
       "verrouille": "Coordonnées verrouillées",
-      "deblocageTitre": "Être mis en relation avec ces médecins",
-      "deblocageTexte": "Nous vous relions à tous les médecins de cette recherche : vous recevez leur nom, leur téléphone, leur e-mail, leur établissement et leur quartier.",
+      "deblocageTitre": "Être mis en relation avec un praticien",
+      "deblocageTexte": "Après le paiement, vous choisissez UN praticien de cette liste et recevez son nom, son téléphone et son adresse. Une mise en relation donne un seul contact : pour un autre praticien, il faudra payer une nouvelle mise en relation.",
       "tarifDetail": "Votre service : {{base}} {{devise}} · frais de paiement estimés : {{frais}} {{devise}} · total : {{total}} {{devise}}.",
       "comptePatientRequis": "La mise en relation se fait depuis un compte patient.",
       "debloquer": "Me mettre en relation — {{montant}} {{devise}}",
@@ -1497,7 +1497,13 @@
       "attenteAide": "Nous attendons la confirmation de votre paiement. Vous n'avez pas payé ou avez abandonné ?",
       "attenteAnnuler": "Réessayer le paiement",
       "erreurPaiement": "Le paiement n'a pas pu être lancé. Réessayez.",
-      "rappelDebloque": "Vous êtes mis en relation avec ces médecins : contactez-les directement. IMSOP ne fixe pas de rendez-vous et ne remplace pas la consultation.",
+      "rappelDebloque": "Contactez directement le praticien choisi : ses coordonnées restent disponibles ici. IMSOP ne fixe pas de rendez-vous et ne remplace pas la consultation.",
+      "choisirMedecin": "Choisir ce médecin",
+      "choisirTradi": "Choisir ce tradipraticien",
+      "choixDisponible": "Paiement confirmé. Choisissez le praticien que vous voulez contacter : ce paiement donne un seul contact.",
+      "choixConfirmer": "Ce paiement donne un seul contact. Voulez-vous vraiment choisir ce praticien ? Pour en contacter un autre, il faudra payer à nouveau.",
+      "autreContactTitre": "Obtenir un autre contact",
+      "autreContactTexte": "Une mise en relation donne un seul contact. Pour être relié à un autre praticien de cette recherche, payez une nouvelle mise en relation.",
       "emailLabel": "Votre adresse e-mail",
       "emailPlaceholder": "vous@exemple.com",
       "emailAide": "Aucun compte nécessaire. Cet e-mail sert à votre paiement et à retrouver votre mise en relation.",

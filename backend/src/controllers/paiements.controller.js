@@ -95,7 +95,10 @@ async function confirmerPaiement(paiement) {
   if (paiement.rechercheAnnuaireId) {
     await prisma.rechercheAnnuaire.update({
       where: { id: paiement.rechercheAnnuaireId },
-      data: { statut: 'DEBLOQUEE', debloqueeLe: new Date() },
+      // Incrément, pas affectation : chaque paiement confirmé ouvre droit à un
+      // contact de plus. La garde `count === 0` plus haut empêche qu'un même
+      // paiement, rejoué par le webhook, en compte deux.
+      data: { statut: 'DEBLOQUEE', debloqueeLe: new Date(), contactsPayes: { increment: 1 } },
     })
     await logAction({
       action: 'ANNUAIRE_DEBLOQUE',

@@ -31,7 +31,7 @@ function Specialites({ cles, t, tradi }) {
 // Avant paiement : ce que l'API rend est déjà sans nom ni contact. Le flou ici
 // n'est qu'une mise en scène de cette absence - il ne cache rien qui soit
 // réellement transmis au navigateur.
-function FicheFloutee({ fiche, t, tradi }) {
+function FicheFloutee({ fiche, t, tradi, onChoisir, choixEnCours }) {
   return (
     <article className="relative rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5 overflow-hidden">
       <div className="flex items-start gap-4">
@@ -51,6 +51,17 @@ function FicheFloutee({ fiche, t, tradi }) {
         </div>
         <Lock className="w-4 h-4 text-[var(--color-text-secondary)] shrink-0" aria-label={t('annuaire.resultats.verrouille')} />
       </div>
+      {onChoisir && (
+        <button
+          type="button"
+          onClick={() => onChoisir(fiche.id)}
+          disabled={choixEnCours}
+          className="relative mt-4 inline-flex items-center gap-2 rounded-full bg-[var(--color-primary)] text-white px-5 py-2.5 text-sm font-bold hover:opacity-90 disabled:opacity-50"
+        >
+          {choixEnCours ? <Loader2 className="w-4 h-4 animate-spin" /> : <LockOpen className="w-4 h-4" />}
+          {t(tradi ? 'annuaire.resultats.choisirTradi' : 'annuaire.resultats.choisirMedecin')}
+        </button>
+      )}
     </article>
   )
 }
@@ -309,7 +320,7 @@ export default function AnnuaireResultats() {
     if (!debutAttente.current) debutAttente.current = Date.now()
     const timer = setInterval(async () => {
       const data = await charger()
-      if (data?.statut === 'DEBLOQUEE' || Date.now() - debutAttente.current > ATTENTE_PAIEMENT_MAX_MS) {
+      if (data?.contactsDisponibles > 0 || Date.now() - debutAttente.current > ATTENTE_PAIEMENT_MAX_MS) {
         setAttenteConfirmation(false)
         debutAttente.current = null
       }
@@ -320,12 +331,12 @@ export default function AnnuaireResultats() {
   // Retour du fournisseur : si un paiement est en attente, on commence à
   // guetter la confirmation sans attendre un clic.
   useEffect(() => {
-    if (recherche && recherche.statut === 'FLOUTEE' && !recherche.urgence && recherche.nombre > 0) {
+    if (recherche && recherche.contactsDisponibles === 0 && !recherche.urgence && recherche.nombre > 0) {
       try {
         if (sessionStorage.getItem(`imsop.annuaire.paiement.${id}`) === '1') setAttenteConfirmation(true)
       } catch { /* stockage indisponible */ }
     }
-    if (recherche?.statut === 'DEBLOQUEE') {
+    if (recherche?.contactsDisponibles > 0) {
       try { sessionStorage.removeItem(`imsop.annuaire.paiement.${id}`) } catch { /* idem */ }
     }
   }, [recherche, id])
@@ -383,23 +394,22 @@ export default function AnnuaireResultats() {
     }
   }
 
-  async function contacterSpecialiste(resultatId, lien) {
+  // Un paiement = un contact : on confirme avant de consommer le paiement sur
+  // une fiche, un clic malheureux coûterait une nouvelle mise en relation.
+  async function choisir(resultatId) {
+    if (!window.confirm(t('annuaire.resultats.choixConfirmer'))) return
     setContactEnCours(true)
     setErreur(null)
-    const nouvelOnglet = lien.startsWith('https://') ? window.open('about:blank', '_blank') : null
-    if (nouvelOnglet) nouvelOnglet.opener = null
     try {
       const { data } = await api.post(`/annuaire/recherches/${id}/choisir/${resultatId}`)
       setRecherche(data)
-      if (nouvelOnglet) nouvelOnglet.location.href = lien
-      else window.location.href = lien
     } catch (err) {
-      nouvelOnglet?.close()
       setErreur(err.response?.data?.message || t('annuaire.resultats.erreurPaiement'))
       await charger()
     } finally {
       setContactEnCours(false)
     }
+  }
   }
 
   const tarif = recherche?.tarif
@@ -465,11 +475,21 @@ export default function AnnuaireResultats() {
                 </p>
               )}
 
-              {recherche.statut === 'FLOUTEE' && recherche.nombre > 0 && (
+              {recherche.contactsDisponibles > 0 && (
+                <p className="rounded-2xl border-2 border-emerald-500 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-800 dark:text-emerald-200 p-4 text-sm font-semibold">
+                  {t('annuaire.resultats.choixDisponible')}
+                </p>
+              )}
+
+              {recherche.contactsDisponibles === 0 && recherche.nombre > recherche.contactsChoisis.length && (
                 <div className="rounded-2xl border-2 border-[var(--color-primary)] bg-[var(--color-surface)] p-5 flex flex-col gap-4">
                   <div>
-                    <p className="font-semibold text-[var(--color-text-main)]">{t('annuaire.resultats.deblocageTitre')}</p>
-                    <p className="text-sm text-[var(--color-text-secondary)]">{t('annuaire.resultats.deblocageTexte')}</p>
+                    <p className="font-semibold text-[var(--color-text-main)]">
+                      {t(recherche.contactsChoisis.length ? 'annuaire.resultats.autreContactTitre' : 'annuaire.resultats.deblocageTitre')}
+                    </p>
+                    <p className="text-sm text-[var(--color-text-secondary)]">
+                      {t(recherche.contactsChoisis.length ? 'annuaire.resultats.autreContactTexte' : 'annuaire.resultats.deblocageTexte')}
+                    </p>
                     <p className="text-xs text-[var(--color-text-secondary)]">
                       {t('annuaire.resultats.tarifDetail', {
                         base: tarif.baseAmount.toLocaleString('fr-FR'),
@@ -530,18 +550,23 @@ export default function AnnuaireResultats() {
 
               <div className="grid grid-cols-1 gap-4">
                 {recherche.resultats.map((fiche) =>
-                  recherche.statut === 'DEBLOQUEE' && (!recherche.specialisteChoisiId || recherche.specialisteChoisiId === fiche.id)
-                    ? <FicheComplete key={fiche.id} fiche={fiche} t={t} onContacter={contacterSpecialiste} tradi={recherche.typePratique === 'TRADITIONNEL'} />
-                    : <FicheFloutee key={fiche.id} fiche={fiche} t={t} tradi={recherche.typePratique === 'TRADITIONNEL'} />,
+                  recherche.contactsChoisis.includes(fiche.id)
+                    ? <FicheComplete key={fiche.id} fiche={fiche} t={t} tradi={recherche.typePratique === 'TRADITIONNEL'} />
+                    : (
+                      <FicheFloutee
+                        key={fiche.id}
+                        fiche={fiche}
+                        t={t}
+                        tradi={recherche.typePratique === 'TRADITIONNEL'}
+                        onChoisir={recherche.contactsDisponibles > 0 ? choisir : null}
+                        choixEnCours={contactEnCours}
+                      />
+                    ),
                 )}
               </div>
 
-              {recherche.statut === 'DEBLOQUEE' && (
-                <p className="text-xs text-[var(--color-text-secondary)]">
-                  {contactEnCours ? 'Enregistrement de votre choix…' : recherche.specialisteChoisiId
-                    ? 'Vous avez choisi ce spécialiste. Les autres fiches restent masquées pour cette recherche.'
-                    : 'Choisissez un spécialiste en le contactant par WhatsApp, téléphone ou e-mail ; les autres fiches seront alors masquées.'}
-                </p>
+              {recherche.contactsChoisis.length > 0 && (
+                <p className="text-xs text-[var(--color-text-secondary)]">{t('annuaire.resultats.rappelDebloque')}</p>
               )}
             </>
           )}
