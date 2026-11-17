@@ -46,7 +46,7 @@ export const useAuthStore = create((set, get) => ({
     } catch (err) {
       const message = errorMessage(err, 'Connexion impossible')
       set({ loading: false, error: message })
-      return { ok: false, error: message }
+      return { ok: false, error: message, espace: err.response?.data?.espace }
     }
   },
 

@@ -162,6 +162,8 @@ export default function Accueil() {
           meta:
             tem.roleAuteur === 'MEDECIN_LOCAL'
               ? t('public.home.testimonialRoleDoctor')
+              : tem.roleAuteur === 'TRADIPRATICIEN'
+              ? t('public.home.testimonialRoleTradipraticien')
               : t('public.home.testimonialRolePatient'),
           pastille: PASTILLES[idx % PASTILLES.length],
           variante: idx % 3 === 2 ? 'sombre' : 'clair',

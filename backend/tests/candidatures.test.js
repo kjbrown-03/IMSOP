@@ -4,7 +4,7 @@ const assert = require('node:assert/strict')
 
 const { api, entete } = require('./helpers/http')
 const { prisma, viderBase, fermerBase } = require('./helpers/db')
-const { creerCoordinateur, creerAdmin, creerSpecialiste, creerUtilisateur } = require('./helpers/factories')
+const { creerCoordinateur, creerAdmin, creerSpecialiste, creerUtilisateur, creerMedecinLocal } = require('./helpers/factories')
 const s3 = require('../src/lib/s3')
 
 // Le stockage n'est pas forcément joignable depuis la suite : on remplace les
@@ -420,6 +420,28 @@ test('Candidatures — création du compte par la coordination', async (t) => {
     const res = await deposer(champs).expect(201)
     return { coordinateur, candidature: await prisma.candidature.findUnique({ where: { id: res.body.id } }) }
   }
+
+  await t.test('un tradipraticien retenu reçoit un compte TRADIPRATICIEN, pas MEDECIN_LOCAL', async () => {
+    const { coordinateur, candidature } = await candidatureAcceptee(medecin({ typePratique: 'TRADITIONNEL' }))
+    const res = await api()
+      .post(`/api/candidatures/${candidature.id}/creer-compte`)
+      .set('Authorization', entete(coordinateur))
+      .expect(201)
+    assert.equal(res.body.user.role, 'TRADIPRATICIEN')
+    assert.equal(res.body.user.medecinLocal.typePratique, 'TRADITIONNEL')
+  })
+
+  await t.test("un compte médecin existant ne devient pas tradipraticien par candidature", async () => {
+    // Le depot refuse une adresse deja inscrite : le compte medecin apparait ici
+    // entre le depot et la creation, comme lorsqu'il s'inscrit seul entre-temps.
+    const { coordinateur, candidature } = await candidatureAcceptee(medecin({ typePratique: 'TRADITIONNEL' }))
+    const { user } = await creerMedecinLocal({ valideParComite: false, email: candidature.email })
+    await api()
+      .post(`/api/candidatures/${candidature.id}/creer-compte`)
+      .set('Authorization', entete(coordinateur))
+      .expect(409)
+    assert.equal((await prisma.user.findUnique({ where: { id: user.id } })).role, 'MEDECIN_LOCAL')
+  })
 
   await t.test("un spécialiste accepté obtient un compte VALIDE, recopié depuis sa candidature", async () => {
     const { coordinateur, candidature } = await candidatureAcceptee()

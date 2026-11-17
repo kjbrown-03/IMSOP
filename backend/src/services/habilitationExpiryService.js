@@ -14,6 +14,8 @@ const { notify } = require('./notificationService')
 // on traite chacune avec son delegate Prisma plutôt que de dupliquer la logique.
 const PROFILS = [
   { role: 'SPECIALISTE', delegate: () => prisma.specialiste, retireDuPool: true },
+  // Le tradipraticien a son profil dans la meme table : un seul passage couvre
+  // les deux roles. Le `role` ci-dessous n'etiquette que le journal.
   { role: 'MEDECIN_LOCAL', delegate: () => prisma.medecinLocal, retireDuPool: false },
 ]
 

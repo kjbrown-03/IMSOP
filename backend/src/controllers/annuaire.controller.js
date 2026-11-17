@@ -521,6 +521,11 @@ async function mettreAJourAnnuaire(req, res) {
   // Meme confiance engagee que l'annuaire : la plateforme designe ce medecin a un
   // patient qui ne le connait pas. L'accepter ici lui ferait croire qu'il recevra
   // des dossiers, alors que l'affectation l'ecarterait sans jamais le lui dire.
+  // L'avis sur dossier est un parcours de medecine conventionnelle : le
+  // tradipraticien n'a pas de dossiers dans son espace.
+  if (avisLocalActif && req.userRole === 'TRADIPRATICIEN') {
+    return res.status(403).json({ message: 'La rédaction d\'avis sur dossier n\'est pas ouverte aux tradipraticiens.' })
+  }
   if (avisLocalActif && (medecin.verificationStatus !== 'VALIDE' || !medecin.valideParComite)) {
     return res.status(403).json({
       message: 'Rédiger des avis est réservé aux médecins habilités et retenus par le comité scientifique.',

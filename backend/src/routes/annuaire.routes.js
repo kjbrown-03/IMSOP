@@ -46,7 +46,8 @@ router.post('/recherches/:id/paiement', authenticateOptional, validate(schema.in
 router.post('/recherches/:id/paiement/simulate', authenticateOptional, validate(schema.rechercheParId), ctrl.simulerPaiement)
 
 // Réglages du médecin pour l'annuaire.
-router.get('/medecin/moi', authenticate, requireRole('MEDECIN_LOCAL'), ctrl.monAnnuaire)
-router.put('/medecin/moi', authenticate, requireRole('MEDECIN_LOCAL'), validate(schema.mettreAJourAnnuaire), ctrl.mettreAJourAnnuaire)
+// Le tradipraticien a sa fiche d'annuaire dans la meme table que le medecin.
+router.get('/medecin/moi', authenticate, requireRole('MEDECIN_LOCAL', 'TRADIPRATICIEN'), ctrl.monAnnuaire)
+router.put('/medecin/moi', authenticate, requireRole('MEDECIN_LOCAL', 'TRADIPRATICIEN'), validate(schema.mettreAJourAnnuaire), ctrl.mettreAJourAnnuaire)
 
 module.exports = router

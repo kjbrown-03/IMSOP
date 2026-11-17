@@ -44,6 +44,7 @@ const ROLE_IMAGES = {
   PATIENT: '/patient-login.jpg',
   SPECIALISTE: 'https://images.unsplash.com/photo-1551076805-e1869033e561?auto=format&fit=crop&q=80',
   MEDECIN_LOCAL: '/medecin-login.png',
+  TRADIPRATICIEN: '/medecin-login.png',
   COORDINATEUR: 'https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&q=80',
   ADMIN: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80',
 };
@@ -54,6 +55,9 @@ const ROLE_LINKS = {
   // Unlike the international specialists, local doctors sign themselves up:
   // a patient can only designate a doctor who already has an account.
   MEDECIN_LOCAL: { forgotLink: '/mot-de-passe-oublie', createLink: '/inscription/medecin' },
+  // Le tradipraticien n'a pas d'inscription libre : son compte est cree par la
+  // coordination apres l'avis du comite.
+  TRADIPRATICIEN: { forgotLink: '/mot-de-passe-oublie', createLink: '/candidature/medecin' },
   COORDINATEUR: { forgotLink: '/mot-de-passe-oublie', createLink: null },
   ADMIN: { forgotLink: '/mot-de-passe-oublie', createLink: null },
 };
@@ -68,6 +72,9 @@ const AnimatedLogin = ({ role = 'PATIENT' }) => {
   // qu'on nous aurait glissée dans l'état de navigation.
   const from = typeof location.state?.from === 'string' && location.state.from.startsWith('/') ? location.state.from : null;
   const login = useAuthStore((s) => s.login);
+  // Compte valide mais autre espace (medecin <-> tradipraticien) : le serveur
+  // le dit apres verification du mot de passe, on propose le bon lien.
+  const [mauvaisEspace, setMauvaisEspace] = useState(null);
   const error = useAuthStore((s) => s.error);
   const loading = useAuthStore((s) => s.loading);
 
@@ -107,6 +114,8 @@ const AnimatedLogin = ({ role = 'PATIENT' }) => {
       navigate('/verification-2fa', { state: { challengeToken: result.challengeToken, role, from } });
     } else if (result?.ok) {
       navigate(from || ROLE_REDIRECTS[role] || '/');
+    } else if (result?.espace) {
+      setMauvaisEspace(result.espace);
     }
   }
 
@@ -186,6 +195,11 @@ const AnimatedLogin = ({ role = 'PATIENT' }) => {
             {(error || oauthError) && (
               <div className="mb-4 bg-red-500/10 border border-red-500/50 text-red-500 text-sm rounded-lg px-4 py-3 text-center">
                 {error || oauthError}
+                {mauvaisEspace && (
+                  <Link to={`/connexion/${mauvaisEspace}`} onClick={() => setMauvaisEspace(null)} className="block mt-2 font-semibold underline">
+                    {t(`auth.animatedLogin.allerEspace.${mauvaisEspace}`)}
+                  </Link>
+                )}
               </div>
             )}
 

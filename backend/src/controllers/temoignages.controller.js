@@ -1,7 +1,7 @@
 const { prisma } = require('../lib/prisma')
 const { logAction } = require('../services/auditService')
 
-const ROLES_AUTORISES = new Set(['PATIENT', 'MEDECIN_LOCAL'])
+const ROLES_AUTORISES = new Set(['PATIENT', 'MEDECIN_LOCAL', 'TRADIPRATICIEN'])
 
 // Patients and médecins traitants are the only roles this form is offered
 // to on the frontend, but the API enforces it too - a specialist's account

@@ -23,7 +23,7 @@ const login = {
   body: z.object({
     email: z.string().trim().toLowerCase().email().max(254),
     password: z.string().min(1).max(128),
-    role: z.enum(['PATIENT', 'SPECIALISTE', 'MEDECIN_LOCAL', 'COORDINATEUR', 'ADMIN']).optional(),
+    role: z.enum(['PATIENT', 'SPECIALISTE', 'MEDECIN_LOCAL', 'TRADIPRATICIEN', 'COORDINATEUR', 'ADMIN']).optional(),
   }).strict(),
 }
 

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Upload, Loader2, ShieldCheck, ShieldAlert, FileText } from 'lucide-react'
 import MedecinShell from '../../components/layout/MedecinShell'
+import TradipraticienShell from '../../components/layout/TradipraticienShell'
 import SpecialistShell from '../../components/layout/SpecialistShell'
 import MessageAttachment from '../../components/ui/MessageAttachment'
 import { useAuthStore } from '../../store/useAuthStore'
@@ -79,7 +80,7 @@ export default function MesJustificatifs() {
   }
 
   // Le praticien reste dans la coque de son propre rôle.
-  const Shell = user?.role === 'SPECIALISTE' ? SpecialistShell : MedecinShell
+  const Shell = user?.role === 'SPECIALISTE' ? SpecialistShell : user?.role === 'TRADIPRATICIEN' ? TradipraticienShell : MedecinShell
   const statut = habilitation?.status
   const bandeau = BANDEAU[statut] || BANDEAU.EN_VERIFICATION
 

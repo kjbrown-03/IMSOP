@@ -6,7 +6,7 @@
 // rôle qu'il utilise — d'où le sessionStorage, isolé par onglet, là où le
 // localStorage est partagé.
 
-export const ROLES = ['PATIENT', 'SPECIALISTE', 'MEDECIN_LOCAL', 'COORDINATEUR', 'ADMIN']
+export const ROLES = ['PATIENT', 'SPECIALISTE', 'MEDECIN_LOCAL', 'TRADIPRATICIEN', 'COORDINATEUR', 'ADMIN']
 
 const CLE_ROLE_ACTIF = 'imsop_role_actif' // sessionStorage : propre à l'onglet
 const CLE_DERNIER_ROLE = 'imsop_dernier_role' // localStorage : sert aux nouveaux onglets
@@ -21,6 +21,7 @@ const PREFIXES_ROLE = [
   ['/patient', 'PATIENT'],
   ['/specialiste', 'SPECIALISTE'],
   ['/medecin', 'MEDECIN_LOCAL'],
+  ['/tradipraticien', 'TRADIPRATICIEN'],
   ['/coordinateur', 'COORDINATEUR'],
   ['/admin', 'ADMIN'],
 ]

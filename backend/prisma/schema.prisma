@@ -14,6 +14,14 @@ enum Role {
   // n'intervient jamais à la place du spécialiste international : il dépose des
   // pièces, échange dans la messagerie et lit le rapport final.
   MEDECIN_LOCAL
+  // Tradipraticien. Son profil vit dans la meme table que celui du medecin
+  // (MedecinLocal, typePratique TRADITIONNEL) parce que l'annuaire lit les deux
+  // medecines au meme endroit. Mais son ESPACE est separe : il n'a ni dossier de
+  // second avis ni avis a rediger, seulement son registre de patients, ses
+  // justificatifs et sa fiche d'annuaire. Un role distinct rend cette frontiere
+  // impossible a franchir par megarde — toutes les routes de dossier exigent
+  // MEDECIN_LOCAL.
+  TRADIPRATICIEN
   COORDINATEUR
   ADMIN
 }
@@ -394,6 +402,8 @@ model MedecinLocal {
   recusations       RecusationMedecinLocal[]
   // Apparitions dans des recherches d'annuaire.
   resultatsAnnuaire RechercheAnnuaireResultat[]
+  // Registre des patients suivis en cabinet (tradipraticiens seulement).
+  patientsRegistre  PatientRegistre[]
 
   // Toute recherche de patient filtre sur ces deux colonnes a la fois : sans
   // index, chaque recherche parcourt la table entiere.
@@ -1012,4 +1022,57 @@ model Specialite {
   updatedAt DateTime @updatedAt
 
   @@index([actif])
+}
+
+// --- Registre des patients du tradipraticien --------------------------------
+// Le carnet de consultation du tradipraticien, tenu dans son espace. Ces
+// patients n'ont pas de compte IMSOP et n'en auront peut-etre jamais : ce
+// registre ne cree aucun dossier, ne declenche aucun paiement, et n'est lu par
+// personne d'autre que le praticien qui l'a ecrit. La coordination n'y a pas
+// acces : ce n'est pas un dossier de la plateforme, c'est le sien.
+
+enum Sexe {
+  MASCULIN
+  FEMININ
+}
+
+// Quand le traitement traditionnel n'a pas suffi, le praticien oriente le
+// patient. Les deux voies sont distinctes et le restent : on ne confond pas
+// « je passe la main a la medecine conventionnelle » et « je l'envoie chez un
+// confrere ».
+enum ReferenceVers {
+  HOPITAL_CONVENTIONNEL
+  AUTRE_TRADIPRATICIEN
+}
+
+model PatientRegistre {
+  id              String       @id @default(uuid())
+  medecinLocalId  String
+  medecinLocal    MedecinLocal @relation(fields: [medecinLocalId], references: [id], onDelete: Cascade)
+
+  nom             String
+  // L'age plutot que la date de naissance : beaucoup de patients ne la
+  // connaissent pas avec certitude, et c'est l'age que le praticien note.
+  age             Int
+  sexe            Sexe
+  paysOrigine     String
+  diagnostic      String
+  therapeutique   String
+  // Texte libre (« 21 jours », « trois lunes ») : les durees de la medecine
+  // traditionnelle ne se plient pas toutes a un nombre de jours.
+  dureeTraitement String
+
+  // Orientation, renseignee seulement si le traitement n'a pas abouti.
+  referenceVers         ReferenceVers?
+  // Nom de l'hopital ou du confrere, tel que le praticien l'ecrit. Pas de lien
+  // vers un compte IMSOP : orienter un patient ne doit pas transmettre son
+  // dossier a un tiers sans que le patient l'ait accepte.
+  referenceDestinataire String?
+  referenceMotif        String?
+  referenceLe           DateTime?
+
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  @@index([medecinLocalId, createdAt])
 }

@@ -4,6 +4,7 @@ import { Mail, Phone, ShieldCheck, ShieldAlert } from 'lucide-react'
 import AdminLayout from '../components/layout/AdminLayout'
 import CoordinatorLayout from '../components/layout/CoordinatorLayout'
 import SpecialistShell from '../components/layout/SpecialistShell'
+import TradipraticienShell from '../components/layout/TradipraticienShell'
 import MedecinShell from '../components/layout/MedecinShell'
 import PatientShell from '../components/layout/PatientShell'
 import AvatarUploader from '../components/ui/AvatarUploader'
@@ -19,6 +20,7 @@ const SHELL_BY_ROLE = {
   COORDINATEUR: CoordinatorLayout,
   SPECIALISTE: SpecialistShell,
   MEDECIN_LOCAL: MedecinShell,
+  TRADIPRATICIEN: TradipraticienShell,
   PATIENT: PatientShell,
 }
 

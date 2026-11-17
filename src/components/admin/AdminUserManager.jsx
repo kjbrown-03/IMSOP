@@ -22,11 +22,13 @@ const EMPTY_FORM = {
 export default function AdminUserManager({ role }) {
   const { t } = useTranslation()
   const isSpecialiste = role === 'SPECIALISTE'
-  const isMedecin = role === 'MEDECIN_LOCAL'
+  // Le tradipraticien a le meme profil que le medecin (fiche d'annuaire) : memes
+  // champs, autre liste.
+  const isMedecin = role === 'MEDECIN_LOCAL' || role === 'TRADIPRATICIEN'
   // Le praticien — spécialiste ou médecin traitant — porte une fiche
   // professionnelle ; le coordinateur, non.
   const estPraticien = isSpecialiste || isMedecin
-  const ns = isSpecialiste ? 'specialistes' : isMedecin ? 'medecins' : 'coordinateurs'
+  const ns = isSpecialiste ? 'specialistes' : role === 'TRADIPRATICIEN' ? 'tradipraticiens' : isMedecin ? 'medecins' : 'coordinateurs'
 
   const [users, setUsers] = useState([])
   const [loading, setLoading] = useState(true)

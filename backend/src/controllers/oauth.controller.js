@@ -5,7 +5,7 @@ const { issueSession, issueTwoFactorChallenge, ROLES_REQUIRING_2FA } = require('
 const { logAction } = require('../services/auditService')
 const { getProvider, isConfigured, buildAuthUrl, exchangeCodeForProfile } = require('../services/oauthProviders')
 
-const VALID_ROLES = new Set(['PATIENT', 'SPECIALISTE', 'COORDINATEUR', 'ADMIN', 'MEDECIN_LOCAL'])
+const VALID_ROLES = new Set(['PATIENT', 'SPECIALISTE', 'COORDINATEUR', 'ADMIN', 'MEDECIN_LOCAL', 'TRADIPRATICIEN'])
 
 const LOGIN_PAGE_BY_ROLE = {
   PATIENT: 'patient',
@@ -13,6 +13,7 @@ const LOGIN_PAGE_BY_ROLE = {
   COORDINATEUR: 'coordinateur',
   ADMIN: 'admin',
   MEDECIN_LOCAL: 'medecin',
+  TRADIPRATICIEN: 'tradipraticien',
 }
 
 function redirectUriFor(provider) {

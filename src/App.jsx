@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect, useState } from 'react'
-import { Routes, Route } from 'react-router-dom'
+import { Navigate, Routes, Route } from 'react-router-dom'
 import ProtectedRoute from './components/ProtectedRoute'
 import SplashScreen from './components/Splashscreen'
 import { useThemeStore } from './store/useThemeStore'
@@ -27,6 +27,8 @@ const ConnexionCoordinateur = lazy(() => import('./pages/auth/ConnexionCoordinat
 const ConnexionSpecialiste = lazy(() => import('./pages/auth/ConnexionSpecialiste'))
 const ConnexionAdmin = lazy(() => import('./pages/auth/ConnexionAdmin'))
 const ConnexionMedecinLocal = lazy(() => import('./pages/auth/ConnexionMedecinLocal'))
+const ConnexionTradipraticien = lazy(() => import('./pages/auth/ConnexionTradipraticien'))
+const RegistrePatients = lazy(() => import('./pages/tradipraticien/RegistrePatients'))
 const InscriptionMedecinLocal = lazy(() => import('./pages/auth/InscriptionMedecinLocal'))
 const VerificationDeuxFacteurs = lazy(() => import('./pages/auth/VerificationDeuxFacteurs'))
 const OAuthCallback = lazy(() => import('./pages/auth/OAuthCallback'))
@@ -174,6 +176,7 @@ export default function App() {
       <Route path="/connexion/coordinateur" element={<ConnexionCoordinateur />} />
       <Route path="/connexion/specialiste" element={<ConnexionSpecialiste />} />
       <Route path="/connexion/medecin" element={<ConnexionMedecinLocal />} />
+      <Route path="/connexion/tradipraticien" element={<ConnexionTradipraticien />} />
       <Route path="/inscription/medecin" element={<InscriptionMedecinLocal />} />
       <Route path="/connexion/admin" element={<ConnexionAdmin />} />
       <Route path="/verification-2fa" element={<VerificationDeuxFacteurs />} />
@@ -286,7 +289,7 @@ export default function App() {
       <Route
         path="/professionnel/justificatifs"
         element={
-          <ProtectedRoute role={['SPECIALISTE', 'MEDECIN_LOCAL']}>
+          <ProtectedRoute role={['SPECIALISTE', 'MEDECIN_LOCAL', 'TRADIPRATICIEN']}>
             <MesJustificatifs />
           </ProtectedRoute>
         }
@@ -371,6 +374,13 @@ export default function App() {
           </ProtectedRoute>
         }
       />
+      {/* Espace du tradipraticien : séparé de celui du médecin traitant, sans
+          dossiers ni avis. */}
+      <Route path="/tradipraticien" element={<Navigate to="/tradipraticien/registre" replace />} />
+      <Route path="/tradipraticien/registre" element={<ProtectedRoute role="TRADIPRATICIEN"><RegistrePatients /></ProtectedRoute>} />
+      <Route path="/tradipraticien/annuaire" element={<ProtectedRoute role="TRADIPRATICIEN"><AnnuaireMedecin /></ProtectedRoute>} />
+      <Route path="/tradipraticien/profil" element={<ProtectedRoute role="TRADIPRATICIEN"><MonProfil /></ProtectedRoute>} />
+      <Route path="/tradipraticien/tutoriel" element={<ProtectedRoute role="TRADIPRATICIEN"><TutorielRole role="TRADIPRATICIEN" /></ProtectedRoute>} />
       <Route path="/medecin/tutoriel" element={<ProtectedRoute role="MEDECIN_LOCAL"><TutorielRole role="MEDECIN_LOCAL" /></ProtectedRoute>} />
       <Route
         path="/patient/dossiers/:id"

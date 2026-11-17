@@ -17,6 +17,9 @@ const { v4: uuidv4 } = require('uuid')
 const PROFILS = {
   SPECIALISTE: 'specialiste',
   MEDECIN_LOCAL: 'medecinLocal',
+  // Meme table de profil que le medecin : c'est la fiche d'annuaire, lue par la
+  // recherche pour les deux medecines.
+  TRADIPRATICIEN: 'medecinLocal',
 }
 
 // Un praticien n'exerce sur la plateforme que tant que son habilitation est
@@ -143,7 +146,7 @@ async function listerDemandes(req, res) {
     where: {
       OR: [
         { role: 'SPECIALISTE', specialiste: { verificationStatus: status } },
-        { role: 'MEDECIN_LOCAL', medecinLocal: { verificationStatus: status } },
+        { role: { in: ['MEDECIN_LOCAL', 'TRADIPRATICIEN'] }, medecinLocal: { verificationStatus: status } },
       ],
     },
     select: {
