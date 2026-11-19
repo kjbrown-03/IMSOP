@@ -112,6 +112,9 @@ export default function AdminUserManager({ role }) {
       bio: user.specialiste?.bio || '',
       ville: user.medecinLocal?.ville || '',
       numeroOrdre: user.medecinLocal?.numeroOrdre || '',
+      // Le tradipraticien ne fixe pas lui-même ses années d'expérience : c'est ici
+      // qu'elles se corrigent.
+      ...(role === 'TRADIPRATICIEN' ? { annuaireExperience: user.medecinLocal?.annuaireExperience ?? '' } : {}),
     })
     setFormError(null)
     setNewCredential(null)
@@ -130,7 +133,13 @@ export default function AdminUserManager({ role }) {
     setFormError(null)
     try {
       if (editingId) {
-        await api.patch(`/admin/users/${editingId}`, form)
+        const { annuaireExperience, ...reste } = form
+        await api.patch(`/admin/users/${editingId}`, {
+          ...reste,
+          ...(annuaireExperience !== undefined
+            ? { annuaireExperience: annuaireExperience === '' ? null : Number(annuaireExperience) }
+            : {}),
+        })
         closeForm()
       } else {
         const { data } = await api.post('/admin/users', { role, ...form })
@@ -284,6 +293,20 @@ export default function AdminUserManager({ role }) {
                           className="h-11 px-4 rounded-xl border border-slate-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
                         />
                       </>
+                    )}
+                    {editingId && form.annuaireExperience !== undefined && (
+                      <label className="flex flex-col gap-1 text-xs font-semibold text-slate-600 dark:text-neutral-300">
+                        {t('admin.tradipraticiens.experience')}
+                        <input
+                          type="number"
+                          min={0}
+                          max={70}
+                          inputMode="numeric"
+                          value={form.annuaireExperience}
+                          onChange={(e) => setForm((f) => ({ ...f, annuaireExperience: e.target.value }))}
+                          className="h-11 px-4 rounded-xl border border-slate-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-sm font-normal text-slate-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                        />
+                      </label>
                     )}
                     {isSpecialiste && (
                       <>

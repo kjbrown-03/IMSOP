@@ -53,6 +53,9 @@ const updateUser = {
     disponible: z.boolean().optional(),
     ville: z.string().trim().max(100).optional(),
     numeroOrdre: z.string().trim().max(100).optional(),
+    // Années d'expérience affichées sur la fiche d'annuaire (tradipraticien) :
+    // il ne peut pas les changer lui-même, la coordination le fait ici.
+    annuaireExperience: z.number().int().min(0).max(70).nullable().optional(),
   }).strict(),
 }
 

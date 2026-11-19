@@ -989,7 +989,8 @@
       "villePlaceholder": "Ville d'exercice",
       "numeroOrdrePlaceholder": "Numéro d'enregistrement (facultatif)",
       "numeroOrdre": "N° {{numero}}",
-      "verified": "Habilité"
+      "verified": "Habilité",
+      "experience": "Années d'expérience (fiche d'annuaire)"
     },
     "praticiensOnglets": {
       "MEDECIN_LOCAL": "Médecins traitants",

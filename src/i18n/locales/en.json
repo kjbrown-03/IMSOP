@@ -989,7 +989,8 @@
       "villePlaceholder": "City of practice",
       "numeroOrdrePlaceholder": "Registration number (optional)",
       "numeroOrdre": "No. {{numero}}",
-      "verified": "Approved"
+      "verified": "Approved",
+      "experience": "Years of experience (directory listing)"
     },
     "praticiensOnglets": {
       "MEDECIN_LOCAL": "Local doctors",

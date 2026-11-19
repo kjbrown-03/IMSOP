@@ -191,7 +191,7 @@ async function updateUser(req, res) {
   if (!user) return res.status(404).json({ message: 'Utilisateur introuvable' })
   if (!assertManageableRole(user.role, res, req)) return
 
-  const { fullName, email, phone, specialite, pays, etablissement, langues, bio, disponible, ville, numeroOrdre } = req.body
+  const { fullName, email, phone, specialite, pays, etablissement, langues, bio, disponible, ville, numeroOrdre, annuaireExperience } = req.body
 
   const data = {}
   if (fullName !== undefined) data.fullName = fullName
@@ -218,6 +218,8 @@ async function updateUser(req, res) {
     if (etablissement !== undefined) medecinData.etablissement = etablissement
     if (ville !== undefined) medecinData.ville = ville
     if (numeroOrdre !== undefined) medecinData.numeroOrdre = numeroOrdre
+    // Réservé au tradipraticien : le médecin conventionnel règle les siennes dans son annuaire.
+    if (annuaireExperience !== undefined && user.role === 'TRADIPRATICIEN') medecinData.annuaireExperience = annuaireExperience
     if (Object.keys(medecinData).length > 0) {
       data.medecinLocal = { update: medecinData }
     }

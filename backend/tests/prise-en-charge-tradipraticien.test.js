@@ -74,6 +74,13 @@ test("le tradipraticien ne modifie pas ses années d'expérience", async () => {
   assert.equal(identique.status, 200)
   assert.equal((await prisma.medecinLocal.findUnique({ where: { id: medecinLocal.id } })).annuaireExperience, 12)
 
+  // La coordination, elle, les corrige.
+  const coord = await creerCoordinateur()
+  const parCoord = await api().patch(`/api/admin/users/${user.id}`).set('Authorization', entete(coord))
+    .send({ annuaireExperience: 20 })
+  assert.equal(parCoord.status, 200)
+  assert.equal((await prisma.medecinLocal.findUnique({ where: { id: medecinLocal.id } })).annuaireExperience, 20)
+
   // Le médecin conventionnel, lui, garde la main.
   const { user: medecin } = await creerMedecinLocal()
   const conv = await api().put('/api/annuaire/medecin/moi').set('Authorization', entete(medecin))
