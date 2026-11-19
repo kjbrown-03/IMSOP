@@ -32,6 +32,10 @@ export default function AdminUserManager({ role }) {
   const [loading, setLoading] = useState(true)
   const [query, setQuery] = useState('')
   const [error, setError] = useState(null)
+  // Médecins traitants et tradipraticiens partagent le rôle MEDECIN_LOCAL ;
+  // seule `typePratique` les sépare. Le tri se fait ici, sur la liste déjà
+  // chargée : changer de filtre ne coûte pas d'aller-retour au serveur.
+  const [pratique, setPratique] = useState('TOUS')
 
   // Numéro de la dernière requête émise. En tapant vite, les réponses ne
   // reviennent pas dans l'ordre où elles sont parties : sans ce compteur, une
@@ -147,6 +151,10 @@ export default function AdminUserManager({ role }) {
       setBusyId(null)
     }
   }
+
+  const affiches = isMedecin && pratique !== 'TOUS'
+    ? users.filter((u) => (u.medecinLocal?.typePratique || 'CONVENTIONNEL') === pratique)
+    : users
 
   return (
     <div>
@@ -308,6 +316,24 @@ export default function AdminUserManager({ role }) {
         </div>
       )}
 
+      {isMedecin && (
+        <div className="flex flex-wrap gap-2 mb-6" role="group" aria-label={t('admin.medecins.filtre')}>
+          {[['TOUS', 'tous'], ['CONVENTIONNEL', 'conventionnels'], ['TRADITIONNEL', 'traditionnels']].map(([valeur, cle]) => (
+            <button
+              key={valeur}
+              onClick={() => setPratique(valeur)}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+                pratique === valeur
+                  ? 'bg-primary-600 text-white'
+                  : 'bg-white dark:bg-neutral-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-neutral-700 hover:bg-slate-50 dark:hover:bg-neutral-700'
+              }`}
+            >
+              {t(`admin.medecins.${cle}`)} ({valeur === 'TOUS' ? users.length : users.filter((u) => (u.medecinLocal?.typePratique || 'CONVENTIONNEL') === valeur).length})
+            </button>
+          ))}
+        </div>
+      )}
+
       {error && <div className="bg-rose-50 dark:bg-rose-900/30 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-400 text-sm font-medium rounded-2xl px-5 py-4 mb-4">{error}</div>}
 
       {loading && users.length === 0 && (
@@ -316,14 +342,14 @@ export default function AdminUserManager({ role }) {
         </div>
       )}
 
-      {!loading && users.length === 0 && (
+      {!loading && affiches.length === 0 && (
         <div className="glass-card rounded-3xl p-10 text-center text-slate-500 dark:text-slate-400 animate-fade-in-up">
           {t('admin.users.empty')}
         </div>
       )}
 
       <div className="flex flex-col gap-4">
-        {users.map((u, idx) => (
+        {affiches.map((u, idx) => (
           <div
             key={u.id}
             className="glass-card rounded-2xl p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 animate-fade-in-up"
@@ -344,6 +370,11 @@ export default function AdminUserManager({ role }) {
                 {estPraticien && (u.specialiste ?? u.medecinLocal)?.verificationStatus === 'VALIDE' && (
                   <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800 flex items-center gap-1">
                     <BadgeCheck className="w-3 h-3" /> {t('admin.specialistes.verified')}
+                  </span>
+                )}
+                {u.medecinLocal?.typePratique === 'TRADITIONNEL' && (
+                  <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800">
+                    {t('admin.medecins.tradipraticien')}
                   </span>
                 )}
               </div>

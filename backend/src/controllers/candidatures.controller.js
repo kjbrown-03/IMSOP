@@ -10,6 +10,7 @@ const { notify } = require('../services/notificationService')
 // Meme raison que pour s3 : le module, pour rester substituable dans les tests.
 const mailer = require('../lib/mailer')
 const { safeUserSelect } = require('../lib/selectors')
+const { motDePasseLisible } = require('../lib/motDePasse')
 const env = require('../config/env')
 const { PAYS_CEMAC } = require('../lib/cemac')
 const { libelleCategorie } = require('../lib/formationsSanitaires')
@@ -419,7 +420,7 @@ function nomDeFichier(nom) {
 }
 
 function motDePasseInitial() {
-  return crypto.randomBytes(11).toString('base64url').slice(0, 14)
+  return motDePasseLisible()
 }
 
 /**

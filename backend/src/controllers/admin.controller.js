@@ -1,10 +1,10 @@
-const crypto = require('crypto')
 const bcrypt = require('bcrypt')
 const { prisma } = require('../lib/prisma')
 const { calculerStatistiques } = require('../services/statistiquesService')
 const { calculerStatistiquesMensuelles } = require('../services/statistiquesMensuellesService')
 const { logAction } = require('../services/auditService')
 const { safeUserSelect } = require('../lib/selectors')
+const { motDePasseLisible } = require('../lib/motDePasse')
 
 const MANAGEABLE_ROLES = new Set(['SPECIALISTE', 'MEDECIN_LOCAL', 'COORDINATEUR'])
 
@@ -141,7 +141,7 @@ async function createUser(req, res) {
   const existing = await prisma.user.findUnique({ where: { email } })
   if (existing) return res.status(409).json({ message: 'Un compte existe déjà avec cet email' })
 
-  const finalPassword = password || crypto.randomBytes(9).toString('base64url')
+  const finalPassword = password || motDePasseLisible()
   const passwordHash = await bcrypt.hash(finalPassword, 12)
 
   const data = {

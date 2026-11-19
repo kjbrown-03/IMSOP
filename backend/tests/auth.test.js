@@ -68,6 +68,13 @@ describe('Authentification', () => {
       assert.equal(res.status, 401)
     })
 
+    test("l'espace emporté par un copier-coller depuis le courriel n'empêche pas la connexion", async () => {
+      const { user } = await f.creerPatient()
+
+      const res = await api().post('/api/auth/login').send({ email: user.email, password: `${f.MOT_DE_PASSE} \n` })
+      assert.equal(res.status, 200)
+    })
+
     test('un compte inexistant renvoie le même message qu\'un mot de passe erroné', async () => {
       const { user } = await f.creerPatient()
 

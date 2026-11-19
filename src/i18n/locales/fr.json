@@ -944,7 +944,12 @@
       "villePlaceholder": "Ville d'exercice",
       "numeroOrdrePlaceholder": "Numéro d'inscription à l'ordre",
       "numeroOrdre": "Ordre {{numero}}",
-      "verified": "Habilité"
+      "verified": "Habilité",
+      "tous": "Tous",
+      "conventionnels": "Médecins traitants",
+      "traditionnels": "Tradipraticiens",
+      "tradipraticien": "Tradipraticien",
+      "filtre": "Filtrer par nature de pratique"
     }
   },
   "shell": {
@@ -1670,6 +1675,11 @@
     "anneesExperienceAide": "Depuis combien d'années exercez-vous ? Les patients le verront sur votre fiche."
   },
   "candidatures": {
+    "filtreNature": "Filtrer par nature de praticien",
+    "moisCreation": "Mois de création du compte",
+    "natures": { "TOUS": "Tous", "SPECIALISTE": "Spécialistes", "MEDECIN_TRAITANT": "Médecins traitants", "TRADIPRATICIEN": "Tradipraticiens" },
+    "videMois": "Aucun compte créé en {{mois}}.",
+    "compteCreeLe": "compte créé le {{date}}",
     "titre": "Demandes d'intégration",
     "sousTitre": "Le comité scientifique reçoit chaque formulaire par e-mail et décide hors de la plateforme. Vous créez ici le compte des candidats qu'il vous transmet.",
     "statuts": {

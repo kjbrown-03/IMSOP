@@ -327,7 +327,15 @@ async function login(req, res) {
     return res.status(401).json({ message: 'Identifiants incorrects' })
   }
 
-  const valid = await bcrypt.compare(password, user.passwordHash)
+  // Un mot de passe copié depuis un courriel emporte souvent l'espace ou le
+  // retour à la ligne qui le suit, invisible dans le champ masqué : le
+  // praticien recevait « Identifiants incorrects » avec le bon mot de passe.
+  // La version rognée n'est essayée qu'en second, pour ne pas refuser celui qui
+  // aurait délibérément choisi des espaces en bordure.
+  let valid = await bcrypt.compare(password, user.passwordHash)
+  if (!valid && password.trim() !== password && password.trim()) {
+    valid = await bcrypt.compare(password.trim(), user.passwordHash)
+  }
   if (!valid) return res.status(401).json({ message: 'Identifiants incorrects' })
 
   if (!user.active) {

@@ -944,7 +944,12 @@
       "villePlaceholder": "City of practice",
       "numeroOrdrePlaceholder": "Medical council registration number",
       "numeroOrdre": "Council {{numero}}",
-      "verified": "Cleared"
+      "verified": "Cleared",
+      "tous": "All",
+      "conventionnels": "Treating doctors",
+      "traditionnels": "Traditional practitioners",
+      "tradipraticien": "Traditional practitioner",
+      "filtre": "Filter by type of practice"
     }
   },
   "shell": {
@@ -1670,6 +1675,11 @@
     "anneesExperienceAide": "How many years have you been practising? Patients will see this on your listing."
   },
   "candidatures": {
+    "filtreNature": "Filter by type of practitioner",
+    "moisCreation": "Month the account was created",
+    "natures": { "TOUS": "All", "SPECIALISTE": "Specialists", "MEDECIN_TRAITANT": "Treating doctors", "TRADIPRATICIEN": "Traditional practitioners" },
+    "videMois": "No account created in {{mois}}.",
+    "compteCreeLe": "account created on {{date}}",
     "titre": "Integration requests",
     "sousTitre": "The scientific committee receives each form by email and decides outside the platform. Here you create the account for the candidates it forwards to you.",
     "statuts": {

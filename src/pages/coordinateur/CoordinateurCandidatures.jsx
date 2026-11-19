@@ -18,6 +18,29 @@ const STATUTS_PAR_ONGLET = {
   REFUSEE: ['REFUSEE'],
 }
 
+// Médecin traitant et tradipraticien partagent le type MEDECIN_LOCAL : seule
+// la nature de la pratique les distingue. Le filtre suit la même séparation que
+// l'annuaire, où les deux médecines ne se mélangent jamais.
+const NATURES = ['TOUS', 'SPECIALISTE', 'MEDECIN_TRAITANT', 'TRADIPRATICIEN']
+
+function natureDe(c) {
+  if (c.type === 'SPECIALISTE') return 'SPECIALISTE'
+  return c.typePratique === 'TRADITIONNEL' ? 'TRADIPRATICIEN' : 'MEDECIN_TRAITANT'
+}
+
+// Clé « AAAA-MM » en heure locale : un compte créé le 31 à 23 h à Douala ne
+// doit pas basculer dans le mois suivant parce que l'ISO est en UTC.
+function cleMois(date) {
+  const d = new Date(date)
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
+}
+
+// Les candidatures pourvues avant l'ajout de `compteCreeLe` n'en portent pas :
+// leur date de dépôt les range au moins dans un mois, plutôt que nulle part.
+function dateCreationCompte(c) {
+  return c.compteCreeLe || c.createdAt
+}
+
 /**
  * Examen des candidatures (comité scientifique) et création des comptes
  * (coordination). Les deux étapes vivent sur le même écran, séparées par le
@@ -28,23 +51,21 @@ export default function CoordinateurCandidatures() {
 
   const [onglet, setOnglet] = useState('A_CREER')
   const [liste, setListe] = useState([])
-  const [compte, setCompte] = useState({})
   const [chargement, setChargement] = useState(true)
   const [erreur, setErreur] = useState(null)
   const [ouverte, setOuverte] = useState(null)
   const [enCours, setEnCours] = useState(null)
   const [info, setInfo] = useState(null)
+  const [nature, setNature] = useState('TOUS')
+  // « Comptes créés » montre le mois en cours. Les mois passés ne disparaissent
+  // pas pour autant : ils restent consultables dans le sélecteur.
+  const [mois, setMois] = useState(() => cleMois(new Date()))
 
   async function charger({ silencieux = false } = {}) {
     if (!silencieux) setChargement(true)
     try {
       const { data } = await api.get('/candidatures')
       setListe(data)
-      const parOnglet = {}
-      for (const [cle, statuts] of Object.entries(STATUTS_PAR_ONGLET)) {
-        parOnglet[cle] = data.filter((c) => statuts.includes(c.statut)).length
-      }
-      setCompte(parOnglet)
       setErreur(null)
     } catch (err) {
       setErreur(err.response?.data?.message || t('candidatures.chargementEchoue'))
@@ -82,7 +103,24 @@ export default function CoordinateurCandidatures() {
     }
   }
 
-  const visibles = liste.filter((c) => STATUTS_PAR_ONGLET[onglet].includes(c.statut))
+  const parNature = liste.filter((c) => nature === 'TOUS' || natureDe(c) === nature)
+  const dansLeMois = (c) => c.statut !== 'COMPTE_CREE' || cleMois(dateCreationCompte(c)) === mois
+  const compte = {}
+  for (const [cle, statuts] of Object.entries(STATUTS_PAR_ONGLET)) {
+    compte[cle] = parNature.filter((c) => statuts.includes(c.statut) && dansLeMois(c)).length
+  }
+  const visibles = parNature.filter((c) => STATUTS_PAR_ONGLET[onglet].includes(c.statut) && dansLeMois(c))
+
+  // Le mois en cours figure toujours, même vide : c'est la vue par défaut.
+  const moisDisponibles = [...new Set([
+    cleMois(new Date()),
+    ...liste.filter((c) => c.statut === 'COMPTE_CREE').map((c) => cleMois(dateCreationCompte(c))),
+  ])].sort().reverse()
+  const libelleMois = (cle) => {
+    const [a, m] = cle.split('-').map(Number)
+    const texte = new Date(a, m - 1, 1).toLocaleDateString(i18n.language === 'en' ? 'en-GB' : 'fr-FR', { month: 'long', year: 'numeric' })
+    return texte.charAt(0).toUpperCase() + texte.slice(1)
+  }
   const formatDate = (iso) =>
     new Date(iso).toLocaleDateString(i18n.language === 'en' ? 'en-GB' : 'fr-FR', { day: '2-digit', month: 'short', year: 'numeric' })
 
@@ -111,6 +149,36 @@ export default function CoordinateurCandidatures() {
         ))}
       </div>
 
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-6">
+        <div className="flex flex-wrap gap-2" role="group" aria-label={t('candidatures.filtreNature')}>
+          {NATURES.map((n) => (
+            <button
+              key={n}
+              onClick={() => { setNature(n); setOuverte(null) }}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+                nature === n
+                  ? 'bg-primary-600 text-white'
+                  : 'bg-white dark:bg-neutral-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-neutral-700 hover:bg-slate-50 dark:hover:bg-neutral-700'
+              }`}
+            >
+              {t(`candidatures.natures.${n}`)}
+            </button>
+          ))}
+        </div>
+        {onglet === 'COMPTE_CREE' && (
+          <select
+            value={mois}
+            onChange={(e) => setMois(e.target.value)}
+            aria-label={t('candidatures.moisCreation')}
+            className="sm:ml-auto h-9 px-3 rounded-lg border border-slate-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-sm text-slate-700 dark:text-slate-200"
+          >
+            {moisDisponibles.map((m) => (
+              <option key={m} value={m}>{libelleMois(m)}</option>
+            ))}
+          </select>
+        )}
+      </div>
+
       {info && (
         <div className="bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-sm font-medium rounded-2xl px-5 py-4 mb-4">
           {info}
@@ -130,7 +198,9 @@ export default function CoordinateurCandidatures() {
 
       {!chargement && visibles.length === 0 && (
         <div className="glass-card rounded-3xl p-10 text-center text-slate-500 dark:text-slate-400">
-          {t(`candidatures.vide.${onglet}`)}
+          {onglet === 'COMPTE_CREE'
+            ? t('candidatures.videMois', { mois: libelleMois(mois) })
+            : t(`candidatures.vide.${onglet}`)}
         </div>
       )}
 
@@ -149,7 +219,7 @@ export default function CoordinateurCandidatures() {
                   <div className="flex flex-wrap items-center gap-2 mb-1">
                     <h3 className="text-lg font-bold text-slate-900 dark:text-white">{c.fullName}</h3>
                     <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-neutral-800 text-slate-600 dark:text-slate-300">
-                      {t(`candidatures.types.${c.type}`)}
+                      {t(`candidatures.natures.${natureDe(c)}`)}
                     </span>
                   </div>
                   <p className="text-sm font-semibold text-primary-700 dark:text-primary-400">{c.specialite}</p>
@@ -163,7 +233,10 @@ export default function CoordinateurCandidatures() {
                   </div>
                   <LieuExercice candidature={c} />
 
-                  <p className="text-xs text-slate-400 dark:text-slate-500 mt-2">{t('candidatures.deposeeLe', { date: formatDate(c.createdAt) })}</p>
+                  <p className="text-xs text-slate-400 dark:text-slate-500 mt-2">
+                    {t('candidatures.deposeeLe', { date: formatDate(c.createdAt) })}
+                    {c.statut === 'COMPTE_CREE' && ` · ${t('candidatures.compteCreeLe', { date: formatDate(dateCreationCompte(c)) })}`}
+                  </p>
 
                   <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-3">
                     {/* Le parcours ecrit n'est plus demande au candidat : le CV
