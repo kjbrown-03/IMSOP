@@ -7,6 +7,7 @@ import { useAuthStore } from '../../store/useAuthStore'
 import { api } from '../../lib/api'
 import ReglageNotifications from '../../components/ui/ReglageNotifications'
 import ChoixLieu from '../../components/annuaire/ChoixLieu'
+import DemandePriseEnCharge from '../../components/annuaire/DemandePriseEnCharge'
 
 const CHAMP =
   'w-full rounded-lg border border-slate-300 dark:border-neutral-700 bg-transparent px-3 py-2 text-slate-900 dark:text-white'
@@ -90,7 +91,9 @@ export default function AnnuaireMedecin() {
     try {
       const { data } = await api.put('/annuaire/medecin/moi', {
         annuaireVisible: reglages.annuaireVisible,
-        annuaireSpecialites: reglages.annuaireSpecialites,
+        // Le tradipraticien n'envoie pas ses maladies : elles ne changent que
+        // sur décision de la coordination, et le serveur refuserait.
+        ...(traditionnel ? {} : { annuaireSpecialites: reglages.annuaireSpecialites }),
         ...(reglages.pays ? { pays: reglages.pays } : {}),
         // Au Cameroun, la ville cède la place au découpage administratif dès
         // qu'une région est choisie : garder « Douala » à côté de « Mfou »
@@ -203,6 +206,12 @@ export default function AnnuaireMedecin() {
           {reglages.annuaireVisible && <ReglageNotifications />}
 
 
+          {traditionnel ? (
+            <DemandePriseEnCharge
+              specialitesActuelles={reglages.annuaireSpecialites}
+              toutesSpecialites={referentiels.specialites}
+            />
+          ) : (
           <section className="glass-card rounded-2xl p-5 flex flex-col gap-4">
             <h2 className="font-semibold text-slate-900 dark:text-white">{t('annuaire.medecin.specialitesTitre')}</h2>
             <p className="text-sm text-slate-500 dark:text-neutral-400">{t('annuaire.medecin.specialitesAide')}</p>
@@ -227,6 +236,7 @@ export default function AnnuaireMedecin() {
               })}
             </div>
           </section>
+          )}
 
           <section className="glass-card rounded-2xl p-5 flex flex-col gap-4">
             <h2 className="font-semibold text-slate-900 dark:text-white">{t('annuaire.medecin.localisationTitre')}</h2>

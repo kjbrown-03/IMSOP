@@ -132,11 +132,12 @@ test("le tradipraticien n'a pas accès aux dossiers de second avis", async () =>
   assert.equal((await api().post('/api/dossiers/demande-medecin').set('Authorization', auth).send({})).status, 403)
 })
 
-test('le tradipraticien garde sa fiche d’annuaire et ses justificatifs', async () => {
+test('le tradipraticien garde sa fiche d’annuaire, sans justificatifs libres', async () => {
   const { user } = await tradipraticien()
   const auth = entete(user)
   assert.equal((await api().get('/api/annuaire/medecin/moi').set('Authorization', auth)).status, 200)
-  assert.equal((await api().get('/api/professionnels/me/justificatifs').set('Authorization', auth)).status, 200)
+  // Ses pièces accompagnent ses demandes de prise en charge, pas un espace à part.
+  assert.equal((await api().get('/api/professionnels/me/justificatifs').set('Authorization', auth)).status, 403)
 })
 
 test('connexion par la mauvaise porte : le tradipraticien est renvoyé vers son espace', async () => {

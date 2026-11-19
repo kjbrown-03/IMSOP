@@ -785,6 +785,24 @@
         "REVERSE": "Paid",
         "ECHOUE": "Failed"
       }
+    },
+    "prisesEnCharge": {
+      "titre": "Traditional practitioners: conditions treated",
+      "sousTitre": "A traditional practitioner asks to add conditions to their directory listing. Accepting adds them immediately: the directory will send patients for these conditions.",
+      "vide": "No request here.",
+      "deposeeLe": "submitted on {{date}}",
+      "traiteeLe": "Reviewed on {{date}}.",
+      "actuelles": "Already treated",
+      "demandees": "Requested",
+      "motif": "Practitioner's explanation",
+      "accepter": "Accept and add",
+      "refuser": "Decline",
+      "motifRefus": "Reason for declining (the practitioner will read it)",
+      "confirmerRefus": "Confirm decline",
+      "refuseeCar": "Declined:",
+      "erreurChargement": "Requests could not be loaded.",
+      "erreurDecision": "The decision could not be saved.",
+      "erreurPiece": "The document could not be opened."
     }
   },
   "specialiste": {
@@ -1012,7 +1030,8 @@
       "specialites": "Specialties",
       "gestionMedecins": "Treating doctors",
       "habilitations": "Credentials",
-      "tutoriel": "Tutorial"
+      "tutoriel": "Tutorial",
+      "prisesEnCharge": "Conditions treated"
     },
     "userMenu": {
       "user": "User",
@@ -1031,7 +1050,6 @@
     },
     "tradipraticienNav": {
       "registre": "Patient register",
-      "justificatifs": "My credentials",
       "annuaire": "Directory",
       "profil": "My account"
     }
@@ -1181,6 +1199,14 @@
       "AVIS_LOCAL_AFFECTE": {
         "title": "Doctor assigned",
         "preview": "A doctor has taken on case {{reference}}."
+      },
+      "PRISE_EN_CHARGE_DEMANDEE": {
+        "title": "Treatment request",
+        "preview": "A traditional practitioner is awaiting your decision."
+      },
+      "PRISE_EN_CHARGE_TRAITEE": {
+        "title": "Your request has been reviewed",
+        "preview": "See the decision in your directory listing."
       }
     },
     "activer": "Turn on notifications",
@@ -1450,7 +1476,10 @@
       "valider": "Change my password",
       "succes": "Password changed. You will be redirected to sign in again with the new one.",
       "echec": "The change failed. Please try again."
-    }
+    },
+    "phoneEdit": "Edit",
+    "phoneSaved": "Number saved.",
+    "phoneError": "The number could not be saved."
   },
   "annuaire": {
     "pays": {
@@ -1623,6 +1652,33 @@
         "action": "Describe what I feel"
       },
       "note": "In both cases, IMSOP connects you: we do not book appointments on your behalf and make no diagnosis. In an emergency, call the emergency services."
+    },
+    "priseEnCharge": {
+      "titre": "Conditions you treat",
+      "aide": "The directory recommends you to patients based on this list. To add a condition, send a request with supporting documents to the coordination team: it is added as soon as they accept it.",
+      "aucune": "No condition recorded yet.",
+      "demander": "Request to treat another condition",
+      "enCours": "Request sent on {{date}} ({{liste}}): awaiting the coordination team. You will be notified of their decision.",
+      "choix": "Conditions you want to add",
+      "motif": "Describe your experience with these conditions",
+      "motifExemple": "How long you have treated them, who trained you, what your documents show…",
+      "pieces": "Supporting documents (required)",
+      "piecesAide": "Certificate, attestation, photo of a document: PDF, JPEG, PNG or WebP, up to 10 MB and 5 files.",
+      "ajouterPiece": "Add a file",
+      "retirer": "Remove",
+      "envoyer": "Send request",
+      "historique": "Requests already reviewed",
+      "statuts": {
+        "EN_ATTENTE": "Pending",
+        "ACCEPTEE": "Accepted",
+        "REFUSEE": "Declined"
+      },
+      "erreurChoix": "Choose at least one condition.",
+      "erreurMotif": "Explain your request in a few words (at least 10 characters).",
+      "erreurPieces": "Attach at least one supporting document.",
+      "erreurFormat": "Format not accepted: PDF, JPEG, PNG or WebP only.",
+      "erreurTaille": "A file is larger than 10 MB.",
+      "erreurEnvoi": "The request could not be sent."
     }
   },
   "candidature": {
@@ -1739,7 +1795,12 @@
   "candidatures": {
     "filtreNature": "Filter by type of practitioner",
     "moisCreation": "Month the account was created",
-    "natures": { "TOUS": "All", "SPECIALISTE": "Specialists", "MEDECIN_TRAITANT": "Treating doctors", "TRADIPRATICIEN": "Traditional practitioners" },
+    "natures": {
+      "TOUS": "All",
+      "SPECIALISTE": "Specialists",
+      "MEDECIN_TRAITANT": "Treating doctors",
+      "TRADIPRATICIEN": "Traditional practitioners"
+    },
     "videMois": "No account created in {{mois}}.",
     "compteCreeLe": "account created on {{date}}",
     "titre": "Integration requests",

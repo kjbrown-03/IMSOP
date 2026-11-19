@@ -100,6 +100,22 @@ const candidatureUpload = multer({
   },
 })
 
+// Pièces d'une demande de prise en charge : une attestation, un certificat,
+// une photo prise au téléphone. Cinq au plus, 10 Mo chacune.
+const PIECES_PRISE_EN_CHARGE_MIME = new Set(['application/pdf', 'image/jpeg', 'image/png', 'image/webp'])
+const piecesPriseEnChargeUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 10 * 1024 * 1024, files: 5 },
+  fileFilter: (req, file, cb) => {
+    if (!PIECES_PRISE_EN_CHARGE_MIME.has(file.mimetype)) {
+      const err = new Error('Format de fichier non autorisé (PDF, JPEG, PNG ou WebP uniquement)')
+      err.status = 400
+      return cb(err)
+    }
+    cb(null, true)
+  },
+})
+
 // multer's own limit errors (LIMIT_FILE_SIZE, etc.) are MulterError instances
 // without a .status, so they'd otherwise fall through to the generic 500.
 function handleUploadErrors(err, req, res, next) {
@@ -113,4 +129,4 @@ function handleUploadErrors(err, req, res, next) {
   next(err)
 }
 
-module.exports = { upload, avatarUpload, candidatureUpload, audioUpload, handleUploadErrors }
+module.exports = { upload, avatarUpload, candidatureUpload, audioUpload, piecesPriseEnChargeUpload, handleUploadErrors }

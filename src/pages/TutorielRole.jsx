@@ -35,8 +35,9 @@ const TUTORIELS = {
       ['Enregistrer un patient', 'Dans Registre des patients, choisissez Nouveau patient et renseignez son nom, son âge, son sexe, son pays d’origine, le diagnostic, la thérapeutique et la durée du traitement.'],
       ['Référer un patient', 'Si le traitement n’a pas suffi, ouvrez sa fiche et choisissez Référer : vers un hôpital conventionnel ou vers un autre tradipraticien. Indiquez le nom de l’établissement ou du confrère et, si vous le souhaitez, le motif.'],
       ['Garder le registre pour vous', 'Les fiches de votre registre ne sont visibles que par vous. Orienter un patient n’envoie pas sa fiche à l’hôpital ni au confrère : remettez-lui ce dont il a besoin.'],
-      ['Tenir votre fiche d’annuaire', 'Dans Annuaire, complétez les maladies que vous traitez et votre lieu d’exercice. Vous décidez si votre fiche est proposée aux patients.'],
-      ['Gérer vos justificatifs', 'Dans Justificatifs et Profil, gardez vos documents et coordonnées à jour pour que la coordination puisse vérifier votre activité.'],
+      ['Tenir votre fiche d’annuaire', 'Dans Annuaire, renseignez votre lieu d’exercice et décidez si votre fiche est proposée aux patients.'],
+      ['Ajouter une maladie prise en charge', 'Dans Annuaire, choisissez « Demander à prendre en charge une autre maladie », expliquez votre expérience et joignez vos justificatifs. La maladie s’ajoute à votre fiche dès que la coordination accepte.'],
+      ['Garder votre numéro à jour', 'Dans Mon compte, modifiez votre téléphone et votre photo. C’est à ce numéro que les patients vous joindront.'],
     ],
   },
   MEDECIN_LOCAL: {

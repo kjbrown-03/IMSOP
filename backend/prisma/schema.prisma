@@ -153,6 +153,12 @@ enum TypeStructure {
 // Nature de la pratique d'un medecin de proximite. Les deux coexistent dans la
 // zone, et un patient qui cherche l'une ne cherche pas l'autre : melanger les
 // deux dans une meme liste de resultats ne rendrait service a personne.
+enum StatutDemandePriseEnCharge {
+  EN_ATTENTE
+  ACCEPTEE
+  REFUSEE
+}
+
 enum TypePratique {
   CONVENTIONNEL
   TRADITIONNEL
@@ -404,6 +410,8 @@ model MedecinLocal {
   resultatsAnnuaire RechercheAnnuaireResultat[]
   // Registre des patients suivis en cabinet (tradipraticiens seulement).
   patientsRegistre  PatientRegistre[]
+  // Demandes d'ajout de maladies prises en charge (tradipraticiens seulement).
+  demandesPriseEnCharge DemandePriseEnCharge[]
 
   // Toute recherche de patient filtre sur ces deux colonnes a la fois : sans
   // index, chaque recherche parcourt la table entiere.
@@ -1075,4 +1083,38 @@ model PatientRegistre {
   updatedAt       DateTime     @updatedAt
 
   @@index([medecinLocalId, createdAt])
+}
+
+// Le tradipraticien ne déclare pas seul ce qu'il soigne : l'annuaire le propose
+// à des inconnus sur la foi de cette liste. Il en demande l'ajout, pièces à
+// l'appui, et la coordination tranche. Les spécialités ne sont écrites sur sa
+// fiche qu'à l'acceptation.
+model DemandePriseEnCharge {
+  id             String                     @id @default(uuid())
+  medecinLocalId String
+  medecinLocal   MedecinLocal               @relation(fields: [medecinLocalId], references: [id], onDelete: Cascade)
+  specialites    String[]
+  motif          String
+  statut         StatutDemandePriseEnCharge @default(EN_ATTENTE)
+  motifRefus     String?
+  traiteParId    String?
+  traiteLe       DateTime?
+  createdAt      DateTime                   @default(now())
+  pieces         PieceDemandePriseEnCharge[]
+
+  @@index([statut, createdAt])
+  @@index([medecinLocalId, createdAt])
+}
+
+model PieceDemandePriseEnCharge {
+  id         String               @id @default(uuid())
+  demandeId  String
+  demande    DemandePriseEnCharge @relation(fields: [demandeId], references: [id], onDelete: Cascade)
+  filename   String
+  mimeType   String
+  sizeBytes  Int
+  storageKey String
+  createdAt  DateTime             @default(now())
+
+  @@index([demandeId])
 }

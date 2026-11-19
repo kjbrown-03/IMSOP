@@ -30,6 +30,8 @@ const TYPE_META = {
   HABILITATION_STATUT: { icon: BadgeCheck, tone: 'bg-amber-50 text-amber-600' },
   DEUX_FACTEURS: { icon: KeyRound, tone: 'bg-amber-50 text-amber-600' },
   INSCRIPTION_EXISTANTE: { icon: Mail, tone: 'bg-slate-100 text-slate-600' },
+  PRISE_EN_CHARGE_DEMANDEE: { icon: BadgeCheck, tone: 'bg-amber-50 text-amber-600' },
+  PRISE_EN_CHARGE_TRAITEE: { icon: BadgeCheck, tone: 'bg-primary-50 text-primary-600' },
 }
 
 const FALLBACK_META = { icon: Bell, tone: 'bg-slate-100 text-slate-600' }
@@ -54,6 +56,11 @@ function linkFor(notification, role) {
     const base = MESSAGERIE_PAR_ROLE[role]
     return base ? `${base}?discussion=${discussion}` : null
   }
+
+  // Sans dossier : la demande vit dans l'écran qui la traite, ou dans la fiche
+  // d'annuaire du praticien.
+  if (notification.type === 'PRISE_EN_CHARGE_DEMANDEE') return '/coordinateur/prises-en-charge'
+  if (notification.type === 'PRISE_EN_CHARGE_TRAITEE') return '/tradipraticien/annuaire'
 
   if (!notification.dossierId) return null
   if (notification.type === 'MESSAGE_RECU') {

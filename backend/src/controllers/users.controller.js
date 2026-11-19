@@ -87,6 +87,17 @@ async function deleteMyAvatar(req, res) {
   res.json(user)
 }
 
+async function changerMonTelephone(req, res) {
+  const user = await prisma.user.update({
+    where: { id: req.userId },
+    data: { phone: req.body.phone },
+    select: safeUserSelect,
+  })
+  // Pas le numéro dans le journal : l'audit n'a pas à recopier des coordonnées.
+  await logAction({ userId: req.userId, action: 'TELEPHONE_MODIFIE', entityType: 'User', entityId: req.userId, ipAddress: req.ip })
+  res.json(user)
+}
+
 // Public on purpose: <img> tags cannot send a Bearer token, and an avatar is
 // shown to every counterpart in a conversation anyway. The random file name is
 // what keeps it unguessable.
@@ -120,4 +131,4 @@ async function serveAvatar(req, res) {
   object.body.pipe(res)
 }
 
-module.exports = { updateMyAvatar, deleteMyAvatar, serveAvatar }
+module.exports = { updateMyAvatar, deleteMyAvatar, serveAvatar, changerMonTelephone }

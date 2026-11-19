@@ -56,12 +56,10 @@ const mettreAJourAnnuaire = {
     annuaireAdresse: z.string().trim().max(300).optional().nullable(),
     annuaireExperience: z.number().int().min(0).max(70).optional().nullable(),
     annuairePresentation: z.string().trim().max(600).optional().nullable(),
-  }).strict().refine(
-    // Être visible sans spécialité déclarée n'aurait aucun sens : le médecin ne
-    // ressortirait dans aucune recherche.
-    (d) => !d.annuaireVisible || (d.annuaireSpecialites && d.annuaireSpecialites.length > 0),
-    { message: 'Choisissez au moins une spécialité pour apparaître dans l\'annuaire', path: ['annuaireSpecialites'] },
-  ),
+  // « Visible sans spécialité » se vérifie dans le contrôleur : le
+  // tradipraticien n'envoie pas ses spécialités, ce sont celles de sa fiche
+  // qui comptent.
+  }).strict(),
 }
 
 module.exports = { rechercher, rechercheParId, choisirSpecialiste, initierPaiement, mettreAJourAnnuaire }

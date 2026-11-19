@@ -9,7 +9,9 @@ const ctrl = require('../controllers/professionnels.controller')
 const router = express.Router()
 router.use(authenticate)
 
-const PRATICIENS = ['SPECIALISTE', 'MEDECIN_LOCAL', 'TRADIPRATICIEN']
+// Le tradipraticien n'a pas de justificatifs libres : il en joint à ses demandes
+// de prise en charge (prisesEnCharge.routes), où la coordination les juge.
+const PRATICIENS = ['SPECIALISTE', 'MEDECIN_LOCAL']
 const CONTROLEURS = ['COORDINATEUR', 'ADMIN']
 
 // Dépôt et relecture de ses propres justificatifs (CDC §16).

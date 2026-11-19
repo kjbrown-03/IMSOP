@@ -785,6 +785,24 @@
         "REVERSE": "Reversé",
         "ECHOUE": "Échec"
       }
+    },
+    "prisesEnCharge": {
+      "titre": "Prises en charge des tradipraticiens",
+      "sousTitre": "Un tradipraticien demande à ajouter des maladies à sa fiche d'annuaire. Accepter les y inscrit aussitôt : l'annuaire lui adressera des patients pour ces maladies.",
+      "vide": "Aucune demande ici.",
+      "deposeeLe": "déposée le {{date}}",
+      "traiteeLe": "Traitée le {{date}}.",
+      "actuelles": "Déjà prises en charge",
+      "demandees": "Demandées",
+      "motif": "Explication du praticien",
+      "accepter": "Accepter et ajouter",
+      "refuser": "Refuser",
+      "motifRefus": "Motif du refus (le praticien le lira)",
+      "confirmerRefus": "Confirmer le refus",
+      "refuseeCar": "Refusée :",
+      "erreurChargement": "Les demandes n'ont pas pu être chargées.",
+      "erreurDecision": "La décision n'a pas pu être enregistrée.",
+      "erreurPiece": "Le justificatif n'a pas pu être ouvert."
     }
   },
   "specialiste": {
@@ -1012,7 +1030,8 @@
       "specialites": "Spécialités",
       "gestionMedecins": "Médecins traitants",
       "habilitations": "Habilitations",
-      "tutoriel": "Tutoriel"
+      "tutoriel": "Tutoriel",
+      "prisesEnCharge": "Prises en charge"
     },
     "userMenu": {
       "user": "Utilisateur",
@@ -1031,7 +1050,6 @@
     },
     "tradipraticienNav": {
       "registre": "Registre des patients",
-      "justificatifs": "Mes justificatifs",
       "annuaire": "Annuaire",
       "profil": "Mon compte"
     }
@@ -1181,6 +1199,14 @@
       "AVIS_LOCAL_AFFECTE": {
         "title": "Médecin affecté",
         "preview": "Un médecin a pris en charge le dossier {{reference}}."
+      },
+      "PRISE_EN_CHARGE_DEMANDEE": {
+        "title": "Demande de prise en charge",
+        "preview": "Un tradipraticien attend votre décision."
+      },
+      "PRISE_EN_CHARGE_TRAITEE": {
+        "title": "Votre demande a été examinée",
+        "preview": "Consultez la décision dans votre fiche d'annuaire."
       }
     },
     "activer": "Activer les notifications",
@@ -1450,7 +1476,10 @@
       "valider": "Changer mon mot de passe",
       "succes": "Mot de passe modifié. Vous allez être redirigé vers la connexion pour vous reconnecter avec le nouveau.",
       "echec": "Le changement a échoué. Réessayez."
-    }
+    },
+    "phoneEdit": "Modifier",
+    "phoneSaved": "Numéro enregistré.",
+    "phoneError": "Le numéro n'a pas pu être enregistré."
   },
   "annuaire": {
     "pays": {
@@ -1623,6 +1652,33 @@
         "action": "Décrire ce que je ressens"
       },
       "note": "Dans les deux cas, IMSOP vous met en relation : nous ne prenons pas de rendez-vous à votre place et ne posons aucun diagnostic. En cas d'urgence, appelez les secours."
+    },
+    "priseEnCharge": {
+      "titre": "Maladies prises en charge",
+      "aide": "C'est sur cette liste que l'annuaire vous propose aux patients. Pour y ajouter une maladie, adressez une demande à la coordination avec vos justificatifs : elle l'ajoute dès qu'elle l'accepte.",
+      "aucune": "Aucune maladie enregistrée pour le moment.",
+      "demander": "Demander à prendre en charge une autre maladie",
+      "enCours": "Demande envoyée le {{date}} ({{liste}}) : en attente de la coordination. Vous serez prévenu de sa décision.",
+      "choix": "Maladies que vous souhaitez ajouter",
+      "motif": "Expliquez votre expérience de ces maladies",
+      "motifExemple": "Depuis combien de temps vous les soignez, auprès de qui vous avez appris, ce que disent vos justificatifs…",
+      "pieces": "Justificatifs (obligatoires)",
+      "piecesAide": "Attestation, certificat, photo d'un document : PDF, JPEG, PNG ou WebP, 10 Mo et 5 fichiers au plus.",
+      "ajouterPiece": "Ajouter un fichier",
+      "retirer": "Retirer",
+      "envoyer": "Envoyer la demande",
+      "historique": "Demandes déjà examinées",
+      "statuts": {
+        "EN_ATTENTE": "En attente",
+        "ACCEPTEE": "Acceptée",
+        "REFUSEE": "Refusée"
+      },
+      "erreurChoix": "Choisissez au moins une maladie.",
+      "erreurMotif": "Expliquez votre demande en quelques mots (10 caractères au moins).",
+      "erreurPieces": "Joignez au moins un justificatif.",
+      "erreurFormat": "Format non accepté : PDF, JPEG, PNG ou WebP uniquement.",
+      "erreurTaille": "Un fichier dépasse 10 Mo.",
+      "erreurEnvoi": "La demande n'a pas pu être envoyée."
     }
   },
   "candidature": {
@@ -1739,7 +1795,12 @@
   "candidatures": {
     "filtreNature": "Filtrer par nature de praticien",
     "moisCreation": "Mois de création du compte",
-    "natures": { "TOUS": "Tous", "SPECIALISTE": "Spécialistes", "MEDECIN_TRAITANT": "Médecins traitants", "TRADIPRATICIEN": "Tradipraticiens" },
+    "natures": {
+      "TOUS": "Tous",
+      "SPECIALISTE": "Spécialistes",
+      "MEDECIN_TRAITANT": "Médecins traitants",
+      "TRADIPRATICIEN": "Tradipraticiens"
+    },
     "videMois": "Aucun compte créé en {{mois}}.",
     "compteCreeLe": "compte créé le {{date}}",
     "titre": "Demandes d'intégration",

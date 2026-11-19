@@ -55,6 +55,7 @@ const CoordinateurSpecialistes = lazy(() => import('./pages/coordinateur/Coordin
 const CoordinateurStatistiques = lazy(() => import('./pages/coordinateur/CoordinateurStatistiques'))
 const CoordinateurCandidatures = lazy(() => import('./pages/coordinateur/CoordinateurCandidatures'))
 const CoordinateurSpecialites = lazy(() => import('./pages/coordinateur/CoordinateurSpecialites'))
+const CoordinateurPrisesEnCharge = lazy(() => import('./pages/coordinateur/CoordinateurPrisesEnCharge'))
 const CoordinateurMedecins = lazy(() => import('./pages/coordinateur/CoordinateurMedecins'))
 const Candidature = lazy(() => import('./pages/public/Candidature'))
 const CandidatureRedirection = lazy(() => import('./pages/public/Candidature').then((m) => ({ default: m.CandidatureRedirection })))
@@ -289,7 +290,7 @@ export default function App() {
       <Route
         path="/professionnel/justificatifs"
         element={
-          <ProtectedRoute role={['SPECIALISTE', 'MEDECIN_LOCAL', 'TRADIPRATICIEN']}>
+          <ProtectedRoute role={['SPECIALISTE', 'MEDECIN_LOCAL']}>
             <MesJustificatifs />
           </ProtectedRoute>
         }
@@ -307,6 +308,14 @@ export default function App() {
         element={
           <ProtectedRoute role={['COORDINATEUR', 'ADMIN']}>
             <CoordinateurSpecialites />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/coordinateur/prises-en-charge"
+        element={
+          <ProtectedRoute role={['COORDINATEUR', 'ADMIN']}>
+            <CoordinateurPrisesEnCharge />
           </ProtectedRoute>
         }
       />

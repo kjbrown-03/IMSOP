@@ -505,6 +505,25 @@ async function mettreAJourAnnuaire(req, res) {
   // c'est la vérification de son numéro d'ordre qui fonde la confiance que la
   // plateforme engage
   // au patient.
+  // Le tradipraticien ne modifie pas ce qu'il soigne : il le demande à la
+  // coordination, justificatifs à l'appui (prisesEnCharge.controller). Le
+  // renvoi de la liste à l'identique reste accepté, pour qu'un ancien écran
+  // qui l'envoie encore ne casse pas l'enregistrement du reste.
+  if (annuaireSpecialites !== undefined && req.userRole === 'TRADIPRATICIEN') {
+    const memes = annuaireSpecialites.length === medecin.annuaireSpecialites.length
+      && annuaireSpecialites.every((s) => medecin.annuaireSpecialites.includes(s))
+    if (!memes) {
+      return res.status(403).json({
+        message: 'Les maladies prises en charge se modifient sur demande à la coordination, avec justificatifs.',
+      })
+    }
+  }
+  // Être visible sans spécialité n'aurait aucun sens : le praticien ne
+  // ressortirait dans aucune recherche.
+  const specialitesFinales = annuaireSpecialites ?? medecin.annuaireSpecialites
+  if (annuaireVisible && specialitesFinales.length === 0) {
+    return res.status(400).json({ message: 'Choisissez au moins une spécialité pour apparaître dans l\'annuaire' })
+  }
   if (annuaireVisible && medecin.verificationStatus !== 'VALIDE') {
     return res.status(403).json({ message: 'Votre habilitation doit être validée avant d\'apparaître dans l\'annuaire' })
   }

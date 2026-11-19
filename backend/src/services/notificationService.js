@@ -130,6 +130,15 @@ L'équipe IMSOP`,
     body: (ctx) =>
       `Bonjour ${ctx.name},\n\nLa moitié du délai de réponse est écoulée sur le dossier ${ctx.reference}, confié à ${ctx.specialiste}. Il reste environ ${ctx.heuresRestantes} h avant l'échéance.\n\nRelancez le spécialiste, ou réaffectez le dossier si vous le jugez nécessaire.\n\nL'équipe IMSOP`,
   },
+  // Ni maladie ni motif dans le texte : il se lit sur un écran verrouillé.
+  PRISE_EN_CHARGE_DEMANDEE: {
+    subject: 'Demande de prise en charge à examiner',
+    body: (ctx) => `Bonjour ${ctx.name},\n\n${ctx.praticien} demande à ajouter des maladies prises en charge à sa fiche d'annuaire. Sa demande et ses justificatifs vous attendent dans l'écran « Prises en charge ».\n\nL'équipe IMSOP`,
+  },
+  PRISE_EN_CHARGE_TRAITEE: {
+    subject: 'Votre demande de prise en charge a été examinée',
+    body: (ctx) => `Bonjour ${ctx.name},\n\nLa coordination a examiné votre demande d'ajout de maladies prises en charge : elle a été ${ctx.acceptee ? 'acceptée. Les maladies figurent désormais sur votre fiche d\'annuaire' : 'refusée. Le motif est indiqué dans votre espace, rubrique « Annuaire »'}.\n\nL'équipe IMSOP`,
+  },
   CANDIDATURE_RECUE: {
     subject: 'Nouvelle candidature à examiner',
     body: (ctx) => `Bonjour ${ctx.name},
@@ -206,12 +215,14 @@ const PUSH_PAR_TYPE = {
   PAIEMENT_CONFIRME: 'DOSSIER',
   MEDECIN_LOCAL_RATTACHE: 'DOSSIER',
   HABILITATION_STATUT: 'DOSSIER',
+  PRISE_EN_CHARGE_TRAITEE: 'DOSSIER',
   IDENTITE_VALIDEE: 'DOSSIER',
   IDENTITE_REFUSEE: 'DOSSIER',
 
   NOUVEAU_DOSSIER_SPECIALISTE: 'COORDINATION',
   DELAI_REPONSE_ALERTE: 'COORDINATION',
   CANDIDATURE_RECUE: 'COORDINATION',
+  PRISE_EN_CHARGE_DEMANDEE: 'COORDINATION',
   CANDIDATURE_A_CREER: 'COORDINATION',
   CONFLIT_INTERETS: 'COORDINATION',
 }

@@ -2,6 +2,7 @@ import {
   Banknote,
   ClipboardList,
   HeartPulse,
+  Leaf,
   BarChart3,
   BookOpen,
   BadgeCheck,
@@ -40,6 +41,7 @@ export const LIENS_COORDINATEUR = [
   { to: '/coordinateur/medecins', cle: 'gestionMedecins', icone: HeartPulse },
   { to: '/coordinateur/reversements', cle: 'reversements', icone: Banknote },
   { to: '/coordinateur/habilitations', cle: 'habilitations', icone: BadgeCheck },
+  { to: '/coordinateur/prises-en-charge', cle: 'prisesEnCharge', icone: Leaf },
   { to: '/coordinateur/exceptions', cle: 'parametres', icone: Settings },
   { to: '/coordinateur/temoignages', cle: 'temoignages', icone: MessageCircleHeart },
 ]
