@@ -518,6 +518,13 @@ async function mettreAJourAnnuaire(req, res) {
       })
     }
   }
+  // Les années d'expérience sont lues par le patient comme une garantie, au
+  // même titre que les maladies : le tradipraticien ne les change pas seul.
+  // Même tolérance pour un renvoi à l'identique.
+  if (annuaireExperience !== undefined && req.userRole === 'TRADIPRATICIEN'
+    && annuaireExperience !== medecin.annuaireExperience) {
+    return res.status(403).json({ message: "Les années d'expérience ne se modifient que par la coordination." })
+  }
   // Être visible sans spécialité n'aurait aucun sens : le praticien ne
   // ressortirait dans aucune recherche.
   const specialitesFinales = annuaireSpecialites ?? medecin.annuaireSpecialites

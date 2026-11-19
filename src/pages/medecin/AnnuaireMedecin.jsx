@@ -107,7 +107,8 @@ export default function AnnuaireMedecin() {
         // Chaine vide = « non renseigne », pas « zero an ».
         avisLocalActif: reglages.avisLocalActif,
         annuaireAdresse: reglages.annuaireAdresse || null,
-        annuaireExperience: reglages.annuaireExperience === '' ? null : Number(reglages.annuaireExperience),
+        // Verrouillées pour le tradipraticien, comme ses maladies : on ne les envoie pas.
+        ...(traditionnel ? {} : { annuaireExperience: reglages.annuaireExperience === '' ? null : Number(reglages.annuaireExperience) }),
         annuairePresentation: reglages.annuairePresentation || null,
       })
       setReglages((r) => ({ ...r, ...data, pays: data.pays || r.pays, ville: data.ville || '', region: data.region || '', departement: data.departement || '', arrondissement: data.arrondissement || '', quartier: data.quartier || '', annuairePresentation: data.annuairePresentation || '', annuaireExperience: data.annuaireExperience ?? '', annuaireAdresse: data.annuaireAdresse || '', avisLocalActif: Boolean(data.avisLocalActif) }))
@@ -277,8 +278,11 @@ export default function AnnuaireMedecin() {
 
           <section className="glass-card rounded-2xl p-5 flex flex-col gap-3">
             <h2 className="font-semibold text-slate-900 dark:text-white">{t('annuaire.medecin.experienceTitre')}</h2>
-            <p className="text-sm text-slate-500 dark:text-neutral-400">{t('annuaire.medecin.experienceAide')}</p>
+            <p className="text-sm text-slate-500 dark:text-neutral-400">{t(traditionnel ? 'annuaire.medecin.experienceVerrouillee' : 'annuaire.medecin.experienceAide')}</p>
             <div className="flex items-center gap-3">
+              {traditionnel ? (
+                <span className="font-semibold text-slate-900 dark:text-white">{reglages.annuaireExperience === '' ? '—' : reglages.annuaireExperience}</span>
+              ) : (
               <input
                 type="number"
                 min={0}
@@ -288,6 +292,7 @@ export default function AnnuaireMedecin() {
                 onChange={(e) => modifier('annuaireExperience', e.target.value)}
                 className={CHAMP + ' w-28'}
               />
+              )}
               <span className="text-sm text-slate-600 dark:text-neutral-300">{t('annuaire.medecin.experienceUnite')}</span>
             </div>
           </section>

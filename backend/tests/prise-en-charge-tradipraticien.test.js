@@ -62,6 +62,25 @@ test("le tradipraticien ne modifie plus lui-même ce qu'il prend en charge", asy
   assert.deepEqual(reste.body.annuaireSpecialites, ['medecine_generale'])
 })
 
+test("le tradipraticien ne modifie pas ses années d'expérience", async () => {
+  const { user, medecinLocal } = await tradipraticien()
+  await prisma.medecinLocal.update({ where: { id: medecinLocal.id }, data: { annuaireExperience: 12 } })
+  const auth = entete(user)
+  const changement = await api().put('/api/annuaire/medecin/moi').set('Authorization', auth)
+    .send({ annuaireVisible: false, annuaireExperience: 40 })
+  assert.equal(changement.status, 403)
+  const identique = await api().put('/api/annuaire/medecin/moi').set('Authorization', auth)
+    .send({ annuaireVisible: false, annuaireExperience: 12 })
+  assert.equal(identique.status, 200)
+  assert.equal((await prisma.medecinLocal.findUnique({ where: { id: medecinLocal.id } })).annuaireExperience, 12)
+
+  // Le médecin conventionnel, lui, garde la main.
+  const { user: medecin } = await creerMedecinLocal()
+  const conv = await api().put('/api/annuaire/medecin/moi').set('Authorization', entete(medecin))
+    .send({ annuaireVisible: false, annuaireExperience: 8 })
+  assert.equal(conv.status, 200)
+})
+
 test('le médecin conventionnel garde la main sur ses spécialités', async () => {
   const { user, medecinLocal } = await creerMedecinLocal()
   const res = await api().put('/api/annuaire/medecin/moi').set('Authorization', entete(user))

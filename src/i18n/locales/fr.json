@@ -1635,7 +1635,8 @@
       "adresseTitre": "Adresse du cabinet",
       "adresseAide": "Telle que vous l'écririez sur une ordonnance. Le patient qui a payé la mise en relation pourra ouvrir l'itinéraire depuis son téléphone. Laissez vide si vous préférez ne donner que le quartier.",
       "avisLocalLabel": "J'accepte de rédiger des avis sur dossier",
-      "avisLocalAide": "Un patient dépose son dossier — analyses, imageries, comptes rendus — et vous rédigez un avis écrit, sans le rencontrer. C'est distinct de la consultation : vous engagez votre signature sur un document. Rémunéré par dossier."
+      "avisLocalAide": "Un patient dépose son dossier — analyses, imageries, comptes rendus — et vous rédigez un avis écrit, sans le rencontrer. C'est distinct de la consultation : vous engagez votre signature sur un document. Rémunéré par dossier.",
+      "experienceVerrouillee": "Fixées par la coordination. Pour les corriger, contactez-la."
     },
     "choix": {
       "eyebrow": "Médecin (spécialiste/généraliste) ou tradipraticien le plus proche",

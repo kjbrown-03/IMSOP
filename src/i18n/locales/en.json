@@ -1635,7 +1635,8 @@
       "adresseTitre": "Practice address",
       "adresseAide": "As you would write it on a prescription. Patients who paid for the introduction can open directions from their phone. Leave blank to give only the neighbourhood.",
       "avisLocalLabel": "I am willing to write written opinions on case files",
-      "avisLocalAide": "A patient submits their file — tests, imaging, reports — and you write an opinion without meeting them. This differs from a consultation: you put your signature on a document. Paid per file."
+      "avisLocalAide": "A patient submits their file — tests, imaging, reports — and you write an opinion without meeting them. This differs from a consultation: you put your signature on a document. Paid per file.",
+      "experienceVerrouillee": "Set by the coordination team. Contact them to correct it."
     },
     "choix": {
       "eyebrow": "Nearest doctor (specialist/GP) or traditional practitioner",
