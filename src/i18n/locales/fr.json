@@ -129,7 +129,8 @@
           "etape3Titre": "Soyez mis en relation",
           "etape3Texte": "Vous payez la mise en relation, choisissez un tradipraticien et recevez ses coordonnées. Un autre contact se paie à nouveau."
         }
-      }
+      },
+      "testimonialRoleTradipraticien": "Tradipraticien"
     },
     "footer": {
       "tagline": "International Medical Second Opinion Platform. Programme africain de deuxième avis médical et de télé-expertise médicale internationale. Pays pilote : Cameroun.",
@@ -177,7 +178,9 @@
       "coordinatorDesc": "Gérez les dossiers, affectations et urgences.",
       "newPatient": "Nouveau patient ?",
       "localDoctorTitle": "Médecin traitant",
-      "localDoctorDesc": "Suivez vos patients et accompagnez leur demande de deuxième avis."
+      "localDoctorDesc": "Suivez vos patients et accompagnez leur demande de deuxième avis.",
+      "tradipraticienTitle": "Tradipraticien",
+      "tradipraticienDesc": "Registre de vos patients, orientation et fiche d'annuaire."
     },
     "loginPatient": {
       "heading": "Votre Santé,<br/>Notre Priorité.",
@@ -293,7 +296,15 @@
         "MEDECIN_LOCAL": {
           "title": "Espace Médecin Traitant",
           "subtitle": "Accompagnez vos centres de santé pour un deuxième avis médical."
+        },
+        "TRADIPRATICIEN": {
+          "title": "Espace Tradipraticien",
+          "subtitle": "Tenez le registre de vos patients et orientez-les quand il le faut."
         }
+      },
+      "allerEspace": {
+        "tradipraticien": "Aller à l'espace tradipraticien",
+        "medecin": "Aller à l'espace médecin"
       }
     },
     "registrationStepper": {
@@ -702,7 +713,8 @@
       },
       "roles": {
         "PATIENT": "Patient",
-        "MEDECIN_LOCAL": "Médecin traitant"
+        "MEDECIN_LOCAL": "Médecin traitant",
+        "TRADIPRATICIEN": "Tradipraticien"
       }
     },
     "delai": {
@@ -950,6 +962,20 @@
       "traditionnels": "Tradipraticiens",
       "tradipraticien": "Tradipraticien",
       "filtre": "Filtrer par nature de pratique"
+    },
+    "tradipraticiens": {
+      "title": "Gestion des tradipraticiens",
+      "subtitle": "Créez, modifiez ou suspendez les comptes des tradipraticiens.",
+      "newButton": "Nouveau tradipraticien",
+      "createTitle": "Nouveau tradipraticien",
+      "villePlaceholder": "Ville d'exercice",
+      "numeroOrdrePlaceholder": "Numéro d'enregistrement (facultatif)",
+      "numeroOrdre": "N° {{numero}}",
+      "verified": "Habilité"
+    },
+    "praticiensOnglets": {
+      "MEDECIN_LOCAL": "Médecins traitants",
+      "TRADIPRATICIEN": "Tradipraticiens"
     }
   },
   "shell": {
@@ -1002,6 +1028,12 @@
     },
     "coordinateurNav": {
       "habilitations": "Habilitations"
+    },
+    "tradipraticienNav": {
+      "registre": "Registre des patients",
+      "justificatifs": "Mes justificatifs",
+      "annuaire": "Annuaire",
+      "profil": "Mon compte"
     }
   },
   "consentement": {
@@ -1649,18 +1681,48 @@
     "categoriePublique": "Catégorie de la formation sanitaire publique",
     "categoriePrivee": "Catégorie de la formation sanitaire privée",
     "categories": {
-      "HOPITAL_GENERAL": { "rang": "1re catégorie", "nom": "Hôpital général ou CHU" },
-      "HOPITAL_CENTRAL": { "rang": "2e catégorie", "nom": "Hôpital central ou centre hospitalier régional" },
-      "HOPITAL_REGIONAL": { "rang": "3e catégorie", "nom": "Hôpital régional" },
-      "HOPITAL_DISTRICT": { "rang": "4e catégorie", "nom": "Hôpital de district" },
-      "CMA": { "rang": "5e catégorie", "nom": "Centre médical d'arrondissement (CMA)" },
-      "CSI": { "rang": "6e catégorie", "nom": "Centre de santé intégré (CSI)" },
-      "HOPITAL_PRIVE": { "nom": "Hôpital privé" },
-      "POLYCLINIQUE": { "nom": "Polyclinique" },
-      "CLINIQUE": { "nom": "Clinique" },
-      "CENTRE_MEDICAL_PRIVE": { "nom": "Centre médical privé" },
-      "CABINET_MEDICAL": { "nom": "Cabinet médical" },
-      "CONFESSIONNELLE": { "nom": "Formation sanitaire confessionnelle ou associative" }
+      "HOPITAL_GENERAL": {
+        "rang": "1re catégorie",
+        "nom": "Hôpital général ou CHU"
+      },
+      "HOPITAL_CENTRAL": {
+        "rang": "2e catégorie",
+        "nom": "Hôpital central ou centre hospitalier régional"
+      },
+      "HOPITAL_REGIONAL": {
+        "rang": "3e catégorie",
+        "nom": "Hôpital régional"
+      },
+      "HOPITAL_DISTRICT": {
+        "rang": "4e catégorie",
+        "nom": "Hôpital de district"
+      },
+      "CMA": {
+        "rang": "5e catégorie",
+        "nom": "Centre médical d'arrondissement (CMA)"
+      },
+      "CSI": {
+        "rang": "6e catégorie",
+        "nom": "Centre de santé intégré (CSI)"
+      },
+      "HOPITAL_PRIVE": {
+        "nom": "Hôpital privé"
+      },
+      "POLYCLINIQUE": {
+        "nom": "Polyclinique"
+      },
+      "CLINIQUE": {
+        "nom": "Clinique"
+      },
+      "CENTRE_MEDICAL_PRIVE": {
+        "nom": "Centre médical privé"
+      },
+      "CABINET_MEDICAL": {
+        "nom": "Cabinet médical"
+      },
+      "CONFESSIONNELLE": {
+        "nom": "Formation sanitaire confessionnelle ou associative"
+      }
     },
     "telStructure": "Téléphone de la structure",
     "emailStructure": "E-mail de la structure",
@@ -1936,6 +1998,58 @@
         "delai": "Vous déposez un dossier et recevez un rapport écrit sous quelques jours.",
         "action": "Déposer un dossier"
       }
+    }
+  },
+  "tradipraticien": {
+    "registre": {
+      "titre": "Registre des patients",
+      "sousTitre": "Votre carnet de consultation. Ces fiches ne sont visibles que par vous : ni la coordination ni le confrère vers qui vous orientez un patient n'y ont accès.",
+      "nouveau": "Nouveau patient",
+      "modifier": "Modifier",
+      "supprimer": "Supprimer",
+      "fermer": "Fermer",
+      "enregistrer": "Enregistrer",
+      "annuler": "Annuler",
+      "rechercher": "Rechercher un patient par son nom",
+      "chargement": "Chargement du registre…",
+      "vide": "Aucun patient enregistré pour l'instant.",
+      "aucunResultat": "Aucun patient ne correspond à cette recherche.",
+      "reserve": "Le registre des patients est réservé aux tradipraticiens.",
+      "erreurChargement": "Impossible de charger le registre.",
+      "erreurEnregistrement": "L'enregistrement a échoué.",
+      "confirmerSuppression": "Supprimer définitivement la fiche de {{nom}} ?",
+      "dureeExemple": "Ex. : 21 jours",
+      "ans_one": "{{count}} an",
+      "ans_other": "{{count}} ans",
+      "champs": {
+        "nom": "Nom du patient",
+        "age": "Âge",
+        "sexe": "Sexe",
+        "paysOrigine": "Pays d'origine",
+        "diagnostic": "Diagnostic",
+        "therapeutique": "Thérapeutique",
+        "dureeTraitement": "Durée du traitement"
+      },
+      "sexe": {
+        "MASCULIN": "Masculin",
+        "FEMININ": "Féminin"
+      },
+      "referer": "Référer ce patient",
+      "versChoix": {
+        "HOPITAL_CONVENTIONNEL": "Hôpital conventionnel",
+        "AUTRE_TRADIPRATICIEN": "Autre tradipraticien"
+      },
+      "destinataire": {
+        "HOPITAL_CONVENTIONNEL": "Nom de l'hôpital",
+        "AUTRE_TRADIPRATICIEN": "Nom du tradipraticien"
+      },
+      "motif": "Motif de l'orientation (facultatif)",
+      "confirmerReference": "Référer",
+      "refereVers": {
+        "HOPITAL_CONVENTIONNEL": "Référé à l'hôpital",
+        "AUTRE_TRADIPRATICIEN": "Référé au tradipraticien"
+      },
+      "annulerReference": "Annuler l'orientation"
     }
   }
 }

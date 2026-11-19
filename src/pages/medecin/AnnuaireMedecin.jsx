@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { CheckCircle2, Eye, EyeOff, FileSignature, Loader2, MapPin, ShieldAlert } from 'lucide-react'
 import MedecinShell from '../../components/layout/MedecinShell'
+import TradipraticienShell from '../../components/layout/TradipraticienShell'
+import { useAuthStore } from '../../store/useAuthStore'
 import { api } from '../../lib/api'
 import ReglageNotifications from '../../components/ui/ReglageNotifications'
 import ChoixLieu from '../../components/annuaire/ChoixLieu'
@@ -16,6 +18,10 @@ const CHAMP =
  */
 export default function AnnuaireMedecin() {
   const { t } = useTranslation()
+  // La meme page sert les deux espaces : la fiche d'annuaire est la meme. Le
+  // tradipraticien n'a pas l'option « rediger des avis », qui suppose des dossiers.
+  const traditionnel = useAuthStore((s) => s.user?.role) === 'TRADIPRATICIEN'
+  const Shell = traditionnel ? TradipraticienShell : MedecinShell
 
   const [referentiels, setReferentiels] = useState(null)
   const [reglages, setReglages] = useState(null)
@@ -111,7 +117,7 @@ export default function AnnuaireMedecin() {
   }
 
   return (
-    <MedecinShell>
+    <Shell>
       <section className="flex flex-col gap-2">
         <h1 className="font-display text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
           <MapPin className="w-7 h-7 text-primary-600" /> {t('annuaire.medecin.titre')}
@@ -175,7 +181,7 @@ export default function AnnuaireMedecin() {
               Ne s'affiche que pour un medecin deja dans l'annuaire : on ne
               propose pas de rediger des avis a quelqu'un qui n'a pas encore
               accepte d'etre propose aux patients. */}
-          {reglages.annuaireVisible && (
+          {reglages.annuaireVisible && !traditionnel && (
             <label className={`glass-card rounded-2xl p-5 flex items-start gap-4 cursor-pointer ${!habilite ? 'opacity-60' : ''}`}>
               <input
                 type="checkbox"
@@ -306,6 +312,6 @@ export default function AnnuaireMedecin() {
           </div>
         </form>
       )}
-    </MedecinShell>
+    </Shell>
   )
 }

@@ -129,7 +129,8 @@
           "etape3Titre": "Get connected",
           "etape3Texte": "You pay for the connection, choose a traditional practitioner and receive their contact details. Another contact means a new payment."
         }
-      }
+      },
+      "testimonialRoleTradipraticien": "Traditional practitioner"
     },
     "footer": {
       "tagline": "International Medical Second Opinion Platform. An African program for second medical opinions and international tele-expertise. Pilot country: Cameroon.",
@@ -177,7 +178,9 @@
       "coordinatorDesc": "Manage cases, assignments and emergencies.",
       "newPatient": "New patient?",
       "localDoctorTitle": "Treating doctor",
-      "localDoctorDesc": "Follow your patients and support their second opinion request."
+      "localDoctorDesc": "Follow your patients and support their second opinion request.",
+      "tradipraticienTitle": "Traditional practitioner",
+      "tradipraticienDesc": "Patient register, referrals and directory listing."
     },
     "loginPatient": {
       "heading": "Your Health,<br/>Our Priority.",
@@ -293,7 +296,15 @@
         "MEDECIN_LOCAL": {
           "title": "Treating Doctor Area",
           "subtitle": "Support your health centers through second medical opinions."
+        },
+        "TRADIPRATICIEN": {
+          "title": "Traditional Practitioner Area",
+          "subtitle": "Keep your patient register and refer patients when needed."
         }
+      },
+      "allerEspace": {
+        "tradipraticien": "Go to the traditional practitioner area",
+        "medecin": "Go to the doctor area"
       }
     },
     "registrationStepper": {
@@ -702,7 +713,8 @@
       },
       "roles": {
         "PATIENT": "Patient",
-        "MEDECIN_LOCAL": "Treating doctor"
+        "MEDECIN_LOCAL": "Treating doctor",
+        "TRADIPRATICIEN": "Traditional practitioner"
       }
     },
     "delai": {
@@ -950,6 +962,20 @@
       "traditionnels": "Traditional practitioners",
       "tradipraticien": "Traditional practitioner",
       "filtre": "Filter by type of practice"
+    },
+    "tradipraticiens": {
+      "title": "Traditional practitioners",
+      "subtitle": "Create, edit or suspend traditional practitioner accounts.",
+      "newButton": "New practitioner",
+      "createTitle": "New traditional practitioner",
+      "villePlaceholder": "City of practice",
+      "numeroOrdrePlaceholder": "Registration number (optional)",
+      "numeroOrdre": "No. {{numero}}",
+      "verified": "Approved"
+    },
+    "praticiensOnglets": {
+      "MEDECIN_LOCAL": "Local doctors",
+      "TRADIPRATICIEN": "Traditional practitioners"
     }
   },
   "shell": {
@@ -1002,6 +1028,12 @@
     },
     "coordinateurNav": {
       "habilitations": "Credentials"
+    },
+    "tradipraticienNav": {
+      "registre": "Patient register",
+      "justificatifs": "My credentials",
+      "annuaire": "Directory",
+      "profil": "My account"
     }
   },
   "consentement": {
@@ -1649,18 +1681,48 @@
     "categoriePublique": "Public health facility category",
     "categoriePrivee": "Private health facility category",
     "categories": {
-      "HOPITAL_GENERAL": { "rang": "Category 1", "nom": "General or university teaching hospital" },
-      "HOPITAL_CENTRAL": { "rang": "Category 2", "nom": "Central hospital or regional hospital centre" },
-      "HOPITAL_REGIONAL": { "rang": "Category 3", "nom": "Regional hospital" },
-      "HOPITAL_DISTRICT": { "rang": "Category 4", "nom": "District hospital" },
-      "CMA": { "rang": "Category 5", "nom": "Sub-divisional medical centre (CMA)" },
-      "CSI": { "rang": "Category 6", "nom": "Integrated health centre (CSI)" },
-      "HOPITAL_PRIVE": { "nom": "Private hospital" },
-      "POLYCLINIQUE": { "nom": "Polyclinic" },
-      "CLINIQUE": { "nom": "Clinic" },
-      "CENTRE_MEDICAL_PRIVE": { "nom": "Private medical centre" },
-      "CABINET_MEDICAL": { "nom": "Doctor's practice" },
-      "CONFESSIONNELLE": { "nom": "Faith-based or non-profit health facility" }
+      "HOPITAL_GENERAL": {
+        "rang": "Category 1",
+        "nom": "General or university teaching hospital"
+      },
+      "HOPITAL_CENTRAL": {
+        "rang": "Category 2",
+        "nom": "Central hospital or regional hospital centre"
+      },
+      "HOPITAL_REGIONAL": {
+        "rang": "Category 3",
+        "nom": "Regional hospital"
+      },
+      "HOPITAL_DISTRICT": {
+        "rang": "Category 4",
+        "nom": "District hospital"
+      },
+      "CMA": {
+        "rang": "Category 5",
+        "nom": "Sub-divisional medical centre (CMA)"
+      },
+      "CSI": {
+        "rang": "Category 6",
+        "nom": "Integrated health centre (CSI)"
+      },
+      "HOPITAL_PRIVE": {
+        "nom": "Private hospital"
+      },
+      "POLYCLINIQUE": {
+        "nom": "Polyclinic"
+      },
+      "CLINIQUE": {
+        "nom": "Clinic"
+      },
+      "CENTRE_MEDICAL_PRIVE": {
+        "nom": "Private medical centre"
+      },
+      "CABINET_MEDICAL": {
+        "nom": "Doctor's practice"
+      },
+      "CONFESSIONNELLE": {
+        "nom": "Faith-based or non-profit health facility"
+      }
     },
     "telStructure": "Facility phone",
     "emailStructure": "Facility email",
@@ -1936,6 +1998,58 @@
         "delai": "You submit a file and receive a written report within a few days.",
         "action": "Submit a file"
       }
+    }
+  },
+  "tradipraticien": {
+    "registre": {
+      "titre": "Patient register",
+      "sousTitre": "Your consultation log. Only you can see these records: neither the coordination team nor the practitioner you refer a patient to has access.",
+      "nouveau": "New patient",
+      "modifier": "Edit",
+      "supprimer": "Delete",
+      "fermer": "Close",
+      "enregistrer": "Save",
+      "annuler": "Cancel",
+      "rechercher": "Search a patient by name",
+      "chargement": "Loading register…",
+      "vide": "No patient recorded yet.",
+      "aucunResultat": "No patient matches this search.",
+      "reserve": "The patient register is reserved for traditional practitioners.",
+      "erreurChargement": "Unable to load the register.",
+      "erreurEnregistrement": "Saving failed.",
+      "confirmerSuppression": "Permanently delete {{nom}}'s record?",
+      "dureeExemple": "E.g. 21 days",
+      "ans_one": "{{count}} year old",
+      "ans_other": "{{count}} years old",
+      "champs": {
+        "nom": "Patient name",
+        "age": "Age",
+        "sexe": "Sex",
+        "paysOrigine": "Country of origin",
+        "diagnostic": "Diagnosis",
+        "therapeutique": "Treatment",
+        "dureeTraitement": "Treatment duration"
+      },
+      "sexe": {
+        "MASCULIN": "Male",
+        "FEMININ": "Female"
+      },
+      "referer": "Refer this patient",
+      "versChoix": {
+        "HOPITAL_CONVENTIONNEL": "Conventional hospital",
+        "AUTRE_TRADIPRATICIEN": "Another traditional practitioner"
+      },
+      "destinataire": {
+        "HOPITAL_CONVENTIONNEL": "Hospital name",
+        "AUTRE_TRADIPRATICIEN": "Practitioner name"
+      },
+      "motif": "Reason for referral (optional)",
+      "confirmerReference": "Refer",
+      "refereVers": {
+        "HOPITAL_CONVENTIONNEL": "Referred to hospital",
+        "AUTRE_TRADIPRATICIEN": "Referred to practitioner"
+      },
+      "annulerReference": "Cancel referral"
     }
   }
 }

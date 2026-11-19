@@ -5,6 +5,7 @@ export const ROLE_REDIRECTS = {
   PATIENT: '/patient/dossiers',
   SPECIALISTE: '/specialiste/tableau-de-bord',
   MEDECIN_LOCAL: '/medecin/dossiers',
+  TRADIPRATICIEN: '/tradipraticien/registre',
   COORDINATEUR: '/coordinateur/tableau-de-bord',
   ADMIN: '/admin/tableau-de-bord',
 }

@@ -44,6 +44,7 @@ const TUTORIEL_PAR_ROLE = {
   PATIENT: '/patient/tutoriel',
   SPECIALISTE: '/specialiste/tutoriel',
   MEDECIN_LOCAL: '/medecin/tutoriel',
+  TRADIPRATICIEN: '/tradipraticien/tutoriel',
   COORDINATEUR: '/coordinateur/tutoriel',
   ADMIN: '/admin/tutoriel',
 }

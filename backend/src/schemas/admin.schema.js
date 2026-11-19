@@ -8,7 +8,7 @@ const listAuditLogs = {
   }).strict(),
 }
 
-const MANAGEABLE_ROLE = z.enum(['SPECIALISTE', 'MEDECIN_LOCAL', 'COORDINATEUR'])
+const MANAGEABLE_ROLE = z.enum(['SPECIALISTE', 'MEDECIN_LOCAL', 'TRADIPRATICIEN', 'COORDINATEUR'])
 
 const listUsers = {
   query: z.object({

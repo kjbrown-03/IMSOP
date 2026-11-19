@@ -45,8 +45,16 @@ Les deux voies se séparent aussi entre **médecine conventionnelle** et
 | `PATIENT` | dépose un dossier, paie, lit l'avis |
 | `SPECIALISTE` | expert international, rédige les avis |
 | `MEDECIN_LOCAL` | médecin traitant **et** médecin d'annuaire — un seul rôle pour les deux |
+| `TRADIPRATICIEN` | registre de ses patients, orientation, fiche d'annuaire — **ni dossier ni avis** |
 | `COORDINATEUR` | affecte les dossiers, habilite les praticiens, suit les délais |
 | `ADMIN` | supervision, journal d'audit, statistiques |
+
+`TRADIPRATICIEN` a son propre espace (`/tradipraticien`) et sa propre session.
+Son profil reste dans la table `MedecinLocal` (`typePratique: TRADITIONNEL`),
+parce que l'annuaire lit les deux médecines au même endroit — mais toutes les
+routes de dossier exigent `MEDECIN_LOCAL`, et `loadDossierWithAccessCheck`
+refuse tout rôle qu'il ne nomme pas. Son registre de patients n'est lu que par
+lui : ni la coordination ni le confrère vers qui il oriente n'y ont accès.
 
 `MEDECIN_LOCAL` recouvre deux réalités, et c'est voulu : un médecin peut suivre
 ses propres patients **et** accepter d'être proposé à des inconnus. Trois

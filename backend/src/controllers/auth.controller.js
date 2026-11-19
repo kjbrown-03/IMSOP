@@ -8,7 +8,7 @@ const { logAction } = require('../services/auditService')
 const { genererPatientRef } = require('../services/referenceService')
 const env = require('../config/env')
 
-const ROLES_REQUIRING_2FA = new Set(['SPECIALISTE', 'MEDECIN_LOCAL', 'COORDINATEUR', 'ADMIN'])
+const ROLES_REQUIRING_2FA = new Set(['SPECIALISTE', 'MEDECIN_LOCAL', 'TRADIPRATICIEN', 'COORDINATEUR', 'ADMIN'])
 
 function hashToken(token) {
   return crypto.createHash('sha256').update(token).digest('hex')
@@ -37,6 +37,7 @@ function serializeUser(user) {
     etablissement: user.medecinLocal?.etablissement ?? user.specialiste?.etablissement,
     ville: user.medecinLocal?.ville ?? user.patient?.city,
     numeroOrdre: user.medecinLocal?.numeroOrdre,
+    typePratique: user.medecinLocal?.typePratique,
     // CDC §16 : EN_VERIFICATION | VALIDE | SUSPENDU | EXPIRE | REVOQUE.
     // Le front s'en sert pour afficher l'état de l'habilitation et, le cas
     // échéant, le motif d'un refus ou d'une suspension.
@@ -320,12 +321,14 @@ async function registerMedecinLocal(req, res) {
   return repondreInscription(res, null)
 }
 
+// Les deux espaces de praticiens de proximite : une erreur de porte entre eux
+// merite d'etre signalee (voir `login`), pas une erreur vers un autre role.
+const ESPACE_DE_CONNEXION = { MEDECIN_LOCAL: 'medecin', TRADIPRATICIEN: 'tradipraticien' }
+
 async function login(req, res) {
   const { email, password, role } = req.body
   const user = await prisma.user.findUnique({ where: { email }, include: { patient: true, specialiste: true, medecinLocal: true } })
-  if (!user || (role && user.role !== role)) {
-    return res.status(401).json({ message: 'Identifiants incorrects' })
-  }
+  if (!user) return res.status(401).json({ message: 'Identifiants incorrects' })
 
   // Un mot de passe copié depuis un courriel emporte souvent l'espace ou le
   // retour à la ligne qui le suit, invisible dans le champ masqué : le
@@ -337,6 +340,24 @@ async function login(req, res) {
     valid = await bcrypt.compare(password.trim(), user.passwordHash)
   }
   if (!valid) return res.status(401).json({ message: 'Identifiants incorrects' })
+
+  if (role && user.role !== role) {
+    // Les tradipraticiens se connectaient par la page des medecins jusqu'a la
+    // separation des deux espaces. Leur repondre « identifiants incorrects »
+    // avec le bon mot de passe les laisserait croire leur compte perdu. On ne
+    // l'indique qu'APRES verification du mot de passe : sans lui, la reponse
+    // dirait a n'importe qui quelle adresse appartient a quel type de compte.
+    const espace = ESPACE_DE_CONNEXION[user.role]
+    if (espace && ESPACE_DE_CONNEXION[role]) {
+      return res.status(409).json({
+        message: user.role === 'TRADIPRATICIEN'
+          ? 'Ce compte est un compte tradipraticien : connectez-vous depuis l\'espace tradipraticien.'
+          : 'Ce compte est un compte médecin : connectez-vous depuis l\'espace médecin.',
+        espace,
+      })
+    }
+    return res.status(401).json({ message: 'Identifiants incorrects' })
+  }
 
   if (!user.active) {
     return res.status(403).json({ message: 'Ce compte a été désactivé. Contactez un administrateur.' })

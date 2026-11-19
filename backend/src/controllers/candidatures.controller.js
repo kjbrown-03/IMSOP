@@ -38,7 +38,13 @@ const PHOTO_FILE_NAME = /^[a-f0-9-]{36}\.(jpg|png|webp)$/
 const EXTENSION_PAR_MIME = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp' }
 const MIME_PAR_EXTENSION = { jpg: 'image/jpeg', png: 'image/png', webp: 'image/webp' }
 
-const ROLES_PAR_TYPE = { SPECIALISTE: 'SPECIALISTE', MEDECIN_LOCAL: 'MEDECIN_LOCAL' }
+// Une candidature « MEDECIN_LOCAL » couvre les deux medecines de proximite ;
+// c'est sa nature de pratique qui decide du role du compte. Le tradipraticien a
+// son propre espace, sans dossiers de second avis.
+function roleDeCandidature(c) {
+  if (c.type === 'SPECIALISTE') return 'SPECIALISTE'
+  return c.typePratique === 'TRADITIONNEL' ? 'TRADIPRATICIEN' : 'MEDECIN_LOCAL'
+}
 
 // --- Formulaire public --------------------------------------------------------
 
@@ -502,7 +508,7 @@ async function eleverCompteExistant({ req, res, candidature, existant }) {
         "Rendez-vous dans vos réglages d'annuaire pour choisir vos spécialités,",
         'votre quartier, et vous rendre visible.',
         '',
-        `${env.publicUrl}/medecin/annuaire`,
+        `${env.publicUrl}/${existant.role === 'TRADIPRATICIEN' ? 'tradipraticien' : 'medecin'}/annuaire`,
         '',
         'Vos identifiants de connexion restent les mêmes.',
       ].join('\n'),
@@ -574,8 +580,9 @@ async function creerCompte(req, res) {
   // On élève le compte existant : c’est la même personne, le comité vient de
   // se prononcer sur elle.
   if (existant) {
-    const meme = ROLES_PAR_TYPE[candidature.type] === existant.role
-    if (!meme || existant.role !== 'MEDECIN_LOCAL') {
+    // Un compte medecin ne devient pas tradipraticien (ni l'inverse) par une
+    // candidature : ce sont deux espaces distincts, il faudrait une autre adresse.
+    if (roleDeCandidature(candidature) !== existant.role || existant.role === 'SPECIALISTE') {
       return res.status(409).json({ message: 'Un compte existe déjà avec cette adresse e-mail' })
     }
     return eleverCompteExistant({ req, res, candidature, existant })
@@ -583,7 +590,7 @@ async function creerCompte(req, res) {
 
   const motDePasse = motDePasseInitial()
   const passwordHash = await bcrypt.hash(motDePasse, 12)
-  const role = ROLES_PAR_TYPE[candidature.type]
+  const role = roleDeCandidature(candidature)
 
   // La candidature a été validée par le comité : c'est cette validation qui
   // vaut habilitation. Faire renaître le compte EN_VERIFICATION obligerait la
@@ -675,7 +682,8 @@ async function creerCompte(req, res) {
  * où un praticien dit n'avoir rien reçu.
  */
 async function envoyerIdentifiants({ user, motDePasse, role, auteurId, ip }) {
-  const urlConnexion = `${env.publicUrl}/connexion/${role === 'SPECIALISTE' ? 'specialiste' : 'medecin'}`
+  const page = { SPECIALISTE: 'specialiste', TRADIPRATICIEN: 'tradipraticien' }[role] || 'medecin'
+  const urlConnexion = `${env.publicUrl}/connexion/${page}`
 
   try {
     const resultat = await mailer.sendMail({

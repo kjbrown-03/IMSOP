@@ -9,7 +9,7 @@ const ctrl = require('../controllers/professionnels.controller')
 const router = express.Router()
 router.use(authenticate)
 
-const PRATICIENS = ['SPECIALISTE', 'MEDECIN_LOCAL']
+const PRATICIENS = ['SPECIALISTE', 'MEDECIN_LOCAL', 'TRADIPRATICIEN']
 const CONTROLEURS = ['COORDINATEUR', 'ADMIN']
 
 // Dépôt et relecture de ses propres justificatifs (CDC §16).

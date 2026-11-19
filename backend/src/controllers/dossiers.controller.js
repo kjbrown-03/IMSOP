@@ -18,6 +18,9 @@ const env = require('../config/env')
 // sans cela, toutes les routes ecrites pour le medecin traitant (televerser une
 // piece, confirmer un complement, payer, modifier le dossier) lui auraient ete
 // ouvertes d'office, et toute future route aussi.
+const ROLES_TOUS_DOSSIERS = new Set(['COORDINATEUR', 'ADMIN'])
+const ROLES_FILTRES = new Set(['PATIENT', 'SPECIALISTE', 'MEDECIN_LOCAL'])
+
 async function loadDossierWithAccessCheck(req, dossierId, { autoriserRedacteur = false } = {}) {
   const dossier = await prisma.dossier.findUnique({
     where: { id: dossierId },
@@ -62,7 +65,13 @@ async function loadDossierWithAccessCheck(req, dossierId, { autoriserRedacteur =
       return { dossier, estRedacteur: true }
     }
   }
-  // COORDINATEUR and ADMIN can access any dossier
+  // Liste blanche : un role qui n'est nomme nulle part ci-dessus (le
+  // tradipraticien, ou tout role futur) tombait jusqu'ici et recevait le
+  // dossier de n'importe quel patient. Les trois roles verifies plus haut ont
+  // deja ete filtres ; la coordination et l'administration voient tout.
+  if (!ROLES_FILTRES.has(req.userRole) && !ROLES_TOUS_DOSSIERS.has(req.userRole)) {
+    return { error: 403, message: 'Accès refusé pour ce rôle' }
+  }
 
   return { dossier, estRedacteur: false }
 }
@@ -228,8 +237,12 @@ async function listDossiers(req, res) {
     // ferait ouvrir dans la page du medecin traitant, qui propose de deposer des
     // pieces et de poser une question.
     where = { OR: [{ demandeurMedecinId: id }, { medecinLocalId: id }] }
-  } else if (req.query.status) {
-    where = { status: req.query.status }
+  } else if (ROLES_TOUS_DOSSIERS.has(req.userRole)) {
+    if (req.query.status) where = { status: req.query.status }
+  } else {
+    // Meme liste blanche que `loadDossierWithAccessCheck` : sans elle, un role
+    // non prevu recevait `where = {}`, c'est-a-dire la liste de tous les dossiers.
+    return res.status(403).json({ message: 'Accès refusé pour ce rôle' })
   }
 
   const { page, pageSize } = req.query

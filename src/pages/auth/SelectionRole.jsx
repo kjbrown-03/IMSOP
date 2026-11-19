@@ -30,6 +30,12 @@ export default function SelectionRole() {
       description: t('auth.roleSelection.localDoctorDesc'),
     },
     {
+      to: '/connexion/tradipraticien',
+      icon: 'eco',
+      title: t('auth.roleSelection.tradipraticienTitle'),
+      description: t('auth.roleSelection.tradipraticienDesc'),
+    },
+    {
       to: '/connexion/coordinateur',
       icon: 'health_and_safety',
       title: t('auth.roleSelection.coordinatorTitle'),

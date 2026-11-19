@@ -6,7 +6,7 @@ const { logAction } = require('../services/auditService')
 const { safeUserSelect } = require('../lib/selectors')
 const { motDePasseLisible } = require('../lib/motDePasse')
 
-const MANAGEABLE_ROLES = new Set(['SPECIALISTE', 'MEDECIN_LOCAL', 'COORDINATEUR'])
+const MANAGEABLE_ROLES = new Set(['SPECIALISTE', 'MEDECIN_LOCAL', 'TRADIPRATICIEN', 'COORDINATEUR'])
 
 async function listAuditLogs(req, res) {
   const { dossierId, entityType, take = 100 } = req.query
@@ -98,7 +98,7 @@ async function dashboardStats(req, res) {
 // anime, au meme titre que le specialiste : c'est elle qui l'enrole depuis une
 // candidature, corrige sa fiche et suspend son acces. Il n'y avait jusqu'ici
 // aucun ecran pour le faire.
-const ROLES_GERES_PAR_COORDINATEUR = new Set(['SPECIALISTE', 'MEDECIN_LOCAL'])
+const ROLES_GERES_PAR_COORDINATEUR = new Set(['SPECIALISTE', 'MEDECIN_LOCAL', 'TRADIPRATICIEN'])
 
 function assertManageableRole(role, res, req) {
   if (!MANAGEABLE_ROLES.has(role)) {
@@ -164,6 +164,11 @@ async function createUser(req, res) {
     // habilitation, c'est le controle du numero d'ordre qui la fonde.
     data.medecinLocal = { create: { specialite, pays, etablissement, ville, numeroOrdre } }
   }
+  if (role === 'TRADIPRATICIEN') {
+    // Meme profil que le medecin (la fiche d'annuaire), marque traditionnel :
+    // c'est ce qui le range dans la bonne liste de resultats.
+    data.medecinLocal = { create: { specialite, pays, etablissement, ville, numeroOrdre, typePratique: 'TRADITIONNEL' } }
+  }
 
   const user = await prisma.user.create({ data, include: { specialiste: true, medecinLocal: true } })
 
@@ -206,7 +211,7 @@ async function updateUser(req, res) {
     }
   }
 
-  if (user.role === 'MEDECIN_LOCAL' && user.medecinLocal) {
+  if ((user.role === 'MEDECIN_LOCAL' || user.role === 'TRADIPRATICIEN') && user.medecinLocal) {
     const medecinData = {}
     if (specialite !== undefined) medecinData.specialite = specialite
     if (pays !== undefined) medecinData.pays = pays

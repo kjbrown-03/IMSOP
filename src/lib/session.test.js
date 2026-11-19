@@ -110,6 +110,7 @@ describe('Sessions cloisonnées par rôle', () => {
       ['/patient/dossiers', 'PATIENT'],
       ['/specialiste/tableau-de-bord', 'SPECIALISTE'],
       ['/medecin/dossiers', 'MEDECIN_LOCAL'],
+      ['/tradipraticien/registre', 'TRADIPRATICIEN'],
       ['/coordinateur/tableau-de-bord', 'COORDINATEUR'],
       ['/admin/journal', 'ADMIN'],
     ])('%s correspond à %s', (chemin, attendu) => {
@@ -192,6 +193,6 @@ describe('Sessions cloisonnées par rôle', () => {
   })
 
   test('la liste des rôles couvre tous les espaces de l\'application', () => {
-    expect(ROLES).toEqual(['PATIENT', 'SPECIALISTE', 'MEDECIN_LOCAL', 'COORDINATEUR', 'ADMIN'])
+    expect(ROLES).toEqual(['PATIENT', 'SPECIALISTE', 'MEDECIN_LOCAL', 'TRADIPRATICIEN', 'COORDINATEUR', 'ADMIN'])
   })
 })

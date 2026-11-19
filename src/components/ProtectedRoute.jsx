@@ -8,6 +8,7 @@ const LOGIN_ROUTES = {
   COORDINATEUR: '/connexion/coordinateur',
   SPECIALISTE: '/connexion/specialiste',
   MEDECIN_LOCAL: '/connexion/medecin',
+  TRADIPRATICIEN: '/connexion/tradipraticien',
   ADMIN: '/connexion/admin',
 }
 

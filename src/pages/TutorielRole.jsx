@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import AdminLayout from '../components/layout/AdminLayout'
 import CoordinatorLayout from '../components/layout/CoordinatorLayout'
 import MedecinShell from '../components/layout/MedecinShell'
+import TradipraticienShell from '../components/layout/TradipraticienShell'
 import PatientShell from '../components/layout/PatientShell'
 import SpecialistShell from '../components/layout/SpecialistShell'
 
@@ -26,6 +27,16 @@ const TUTORIELS = {
       ['Analyser et demander des précisions', 'Étudiez les éléments transmis. Si une donnée manque, demandez un complément au patient dans le dossier ou la messagerie.'],
       ['Rédiger et transmettre votre rapport', 'Rédigez votre avis dans l’espace de rapport, relisez-le, puis soumettez-le pour validation. Les statuts vous indiquent quand il a été validé et transmis.'],
       ['Gérer votre activité', 'Dans Disponibilités, indiquez si vous pouvez recevoir de nouvelles demandes. Consultez Messagerie pour répondre, et Justificatifs pour maintenir votre dossier professionnel à jour.'],
+    ],
+  },
+  TRADIPRATICIEN: {
+    titre: 'Guide du tradipraticien', introduction: 'Votre espace sert à tenir le registre de vos patients, à les orienter quand votre traitement ne suffit pas, et à gérer votre fiche dans l’annuaire.',
+    etapes: [
+      ['Enregistrer un patient', 'Dans Registre des patients, choisissez Nouveau patient et renseignez son nom, son âge, son sexe, son pays d’origine, le diagnostic, la thérapeutique et la durée du traitement.'],
+      ['Référer un patient', 'Si le traitement n’a pas suffi, ouvrez sa fiche et choisissez Référer : vers un hôpital conventionnel ou vers un autre tradipraticien. Indiquez le nom de l’établissement ou du confrère et, si vous le souhaitez, le motif.'],
+      ['Garder le registre pour vous', 'Les fiches de votre registre ne sont visibles que par vous. Orienter un patient n’envoie pas sa fiche à l’hôpital ni au confrère : remettez-lui ce dont il a besoin.'],
+      ['Tenir votre fiche d’annuaire', 'Dans Annuaire, complétez les maladies que vous traitez et votre lieu d’exercice. Vous décidez si votre fiche est proposée aux patients.'],
+      ['Gérer vos justificatifs', 'Dans Justificatifs et Profil, gardez vos documents et coordonnées à jour pour que la coordination puisse vérifier votre activité.'],
     ],
   },
   MEDECIN_LOCAL: {
@@ -64,6 +75,7 @@ const SHELLS = {
   PATIENT: PatientShell,
   SPECIALISTE: SpecialistShell,
   MEDECIN_LOCAL: MedecinShell,
+  TRADIPRATICIEN: TradipraticienShell,
   COORDINATEUR: CoordinatorLayout,
   ADMIN: AdminLayout,
 }

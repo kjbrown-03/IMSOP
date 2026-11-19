@@ -22,11 +22,13 @@ const EMPTY_FORM = {
 export default function AdminUserManager({ role }) {
   const { t } = useTranslation()
   const isSpecialiste = role === 'SPECIALISTE'
-  const isMedecin = role === 'MEDECIN_LOCAL'
+  // Le tradipraticien a le meme profil que le medecin (fiche d'annuaire) : memes
+  // champs, autre liste.
+  const isMedecin = role === 'MEDECIN_LOCAL' || role === 'TRADIPRATICIEN'
   // Le praticien — spécialiste ou médecin traitant — porte une fiche
   // professionnelle ; le coordinateur, non.
   const estPraticien = isSpecialiste || isMedecin
-  const ns = isSpecialiste ? 'specialistes' : isMedecin ? 'medecins' : 'coordinateurs'
+  const ns = isSpecialiste ? 'specialistes' : role === 'TRADIPRATICIEN' ? 'tradipraticiens' : isMedecin ? 'medecins' : 'coordinateurs'
 
   const [users, setUsers] = useState([])
   const [loading, setLoading] = useState(true)
@@ -152,7 +154,13 @@ export default function AdminUserManager({ role }) {
     }
   }
 
-  const affiches = isMedecin && pratique !== 'TOUS'
+  // Depuis le rôle TRADIPRATICIEN, chaque liste ne porte plus qu'une nature :
+  // le filtre et le badge n'apparaissent que si la liste mélange encore les deux
+  // (compte resté MEDECIN_LOCAL malgré une pratique traditionnelle). Sans cela
+  // l'écran affichait « Tradipraticiens (0) » en permanence.
+  const mixte = isMedecin
+    && new Set(users.map((u) => u.medecinLocal?.typePratique || 'CONVENTIONNEL')).size > 1
+  const affiches = mixte && pratique !== 'TOUS'
     ? users.filter((u) => (u.medecinLocal?.typePratique || 'CONVENTIONNEL') === pratique)
     : users
 
@@ -316,7 +324,7 @@ export default function AdminUserManager({ role }) {
         </div>
       )}
 
-      {isMedecin && (
+      {mixte && (
         <div className="flex flex-wrap gap-2 mb-6" role="group" aria-label={t('admin.medecins.filtre')}>
           {[['TOUS', 'tous'], ['CONVENTIONNEL', 'conventionnels'], ['TRADITIONNEL', 'traditionnels']].map(([valeur, cle]) => (
             <button
@@ -372,7 +380,7 @@ export default function AdminUserManager({ role }) {
                     <BadgeCheck className="w-3 h-3" /> {t('admin.specialistes.verified')}
                   </span>
                 )}
-                {u.medecinLocal?.typePratique === 'TRADITIONNEL' && (
+                {mixte && u.medecinLocal?.typePratique === 'TRADITIONNEL' && (
                   <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800">
                     {t('admin.medecins.tradipraticien')}
                   </span>

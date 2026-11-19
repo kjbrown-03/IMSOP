@@ -104,7 +104,7 @@ async function main() {
 
     const existant = await prisma.user.findUnique({ where: { email }, include: { medecinLocal: true } })
     if (existant?.medecinLocal) {
-      await prisma.user.update({ where: { id: existant.id }, data: { fullName: tp.nom, phone: tp.telephones[0] || null } })
+      await prisma.user.update({ where: { id: existant.id }, data: { fullName: tp.nom, phone: tp.telephones[0] || null, role: 'TRADIPRATICIEN' } })
       await prisma.medecinLocal.update({ where: { id: existant.medecinLocal.id }, data: fiche })
       bilan.misAJour++
       continue
@@ -114,7 +114,7 @@ async function main() {
       data: {
         email,
         passwordHash,
-        role: 'MEDECIN_LOCAL',
+        role: 'TRADIPRATICIEN',
         fullName: tp.nom,
         phone: tp.telephones[0] || null,
         medecinLocal: { create: { ...fiche, valideParComiteLe: new Date() } },
