@@ -95,9 +95,24 @@ const changerMotDePasse = {
   }).strict(),
 }
 
+// Ajout ou changement d'adresse : voir demanderChangementEmail.
+const demanderChangementEmail = {
+  body: z.object({
+    nouvelEmail: z.string().trim().toLowerCase().email().max(254),
+    motDePasse: z.string().min(1).max(128),
+  }).strict(),
+}
+
+const confirmerChangementEmail = {
+  body: z.object({
+    jeton: z.string().min(1),
+    code: z.string().regex(/^\d{6}$/, 'Le code doit contenir 6 chiffres'),
+  }).strict(),
+}
+
 module.exports = {
   registerMedecinLocal,
   registerPatient, login, verifyTwoFactor, refresh, logout,
   forgotPassword, resetPassword, verifyEmail, verifierCodeConsentement,
-  changerMotDePasse,
+  changerMotDePasse, demanderChangementEmail, confirmerChangementEmail,
 }

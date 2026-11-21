@@ -1459,6 +1459,21 @@
     "emailUnverified": "Address not verified",
     "phone": "Phone",
     "phoneEmpty": "Not provided",
+    "emailChange": {
+      "aucune": "No email address",
+      "aucuneAide": "Without an address you receive no sign-in code or email notification, and \"forgot password\" cannot help you.",
+      "ajouter": "Add",
+      "modifier": "Edit",
+      "nouvelle": "New email address",
+      "motDePasse": "Your current password",
+      "aide": "A code will be sent to this address. It replaces the current one only once the code is entered, and you will then use it to sign in.",
+      "envoyerCode": "Send me the code",
+      "codeEnvoye": "A 6-digit code has just been sent to {{email}}. Enter it here (valid for 15 minutes; check your spam folder).",
+      "code": "Verification code",
+      "confirmer": "Confirm address",
+      "enregistree": "Address saved. Use it from now on to sign in.",
+      "echec": "Changing the address failed. Please try again."
+    },
     "roles": {
       "PATIENT": "Patient",
       "SPECIALISTE": "Specialist",

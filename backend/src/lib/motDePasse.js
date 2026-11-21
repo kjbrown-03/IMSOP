@@ -1,3 +1,4 @@
+const bcrypt = require('bcrypt')
 const crypto = require('crypto')
 
 // Un mot de passe envoyé par courriel est RECOPIÉ à la main, souvent depuis un
@@ -15,4 +16,24 @@ function motDePasseLisible(longueur = 14) {
   return resultat
 }
 
-module.exports = { motDePasseLisible, ALPHABET }
+/**
+ * Compare un mot de passe saisi à son empreinte, en tolérant les blancs en
+ * bordure.
+ *
+ * Un mot de passe copié depuis un courriel emporte souvent l'espace ou le retour
+ * à la ligne qui le suit, invisible dans le champ. La connexion le tolérait déjà ;
+ * le changement de mot de passe non : le navigateur, qui avait mémorisé la saisie
+ * de la connexion avec son blanc, la reproposait dans « mot de passe actuel », et
+ * le praticien lisait « mot de passe actuel incorrect » avec le bon mot de passe
+ * sous les yeux. Les deux passent désormais par ici.
+ *
+ * La version rognée n'est essayée qu'en second, pour ne pas refuser celui qui
+ * aurait délibérément choisi des espaces en bordure.
+ */
+async function motDePasseCorrespond(saisi, empreinte) {
+  if (await bcrypt.compare(saisi, empreinte)) return true
+  const rogne = saisi.trim()
+  return rogne !== saisi && rogne.length > 0 && bcrypt.compare(rogne, empreinte)
+}
+
+module.exports = { motDePasseLisible, motDePasseCorrespond, ALPHABET }

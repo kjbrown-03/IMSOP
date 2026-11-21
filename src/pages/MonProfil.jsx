@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { CheckCircle2, Loader2, Mail, Pencil, Phone, ShieldCheck, ShieldAlert } from 'lucide-react'
+import { CheckCircle2, Loader2, Pencil, Phone, ShieldCheck, ShieldAlert } from 'lucide-react'
 import AdminLayout from '../components/layout/AdminLayout'
 import CoordinatorLayout from '../components/layout/CoordinatorLayout'
 import SpecialistShell from '../components/layout/SpecialistShell'
@@ -9,6 +9,7 @@ import MedecinShell from '../components/layout/MedecinShell'
 import PatientShell from '../components/layout/PatientShell'
 import AvatarUploader from '../components/ui/AvatarUploader'
 import ChangementMotDePasse from '../components/ui/ChangementMotDePasse'
+import ChangementEmail from '../components/ui/ChangementEmail'
 import { useAuthStore } from '../store/useAuthStore'
 import ReglageNotifications from '../components/ui/ReglageNotifications'
 import { api } from '../lib/api'
@@ -157,12 +158,16 @@ export default function MonProfil() {
       </section>
 
       <section className="bg-white dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 rounded-3xl px-6 shadow-sm divide-y divide-slate-100 dark:divide-neutral-800">
-        <InfoRow icon={Mail} label={t('profile.email')} value={user?.email || '—'} />
-        <InfoRow
-          icon={EmailIcon}
-          label={t('profile.emailStatus')}
-          value={user?.emailVerified ? t('profile.emailVerified') : t('profile.emailUnverified')}
-        />
+        <ChangementEmail user={user} onChange={refreshMe} />
+        {/* Sans adresse, « non vérifiée » ne veut rien dire : la ligne au-dessus
+            dit déjà qu'il n'y en a pas. */}
+        {!user?.sansEmail && (
+          <InfoRow
+            icon={EmailIcon}
+            label={t('profile.emailStatus')}
+            value={user?.emailVerified ? t('profile.emailVerified') : t('profile.emailUnverified')}
+          />
+        )}
         {user?.role === 'TRADIPRATICIEN' ? (
           <TelephoneModifiable phone={user?.phone} onChange={refreshMe} />
         ) : (

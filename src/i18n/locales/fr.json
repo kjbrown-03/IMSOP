@@ -1459,6 +1459,21 @@
     "emailUnverified": "Adresse non vérifiée",
     "phone": "Téléphone",
     "phoneEmpty": "Non renseigné",
+    "emailChange": {
+      "aucune": "Aucune adresse e-mail",
+      "aucuneAide": "Sans adresse, vous ne recevez ni code de connexion ni notification par courriel, et « mot de passe oublié » ne peut rien pour vous.",
+      "ajouter": "Ajouter",
+      "modifier": "Modifier",
+      "nouvelle": "Nouvelle adresse e-mail",
+      "motDePasse": "Votre mot de passe actuel",
+      "aide": "Un code va être envoyé à cette adresse. Elle ne remplacera l'actuelle qu'une fois le code saisi : c'est elle qui servira ensuite à vous connecter.",
+      "envoyerCode": "Recevoir le code",
+      "codeEnvoye": "Un code à 6 chiffres vient d'être envoyé à {{email}}. Saisissez-le ici (valable 15 minutes, pensez aux courriers indésirables).",
+      "code": "Code de vérification",
+      "confirmer": "Confirmer l'adresse",
+      "enregistree": "Adresse enregistrée. Utilisez-la désormais pour vous connecter.",
+      "echec": "La modification de l'adresse a échoué. Réessayez."
+    },
     "roles": {
       "PATIENT": "Patient",
       "SPECIALISTE": "Spécialiste",

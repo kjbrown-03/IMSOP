@@ -104,6 +104,32 @@ Ce code est valable 10 minutes. Si vous n'êtes pas à l'origine de cette demand
 
 L'équipe IMSOP`,
   },
+  CHANGEMENT_EMAIL_CODE: {
+    // Envoyé à la NOUVELLE adresse : c'est la preuve qu'elle existe et qu'elle
+    // appartient à qui la demande. Comme tout code, rien en base.
+    courrielSeulement: true,
+    subject: 'Confirmez votre adresse e-mail IMSOP',
+    body: (ctx) => `Bonjour ${ctx.name},
+
+Pour rattacher cette adresse à votre compte IMSOP, saisissez le code suivant : ${ctx.code}
+
+Ce code est valable 15 minutes. Si vous n'êtes pas à l'origine de cette demande, ignorez ce message : rien ne sera modifié.
+
+L'équipe IMSOP`,
+  },
+  EMAIL_MODIFIE: {
+    // Envoyé à l'ANCIENNE adresse, qui n'est plus celle du compte : une entrée
+    // dans la cloche n'atteindrait pas la personne qu'on cherche à prévenir.
+    courrielSeulement: true,
+    subject: 'L\'adresse e-mail de votre compte IMSOP a changé',
+    body: (ctx) => `Bonjour ${ctx.name},
+
+L'adresse e-mail de votre compte IMSOP vient d'être remplacée. Vous ne recevrez plus nos messages à cette adresse.
+
+Si vous n'êtes pas à l'origine de ce changement, contactez immédiatement la coordination IMSOP.
+
+L'équipe IMSOP`,
+  },
   VERIFICATION_EMAIL: {
     subject: 'Vérifiez votre adresse e-mail IMSOP',
     body: (ctx) => `Bonjour ${ctx.name},\n\nVotre code de vérification est : ${ctx.code}\n\nCe code est valable 15 minutes.\n\nL'équipe IMSOP`,

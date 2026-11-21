@@ -7,6 +7,8 @@ const { notify } = require('../services/notificationService')
 const { logAction } = require('../services/auditService')
 const { genererPatientRef } = require('../services/referenceService')
 const env = require('../config/env')
+const { motDePasseCorrespond } = require('../lib/motDePasse')
+const { estAdresseFictive } = require('../lib/mailer')
 
 const ROLES_REQUIRING_2FA = new Set(['SPECIALISTE', 'MEDECIN_LOCAL', 'TRADIPRATICIEN', 'COORDINATEUR', 'ADMIN'])
 
@@ -18,6 +20,10 @@ function serializeUser(user) {
   return {
     id: user.id,
     email: user.email,
+    // Adresse d'import (`.invalid`) : le compte n'a en réalité aucun courriel.
+    // L'écran du profil dit « aucune adresse » au lieu d'afficher un identifiant
+    // technique que le praticien croirait être le sien.
+    sansEmail: estAdresseFictive(user.email),
     fullName: user.fullName,
     role: user.role,
     phone: user.phone,
@@ -330,15 +336,8 @@ async function login(req, res) {
   const user = await prisma.user.findUnique({ where: { email }, include: { patient: true, specialiste: true, medecinLocal: true } })
   if (!user) return res.status(401).json({ message: 'Identifiants incorrects' })
 
-  // Un mot de passe copié depuis un courriel emporte souvent l'espace ou le
-  // retour à la ligne qui le suit, invisible dans le champ masqué : le
-  // praticien recevait « Identifiants incorrects » avec le bon mot de passe.
-  // La version rognée n'est essayée qu'en second, pour ne pas refuser celui qui
-  // aurait délibérément choisi des espaces en bordure.
-  let valid = await bcrypt.compare(password, user.passwordHash)
-  if (!valid && password.trim() !== password && password.trim()) {
-    valid = await bcrypt.compare(password.trim(), user.passwordHash)
-  }
+  // Blancs en bordure tolérés : voir motDePasseCorrespond.
+  const valid = await motDePasseCorrespond(password, user.passwordHash)
   if (!valid) return res.status(401).json({ message: 'Identifiants incorrects' })
 
   if (role && user.role !== role) {
@@ -550,7 +549,7 @@ async function changerMotDePasse(req, res) {
   })
   if (!user) return res.status(404).json({ message: 'Compte introuvable' })
 
-  const correct = await bcrypt.compare(motDePasseActuel, user.passwordHash)
+  const correct = await motDePasseCorrespond(motDePasseActuel, user.passwordHash)
   if (!correct) {
     return res.status(400).json({ message: 'Le mot de passe actuel est incorrect' })
   }
@@ -582,11 +581,143 @@ async function changerMotDePasse(req, res) {
   res.json({ message: 'Mot de passe modifié. Reconnectez-vous avec le nouveau.' })
 }
 
+/**
+ * Ajout ou changement de l'adresse e-mail par son titulaire.
+ *
+ * Des praticiens sont enrôlés sans adresse : tradipraticiens importés de la
+ * cartographie (adresse `.invalid`), médecins dont la coordination n'avait
+ * qu'un téléphone, adresse mal saisie au recrutement. Sans adresse valable, ni
+ * code de connexion, ni « mot de passe oublié », ni notification n'arrivent.
+ *
+ * Deux temps, parce que l'adresse devient l'identifiant de connexion ET le canal
+ * du code à deux facteurs : une faute de frappe enregistrée sans vérification
+ * fermerait le compte à son titulaire. Le code part donc à la NOUVELLE adresse,
+ * et rien ne change tant qu'il n'est pas rendu.
+ *
+ * Le mot de passe est exigé, comme pour le changer : une session laissée ouverte
+ * ne doit pas suffire à détourner le compte vers une autre boîte.
+ */
+const PURPOSE_CHANGEMENT_EMAIL = 'CHANGEMENT_EMAIL'
+
+// L'adresse visée n'est pas stockée en base (pas de colonne pour elle) : elle
+// voyage dans un jeton signé, et l'empreinte du code l'inclut. Un code reçu pour
+// une adresse ne peut donc pas valider un jeton forgé pour une autre.
+const empreinteCodeEmail = (code, email) => hashToken(`${code}:${email}`)
+
+async function demanderChangementEmail(req, res) {
+  const { nouvelEmail, motDePasse } = req.body
+
+  const user = await prisma.user.findUnique({ where: { id: req.userId } })
+  if (!user || !user.active) return res.status(403).json({ message: 'Ce compte a été désactivé' })
+
+  if (!(await motDePasseCorrespond(motDePasse, user.passwordHash))) {
+    return res.status(400).json({ message: 'Mot de passe incorrect' })
+  }
+  if (estAdresseFictive(nouvelEmail)) {
+    return res.status(400).json({ message: 'Cette adresse ne peut pas recevoir de courriel' })
+  }
+  if (nouvelEmail === user.email) {
+    return res.status(400).json({ message: 'C\'est déjà l\'adresse de votre compte' })
+  }
+  // Le dire révèle qu'un compte existe à cette adresse, mais seulement à un
+  // titulaire authentifié qui a redonné son mot de passe, sous limiteur. Le
+  // taire laisserait un praticien attendre un code qui ne viendrait jamais.
+  const prise = await prisma.user.findUnique({ where: { email: nouvelEmail }, select: { id: true } })
+  if (prise) {
+    return res.status(409).json({ message: 'Cette adresse est déjà utilisée par un autre compte' })
+  }
+
+  // Un seul code vivant à la fois, comme pour le consentement.
+  await prisma.twoFactorChallenge.updateMany({
+    where: { userId: user.id, purpose: PURPOSE_CHANGEMENT_EMAIL, consumedAt: null },
+    data: { consumedAt: new Date() },
+  })
+
+  const code = crypto.randomInt(100000, 999999).toString()
+  await prisma.twoFactorChallenge.create({
+    data: {
+      userId: user.id,
+      purpose: PURPOSE_CHANGEMENT_EMAIL,
+      codeHash: empreinteCodeEmail(code, nouvelEmail),
+      expiresAt: new Date(Date.now() + 15 * 60 * 1000),
+    },
+  })
+
+  await notify(user.id, nouvelEmail, 'CHANGEMENT_EMAIL_CODE', { name: user.fullName, code })
+  console.log(`[CHANGEMENT_EMAIL] Code for ${nouvelEmail}: ${code}`)
+
+  const jeton = jwt.sign(
+    { sub: user.id, purpose: 'changement-email', email: nouvelEmail },
+    env.jwt.accessSecret,
+    { expiresIn: '15m' },
+  )
+  res.json({ jeton, email: nouvelEmail })
+}
+
+async function confirmerChangementEmail(req, res) {
+  const { jeton, code } = req.body
+
+  let payload
+  try {
+    payload = jwt.verify(jeton, env.jwt.accessSecret)
+  } catch {
+    return res.status(401).json({ message: 'Demande expirée : recommencez' })
+  }
+  if (payload.purpose !== 'changement-email' || payload.sub !== req.userId || !payload.email) {
+    return res.status(401).json({ message: 'Demande expirée : recommencez' })
+  }
+
+  const challenge = await prisma.twoFactorChallenge.findFirst({
+    where: { userId: req.userId, purpose: PURPOSE_CHANGEMENT_EMAIL, consumedAt: null, expiresAt: { gt: new Date() } },
+    orderBy: { createdAt: 'desc' },
+  })
+  // consommerChallenge hache ce qu'on lui donne : on lui passe le couple
+  // code + adresse, à l'image de l'empreinte enregistrée.
+  const tentative = await consommerChallenge(challenge, `${code}:${payload.email}`)
+  if (tentative.erreur === 'epuise') {
+    return res.status(429).json({ message: 'Trop de codes erronés. Recommencez la demande.' })
+  }
+  if (tentative.erreur) {
+    return res.status(401).json({ message: 'Code invalide ou expiré' })
+  }
+
+  const avant = await prisma.user.findUnique({ where: { id: req.userId }, select: { email: true, fullName: true } })
+
+  let user
+  try {
+    user = await prisma.user.update({
+      where: { id: req.userId },
+      // Le code vient d'être reçu à cette adresse : elle est vérifiée.
+      data: { email: payload.email, emailVerified: true },
+      include: { patient: true, specialiste: true, medecinLocal: true },
+    })
+  } catch (err) {
+    // Un autre compte a pris l'adresse entre la demande et la confirmation.
+    if (err.code === 'P2002') {
+      return res.status(409).json({ message: 'Cette adresse est déjà utilisée par un autre compte' })
+    }
+    throw err
+  }
+
+  // Pas les adresses dans le journal : l'audit n'a pas à recopier des
+  // coordonnées (même règle que pour le téléphone).
+  await logAction({ userId: req.userId, action: 'EMAIL_MODIFIE', entityType: 'User', entityId: req.userId, ipAddress: req.ip })
+
+  // L'ancienne boîte est prévenue : si le changement n'est pas de son fait,
+  // c'est le seul signal que son titulaire recevra. Une adresse d'import ne
+  // reçoit rien (le mailer l'écarte).
+  if (avant?.email) {
+    await notify(req.userId, avant.email, 'EMAIL_MODIFIE', { name: avant.fullName })
+  }
+
+  res.json(serializeUser(user))
+}
+
 module.exports = {
   registerMedecinLocal,
   registerPatient, login, verifyTwoFactor, refresh, logout, me,
   forgotPassword, resetPassword, verifyEmail, resendEmailVerification,
   issueSession, issueTwoFactorChallenge, ROLES_REQUIRING_2FA,
   envoyerCodeConsentement, verifierCodeConsentement, verifierJetonConsentement,
-  changerMotDePasse,
+  changerMotDePasse, demanderChangementEmail, confirmerChangementEmail,
 }

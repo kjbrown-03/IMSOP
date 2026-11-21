@@ -24,6 +24,10 @@ router.post('/consentement/code/verify', authenticate, authLimiter, validate(sch
 // Sous authLimiter : une tentative répétée sur « mot de passe actuel » est une
 // attaque par force brute comme une autre.
 router.post('/mot-de-passe', authenticate, authLimiter, validate(schema.changerMotDePasse), ctrl.changerMotDePasse)
+// Ajout ou changement d'adresse e-mail, en deux temps (code envoyé à la
+// nouvelle adresse). Mot de passe exigé à la demande : sous authLimiter.
+router.post('/email', authenticate, authLimiter, validate(schema.demanderChangementEmail), ctrl.demanderChangementEmail)
+router.post('/email/confirmation', authenticate, authLimiter, validate(schema.confirmerChangementEmail), ctrl.confirmerChangementEmail)
 router.get('/me', authenticate, ctrl.me)
 
 module.exports = router
