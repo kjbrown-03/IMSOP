@@ -44,7 +44,9 @@ const ROLE_IMAGES = {
   PATIENT: '/patient-login.jpg',
   SPECIALISTE: 'https://images.unsplash.com/photo-1551076805-e1869033e561?auto=format&fit=crop&q=80',
   MEDECIN_LOCAL: '/medecin-login.png',
-  TRADIPRATICIEN: '/medecin-login.png',
+  // Photo d'Aliburhan S (Tessaoua, Niger), licence Unsplash : usage commercial
+  // libre, sans attribution obligatoire. https://unsplash.com/photos/t4pnVANJdI0
+  TRADIPRATICIEN: '/tradipraticien-login.jpg',
   COORDINATEUR: 'https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&q=80',
   ADMIN: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80',
 };
