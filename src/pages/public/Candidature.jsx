@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, Navigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { ArrowLeft, Camera, CheckCircle2, FileText, Loader2, Stethoscope, ShieldCheck, X } from 'lucide-react'
+import { ArrowLeft, Camera, CheckCircle2, FileText, Leaf, Loader2, Stethoscope, ShieldCheck, X } from 'lucide-react'
 import AuthLayout from '../../components/layout/AuthLayout'
 import NotFound from '../NotFound'
 import ListeDeroulante from '../../components/ui/ListeDeroulante'
@@ -250,10 +250,11 @@ export default function Candidature({ type = 'SPECIALISTE' }) {
     <AuthLayout
       heading={titre}
       tagline={t('candidature.accroche')}
-      bgImage="/medecin-login.png"
+      // Un tradipraticien ne se reconnaît pas dans un médecin en blouse.
+      bgImage={estTraditionnel ? '/tradipraticien-login.jpg' : '/medecin-login.png'}
       badges={
         <>
-          <span className="text-on-surface-variant"><Stethoscope className="w-6 h-6 text-primary" /></span>
+          <span className="text-on-surface-variant">{estTraditionnel ? <Leaf className="w-6 h-6 text-primary" /> : <Stethoscope className="w-6 h-6 text-primary" />}</span>
           <span className="text-on-surface-variant"><ShieldCheck className="w-6 h-6 text-primary" /></span>
         </>
       }
